@@ -983,6 +983,32 @@ function renderNodePanel(d){
   }
   if(modeRead.length) body += infoSection('Active overlay read', modeRead.join('; ') + '.');
 
+  /* module document link */
+  const MODULE_DOCS = {
+    'M01':  { pdf:'docs/EDP_Module01_Stealers_v1.pdf',            label:'EDP Module 01 — Stealers' },
+    'M02':  { pdf:'docs/EDP_Module02_Loaders_v1.pdf',             label:'EDP Module 02 — Loaders' },
+    'M03':  { pdf:'docs/EDP_Module03_Crypters_v1.pdf',            label:'EDP Module 03 — Crypters & Packers' },
+    'M04':  { pdf:'docs/EDP_Module04_Callers_v1.pdf',             label:'EDP Module 04 — Callers & Spammers' },
+    'M05':  { pdf:'docs/EDP_Module05_IABs_v1.pdf',                label:'EDP Module 05 — Initial Access Brokers' },
+    'M06':  { pdf:'docs/EDP_Module06_ExploitBrokers_v1.pdf',      label:'EDP Module 06 — Exploit Brokers' },
+    'M07':  { pdf:'docs/EDP_Module07_RaaS_ScopeReduced_v1.pdf',   label:'EDP Module 07 — RaaS' },
+    'M08':  { pdf:'docs/EDP_Module08_LeakSiteOps_v1.pdf',         label:'EDP Module 08 — Leak Site Operations' },
+    'M09':  { pdf:'docs/EDP_Module09_BPH_v1.pdf',                 label:'EDP Module 09 — Bulletproof Hosting' },
+    'M10':  { pdf:'docs/EDP_Module10_UndergroundForums_v1.pdf',   label:'EDP Module 10 — Underground Forums' },
+    'M11':  { pdf:'docs/EDP_Module11_CryptoMixers_v1.pdf',        label:'EDP Module 11 — Crypto Mixers' },
+    'M11b': { pdf:'docs/EDP_Module11_CryptoMixers_v1.pdf',        label:'EDP Module 11 — Crypto Mixers & Bridges' },
+    'M12':  { pdf:'docs/EDP_Module12_OTCBrokers_v1.pdf',          label:'EDP Module 12 — OTC Brokers' },
+    'M13':  { pdf:'docs/EDP_Module13_MoneyLaunderers_v1.pdf',     label:'EDP Module 13 — Money Launderers' },
+    'M13b': { pdf:'docs/EDP_Module13_MoneyLaunderers_v1.pdf',     label:'EDP Module 13 — Money Launderers' },
+    'M13c': { pdf:'docs/EDP_Module13_MoneyLaunderers_v1.pdf',     label:'EDP Module 13 — Money Launderers' },
+    'M14':  { pdf:'docs/EDP_Module14_MuleNetworks_v1.pdf',        label:'EDP Module 14 — Mule Networks' },
+    'M15':  { pdf:'docs/EDP_Module15_NegotiationServices_v1.pdf', label:'EDP Module 15 — Negotiation Services' },
+  };
+  if(d.module && MODULE_DOCS[d.module]) {
+    const doc = MODULE_DOCS[d.module];
+    body += `<div class="info-section"><div class="info-label">Module Reference</div><a href="${doc.pdf}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#7ab0d8;text-decoration:none;padding:6px 11px;border:1px solid #1e3a5c;border-radius:3px;background:rgba(30,60,100,0.15);margin-top:3px;transition:background 150ms;" onmouseover="this.style.background='rgba(50,100,160,0.28)'" onmouseout="this.style.background='rgba(30,60,100,0.15)'">${doc.label} &#8599;</a></div>`;
+  }
+
   /* dependency map */
   const upNodes   = EDGES.filter(e=>e.t===d.id).map(e=>NODES.find(n=>n.id===e.s)).filter(Boolean);
   const downNodes = EDGES.filter(e=>e.s===d.id).map(e=>NODES.find(n=>n.id===e.t)).filter(Boolean);
@@ -1020,6 +1046,7 @@ function renderStatePanel(d){
   if(d.targets) body += infoSection('Best pressure targets', d.targets);
   body += infoSection('Constraints / blowback', d.constraints||'');
   body += infoSection('What success looks like', d.success||d.damage);
+  body += `<div class="info-section"><div class="info-label">Reference Document</div><a href="docs/04%20RU_GOV_Protection_Framework_v1.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#7ab0d8;text-decoration:none;padding:6px 11px;border:1px solid #1e3a5c;border-radius:3px;background:rgba(30,60,100,0.15);margin-top:3px;transition:background 150ms;" onmouseover="this.style.background='rgba(50,100,160,0.28)'" onmouseout="this.style.background='rgba(30,60,100,0.15)'">RU Gov Protection Framework &#8599;</a></div>`;
   document.getElementById('selectionBody').innerHTML = body;
 }
 
