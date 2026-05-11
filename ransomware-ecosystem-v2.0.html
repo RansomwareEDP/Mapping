@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ransomware Ecosystem v1.3 — Reno</title>
+<title>Ransomware Ecosystem v2.0 — Reno</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
@@ -219,16 +219,54 @@ body.present #minimap-wrap { display: none !important; }
 #exit-present-btn:hover { background: rgba(20,40,70,0.95); }
 body.present #exit-present-btn { display: block; }
 
+
+/* ── INTEL ANNEX TABS ───────────────────────────────────────── */
+.panel-tabs { display:flex; gap:0; margin:-4px 0 8px; border-bottom:1px solid #1a2a44; flex-shrink:0; }
+.panel-tab  { padding:5px 14px; font-size:9.5px; text-transform:uppercase; letter-spacing:1px;
+              color:#4a6a88; cursor:pointer; border:none; background:transparent; font-family:inherit;
+              border-bottom:2px solid transparent; margin-bottom:-1px; transition:color 120ms; }
+.panel-tab:hover { color:#8aaac0; }
+.panel-tab.active { color:#7ab8e8; border-bottom-color:#5a9acc; }
+
+/* ── POSTURE BADGE ──────────────────────────────────────────── */
+.posture-badge { display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:1px;
+                 text-transform:uppercase; padding:3px 9px; border-radius:3px; border:1px solid; }
+.posture-COLLECT-ONLY     { background:rgba(120,60,180,0.18); border-color:rgba(140,80,200,0.55); color:#c090ee; }
+.posture-COLLECT-THEN-ACT { background:rgba(190,140,20,0.18); border-color:rgba(200,150,20,0.55); color:#e8c040; }
+.posture-ACT-PROMPTLY     { background:rgba(210,60,40,0.18);  border-color:rgba(220,70,50,0.55);  color:#f07060; }
+
+/* ── COLLECTABILITY INLINE ──────────────────────────────────── */
+.coll-VERY-HIGH { color:#40e878; }
+.coll-HIGH   { color:#6ab87a; }
+.coll-MEDIUM { color:#c8a040; }
+.coll-LOW    { color:#e07060; }
+
+/* ── INTEL SECTIONS ─────────────────────────────────────────── */
+.intel-section { margin-top:9px; padding-top:9px; border-top:1px solid #0f1e34; }
+.intel-label   { font-size:9px; text-transform:uppercase; letter-spacing:1.1px; color:#5a7898; margin-bottom:5px; font-weight:700; }
+.intel-text    { font-size:11.5px; color:#8aaac0; line-height:1.58; }
+.method-item   { font-size:11px; color:#7a9ab8; padding:3px 0 3px 10px; border-left:2px solid #1e3a5c; margin:2px 0; line-height:1.4; }
+.indicator-item{ font-size:11px; color:#8aacca; padding:5px 0 5px 10px; border-left:2px solid #3a5a3a; margin:3px 0; line-height:1.45; }
+.obj-item      { font-size:11px; color:#7a9ab8; padding:3px 0 3px 10px; border-left:2px solid #2a4060; margin:2px 0; line-height:1.4; }
+.no-annex-msg  { font-size:11px; color:#4a6888; font-style:italic; padding:10px 0; }
+
+/* ── POSTURE OVERLAY BUTTON ─────────────────────────────────── */
+.posture-btn { border-color:#8840c080; color:#c090e8bb; }
+.posture-btn.on { background:rgba(120,60,160,0.18); border-color:#8840c0cc; color:#d0a0f0; }
+
+/* ── POSTURE OVERLAY RING COLORS (used in SVG) ──────────────── */
+/* COLLECT-ONLY = #9040c8, COLLECT-THEN-ACT = #c8a020, ACT-PROMPTLY = #d04030 */
+
 </style>
 </head>
 <body>
 <div id="class-banner-top"></div>
 <div id="header">
   <div class="title-block">
-    <h1>Ransomware Ecosystem — v1.3</h1>
-    <div class="sub">Scroll to zoom · Drag to pan · Click node to inspect · Search to filter · Phase / Jurisdiction / Backfire / Case Study overlays</div>
+    <h1>Ransomware Ecosystem — v2.0</h1>
+    <div class="sub">Scroll to zoom · Drag to pan · Click node to inspect · Search to filter · Phase / Jurisdiction / Backfire / Collection Posture / Case Study overlays</div>
   </div>
-  <div class="meta" style="text-align:right;line-height:1.9;"><span id="node-stats" style="color:#4e6e8e;font-size:9px;"></span><br><span id="reno-tip-trigger" style="cursor:help;border-bottom:1px dotted #4a7aaa;color:#8aaac8;font-size:10px;transition:color 120ms;">Developed by Reno</span><span style="color:#4e6e8e;font-size:10px;"> · Published 08 May 2026 · v1.3</span></div>
+  <div class="meta" style="text-align:right;line-height:1.9;"><span id="node-stats" style="color:#4e6e8e;font-size:9px;"></span><br><span id="reno-tip-trigger" style="cursor:help;border-bottom:1px dotted #4a7aaa;color:#8aaac8;font-size:10px;transition:color 120ms;">Developed by Reno</span><span style="color:#4e6e8e;font-size:10px;"> · Published 11 May 2026 · v2.0</span></div>
   <div class="mode-toggle-wrap">
     <button class="mode-btn" id="mode-present" data-tip="Presentation mode — hides controls, enlarges labels, focuses the map" style="border-color:#3a6040;color:#70a880;">Present</button>
     <button class="mode-btn active" id="mode-analyst" data-tip="Standard mode — explore freely, click nodes to inspect" >Analyst</button>
@@ -283,6 +321,8 @@ body.present #exit-present-btn { display: block; }
   <button class="conf-btn conf-btn-ANALYST"   data-conf="ANALYST" data-tip="Show only ANALYST nodes — structured analytic inference">Analyst</button>
   <div class="ctrl-sep"></div>
   <button class="analysis-btn" id="btn-centrality" data-tip="Scales nodes by connection count — largest rings are structural hubs" style="border-color:#5a6a9080;color:#8898c0bb;">Centrality</button>
+  <div class="ctrl-sep"></div>
+  <button class="analysis-btn posture-btn" id="btn-posture" data-tip="Colors nodes by collection posture: COLLECT-ONLY (purple), COLLECT-THEN-ACT (amber). Based on EDP Intel Annexes. Nodes without annex data are unchanged.">Collect Posture</button>
   <div class="ctrl-sep" style="margin-left:auto;"></div>
   <span class="ctrl-label">Search:</span>
   <input type="text" id="search-input" placeholder="filter nodes…" autocomplete="off" spellcheck="false"/>
@@ -328,6 +368,7 @@ body.present #exit-present-btn { display: block; }
   </div>
   <section class="panel hidden" id="selectionPanel">
       <h2 id="panelHeader">Selected node</h2>
+      <div id="panel-tabs" class="panel-tabs" style="display:none;"><button class="panel-tab active" id="tab-disrupt">Disruption</button><button class="panel-tab" id="tab-intel">Intel Annex</button></div>
       <div id="selectionTitle"></div>
       <div id="selectionBadges" class="badges"></div>
       <div id="selectionBody"></div>
@@ -622,6 +663,307 @@ const EDGES = [
   { s:'fsb', t:'genpros', p:false, note:'FSB uses the Prosecutor General as an institutional backstop to shield protected actors from MVD-initiated prosecution.' },
 ];
 
+
+const ANNEX_DATA = {
+  "stealers": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "HIGH",
+    "decisionSummary": "Stealer C2 monitoring and log market coverage should run continuously as baseline operations. The 19-day downstream window means that collection lags at the stealer layer translate directly into missed victim notification opportunities at the IAB and DLS layers.",
+    "methods": [
+      "Stealer Log Market Monitoring",
+      "C2 Infrastructure Enumeration and Monitoring",
+      "Malware Sample Analysis",
+      "Forum and Distribution Channel Monitoring"
+    ],
+    "preActionIndicators": [
+      "Stealer log volume spike for a specific sector or credential type",
+      "New stealer family appearing in markets before C2 fingerprint library is updated",
+      "Stealer operator announcing service shutdown or selling source code"
+    ],
+    "collectObjectives": [
+      "Log market coverage is active and producing victim identifications",
+      "Downstream IAB program is configured to receive upstream victim flags",
+      "Operator attribution at analyst confidence with durable instrument ready",
+      "Alternative stealer infrastructure under collection"
+    ]
+  },
+  "loaders": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "HIGH",
+    "decisionSummary": "Loader C2 monitoring should run continuously as a persistent background operation. Pre-encryption warning it produces is the highest-value victim protection mechanism in the EDP collection architecture \u2014 collection should never be traded for a tactical disruption gain.",
+    "methods": [
+      "C2 Infrastructure Enumeration and Monitoring",
+      "Malware Sample Analysis",
+      "Botnet Monitoring and Sinkholing",
+      "Forum and Dark Market Monitoring"
+    ],
+    "preActionIndicators": [
+      "Known loader C2 traffic detected in a specific victim network",
+      "Loader operator withdrawing forum presence or infrastructure shutdown signals",
+      "New loader family with no existing C2 fingerprint appearing in samples"
+    ],
+    "collectObjectives": [
+      "Full victim pool enumeration for active campaigns",
+      "Operator attribution confirmed \u2014 handles, infrastructure, payment wallets",
+      "Distribution infrastructure mapped (SEO networks, IoT C2 layers, drive-by domains)",
+      "Successor loader infrastructure identified and under collection"
+    ]
+  },
+  "crypters": {
+    "posture": "COLLECT-ONLY",
+    "collectability": "MEDIUM",
+    "decisionSummary": "Action against crypter operators is off the table as a primary objective. The market is too competitive and too replaceable for disruption to produce measurable capability reduction. The operational value is entirely defensive: feeding AV vendor coordination and EDR signature updates.",
+    "methods": [
+      "Forum and Dark Market Monitoring",
+      "Malware Sample Technical Analysis"
+    ],
+    "preActionIndicators": [
+      "FUD claims extending beyond 7 days for a major AV/EDR product",
+      "New obfuscation technique appearing across multiple unrelated malware families simultaneously",
+      "Major crypter service announcing capacity expansion or new subscription tier"
+    ],
+    "collectObjectives": []
+  },
+  "callers": {
+    "posture": "COLLECT-ONLY",
+    "collectability": "LOW",
+    "decisionSummary": "There is no disruption trigger for vishing services. The node is too replaceable for any disruption to produce lasting impact. The collection program is entirely defensive: build and maintain a pretext library, track sector targeting patterns, and feed victim preparation programs continuously.",
+    "methods": [
+      "Victim Report Aggregation",
+      "Forum and Telegram Monitoring"
+    ],
+    "preActionIndicators": [
+      "Vishing campaign volume spike in a specific sector",
+      "New pretext type appearing in forum advertising before appearing in victim reports",
+      "Recruitment posting for native English-speaking vishing operators"
+    ],
+    "collectObjectives": []
+  },
+  "iab": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "HIGH",
+    "decisionSummary": "IAB listing monitoring should run continuously and indefinitely. The 19-day window is operational \u2014 not a historical artifact \u2014 and every unprocessed listing is a victim notification failure. Market infrastructure disruption should only occur once victim notification pipeline is fully operational.",
+    "methods": [
+      "Forum and Market Listing Monitoring",
+      "Listing-to-DLS Correlation",
+      "Stealer Log Cross-Reference",
+      "HUMINT \u2014 Informant Development from IAB Layer"
+    ],
+    "preActionIndicators": [
+      "IAB listing volume spike for a specific sector (healthcare, energy, financial)",
+      "Known high-value organization appears in IAB listing",
+      "Boutique IAB operator shifting from public forum to invite-only or direct communication"
+    ],
+    "collectObjectives": [
+      "Victim notification pipeline fully operational and tested",
+      "Listing-to-DLS correlation pipeline processing in under 24 hours",
+      "Boutique operator financial designation package complete with blockchain tracing",
+      "Forum section takedown coordinated with Node 07 action plan"
+    ]
+  },
+  "exploits": {
+    "posture": "COLLECT-ONLY",
+    "collectability": "MEDIUM",
+    "decisionSummary": "Exploit broker monitoring is a permanent defensive intelligence collection program. No action trigger exists at this node because disruption produces no lasting impact. The entire value of collection here is feeding patching prioritization and AV/EDR vendor coordination continuously.",
+    "methods": [
+      "Forum and Market Listing Monitoring",
+      "Malware Sample Exploit Code Cross-Reference",
+      "HUMINT \u2014 Market Participant Reporting"
+    ],
+    "preActionIndicators": [
+      "Critical infrastructure product CVE appearing in criminal market listing within 7 days of disclosure",
+      "Mass purchase of a specific CVE exploit by multiple forum actors simultaneously",
+      "Known exploit broker advertising new zero-day before NVD publication"
+    ],
+    "collectObjectives": []
+  },
+  "raas": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "HIGH",
+    "decisionSummary": "Passive collection \u2014 DLS monitoring, TOR enumeration, on-chain analytics, malware sample analysis, forum monitoring \u2014 should run continuously against all identified platforms. The operator node is the highest-value collection target. Premature disruption eliminates visibility while producing only temporary degradation.",
+    "methods": [
+      "TOR Infrastructure Enumeration",
+      "Affiliate Recruitment Channel Monitoring",
+      "Cryptocurrency Wallet Tracking",
+      "Leak Site and Victim Pipeline Monitoring",
+      "Malware Sample Analysis and Build Tracking"
+    ],
+    "preActionIndicators": [
+      "Reduction in DLS posting frequency without corresponding victim volume decrease",
+      "Forum recruitment posting withdrawal or account suspension",
+      "Operator switching to new cryptocurrency receiving wallets without known campaign activity"
+    ],
+    "collectObjectives": [
+      "Full affiliate network mapped by handle with geographic distribution assessed",
+      "All active TOR infrastructure fingerprinted and linked to operator",
+      "Admin wallet cluster documented for designation package",
+      "Successor infrastructure identified and under collection before primary action"
+    ]
+  },
+  "leaksite": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "VERY HIGH",
+    "decisionSummary": "DLS monitoring is a permanent background process that should never be suspended. LOW burn risk on DLS action reflects that DLS infrastructure is separate from core RaaS platform \u2014 disrupting a DLS does not affect the operator's ability to attack victims, only the extortion pressure mechanism.",
+    "methods": [
+      "Continuous DLS Monitoring",
+      "DLS Infrastructure Enumeration",
+      "IAB Listing-to-DLS Correlation"
+    ],
+    "preActionIndicators": [
+      "DLS countdown timer acceleration without victim payment confirmation",
+      "High-value victim (critical infrastructure, healthcare) posted to DLS",
+      "Multi-brand DLS hosted on same backbone \u2014 single action can hit multiple brands"
+    ],
+    "collectObjectives": [
+      "Infrastructure fingerprint database current and updated within 24 hours of change",
+      "Covert access assessed and authorized if Hive model applies",
+      "All victim notifications processed from current DLS victim list",
+      "Successor hosting infrastructure identified"
+    ]
+  },
+  "bph": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "HIGH",
+    "decisionSummary": "Passive BPH collection \u2014 BGP monitoring, passive DNS, IOC feed integration, forum monitoring \u2014 should run continuously and indefinitely against all identified infrastructure. This baseline collection costs little and produces continuous customer-roster and infrastructure-mapping intelligence.",
+    "methods": [
+      "BGP and ASN Monitoring",
+      "IP Range and Passive DNS Monitoring",
+      "IOC Feed Integration",
+      "Abuse Database and Registry Monitoring",
+      "Forum Monitoring"
+    ],
+    "preActionIndicators": [
+      "Sudden decrease in forum advertising for a specific provider (aware of LE attention)",
+      "New shell company registrations in same jurisdiction as known BPH entity",
+      "BPH provider acquiring significant new ASN block or IP ranges"
+    ],
+    "collectObjectives": [
+      "Full entity chain mapped \u2014 all legal entities and beneficial ownership chain traced",
+      "Complete criminal customer roster documented for the target provider",
+      "Upstream ISP depeering partners identified and engaged prior to action",
+      "Successor provider infrastructure identified and under collection"
+    ]
+  },
+  "forums": {
+    "posture": "COLLECT-ONLY",
+    "collectability": "HIGH",
+    "decisionSummary": "Underground forums are COLLECT-ONLY for Russian-language institutional forums (Exploit, XSS, RAMP). These forums are effectively impervious to external disruption without Russian government cooperation. Cross-node coverage value is irreplaceable \u2014 no other platform provides comparable ecosystem-wide visibility.",
+    "methods": [
+      "Cover Account Infiltration",
+      "IAB Listing Monitoring and the 19-Day Window",
+      "Handle Correlation and Persona Tracking",
+      "Infrastructure Monitoring (Hosting and Domain)",
+      "Escrow and Financial Infrastructure Monitoring"
+    ],
+    "preActionIndicators": [
+      "Sudden increase in private Telegram channel references replacing forum discussion threads",
+      "Admin-initiated rule changes restricting previously permitted activity categories",
+      "Forum administrator indicating awareness of law enforcement infiltration"
+    ],
+    "collectObjectives": []
+  },
+  "mixers": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "MEDIUM",
+    "decisionSummary": "Passive on-chain monitoring against known mixer addresses runs continuously and requires no action decision. Designation is preferred over seizure because it terminates the criminal use case while allowing continued passive monitoring of funds that remain in the mixer.",
+    "methods": [
+      "On-Chain Analytics Against Known Mixer Addresses",
+      "Smart Contract Analysis (Decentralized Mixers)",
+      "Mixer Infrastructure OSINT (Centralized Services)"
+    ],
+    "preActionIndicators": [
+      "Mixer transaction volume spike correlating with a major ransomware campaign",
+      "Mixer operator announcing new features or expanded capacity",
+      "New decentralized mixer protocol launching with anonymity features exceeding Tornado Cash"
+    ],
+    "collectObjectives": [
+      "Criminal customer wallet cluster map complete \u2014 all major RaaS wallets using the mixer documented",
+      "Entity chain behind centralized mixer reconstructed for designation package",
+      "Successor mixer infrastructure identified and on-chain monitoring established",
+      "Financial chain traces from mixer output to OTC/exchange endpoints documented"
+    ]
+  },
+  "otc": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "MEDIUM",
+    "decisionSummary": "Passive OTC broker monitoring \u2014 forum and Telegram advertising, on-chain analytics \u2014 should run continuously. The designation decision is governed by criminal customer documentation completeness and entity chain reconstruction quality, not transaction volume alone.",
+    "methods": [
+      "Forum and Telegram Channel Monitoring",
+      "On-Chain Analytics Against Known Broker Wallets",
+      "Exchange Cooperation and KYC Data"
+    ],
+    "preActionIndicators": [
+      "OTC broker transaction volume spike following a major ransomware campaign",
+      "Broker advertising minimum transaction floor drop (accepting smaller amounts \u2014 market thinning)",
+      "Broker transferring large volumes to new wallets without corresponding customer activity"
+    ],
+    "collectObjectives": [
+      "Criminal customer wallet set documented \u2014 all major RaaS operator clusters transacting with the broker",
+      "Entity chain reconstructed for OFAC designation package",
+      "T3 Financial Crime Unit USDT blacklisting action coordinated for simultaneous execution",
+      "Successor OTC infrastructure identified and monitoring established"
+    ]
+  },
+  "exchl": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "MEDIUM",
+    "decisionSummary": "On-chain payment chain tracing and corporate registry monitoring run continuously as analytical programs. The action decision is governed by prosecution package completeness \u2014 whether the chain from ransomware proceeds to real-world assets is sufficiently documented to support asset forfeiture.",
+    "methods": [
+      "On-Chain Payment Chain Tracing",
+      "Corporate Registry and Financial OSINT",
+      "Financial Institution Cooperation"
+    ],
+    "preActionIndicators": [
+      "Identified launderer entity acquiring significant real estate in an accessible jurisdiction",
+      "Shell company chain approaching a jurisdiction with an extradition treaty",
+      "Financial institution SAR cluster identifying a launderer entity linked to 10+ transactions"
+    ],
+    "collectObjectives": [
+      "Payment chain traced from ransom wallet through mixing and OTC layers to launderer entity",
+      "Asset map complete \u2014 real estate, vehicles, business interests in accessible jurisdictions documented",
+      "Physical enforcement partners engaged in relevant host jurisdictions",
+      "Beneficial ownership exposure package ready for simultaneous public release"
+    ]
+  },
+  "mules": {
+    "posture": "COLLECT-THEN-ACT",
+    "collectability": "MEDIUM",
+    "decisionSummary": "SAR coordination and recruitment monitoring run continuously. Individual mule arrests without coordinator prosecution are low-value \u2014 they replace one mule with another. The collection objective is coordinator identification, which supports the prosecution package that dismantles the management layer.",
+    "methods": [
+      "Financial Institution SAR Coordination",
+      "Mule Recruitment Advertising Monitoring",
+      "Mule Cooperation and Informant Development"
+    ],
+    "preActionIndicators": [
+      "SAR clustering identifies a coordinator entity linked to 10+ mule accounts",
+      "Mule recruitment advertising surge correlated with a major ransomware campaign",
+      "Mule coordinator shifting to a new recruitment platform or communication channel"
+    ],
+    "collectObjectives": [
+      "Coordinator-level attribution at legal standard supported by mule cooperation and financial records",
+      "Mule network map complete \u2014 coordinator, sub-coordinators, and active account holders documented",
+      "Real-time payment network intervention plan ready with partner financial institutions",
+      "Recruitment advertising platform notifications coordinated for simultaneous disruption"
+    ]
+  },
+  "negot": {
+    "posture": "COLLECT-ONLY",
+    "collectability": "MEDIUM",
+    "decisionSummary": "Collection against criminal negotiation services is a permanent intelligence program. Disrupting negotiation services is counterproductive: it collapses the negotiation process, increases probability of victim data publication without resolution, and eliminates a multi-operator intelligence source.",
+    "methods": [
+      "Victim Cooperation \u2014 Negotiation Communication Sharing",
+      "TOR Portal Monitoring and Cover Engagement",
+      "Ransom Note Corpus Analysis"
+    ],
+    "preActionIndicators": [
+      "Negotiation service linguistic signature appearing under a new operator brand (confirms rebrand)",
+      "Same negotiation service detected across 3+ active RaaS operators simultaneously",
+      "Negotiation service adopting new communication channel or encryption protocol"
+    ],
+    "collectObjectives": []
+  }
+};
+
 const PAY_CHAIN = ['mixers','otc','exchl','mules'];
 const PRESSURE_PATHS = [
   ['fns','mules','otc'],
@@ -812,6 +1154,7 @@ const phaseG      = zoomG.append('g').attr('opacity',0).style('pointer-events','
 const jurisdG     = zoomG.append('g').attr('opacity',0).style('pointer-events','none');
 const backfireG   = zoomG.append('g').attr('opacity',0).style('pointer-events','none');
 const caseStudyG  = zoomG.append('g').attr('opacity',0).style('pointer-events','none');
+const postureG    = zoomG.append('g').attr('opacity',0).style('pointer-events','none');
 
 function overlayRing(group, node, color, sw, expand){
   sw = sw||2; expand = expand||7;
@@ -862,6 +1205,33 @@ function drawBackfireOverlay(){
   });
 }
 
+
+const POSTURE_COLORS = { 'COLLECT-ONLY':'#9040c8', 'COLLECT-THEN-ACT':'#c8a020', 'ACT-PROMPTLY':'#d04030' };
+
+function drawPostureOverlay(){
+  postureG.selectAll('*').remove();
+  coreNodes.forEach(n => {
+    const rec = ANNEX_DATA[n.id];
+    if(!rec) return;
+    const c = POSTURE_COLORS[rec.posture];
+    if(!c) return;
+    const sw = rec.posture === 'COLLECT-ONLY' ? 2.2 : rec.posture === 'COLLECT-THEN-ACT' ? 2.5 : 3;
+    overlayRing(postureG, n, c, sw, 9);
+    /* label pill */
+    const shortLabel = rec.posture === 'COLLECT-ONLY' ? 'C-ONLY' : rec.posture === 'COLLECT-THEN-ACT' ? 'C-THEN-ACT' : 'ACT';
+    postureG.append('rect')
+      .attr('x', n.x - NW/2 - 9).attr('y', n.y + NH/2 + 4)
+      .attr('width', NW + 18).attr('height', 13).attr('rx', 3)
+      .attr('fill', c).attr('opacity', 0.18);
+    postureG.append('text')
+      .attr('x', n.x).attr('y', n.y + NH/2 + 13.5)
+      .attr('text-anchor','middle').attr('font-size', 7)
+      .attr('font-family','Segoe UI,sans-serif').attr('fill', c)
+      .attr('font-weight','700').attr('letter-spacing','0.8')
+      .text(shortLabel);
+  });
+}
+
 function drawCaseStudyOverlay(){
   caseStudyG.selectAll('*').remove();
   if(!activeCaseStudy) return;
@@ -904,7 +1274,7 @@ function updateNodePositions(){
     pressureG.append('path').attr('d',simpleOverlayPath(p,-28+idx*8)).attr('fill','none').attr('stroke','#4080e0').attr('stroke-width',2).attr('stroke-dasharray','5 4').attr('marker-end','url(#arr-pressure)').attr('opacity',0.86);
   });
   drawRIS(); drawRecon();
-  drawPhaseOverlay(); drawJurisdOverlay(); drawBackfireOverlay(); drawCaseStudyOverlay();
+  drawPhaseOverlay(); drawJurisdOverlay(); drawBackfireOverlay(); drawCaseStudyOverlay(); drawPostureOverlay();
 }
 
 /* ── ZOOM BEHAVIOUR ──────────────────────────────────────────── */
@@ -945,10 +1315,107 @@ function infoSection(label, text){
   return `<div class="info-section"><div class="info-label">${label}</div><div class="info-text">${text}</div></div>`;
 }
 
+
+/* ── INTEL ANNEX TAB SYSTEM ─────────────────────────────────────────── */
+let currentTab = 'disrupt';
+
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById('tab-disrupt').classList.toggle('active', tab==='disrupt');
+  document.getElementById('tab-intel').classList.toggle('active', tab==='intel');
+  if(selectedNode){ renderSelection(nodeById[selectedNode]); }
+}
+
+/* Wire tab clicks — do after DOM ready */
+function initTabs(){
+  document.getElementById('tab-disrupt').onclick = () => switchTab('disrupt');
+  document.getElementById('tab-intel').onclick    = () => switchTab('intel');
+}
+
+function postureLabel(p){
+  if(p==='COLLECT-ONLY')     return 'Collect Only';
+  if(p==='COLLECT-THEN-ACT') return 'Collect, Then Act';
+  if(p==='ACT-PROMPTLY')     return 'Act Promptly';
+  return p;
+}
+
+function collectLabel(c){
+  const map = { 'VERY HIGH':'Very High','HIGH':'High','MEDIUM':'Medium','LOW':'Low' };
+  return map[c] || c;
+}
+
+function renderIntelTab(d){
+  const rec = ANNEX_DATA[d.id];
+  if(!rec){
+    document.getElementById('selectionBody').innerHTML =
+      '<div class="no-annex-msg">No intel annex data for this node. '
+      + 'Intel Annexes cover EDP Modules 01–15 (criminal ecosystem nodes only).</div>';
+    return;
+  }
+  const p = rec.posture;
+  let html = '';
+
+  /* Posture + Collectability header row */
+  html += '<div style="display:flex;align-items:flex-start;gap:10px;margin-top:6px;flex-wrap:wrap;">';
+  html += `<div><div class="intel-label" style="margin-bottom:4px;">Collection Posture</div><span class="posture-badge posture-${p}">${postureLabel(p)}</span></div>`;
+  const cc = (rec.collectability||'').replace(' ','-');
+  html += `<div><div class="intel-label" style="margin-bottom:4px;">Collectability</div><span style="font-size:13px;font-weight:700;" class="coll-${cc}">${collectLabel(rec.collectability)}</span></div>`;
+  html += '</div>';
+
+  /* Decision summary */
+  if(rec.decisionSummary){
+    html += '<div class="intel-section"><div class="intel-label">Posture Rationale</div>';
+    html += `<div class="intel-text">${rec.decisionSummary}</div></div>`;
+  }
+
+  /* Collection methods */
+  if(rec.methods && rec.methods.length){
+    html += '<div class="intel-section"><div class="intel-label">Key Collection Methods</div>';
+    rec.methods.forEach(m => { html += `<div class="method-item">&#9656; ${m}</div>`; });
+    html += '</div>';
+  }
+
+  /* Pre-action indicators */
+  if(rec.preActionIndicators && rec.preActionIndicators.length){
+    html += '<div class="intel-section"><div class="intel-label">Pre-Action Indicators</div>';
+    rec.preActionIndicators.forEach(ind => { html += `<div class="indicator-item">&#9650; ${ind}</div>`; });
+    html += '</div>';
+  }
+
+  /* Collection objectives (COLLECT-THEN-ACT only) */
+  if(rec.collectObjectives && rec.collectObjectives.length){
+    html += '<div class="intel-section"><div class="intel-label">Collection Objectives (Required Before Action)</div>';
+    rec.collectObjectives.forEach((obj, i) => { html += `<div class="obj-item">${i+1}. ${obj}</div>`; });
+    html += '</div>';
+  }
+
+  /* Posture is COLLECT-ONLY note */
+  if(p === 'COLLECT-ONLY'){
+    html += '<div class="intel-section" style="border-top-color:#3a1a5a;"><div class="intel-label" style="color:#8040a8;">COLLECT-ONLY Note</div>';
+    html += '<div class="intel-text" style="color:#a060c8;font-size:11px;">No disruption trigger authorized for this node. '
+          + 'Collection should continue indefinitely. Any action must be part of a fully synchronized multi-node campaign '
+          + 'with all collection objectives simultaneously complete.</div></div>';
+  }
+
+  document.getElementById('selectionBody').innerHTML = html;
+}
+
 function renderNodePanel(d){
   const color = LAYERS[d.layer].color;
   document.getElementById('panelHeader').textContent = 'Selected node';
   document.getElementById('selectionTitle').innerHTML = `<span style="color:${color}">${d.label.join(' ')}</span>`;
+  /* show/hide tab bar based on annex data availability */
+  const hasAnnex = !!ANNEX_DATA[d.id];
+  const tabsEl = document.getElementById('panel-tabs');
+  tabsEl.style.display = hasAnnex ? 'flex' : 'none';
+  /* render appropriate tab */
+  if(hasAnnex && currentTab === 'intel'){
+    document.getElementById('selectionBadges').innerHTML = '';
+    renderIntelTab(d);
+    return;
+  }
+  /* reset tab indicator when no annex */
+  if(!hasAnnex) currentTab = 'disrupt';
 
   const modeRead=[];
   if(payOn && PAY_CHAIN.includes(d.id)) modeRead.push('Part of active payment path');
@@ -965,7 +1432,7 @@ function renderNodePanel(d){
     phaseBadge +
     `<span class="badge">${d.owner}</span>` +
     (d.protected?`<span class="badge critical">Protection-sensitive</span>`:'') +
-    (d.conf?`<span class="badge conf-${d.conf}" style="font-size:9px;padding:2px 6px;border-radius:999px;border:1px solid;display:inline-block;letter-spacing:.8px;text-transform:uppercase;">${confLabel(d.conf)}</span>`:'');
+    (d.conf?`<span class="badge conf-${d.conf}" style="font-size:9px;padding:2px 6px;border-radius:999px;border:1px solid;display:inline-block;letter-spacing:.8px;text-transform:uppercase;">${confLabel(d.conf)}</span>`:'') + (ANNEX_DATA[d.id]?`<span class="posture-badge posture-${ANNEX_DATA[d.id].posture}" style="font-size:9px;margin-top:2px;">${postureLabel(ANNEX_DATA[d.id].posture)}</span>`:'');
 
   let body = infoSection('What it is', d.desc);
   if(d.why) body += infoSection('Why it matters', d.why);
@@ -1034,6 +1501,7 @@ function renderNodePanel(d){
 }
 
 function renderStatePanel(d){
+  document.getElementById('panel-tabs').style.display='none'; currentTab='disrupt';
   document.getElementById('panelHeader').textContent = 'Russian state node';
   document.getElementById('selectionTitle').innerHTML = `<span style="color:${RU_COLOR}">${d.label.join(' ')}</span>`;
   document.getElementById('selectionBadges').innerHTML =
@@ -1289,6 +1757,17 @@ document.getElementById('btn-backfire').onclick=()=>{
   if(selectedNode) renderSelection(nodeById[selectedNode]);
 };
 
+
+/* ── COLLECTION POSTURE TOGGLE ───────────────────────────────────────── */
+let postureOn=false;
+document.getElementById('btn-posture').onclick=()=>{
+  postureOn=!postureOn;
+  document.getElementById('btn-posture').classList.toggle('on',postureOn);
+  if(postureOn){ drawPostureOverlay(); postureG.attr('opacity',1); }
+  else postureG.attr('opacity',0);
+  if(selectedNode) renderSelection(nodeById[selectedNode]);
+};
+
 /* ── CASE STUDY BUTTONS ──────────────────────────────────────── */
 let activeCaseStudy=null;
 document.querySelectorAll('.case-btn').forEach(btn => {
@@ -1327,6 +1806,8 @@ document.getElementById('layout-top').onclick=()=>setStateLane('top');
 document.getElementById('layout-bottom').onclick=()=>setStateLane('bottom');
 
 /* ── RESET ───────────────────────────────────────────────────── */
+initTabs();
+
 document.getElementById('reset-btn').onclick=()=>{
   activeLayer=null; layerMode='all';
   filterButtons.forEach(b=>b.classList.remove('on')); noneBtn.classList.remove('on');
@@ -1338,6 +1819,7 @@ document.getElementById('reset-btn').onclick=()=>{
   phaseG.attr('opacity',0);
   jurisdictionOn=false; document.getElementById('btn-juris').classList.remove('on'); jurisdG.attr('opacity',0);
   backfireOn=false; document.getElementById('btn-backfire').classList.remove('on'); backfireG.attr('opacity',0);
+  postureOn=false; document.getElementById('btn-posture').classList.remove('on'); postureG.attr('opacity',0);
   document.querySelectorAll('.conf-btn').forEach(b=>b.classList.remove('on'));
   nodeElems.classed('conf-dim',false);
   activeCaseStudy=null;
@@ -1898,7 +2380,7 @@ document.getElementById('export-csv-btn').onclick = function() {
 /* ── SHARE / PERMALINK ───────────────────────────────────── */
 document.getElementById('share-btn').onclick = function() {
   const state = {
-    pay: payOn, pres: pressureOn, ris: risOn, recon: reconOn,
+    pay: payOn, pres: pressureOn, ris: risOn, recon: reconOn, posture: postureOn,
     juris: jurisdictionOn, back: backfireOn,
     phases: Array.from(activePhases),
     lmode: layerMode, layer: activeLayer

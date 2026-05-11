@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDP Module Intelligence — Ransomware Ecosystem v1.0</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;overflow:hidden;}body{height:100%;overflow:hidden;display:flex;flex-direction:column;background:#070b16;font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;color:#c0cfe0;}
+
+/* ── HEADER ─────────────────────────────── */
+#header{padding:8px 20px 6px;border-bottom:1px solid #1a2a44;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;}
+#header h1{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#5a9acc;}
+#header .sub{font-size:9px;color:#3a5878;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* ── CONTROLS ────────────────────────────── */
+#controls{padding:5px 20px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-bottom:1px solid #0f1a30;flex-shrink:0;background:#060d1a;}
+.ctrl-label{font-size:9.5px;color:#607898;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+.ctrl-sep{width:1px;height:14px;background:#1a2a42;margin:0 4px;}
+.fbtn{padding:3px 10px;border-radius:3px;border:1px solid;background:transparent;font-size:9.5px;cursor:pointer;font-family:inherit;color:#a8bdd6;border-color:#2a3a58;transition:all 100ms;}
+.fbtn:hover{background:rgba(255,255,255,0.05);}
+.fbtn.on{background:rgba(255,255,255,0.09);}
+.phase-A{border-color:#a0700a80!important;color:#c8a040;}
+.phase-A.on{background:rgba(160,112,10,0.18)!important;}
+.phase-B{border-color:#3a6ca880!important;color:#7aaad8;}
+.phase-B.on{background:rgba(58,108,168,0.18)!important;}
+.phase-C{border-color:#a0402080!important;color:#d08060;}
+.phase-C.on{background:rgba(160,64,32,0.18)!important;}
+
+/* ── LAYOUT ──────────────────────────────── */
+#app{display:flex;flex:1 1 0;min-height:0;overflow:hidden;}
+
+/* ── LEFT PANEL: MODULE LIST ─────────────── */
+#mod-list{width:300px;flex-shrink:0;overflow-y:auto;border-right:1px solid #0f1a30;background:#06101c;}
+#mod-list-header{padding:8px 14px 6px;border-bottom:1px solid #0f1a30;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:#3a5878;}
+
+.mod-row{padding:8px 14px;border-bottom:1px solid #0a1626;cursor:pointer;transition:background 80ms;display:flex;align-items:flex-start;gap:8px;}
+.mod-row:hover{background:#0c1828;}
+.mod-row.active{background:#0f1e30;border-left:2px solid #5a9acc;}
+.mod-num{font-size:9px;color:#3a5878;font-weight:700;flex-shrink:0;margin-top:2px;width:18px;}
+.mod-info{flex:1;min-width:0;}
+.mod-name{font-size:11px;font-weight:600;color:#c0d8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mod-sub{font-size:9px;color:#4a6888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mod-badges{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.badge{font-size:8px;padding:1px 5px;border-radius:2px;border:1px solid;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;}
+.badge-A{border-color:#a0700a60;color:#c8a040;background:rgba(160,112,10,0.1);}
+.badge-B{border-color:#3a6ca860;color:#7aaad8;background:rgba(58,108,168,0.1);}
+.badge-C{border-color:#a0402060;color:#d08060;background:rgba(160,64,32,0.1);}
+.badge-Cross{border-color:#5a4a7860;color:#a898c8;background:rgba(90,74,120,0.1);}
+.badge-CRITICAL{border-color:#c8302060;color:#e08070;background:rgba(200,48,32,0.12);}
+.badge-HIGH{border-color:#c8a01060;color:#d4b060;background:rgba(200,160,16,0.1);}
+.badge-MEDIUM{border-color:#3a6ca860;color:#80b0d8;background:rgba(58,108,168,0.1);}
+.badge-LOW{border-color:#3a7a4a60;color:#70b880;background:rgba(58,122,74,0.1);}
+
+/* filter dimming */
+.mod-row.phase-dim{opacity:0.18;}
+
+/* ── RIGHT PANEL: DETAIL ─────────────────── */
+#detail{flex:1 1 0;overflow-y:auto;padding:0;min-width:0;min-height:0;display:flex;flex-direction:column;}
+#detail-empty{display:flex;align-items:center;justify-content:center;flex:1;color:#2a4a68;font-size:12px;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── DETAIL HEADER ───────────────────────── */
+#det-header{padding:10px 18px 8px;border-bottom:1px solid #0f1a30;background:#08101d;flex-shrink:0;}
+#det-num{font-size:9px;color:#3a5878;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+#det-title{font-size:18px;font-weight:700;color:#d6e5f4;line-height:1.2;}
+#det-subtitle{font-size:12px;color:#4a6888;margin-top:3px;}
+#det-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.det-badge{font-size:9.5px;padding:3px 9px;border-radius:3px;border:1px solid;letter-spacing:.8px;text-transform:uppercase;}
+
+/* ── DETAIL SECTIONS ─────────────────────── */
+#det-body{padding:12px 18px;display:flex;flex-direction:column;gap:12px;flex:1 1 0;min-height:0;overflow-y:auto;}
+.det-section{background:#0c1524;border:1px solid #1a2a44;border-radius:5px;padding:10px 12px;}
+.det-sec-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1.2px;color:#3a5878;margin-bottom:7px;font-weight:700;}
+.det-sec-title{font-size:13px;font-weight:700;color:#5a9acc;margin-bottom:10px;}
+
+/* ── DEPENDENCY FLOW ─────────────────────── */
+#dep-flow{display:flex;align-items:stretch;gap:0;min-height:100px;}
+.dep-col{display:flex;flex-direction:column;gap:6px;justify-content:center;}
+.dep-col-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#3a5878;margin-bottom:6px;text-align:center;}
+.dep-col.left{align-items:flex-end;flex:1;}
+.dep-col.center{align-items:center;justify-content:center;padding:0 12px;flex-shrink:0;}
+.dep-col.right{align-items:flex-start;flex:1;}
+.dep-center-node{background:rgba(90,154,204,0.15);border:2px solid #5a9acc;border-radius:5px;padding:8px 12px;text-align:center;font-size:11px;font-weight:700;color:#9ac8e8;}
+.dep-item-pill{font-size:10px;background:#0a1828;border:1px solid #1a3050;border-radius:3px;padding:4px 8px;color:#7aaac8;cursor:pointer;text-align:center;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;transition:border-color 100ms;}
+.dep-item-pill:hover{border-color:#5a9acc;color:#c0d8f0;}
+.dep-arrows{display:flex;flex-direction:column;justify-content:center;gap:4px;align-items:center;padding:0 4px;}
+svg.flow-arrow{overflow:visible;}
+
+/* ── ACTOR GRID ──────────────────────────── */
+#actor-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.actor-pill{font-size:10px;padding:4px 9px;border-radius:3px;border:1px solid;white-space:nowrap;}
+.actor-named{border-color:#5a7a9a60;color:#9ab8d4;background:rgba(90,122,154,0.1);}
+.actor-sanctioned{border-color:#c8302060;color:#e08878;background:rgba(200,48,32,0.12);}
+.actor-disrupted{border-color:#a0700a60;color:#c8a040;background:rgba(160,112,10,0.1);}
+.actor-active{border-color:#3a7a4a60;color:#70b880;background:rgba(58,122,74,0.1);}
+.actor-legend{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.actor-legend-item{display:flex;align-items:center;gap:4px;font-size:9px;color:#4a6888;}
+.actor-legend-dot{width:8px;height:8px;border-radius:2px;border:1px solid;}
+
+/* ── TIMELINE ────────────────────────────── */
+#timeline-wrap{position:relative;padding:10px 0 4px;}
+#timeline-line{height:2px;background:#1a2a44;border-radius:1px;position:relative;margin:0 8px;}
+.tl-events{position:relative;height:0;}
+.tl-event{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;cursor:default;}
+.tl-dot{width:11px;height:11px;border-radius:50%;border:2px solid;margin-top:-6px;flex-shrink:0;position:relative;z-index:2;}
+.tl-label{font-size:8.5px;text-align:center;max-width:90px;color:#5a7898;margin-top:5px;line-height:1.3;}
+.tl-year{font-size:10px;font-weight:700;color:#3a5878;margin-top:2px;}
+.tl-LE .tl-dot{background:#5a1818;border-color:#c83020;}
+.tl-Market .tl-dot{background:#5a4208;border-color:#c8a020;}
+.tl-Reconstitution .tl-dot{background:#0c3050;border-color:#3a80c8;}
+.tl-Designation .tl-dot{background:#3a1858;border-color:#9a50d0;}
+#timeline-axis{display:flex;justify-content:space-between;padding:0 8px;margin-top:60px;font-size:9px;color:#2a4060;}
+
+/* ── LEVERAGE BOX ────────────────────────── */
+.leverage-box{background:#0a1c30;border:1px solid #1a3a60;border-left:3px solid #5a9acc;border-radius:3px;padding:9px 12px;}
+.leverage-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1.2px;color:#2e5070;margin-bottom:6px;font-weight:700;}
+.leverage-text{font-size:12px;color:#8aaac0;line-height:1.62;}
+
+/* ── SANKEY / FLOW (financial modules) ───── */
+.sankey-wrap{overflow:hidden;}
+svg.sankey{display:block;}
+
+/* ── MATRIX VIEW ──────────────────────────── */
+#matrix-view{padding:16px 24px;display:none;}
+#matrix-view.visible{display:block;}
+.matrix-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#3a5878;margin-bottom:12px;}
+table.matrix{width:100%;border-collapse:collapse;font-size:10.5px;}
+table.matrix th{padding:6px 10px;text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#5a7898;background:#0a1420;border:1px solid #1a2a3a;font-weight:600;}
+table.matrix th.left{text-align:left;}
+table.matrix td{padding:6px 10px;border:1px solid #0f1e30;text-align:center;cursor:pointer;transition:background 80ms;}
+table.matrix td.mod-cell{text-align:left;font-weight:600;color:#9ab8d4;}
+table.matrix tr:hover td{background:#0e1c2e!important;}
+.cell-critical{background:rgba(200,48,32,0.18);color:#e08070;}
+.cell-high{background:rgba(200,160,16,0.15);color:#d4b060;}
+.cell-medium{background:rgba(58,108,168,0.15);color:#80b0d8;}
+.cell-low{background:rgba(58,122,74,0.12);color:#70b880;}
+.cell-na{color:#2a4060;}
+
+
+/* ── OWNERSHIP TABLE ─────────────────────── */
+.own-table{width:100%;border-collapse:collapse;font-size:10px;}
+.own-table th{padding:5px 8px;text-align:left;font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#3a5878;background:#080f1c;border-bottom:1px solid #1a2a3a;}
+.own-table td{padding:5px 8px;border-bottom:1px solid #0d1a2e;color:#8aaac0;vertical-align:top;}
+.own-table td:first-child{color:#c0d8f0;font-weight:600;white-space:nowrap;}
+/* ── COMPOUND / INDICATOR LIST ───────────── */
+.item-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px;}
+.item-list li{font-size:10.5px;color:#8aaac0;line-height:1.5;padding-left:12px;position:relative;}
+.item-list li::before{content:'›';position:absolute;left:0;color:#3a6a9a;font-weight:700;}
+/* ── FINANCIAL BOX ───────────────────────── */
+.fin-box{background:#070e1d;border:1px solid #2a3a18;border-left:3px solid #c8a040;border-radius:4px;padding:12px 14px;height:100%;}
+.fin-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1.2px;color:#7a6030;margin-bottom:8px;font-weight:700;}
+.fin-text{font-size:11.5px;color:#a09060;line-height:1.65;}
+
+/* ── DEFINITION SECTION ──────────────────── */
+.def-text{font-size:11.5px;color:#8aaac0;line-height:1.65;margin:0;}
+/* ── INFLUENCE COLUMNS ───────────────────── */
+.det-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:1100px){.det-3col{grid-template-columns:1fr 1fr;}}
+.inf-west{border-left:3px solid #3a6ca8!important;}
+.inf-east{border-left:3px solid #c83020!important;}
+.inf-evo{border-left:3px solid #6a5a9a!important;}
+.inf-label{font-size:8px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:7px;}
+.inf-label-west{color:#4a7ab8;}
+.inf-label-east{color:#a04030;}
+.inf-label-evo{color:#5a4a8a;}
+.inf-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;}
+.inf-list li{font-size:10.5px;color:#8aaac0;line-height:1.45;padding-left:10px;position:relative;}
+.inf-list li::before{content:'›';position:absolute;left:0;font-weight:700;}
+.inf-list-west li::before{color:#3a6ca8;}
+.inf-list-east li::before{color:#c83020;}
+.inf-list-evo li::before{color:#6a5a9a;}
+/* ── COMPACT DEP FLOW ────────────────────── */
+.dep-compact{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:4px 0;}
+.dep-node{font-size:9.5px;padding:3px 8px;border-radius:3px;border:1px solid #1a3050;background:#0a1828;color:#7aaac8;white-space:nowrap;}
+.dep-arrow{color:#2a4a68;font-size:12px;flex-shrink:0;}
+.dep-center-pill{font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;border:2px solid #5a9acc;background:rgba(90,154,204,0.12);color:#9ac8e8;white-space:nowrap;}
+/* ── SCROLLBAR ───────────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:#060d1a;}
+::-webkit-scrollbar-thumb{background:#1a2a44;border-radius:2px;}
+
+/* ── VIEW TOGGLE ──────────────────────────── */
+.view-btn{padding:3px 10px;border-radius:3px;border:1px solid #2a3a58;background:transparent;font-size:9.5px;cursor:pointer;font-family:inherit;color:#6a8aaa;}
+.view-btn:hover{background:rgba(255,255,255,0.05);}
+.view-btn.on{background:rgba(90,154,204,0.15);border-color:#5a9acc;color:#9ac8e8;}
+
+/* ── TOOLTIP ──────────────────────────────── */
+#tt{position:fixed;background:#0c1524;border:1px solid #1c3258;border-left:3px solid #5a9acc;border-radius:4px;padding:9px 12px;max-width:260px;font-size:10.5px;pointer-events:none;display:none;z-index:9999;line-height:1.55;box-shadow:0 4px 20px rgba(0,0,0,.7);}
+#tt h4{font-size:11px;margin-bottom:3px;color:#c0d8f0;}
+#tt p{color:#7aaac0;}
+
+/* ── DETAIL 2-COL ───────────────────────── */
+.det-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:900px){.det-2col{grid-template-columns:1fr;}}
+
+/* ── KPI STRIP ──────────────────────────── */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:0;}
+.kpi-card{background:#080f1c;border:1px solid #1a2a3a;border-radius:3px;padding:6px 8px;}
+.kpi-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#3a5878;margin-bottom:4px;}
+.kpi-val{font-size:16px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <h1>Ransomware Ecosystem — EDP Module Intelligence</h1>
+    <div class="sub">15 Ecosystem Dependency Profiles &nbsp;|&nbsp; v1.0 &nbsp;|&nbsp; Reno &nbsp;|&nbsp; April 2026</div>
+  </div>
+  <div class="hdr-right">
+    <button class="view-btn on" id="btn-detail" onclick="setView('detail')">MODULE DETAIL</button>
+    <button class="view-btn" id="btn-matrix" onclick="setView('matrix')">COMPARISON MATRIX</button>
+  </div>
+</div>
+
+<div id="controls">
+  <span class="ctrl-label">Filter Phase:</span>
+  <button class="fbtn phase-A" id="f-A" onclick="togglePhase('A')">Phase A</button>
+  <button class="fbtn phase-B" id="f-B" onclick="togglePhase('B')">Phase B</button>
+  <button class="fbtn phase-C" id="f-C" onclick="togglePhase('C')">Phase C</button>
+  <button class="fbtn" id="f-Cross" onclick="togglePhase('Cross')">Cross-Cutting</button>
+  <div class="ctrl-sep"></div>
+  <span class="ctrl-label">Tier:</span>
+  <button class="fbtn" id="f-CRITICAL" onclick="toggleTier('CRITICAL')" style="border-color:#c8302060;color:#e08070;">Critical</button>
+  <button class="fbtn" id="f-HIGH" onclick="toggleTier('HIGH')" style="border-color:#c8a01060;color:#d4b060;">High</button>
+  <button class="fbtn" id="f-MEDIUM" onclick="toggleTier('MEDIUM')" style="border-color:#3a6ca860;color:#80b0d8;">Medium</button>
+  <div class="ctrl-sep"></div>
+  <button class="fbtn" id="f-reset" onclick="resetFilters()" style="color:#4a6a88;">Reset</button>
+</div>
+
+<div id="app">
+
+  <!-- LEFT: MODULE LIST -->
+  <div id="mod-list">
+    <div id="mod-list-header">15 Modules — Click to Explore</div>
+    <div id="mod-rows"></div>
+  </div>
+
+  <!-- RIGHT: DETAIL + MATRIX -->
+  <div id="detail">
+    <div id="detail-empty">Select a module to begin</div>
+    <div id="det-header" style="display:none;"></div>
+    <div id="det-body" style="display:none;"></div>
+    <div id="matrix-view"></div>
+  </div>
+
+</div>
+
+<div id="tt"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════════════════════
+
+const MODS = [
+  {
+    id:1, name:'Stealers', subtitle:'Infostealer Malware and Log Markets',
+    layer:'Access Generation', phase:'B', tier:'HIGH',
+    replaceDiff:'MEDIUM', durability:'LOW', reconSpeed:'FAST (weeks)',
+    leActions:'LOW (few direct)', financialCentrality:'MEDIUM',
+    upstream:['Loaders (02)','Crypters (03)'],
+    downstream:['IABs (05)','RaaS Groups (07)','Underground Forums (10)'],
+    actors:[
+      {name:'LummaC2',status:'active'},{name:'Vidar',status:'active'},{name:'Redline',status:'active'},
+      {name:'RisePro',status:'active'},{name:'Meduza',status:'active'},{name:'Stealc',status:'active'},
+      {name:'Russian Market',status:'active'},{name:'2easy',status:'active'},
+      {name:'Genesis Market',status:'disrupted'},{name:'Shared TDS infrastructure',status:'named'},
+    ],
+    timeline:[
+      {year:2023,event:'Genesis Market seized (Operation Cookie Monster)',type:'LE',outcome:'Darknet instance survived; volumes shifted to Russian Market and 2easy within months'},
+      {year:2025,event:'~2,300 Lumma C2 domains seized (Microsoft DCU)',type:'LE',outcome:'Significant infrastructure disruption; LummaC2 operations disrupted; ecosystem adapting'},
+    ],
+    leverage:'Shared loader/TDS delivery infrastructure disruption hits multiple stealer families simultaneously. Loader ecosystem disruption (Module 02) is highest upstream leverage. Individual market takedowns produce market displacement, not volume reduction.',
+    financialNote:'Log markets are commodity input layer. Average log ~$10; high-value corporate access logs command significant premium. Aggregate volume into billions of records across major markets.'
+  },
+  {
+    id:2, name:'Loaders', subtitle:'Loader Malware and Delivery Platforms',
+    layer:'Delivery / Execution', phase:'B', tier:'HIGH',
+    replaceDiff:'HIGH', durability:'MEDIUM', reconSpeed:'6-18 months (C2 infra)',
+    leActions:'MEDIUM', financialCentrality:'MEDIUM',
+    upstream:['Callers/Spammers (04)','Crypters (03)','BPH (09)'],
+    downstream:['Stealers (01)','IABs (05)','RaaS Groups (07)'],
+    actors:[
+      {name:'IcedID / BokBot',status:'disrupted'},{name:'Latrodectus',status:'active'},
+      {name:'Gootloader',status:'active'},{name:'Raspberry Robin',status:'active'},
+      {name:'Bumblebee',status:'disrupted'},{name:'SmokeLoader',status:'disrupted'},
+      {name:'QakBot',status:'disrupted'},{name:'Pikabot',status:'active'},
+    ],
+    timeline:[
+      {year:2023,event:'QakBot infrastructure seized (Operation Duck Hunt)',type:'LE',outcome:'QakBot operations disrupted; operators reconstituted via Pikabot and new infrastructure within months'},
+      {year:2024,event:'Operation Endgame: IcedID, Bumblebee, SmokeLoader, Pikabot infrastructure seized',type:'LE',outcome:'Largest coordinated loader takedown on record. Europol: over €100M in enabled damages. IcedID operators transitioned to Latrodectus.'},
+      {year:2025,event:'Latrodectus and successor campaigns active post-Endgame',type:'Reconstitution',outcome:'Operator reconstitution confirmed; new distribution infrastructure operational within 3-6 months of Endgame'},
+    ],
+    leverage:'Loader distribution infrastructure (SEO poisoning networks, IoT C2 layers) takes 6-18 months to rebuild. Coordinated action against C2 plus distribution (not just domain seizure alone) produces highest durability. Endgame is the model — target infrastructure, not just payloads.',
+    financialNote:'Loader-as-a-Service subscriptions estimated $100–$1,000/month. Raspberry Robin C2 access brokered to ransomware groups at premium. Europol assessed Endgame-targeted loaders enabled over €100M in ransomware damages.'
+  },
+  {
+    id:3, name:'Crypters', subtitle:'Obfuscation-as-a-Service (CaaS)',
+    layer:'Evasion Substrate (Cross-Cutting)', phase:'Cross', tier:'MEDIUM',
+    replaceDiff:'LOW', durability:'LOW', reconSpeed:'VERY FAST (hours/days)',
+    leActions:'VERY LOW (no major LE action documented)', financialCentrality:'LOW',
+    upstream:['Underground Forums (10)','BPH (09)'],
+    downstream:['Stealers (01)','Loaders (02)','RaaS Groups (07)'],
+    actors:[
+      {name:'Private FUD CaaS providers (unnamed)',status:'active'},{name:'Telegram CaaS bots',status:'active'},
+      {name:'Open-source obfuscation tooling',status:'active'},{name:'arXiv 2024 study: 1-3 dominant sellers per market',status:'named'},
+    ],
+    timeline:[
+      {year:2024,event:'Academic CaaS study: 1-3 top sellers dominate transaction volume on major markets',type:'Market',outcome:'Market concentration confirmed; no corresponding LE action documented'},
+      {year:2026,event:'No documented major CaaS LE action as of April 2026',type:'Market',outcome:'Gap in disruption coverage; function persists continuously'},
+    ],
+    leverage:'Market concentration (1-3 top-reputation sellers dominate volume) makes operator identification a high-ROI intelligence action. Enforcement against high-volume providers would degrade multiple downstream campaigns simultaneously. Open-source tooling limits overall durability — function regenerates rapidly regardless.',
+    financialNote:'Pricing not reliably documented in open sources. Per-build and subscription models both observed. Revenue estimates not available; CaaS is a cost-center disruption target rather than a major financial flow node.'
+  },
+  {
+    id:4, name:'Callers / Spammers', subtitle:'Social Engineering and Human-Layer Access',
+    layer:'Human-Layer Access Generation (Cross-Cutting)', phase:'Cross', tier:'MEDIUM',
+    replaceDiff:'LOW-MEDIUM', durability:'LOW', reconSpeed:'FAST',
+    leActions:'VERY LOW (no major LE action on callers specifically)', financialCentrality:'LOW',
+    upstream:['Stealer logs (01)','Underground Forums (10)'],
+    downstream:['IABs (05)','RaaS Groups (07)','Loaders (02)'],
+    actors:[
+      {name:'Scattered Spider',status:'disrupted'},{name:'LAPSUS$',status:'disrupted'},
+      {name:'Black Basta callers',status:'active'},{name:'PlugValley (VaaS platform)',status:'active'},
+      {name:'BazarCall call centers',status:'active'},{name:'Anonymous call-center operators (RU/UA/NG)',status:'named'},
+    ],
+    timeline:[
+      {year:2021,event:'BazarCall model first documented at scale',type:'Market',outcome:'Model persists through 2026; no major LE action specifically targeting call-center infrastructure'},
+      {year:2023,event:'MGM Resorts: Scattered Spider vishing entry → ALPHV ransomware (~$100M loss)',type:'LE',outcome:'Scattered Spider members subsequently arrested (UK/US); group disrupted but model survived'},
+      {year:2024,event:'Black Basta email-bombing + vishing campaigns documented at scale',type:'Market',outcome:'Model active and evolving; AI vishing platforms (PlugValley) lowering operator skill floor'},
+    ],
+    leverage:'Victim-side hardening is the highest-ROI lever — not LE action. Strict out-of-band verification for helpdesk actions effectively eliminates BazarCall and vishing attack surface regardless of LE action. AI vishing platforms (VaaS) are the emerging structural threat; PlugValley enforcement would degrade multiple campaigns simultaneously.',
+    financialNote:'MGM Resorts disclosed ~$100M in losses from Scattered Spider vishing-initiated entry. No global volume estimate available. Cost to operators: minimal — human labor in low-wage geographies + spoofed VoIP infrastructure.'
+  },
+  {
+    id:5, name:'IABs', subtitle:'Initial Access Broker Markets',
+    layer:'Initial Access / Supply', phase:'B', tier:'HIGH',
+    replaceDiff:'MEDIUM', durability:'MEDIUM', reconSpeed:'Weeks (standard); 6-18 months (platform IABs)',
+    leActions:'LOW-MEDIUM', financialCentrality:'HIGH',
+    upstream:['Stealers (01)','Loaders (02)','Underground Forums (10)','BPH (09)'],
+    downstream:['RaaS Groups (07)','Nation-state APT buyers','BEC/fraud operators'],
+    actors:[
+      {name:'High-volume bulk IABs (RU-language forums)',status:'active'},{name:'Boutique IABs on RAMP/DarkForums',status:'active'},
+      {name:'Raspberry Robin C2 (automated pipeline)',status:'active'},{name:'Exploit.in/XSS bulk operators',status:'active'},
+    ],
+    timeline:[
+      {year:2023,event:'H2 2023: Confirmed shift from legacy forums toward RAMP and DarkForums',type:'Market',outcome:'Market migration reduces LE visibility; boutique IAB transactions increasingly private'},
+      {year:2024,event:'Rapid7: 71.4% of observed IAB transactions offered privileged access',type:'Market',outcome:'Market maturation; buyers demand quality over quantity; boutique IAB premium growing'},
+      {year:2025,event:'Raspberry Robin C2 infrastructure ongoing; sinkholing operations partial',type:'LE',outcome:'Platform IAB model persists; estimated 6-18 month reconstitution cost for full C2 disruption'},
+    ],
+    leverage:'Boutique IAB financial designation (OFAC) is highest-durability targeted action in this layer. Trust infrastructure (forum reputation + vetting) is the structural vulnerability — attacking trust mechanics raises transaction costs for all IAB tiers. Most effective when Phase A financial pressure is already applied.',
+    financialNote:'Bulk IAB prices: $500–$1,000 per access. Boutique IAB prices: $2,700–$10,000+ per access. 71.4% of observed transactions include privileged (domain admin or equivalent) access. Total market volume not reliably estimated in open sources.'
+  },
+  {
+    id:6, name:'Exploit Brokers', subtitle:'Exploit and Vulnerability Brokers',
+    layer:'Initial Access Enablement / Pre-IAB Supply', phase:'B', tier:'CRITICAL',
+    replaceDiff:'HIGH', durability:'HIGH', reconSpeed:'SLOW (researcher relationships rebuild slowly)',
+    leActions:'LOW (attribution extremely difficult)', financialCentrality:'MEDIUM',
+    upstream:['Criminal vulnerability researchers','State-adjacent researchers','Gray-market vendors (Zerodium, Crowdfense)'],
+    downstream:['IABs (05)','RaaS Groups (07)','Loaders (05)'],
+    actors:[
+      {name:'CL0p / TA505',status:'active'},{name:'Zerodium (gray market)',status:'named'},
+      {name:'Crowdfense (gray market)',status:'named'},{name:'Criminal forum exploit traders',status:'active'},
+      {name:'State-adjacent researchers (RU/CN)',status:'named'},
+    ],
+    timeline:[
+      {year:2023,event:'MOVEit 0-day (CVE-2023-34362): CL0p campaign — 2,000+ orgs, 60+ countries',type:'Market',outcome:'CL0p estimated $100M+ in extortion revenue. Most impactful single zero-day ransomware campaign documented.'},
+      {year:2024,event:'N-day exploitation of edge devices (Ivanti, Citrix, Palo Alto) at scale by RaaS affiliates',type:'Market',outcome:'Exploit supply pipeline confirmed active; patch velocity remains critical defensive lever'},
+    ],
+    leverage:'Bug bounty economics gap is the highest-ROI non-LE lever: when criminal prices exceed vendor bounties by 10x-100x, researchers rationally sell to criminal markets. Closing this gap reduces supply without LE action. Direct enforcement requires intelligence-level penetration; RaaS direct researcher relationships are not forum-observable.',
+    financialNote:'Zero-day exploit prices range from tens of thousands to millions depending on target software and exclusivity. CL0p estimated $100M+ from a single 0-day campaign. Market operates bilaterally and is not forum-observable for highest-value transactions.'
+  },
+  {
+    id:7, name:'RaaS Groups', subtitle:'Ransomware Groups and RaaS Variants',
+    layer:'Core Operator / Central Monetization Layer', phase:'C', tier:'CRITICAL',
+    replaceDiff:'LOW-MEDIUM (brand) / HIGH (function)', durability:'LOW (brand)', reconSpeed:'30-90 days (brand reconstitution)',
+    leActions:'HIGH (most LE focus here)', financialCentrality:'CRITICAL',
+    upstream:['IABs (05)','Stealers (01)','Crypters (03)','BPH (09)','Underground Forums (10)'],
+    downstream:['Leak Sites (08)','OTC Brokers (12)','Exchanges (13)','Mixers (11)','Mule Networks (14)'],
+    actors:[
+      {name:'LockBit 3.0',status:'disrupted'},{name:'ALPHV/BlackCat',status:'disrupted'},
+      {name:'RansomHub',status:'active'},{name:'Play',status:'active'},
+      {name:'Cl0p',status:'active'},{name:'Black Basta',status:'active'},
+      {name:'Scattered Spider (hybrid)',status:'disrupted'},{name:'Rhysida',status:'active'},
+      {name:'Akira',status:'active'},
+    ],
+    timeline:[
+      {year:2022,event:'Conti collapse: 60,000 internal chat messages leaked by embedded researcher',type:'Market',outcome:'Conti brand dissolved within 90 days. Former members formed Black Basta, Royal, Quantum. Ecosystem absorbed disruption rapidly.'},
+      {year:2022,event:'REvil: FSB arrests following Colonial Pipeline political pressure',type:'LE',outcome:'Operations temporarily dampened; affiliates migrated to BlackCat and LockBit. Partial reconstitution attempts failed.'},
+      {year:2023,event:'Hive: FBI 7-month covert infiltration; $130M in victim payments avoided; infrastructure seized',type:'LE',outcome:'Unique case — Hive did not reconstitute. FBI key distribution to 300+ victims is the model.'},
+      {year:2024,event:'Operation Cronos: LockBit infrastructure seized, 34 servers, 1,000+ decryption keys',type:'LE',outcome:'LockBit brand severely disrupted. Affiliates migrated to RansomHub within 60-90 days. 7,460+ victims claimed ecosystem-wide despite operation.'},
+      {year:2024,event:'ALPHV/BlackCat exit scam: operators took $22M deposit and disappeared',type:'Market',outcome:'Group disbanded; affiliates dispersed rapidly to RansomHub and others.'},
+    ],
+    leverage:'Non-payment rate growth is the most structurally durable lever against core operations — it degrades the affiliate revenue model regardless of brand identity. 2025 72% non-payment rate (28% paid, record low) is the strongest signal available; attacks rose 50% but total payments held flat. Brand takedowns without Phase A/B financial and infrastructure pressure produce 30-90 day disruption only.',
+    financialNote:'2025: 7,500+ victims publicly named (record, up 50% YoY); estimated $813M in confirmed payments (Chainalysis). Conti generated ~$180M in a single year; Wizard Spider estimated $2.7B total. RaaS splits typically 70-80% to affiliates. Mass-market kits as low as $40-100/month subscription.'
+  },
+  {
+    id:8, name:'Leak Site Ops', subtitle:'Data Leak Site Operations',
+    layer:'Extortion Pressure / Publication Infrastructure', phase:'C', tier:'HIGH',
+    replaceDiff:'LOW-MEDIUM', durability:'LOW-MEDIUM', reconSpeed:'Hours to days (address replacement); weeks (full rebuild)',
+    leActions:'MEDIUM', financialCentrality:'MEDIUM',
+    upstream:['BPH (09)','RaaS Groups (07)','IABs (05)'],
+    downstream:['RaaS Groups (07)','OTC Brokers (12)','Credential Markets (01)'],
+    actors:[
+      {name:'Hive DLS',status:'disrupted'},{name:'LockBit DLS',status:'disrupted'},
+      {name:'RansomHub DLS',status:'active'},{name:'Play DLS',status:'active'},
+      {name:'Multi-tenant DLS operators',status:'active'},{name:'Cl0p torrent distribution',status:'active'},
+    ],
+    timeline:[
+      {year:2019,event:'Maze ransomware introduces double extortion / DLS model',type:'Market',outcome:'Model adopted by virtually all major RaaS platforms within 18 months. Permanent structural shift.'},
+      {year:2023,event:'FBI 7-month covert Hive DLS access; decryptors distributed to 300+ victims',type:'LE',outcome:'$130M in avoided payments. Hive DLS permanently seized. Gold standard — not replicated at scale.'},
+      {year:2024,event:'December 2024: Record 621 victims posted in single month across DLS platforms',type:'Market',outcome:'DLS volume growing despite brand-level disruptions. Multi-tenant infrastructure absorbs disrupted groups.'},
+    ],
+    leverage:'Covert access to DLS infrastructure (Hive model) is highest-impact approach — key distribution to victims before public seizure avoids payments and degrades operator leverage simultaneously. Multi-tenant DLS disruption is higher value than single-brand takedown. BPH disruption compounds DLS uptime.',
+    financialNote:'Hive DLS covert access: ~$130M in avoided victim payments over 7 months. DLS posting volume correlates directly with affiliate recruitment: high posting rates signal operational health to potential affiliates.'
+  },
+  {
+    id:9, name:'BPH', subtitle:'Bulletproof Hosting Providers',
+    layer:'Critical Infrastructure / Abuse-Resistant Hosting Foundation', phase:'A', tier:'CRITICAL',
+    replaceDiff:'HIGH', durability:'HIGH', reconSpeed:'Weeks to months (full conglomerate disruption)',
+    leActions:'MEDIUM (growing — designation actions increasing)', financialCentrality:'MEDIUM',
+    upstream:['Underground Forums (10)','Upstream ISPs / transit providers'],
+    downstream:['Leak Sites (08)','Loaders (02)','IABs (05)','Forums (10)','ALL modules requiring online presence'],
+    actors:[
+      {name:'Zservers',status:'sanctioned'},{name:'Media Land LLC',status:'sanctioned'},
+      {name:'Aeza Group',status:'active'},{name:'BEARHOST',status:'active'},
+      {name:'Troyak (historical)',status:'disrupted'},{name:'McColo (historical)',status:'disrupted'},
+    ],
+    timeline:[
+      {year:2008,event:'McColo upstream depeering by Hurricane Electric',type:'LE',outcome:'Global spam volume dropped 75% within hours. Benchmark for upstream ISP depeering effectiveness. McColo did not reconstitute.'},
+      {year:2024,event:'OFAC/UK NCA/Australia joint designation: Zservers and Media Land LLC',type:'Designation',outcome:'Most significant BPH enforcement in recorded history. Financial isolation and compliance obligations for US-nexus upstream providers. 6-12 month structural impact expected.'},
+      {year:2025,event:'Sophos: single VM template image underlying 7,000+ ransomware-linked servers identified',type:'Market',outcome:'Proactive detection and disruption opportunity identified but not yet actioned at scale.'},
+    ],
+    leverage:'Upstream ISP depeering is the gold standard — disrupts multiple nodes simultaneously, not addressable by simple server migration. Sophos VM template fingerprint is an underexploited proactive vector. BPH designation is necessary but insufficient alone; physical enforcement required within 12-18 months.',
+    financialNote:'BPH fees estimated at premium to legitimate hosting due to abuse-tolerance value. Aggregate revenue across top providers not documented in open sources. Cost imposed on ecosystem through BPH disruption is significant: infrastructure migration costs, operational downtime, trust disruption with criminal clients.'
+  },
+  {
+    id:10, name:'Underground Forums', subtitle:'Underground Forums and Dark Web Markets',
+    layer:'Market Infrastructure / Trust Governance', phase:'B', tier:'HIGH',
+    replaceDiff:'HIGH', durability:'HIGH', reconSpeed:'Months (forum-specific); weeks (for migration to alternatives)',
+    leActions:'MEDIUM', financialCentrality:'LOW (indirect — enables all transactions)',
+    upstream:['BPH (09)','Mixers (11)','Stealers (01)','Crypters (03)'],
+    downstream:['IABs (05)','RaaS Groups (07)','Leak Sites (08)'],
+    actors:[
+      {name:'Exploit.in',status:'active'},{name:'XSS.is',status:'active'},
+      {name:'RAMP',status:'active'},{name:'DarkForums',status:'active'},
+      {name:'BreachForums (v1)',status:'disrupted'},{name:'BreachForums (v2/v3)',status:'active'},
+      {name:'RaidForums',status:'disrupted'},
+    ],
+    timeline:[
+      {year:2022,event:'RaidForums seized; Conti leaks destroy trust across Conti-linked forum identities',type:'LE',outcome:'Migration to BreachForums; Conti-linked handles burned. Illustrates trust infrastructure as primary vulnerability.'},
+      {year:2023,event:'BreachForums v1 seized; administrator arrested',type:'LE',outcome:'Community migrated to BreachForums v2 within weeks. Forum reconstitution is faster than BPH or financial rail reconstitution.'},
+      {year:2024,event:'BreachForums v2 seized (FBI/Europol)',type:'LE',outcome:'BreachForums v3 emerged. Pattern: each seizure accelerates security culture evolution — invite-gating, key-based authentication, smaller trusted circles.'},
+    ],
+    leverage:'Trust infrastructure is the real disruption target — not the forum URL. Infiltration and manipulation of vetting/escrow/reputation systems raises transaction costs for all actors. Sequential phase pressure: degrade financial rails (Phase A) before forum pressure (Phase B) to reduce reconstitution motivation.',
+    financialNote:'Forums do not directly handle large financial flows — they are governance infrastructure. Aggregate value enabled through forum-facilitated transactions (IAB sales, RaaS recruitment, service procurement) is in the hundreds of millions annually but is not directly attributable.'
+  },
+  {
+    id:11, name:'Crypto Mixers', subtitle:'Cryptocurrency Mixing and Tumbling Services',
+    layer:'Financial Obfuscation / Laundering Infrastructure', phase:'B', tier:'HIGH',
+    replaceDiff:'MEDIUM', durability:'MEDIUM', reconSpeed:'Months (new service); weeks (migration to alternatives)',
+    leActions:'HIGH (most active enforcement period in asset class history)', financialCentrality:'HIGH',
+    upstream:['RaaS Groups (07)','IABs (05)','Underground Forums (10)'],
+    downstream:['OTC Brokers (12)','Exchanges (13)','Mule Networks (14)'],
+    actors:[
+      {name:'Chipmixer',status:'disrupted'},{name:'Blender.io',status:'sanctioned'},
+      {name:'Sinbad.io',status:'disrupted'},{name:'Tornado Cash',status:'sanctioned'},
+      {name:'Wasabi Wallet (CoinJoin)',status:'active'},{name:'JoinMarket',status:'active'},
+      {name:'Cross-chain bridge operators',status:'active'},{name:'Privacy coin on-ramps',status:'active'},
+    ],
+    timeline:[
+      {year:2022,event:'Tornado Cash: OFAC designation (first smart contract designation)',type:'Designation',outcome:'Landmark precedent for smart contract sanctions. Partial operational impact — protocol continues running; fiat on/off ramps disrupted.'},
+      {year:2022,event:'Blender.io: OFAC designation',type:'Designation',outcome:'First cryptocurrency mixer designated. Operators migrated to Sinbad.io.'},
+      {year:2023,event:'Chipmixer seized: $3B+ in criminal proceeds processed; 7 servers seized',type:'LE',outcome:'Largest single mixer enforcement action. Ecosystem shifted to cross-chain bridges and decentralized alternatives.'},
+      {year:2023,event:'Sinbad.io seized (OFAC + DOJ)',type:'LE',outcome:'Blender successor disrupted within one year of launch. Ecosystem continuing to fragment toward decentralized mixing.'},
+      {year:2024,event:'2024: Confirmed ransomware payments decline 35% — correlates with most active mixer enforcement period',type:'Market',outcome:'Strongest available evidence that financial-layer enforcement changes attacker economics. Correlation not proven causation but directionally consistent.'},
+    ],
+    leverage:'72% non-payment rate in 2025 correlates with sustained mixer and exchange enforcement. Mixer designation compounds when paired with exchange enforcement simultaneously. Decentralized mixing (CoinJoin, cross-chain bridges) represents the next-generation challenge — harder to designate, harder to attribute.',
+    financialNote:'Chipmixer: $3B+ in criminal proceeds processed. Blender: hundreds of millions. Tornado Cash: billions across all criminal categories. Mixer fees typically 1-3% of transaction volume. 2025 confirmed ransomware payments: ~$813M total (Chainalysis; record-low 28% victim payment rate).'
+  },
+  {
+    id:12, name:'OTC Brokers', subtitle:'Over-the-Counter Crypto Brokers',
+    layer:'Financial Cash-Out / Fiat Conversion', phase:'A', tier:'CRITICAL',
+    replaceDiff:'HIGH', durability:'HIGH', reconSpeed:'Months (trust-dependent; not just infrastructure)',
+    leActions:'HIGH (OFAC designation sequence)', financialCentrality:'CRITICAL',
+    upstream:['Mixers (11)','RaaS Groups (07)','Underground Forums (10)'],
+    downstream:['Exchanges (13)','Mule Networks (14)'],
+    actors:[
+      {name:'SUEX',status:'sanctioned'},{name:'Chatex',status:'sanctioned'},
+      {name:'Garantex',status:'disrupted'},{name:'Cryptex',status:'sanctioned'},
+      {name:'Black OTC networks (unnamed)',status:'active'},{name:'Nested OTC within compliant CEXs',status:'active'},
+    ],
+    timeline:[
+      {year:2021,event:'SUEX: First cryptocurrency exchange OFAC designation',type:'Designation',outcome:'Landmark precedent. SUEX processed hundreds of millions in ransomware proceeds. Designation established the OTC-disruption playbook.'},
+      {year:2021,event:'Chatex designated (SUEX successor)',type:'Designation',outcome:'Follow-on action confirmed the designation sequence model; Chatex migrated to alternative infrastructure.'},
+      {year:2022,event:'Garantex: OFAC designation',type:'Designation',outcome:'Continued operations under designation for nearly 3 years (2022-2025). Gap between designation and enforcement is the critical vulnerability of this model.'},
+      {year:2024,event:'Cryptex: OFAC designation + USDT seizure',type:'Designation',outcome:'$7B+ in criminal transactions identified. Physical enforcement pending as of research date.'},
+      {year:2025,event:'Garantex: Servers seized, administrators arrested (Europol/DOJ)',type:'LE',outcome:'Physical enforcement 3 years post-designation. Confirms: designation without timely physical enforcement allows continued operation.'},
+    ],
+    leverage:'Highest-priority Phase A target. SUEX-to-Garantex-to-Cryptex designation sequence is the proof of concept. OTC and exchange enforcement must be coordinated simultaneously — designating one without the other produces displacement. Physical enforcement must follow within 12-18 months or the gap closes.',
+    financialNote:'SUEX: hundreds of millions in ransomware proceeds. Garantex: processed hundreds of millions under designation 2022-2025. Cryptex: $7B+ in criminal transactions identified. OTC broker fees: 1-5% for high-volume criminal clients. Russia is dominant jurisdiction for high-volume criminal OTC.'
+  },
+  {
+    id:13, name:'Money Launderers / Exchanges', subtitle:'High-Risk and Non-Compliant Exchanges',
+    layer:'Crypto-to-Fiat Conversion / Exchange Off-Ramp', phase:'A', tier:'CRITICAL',
+    replaceDiff:'HIGH', durability:'HIGH', reconSpeed:'Months (new exchange); weeks (migration)',
+    leActions:'HIGH', financialCentrality:'CRITICAL',
+    upstream:['Mixers (11)','OTC Brokers (12)','RaaS Groups (07)'],
+    downstream:['Mule Networks (14)','Direct fiat withdrawal'],
+    actors:[
+      {name:'Garantex',status:'disrupted'},{name:'Cryptex',status:'sanctioned'},
+      {name:'Bitzlato',status:'disrupted'},{name:'BTC-e (historical)',status:'disrupted'},
+      {name:'Nested OTC within compliant CEXs',status:'active'},{name:'Dedicated underground VASPs',status:'active'},
+    ],
+    timeline:[
+      {year:2023,event:'Bitzlato seized: $700M+ in criminal proceeds; founder arrested (international operation)',type:'LE',outcome:'Significant disruption. Volumes shifted to Garantex and other non-compliant exchanges.'},
+      {year:2024,event:'Behavioral deterrence effect: 2024 payment decline correlates with enforcement activity',type:'Market',outcome:'Exchange enforcement contributing to deterrence. Strongest available evidence for Phase A mechanism effectiveness.'},
+      {year:2025,event:'Garantex: Physical enforcement — servers seized, administrators arrested',type:'LE',outcome:'Most significant exchange enforcement action post-Garantex-designation. Demonstrates: physical enforcement is required, not designation alone.'},
+    ],
+    leverage:'Coordinated same-window designation and physical enforcement across multiple exchanges is the untested high-value action. Garantex model took 3 years from designation to enforcement — that gap allowed continued operation. Tether (USDT) T3 unit real-time freeze cooperation is an underutilized lever: USDT freeze upon identification rather than post-enforcement.',
+    financialNote:'Bitzlato: $700M+ in criminal proceeds. Garantex: hundreds of millions. Node 02 is rated CRITICAL alongside OTC Brokers (Node 01): both are required for ransomware proceeds to reach the real economy as spendable funds. Disrupting one without the other produces displacement.'
+  },
+  {
+    id:14, name:'Mule Networks', subtitle:'Fiat Layering and Integration',
+    layer:'Fiat Layering and Integration', phase:'C', tier:'MEDIUM',
+    replaceDiff:'MEDIUM', durability:'MEDIUM', reconSpeed:'Weeks to months',
+    leActions:'MEDIUM', financialCentrality:'HIGH (terminal layer)',
+    upstream:['OTC Brokers (12)','Exchanges (13)'],
+    downstream:['Real economy: real estate, business fronts, luxury goods, financial instruments'],
+    actors:[
+      {name:'Mule herder networks (professional operators)',status:'active'},{name:'Unwitting mule recruits',status:'named'},
+      {name:'Shell company operators',status:'active'},{name:'Real estate intermediaries',status:'named'},
+      {name:'Luxury goods intermediaries',status:'named'},{name:'Rosfinmonitoring-listed entities',status:'named'},
+    ],
+    timeline:[
+      {year:2022,event:'Conti financial operator analysis: shell companies, real estate, luxury goods integration confirmed',type:'Market',outcome:'Conti leaks exposed integration-stage financial operations. Pattern consistent with other groups.'},
+      {year:2024,event:'TRM Labs: 50%+ of mule-linked funds exit within 1 hour of receipt',type:'Market',outcome:'Speed confirms: recovery at this stage is extremely difficult without real-time intervention.'},
+      {year:2025,event:'Cross-cybercrime herder-tier prosecution (multiple operations)',type:'LE',outcome:'Herder-tier actions produce cross-ecosystem disruption: same networks serve ransomware, fraud, and other cybercrime simultaneously.'},
+    ],
+    leverage:'Herder-tier prosecution produces cross-cybercrime-ecosystem disruption value. Integration-stage regulatory action (real estate, luxury goods) operates entirely in Western jurisdictions — no Russian cooperation required. Phase A and B upstream financial pressure is the most effective compound lever: reduces volume and cleanliness of fiat reaching mule pipelines.',
+    financialNote:'50%+ of mule-linked funds exit within 1 hour of receipt. Integration-stage recovery without Russian cooperation is extremely limited. Herder networks serve multiple criminal enterprises simultaneously — takedown impact extends beyond ransomware.'
+  },
+  {
+    id:15, name:'Negotiation Services', subtitle:'Criminal and Defender-Side Negotiation',
+    layer:'Extortion Interface / Victim-Attacker Monetization Bridge', phase:'Cross', tier:'MEDIUM',
+    replaceDiff:'N/A (dual character)', durability:'HIGH (defender leverage)', reconSpeed:'N/A',
+    leActions:'LOW (criminal side); N/A (defender side)',financialCentrality:'HIGH (payment decision point)',
+    upstream:['RaaS Groups (07)','Leak Sites (08)','Underground Forums (10)'],
+    downstream:['OTC Brokers (12) if payment occurs','Victim recovery chain if payment avoided'],
+    actors:[
+      {name:'RaaS internal negotiation teams (criminal)',status:'active'},{name:'Rogue recovery operators (criminal-adjacent)',status:'active'},
+      {name:'Coveware (defender)',status:'named'},{name:'GuidePoint Security (defender)',status:'named'},
+      {name:'CyberSecOp (defender)',status:'named'},{name:'Incident response firms (broad)',status:'named'},
+    ],
+    timeline:[
+      {year:2019,event:'Double extortion model emerges: DLS pressure added to encryption coercion',type:'Market',outcome:'Negotiation complexity increases; professional IR firms gain structural advantage over unprepared victims.'},
+      {year:2022,event:'Coveware Q4 2022: non-payment rate exceeds 60% for professionally managed incidents',type:'Market',outcome:'Confirmed structural benefit of professional negotiation engagement. Gap vs. unmanaged incidents is growing.'},
+      {year:2024,event:'Professional negotiation non-payment rate: 70%+ (Coveware data)',type:'Market',outcome:'Scaling professional negotiation access is the largest ransomware disruption opportunity not requiring access to Russian infrastructure.'},
+    ],
+    leverage:'Scaling professional negotiation access to SMB and under-resourced organizations is the highest-ROI disruption action that operates entirely outside Russian jurisdiction. Non-payment growth reduces affiliate revenue model durability regardless of which brand carries the flag. Criminal-side: rogue recovery companies require standalone enforcement action.',
+    financialNote:'Professional negotiation: 70%+ non-payment rate vs. estimated 30-40% without support. Each point of non-payment rate growth at ecosystem scale represents hundreds of millions in avoided payments. Payment decision occurs at this node — highest leverage for financial disruption without attacking Russian infrastructure.'
+  },
+];
+
+
+const MOD_EXTRA = {
+  1:{
+    ownership:[
+      {owner:'FBI / CISA',action:'Stealer log market disruption coordination',priority:'HIGH'},
+      {owner:'Microsoft DCU',action:'Domain seizure (LummaC2 model)',priority:'HIGH'},
+      {owner:'Europol / EC3',action:'MaaS provider infrastructure actions',priority:'MEDIUM'},
+    ],
+    compounding:[
+      'Loader disruption (Module 02) starves stealer delivery simultaneously',
+      'IAB market pressure (Module 05) degrades log monetization pipeline',
+      'Forum disruption (Module 10) degrades log sales infrastructure',
+      'Phase A financial pressure raises reconstitution cost for operators',
+    ],
+    indicators:[
+      'Log market pricing and volume trends (Russian Market, 2easy)',
+      'Stealer family C2 domain registration velocity',
+      'Stealer-to-IAB listing conversion rates on monitored forums',
+      'MaaS subscription pricing changes as demand signal',
+    ]
+  },
+  2:{
+    ownership:[
+      {owner:'Europol / EC3',action:'Operation Endgame model: coordinated multi-country C2 takedown',priority:'HIGH'},
+      {owner:'US DOJ / FBI',action:'C2 infrastructure seizure (QakBot model)',priority:'HIGH'},
+      {owner:'Microsoft DCU',action:'Civil action domain seizure support',priority:'MEDIUM'},
+    ],
+    compounding:[
+      'BPH disruption (Module 09) forces loader C2 migration simultaneously',
+      'IAB market pressure (Module 05) degrades downstream access pipeline',
+      'Crypter disruption (Module 03) compounds loader evasion capability',
+      'Endgame is the model: target infrastructure and operators, not just payloads',
+    ],
+    indicators:[
+      'C2 beacon volume across known loader infrastructure (sinkhole telemetry)',
+      'New loader family deployment velocity post-Endgame',
+      'Loader-as-a-Service pricing and availability on criminal forums',
+      'SEO poisoning campaign volume (primary loader delivery vector)',
+    ]
+  },
+  3:{
+    ownership:[
+      {owner:'CISA / NCSC',action:'AV/EDR signature coordination to burn CaaS stubs at scale',priority:'HIGH'},
+      {owner:'FBI / NCA',action:'CaaS build server identification and seizure',priority:'MEDIUM'},
+      {owner:'No documented lead LE actor as of April 2026',action:'Gap in disruption coverage',priority:'LOW'},
+    ],
+    compounding:[
+      'Loader disruption (Module 02) removes the primary CaaS customer base',
+      'AV/EDR coordination burns stubs and compresses the FUD validity window',
+      'Forum disruption (Module 10) degrades CaaS seller reputation infrastructure',
+      'Market concentration (1-3 top sellers) makes single enforcement action high-ROI',
+    ],
+    indicators:[
+      'CaaS listing volume and pricing on criminal forums and Telegram bots',
+      'FUD time-to-detection metrics (AV/EDR telemetry)',
+      'Top-seller forum activity and listing frequency',
+      'Telegram CaaS bot subscriber growth as market health signal',
+    ]
+  },
+  4:{
+    ownership:[
+      {owner:'FBI / USSS',action:'Scattered Spider prosecution model; call-center operator identification',priority:'HIGH'},
+      {owner:'FCC / Ofcom',action:'SIM-swapping infrastructure enforcement',priority:'HIGH'},
+      {owner:'Victim organizations',action:'Out-of-band helpdesk verification (eliminates attack surface without LE)',priority:'CRITICAL'},
+    ],
+    compounding:[
+      'Stealer log disruption (Module 01) degrades caller target-intelligence quality',
+      'Forum disruption (Module 10) degrades caller recruitment infrastructure',
+      'Victim-side hardening eliminates BazarCall surface regardless of LE action',
+      'VaaS platform (PlugValley) enforcement degrades multiple campaigns simultaneously',
+    ],
+    indicators:[
+      'Vishing campaign volume against financial and healthcare sectors',
+      'BazarCall / callback phishing email volume (industry reporting)',
+      'VaaS platform subscriber counts and forum advertising activity',
+      'Helpdesk impersonation incident reporting rate',
+    ]
+  },
+  5:{
+    ownership:[
+      {owner:'US DOJ / OFAC',action:'Boutique IAB financial designation',priority:'HIGH'},
+      {owner:'Europol / EC3',action:'Forum-based IAB account disruption',priority:'MEDIUM'},
+      {owner:'FBI',action:'Raspberry Robin C2 sinkholing',priority:'HIGH'},
+    ],
+    compounding:[
+      'Forum disruption (Module 10) degrades IAB trust and vetting infrastructure',
+      'Phase A financial pressure raises IAB reconstitution cost across tiers',
+      'Stealer log disruption (Module 01) reduces IAB raw material supply',
+      'Infiltration attacks on forum vetting mechanics raises costs for all IAB tiers',
+    ],
+    indicators:[
+      'IAB listing volume by tier on RAMP, DarkForums, XSS',
+      'Average IAB price trends (bulk vs. boutique premium spread)',
+      'Privileged access percentage in observed listings (maturity signal)',
+      'Time-to-sale for new IAB listings as market demand signal',
+    ]
+  },
+  6:{
+    ownership:[
+      {owner:'CISA / NSA',action:'Rapid patch deployment coordination: compresses n-day exploitation window',priority:'CRITICAL'},
+      {owner:'Vendor bug bounty programs',action:'Price gap reduction vs. criminal markets (structural leverage)',priority:'CRITICAL'},
+      {owner:'US DOJ / FBI',action:'Criminal vulnerability researcher identification and prosecution',priority:'HIGH'},
+    ],
+    compounding:[
+      'Forum disruption (Module 10) degrades exploit broker market visibility',
+      'IAB market pressure (Module 05) reduces demand for broker-supplied exploits',
+      'Bug bounty price parity removes researcher incentive to sell to criminal markets',
+      'Rapid patch velocity compresses the n-day exploitation window to days not weeks',
+    ],
+    indicators:[
+      'N-day exploitation velocity post-CVE publication (patch adoption gap metric)',
+      'Patch adoption rates for targeted edge devices (Ivanti, Citrix, Palo Alto)',
+      'Bug bounty payout vs. criminal market price gap for major software categories',
+      'Zero-day exploit listings on monitored criminal forums',
+    ]
+  },
+  7:{
+    ownership:[
+      {owner:'FBI / Europol',action:'Infrastructure seizure plus affiliate OPSEC exposure (LockBit / Hive model)',priority:'CRITICAL'},
+      {owner:'OFAC / Treasury',action:'Financial designation of operators and facilitators',priority:'CRITICAL'},
+      {owner:'CISA / NCSC',action:'Non-payment advocacy and victim support coordination',priority:'HIGH'},
+    ],
+    compounding:[
+      'Phase A financial pressure (OTC + exchange) degrades affiliate revenue simultaneously',
+      'Phase B forum disruption degrades affiliate recruitment infrastructure',
+      'Non-payment growth (Module 15) reduces affiliate economics regardless of brand identity',
+      'BPH disruption (Module 09) denies leak site and C2 hosting simultaneously',
+      '2025: 72% non-payment rate (28% paid, record low) reflects compound effect of layered pressure; attacks up 50% YoY, payments flat',
+    ],
+    indicators:[
+      'Active RaaS brand count and affiliate recruitment advertising volume',
+      'Victim notification rate vs. DLS posting volume (payment avoidance signal)',
+      'Time from brand disruption to affiliate migration (reconstitution speed tracker)',
+      'Non-payment rate trajectory by quarter (Coveware data)',
+      'RaaS-to-affiliate revenue split trends as affiliate demand signal',
+    ]
+  },
+  8:{
+    ownership:[
+      {owner:'FBI',action:'Covert DLS access before seizure: decryptor distribution to victims (Hive model)',priority:'CRITICAL'},
+      {owner:'Europol / NCA',action:'DLS infrastructure seizure coordination',priority:'HIGH'},
+      {owner:'BPH enforcement actors',action:'Upstream hosting disruption (Module 09 compound effect)',priority:'HIGH'},
+    ],
+    compounding:[
+      'BPH disruption (Module 09) directly degrades DLS uptime',
+      'RaaS group disruption (Module 07) removes DLS operator incentive',
+      'Covert access before seizure avoids victim payments and degrades operator leverage simultaneously',
+      'Multi-tenant DLS disruption (cross-group) is higher value than single-brand takedown',
+    ],
+    indicators:[
+      'DLS victim posting volume by platform (monthly trend)',
+      'DLS uptime percentage for major active platforms',
+      'Multi-tenant DLS operator count and platform capacity',
+      'Victim payment rate before vs. after DLS compromise notification',
+    ]
+  },
+  9:{
+    ownership:[
+      {owner:'Upstream ISPs (Hurricane Electric model)',action:'Transit depeering: disrupts all modules simultaneously',priority:'CRITICAL'},
+      {owner:'OFAC / UK OFSI / Australia DFAT',action:'Joint financial designation (Zservers model)',priority:'HIGH'},
+      {owner:'Europol / FBI',action:'Physical enforcement within 12-18 months of designation',priority:'HIGH'},
+    ],
+    compounding:[
+      'Upstream depeering disrupts ALL hosted modules simultaneously: not addressable by server migration',
+      'Sophos VM template fingerprint enables proactive detection across 7,000+ servers',
+      'BPH designation compounds Phase B/C actions by denying reconstitution hosting',
+      'Physical enforcement within 12-18 months of designation required or gap closes',
+    ],
+    indicators:[
+      'BPH provider BGP route advertisement changes',
+      'Criminal client migration velocity post-designation',
+      'VM template fingerprint prevalence across monitored infrastructure',
+      'Uptime metrics for ransomware-linked BPH providers',
+    ]
+  },
+  10:{
+    ownership:[
+      {owner:'Intelligence agencies',action:'Forum infiltration and trust manipulation (highest ROI action)',priority:'CRITICAL'},
+      {owner:'FBI / Europol',action:'Forum administrator identification and prosecution',priority:'HIGH'},
+      {owner:'Phase A financial actors',action:'Financial rail disruption before forum pressure (sequencing required)',priority:'HIGH'},
+    ],
+    compounding:[
+      'Phase A financial actions degrade forum reconstitution motivation before Phase B pressure',
+      'Conti leak model: trust infrastructure destruction burns all linked handles simultaneously',
+      'Sequential pressure (financial first, then forum) reduces displacement to alternatives',
+      'Each seizure accelerates security culture evolution: invite-gating, key authentication',
+    ],
+    indicators:[
+      'Forum active-user and post-volume metrics (OSINT monitoring)',
+      'Time-to-migration post-seizure (reconstitution speed signal)',
+      'New forum launches following major seizures',
+      'Forum escrow volume trends as transaction health signal',
+    ]
+  },
+  11:{
+    ownership:[
+      {owner:'OFAC / FinCEN',action:'Mixer designation: custodial and smart contract (Tornado Cash model)',priority:'HIGH'},
+      {owner:'DOJ / FBI / Europol',action:'Server seizure and operator arrest (Chipmixer / Sinbad model)',priority:'HIGH'},
+      {owner:'Chainalysis / TRM Labs',action:'Blockchain analytics attribution supporting enforcement',priority:'HIGH'},
+    ],
+    compounding:[
+      'OFAC designation creates compliance off-ramp effect extending beyond direct mixer users',
+      'Exchange enforcement simultaneously (Module 13) prevents laundered funds reaching fiat',
+      'Mixer plus exchange pressure in same window creates compound financial isolation',
+      '~$813M in 2025 payments (record-low 28% payment rate) correlates with sustained financial-layer enforcement',
+    ],
+    indicators:[
+      'Mixer transaction volume by platform (blockchain analytics)',
+      'Cross-chain bridge usage by ransomware-linked wallets (displacement signal)',
+      'Privacy coin on-ramp volumes (alternative obfuscation indicator)',
+      'Time-to-mixer post-payment for tracked ransomware wallets',
+    ]
+  },
+  12:{
+    ownership:[
+      {owner:'OFAC / Treasury',action:'OTC broker designation sequence (SUEX to Garantex to Cryptex model)',priority:'CRITICAL'},
+      {owner:'DOJ / FBI / Europol',action:'Physical enforcement within 12-18 months of designation',priority:'CRITICAL'},
+      {owner:'FinCEN',action:'Nested OTC-within-CEX identification and referral to exchanges',priority:'HIGH'},
+    ],
+    compounding:[
+      'OTC plus exchange designation in same enforcement window prevents displacement to alternatives',
+      'Physical enforcement within 12-18 months closes the Garantex 3-year gap vulnerability',
+      'Forum pressure (Module 10) degrades OTC broker recruitment and advertising infrastructure',
+      'Tether T3 real-time USDT freeze upon identification is the underused high-impact lever',
+    ],
+    indicators:[
+      'OTC broker advertising volume and pricing on criminal forums',
+      'USDT and BTC flow volumes through designated OTC addresses (blockchain analytics)',
+      'Criminal forum OTC price spread vs. market rate as demand signal',
+      'Time between OFAC designation and physical enforcement (gap metric)',
+    ]
+  },
+  13:{
+    ownership:[
+      {owner:'OFAC / Treasury plus DOJ',action:'Coordinated designation and physical enforcement (not designation alone)',priority:'CRITICAL'},
+      {owner:'Europol / AMLA',action:'EU-side enforcement coordination',priority:'HIGH'},
+      {owner:'Tether / Circle',action:'USDT/USDC real-time freeze cooperation at identification, not post-enforcement',priority:'HIGH'},
+    ],
+    compounding:[
+      'OTC plus exchange designation in same window prevents displacement (requires coordination)',
+      'Tether T3 real-time freeze at wallet identification is the highest-impact underused lever',
+      'Designation without physical enforcement within 12-18 months allows continued operation',
+      'Blockchain analytics firms provide real-time attribution enabling proactive freeze',
+    ],
+    indicators:[
+      'High-risk exchange USDT and BTC inflow volumes from ransomware-linked wallets',
+      'New VASP registrations in permissive jurisdictions post-enforcement (displacement signal)',
+      'Ransomware-linked wallet clustering through exchange deposit addresses',
+      'Exchange KYC compliance rates and SAR filing velocity',
+    ]
+  },
+  14:{
+    ownership:[
+      {owner:'FBI / USSS',action:'Herder-tier prosecution: cross-cybercrime ecosystem disruption impact',priority:'HIGH'},
+      {owner:'Western financial regulators',action:'Real estate and luxury goods AML enforcement (no Russian cooperation required)',priority:'HIGH'},
+      {owner:'FinCEN / FINTRAC',action:'Suspicious activity reporting for mule account patterns in financial institutions',priority:'MEDIUM'},
+    ],
+    compounding:[
+      'Phase A and B financial actions reduce volume and quality of fiat reaching mule pipelines',
+      'Herder prosecution disrupts ransomware plus fraud plus BEC ecosystems simultaneously',
+      'Integration-stage AML action operates entirely in Western jurisdictions: no Russian cooperation required',
+      '50%+ of mule funds exit within 1 hour: real-time intervention is the only recovery path',
+    ],
+    indicators:[
+      'Mule account recruitment volume on criminal forums and Telegram',
+      'Suspicious transaction filing velocity in financial institutions',
+      'Real estate purchase patterns linked to shell companies in monitored jurisdictions',
+      'Herder network overlap between ransomware and other cybercrime types',
+    ]
+  },
+  15:{
+    ownership:[
+      {owner:'CISA / NCSC',action:'Professional negotiation access scaling for SMB and critical infrastructure sectors',priority:'CRITICAL'},
+      {owner:'FBI / DOJ',action:'Rogue recovery operator enforcement and prosecution',priority:'HIGH'},
+      {owner:'Incident response firms (Coveware, GuidePoint)',action:'Non-payment rate growth through professional engagement',priority:'CRITICAL'},
+    ],
+    compounding:[
+      'Non-payment rate growth reduces affiliate revenue model regardless of which brand carries the flag',
+      'Phase A financial pressure compounds: degrades operator negotiating leverage as payment becomes harder',
+      'Rogue recovery enforcement removes false non-payment signals and protects victim decisions',
+      'Each percentage point of non-payment rate growth represents hundreds of millions in avoided payments at scale. 2025: 72% non-payment rate (28% paid — record low); attacks up 50% YoY',
+    ],
+    indicators:[
+      'Non-payment rate by sector and organization size (Coveware quarterly report)',
+      'Rogue recovery operator advertising volume on victim-facing platforms',
+      'Professional IR firm engagement rate for ransomware incidents',
+      'Average ransom demand vs. final payment amount (negotiation gap signal)',
+    ]
+  }
+};
+
+
+const MOD_DETAIL = {
+  1:{
+    definition:'Infostealer malware is designed to rapidly locate, extract, and exfiltrate credentials, browser session tokens, cryptocurrency wallet keys, and system intelligence from infected endpoints. The output is sold in bulk on log markets (Russian Market, 2easy, formerly Genesis) as a commodity input for the credential-based access economy. Stealers operate as Malware-as-a-Service (MaaS): developers lease the malware to operators who handle delivery and collect logs for resale. The entire pipeline from infection to log sale to IAB listing can complete in under 24 hours. Average log value is $10-$50; high-value corporate access logs command significant premiums. The layer produces the raw intelligence that fuels initial access across the entire ransomware supply chain.',
+    western:[
+      'Microsoft DCU civil action: 2,300+ LummaC2 domains seized (May 2025) — largest single infrastructure disruption in stealer history',
+      'Operation Cookie Monster (2023): Genesis Market seized; FBI provided decryption keys to 920,000 victims',
+      'AV/EDR telemetry sharing (CISA coordination): accelerates detection signature deployment, compresses FUD validity window',
+      'Victim notification programs: FBI Genesis seizure demonstrated value of key distribution over infrastructure destruction',
+      'Financial designation of log market operators: no major action documented yet — significant gap in coverage',
+    ],
+    russian:[
+      'Primary MaaS developers (LummaC2, Vidar, Redline, Meduza) are overwhelmingly RU/CIS-origin and operate from Russian-tolerant jurisdictions',
+      'Log markets (Russian Market, 2easy) hosted on BPH with Russian infrastructure tolerance; Russian Market explicitly caters to RU-speaking operators',
+      'FSB historically tolerant of credential theft operations that do not target CIS citizens or Russian state entities',
+      'Krysha dynamic: RU state awareness does not translate to enforcement; operators effectively immune from Russian prosecution',
+      'No documented cases of Russian law enforcement action against stealer operators targeting Western victims',
+    ],
+    evolution:'2018-2019: AZORult and Raccoon Stealer dominate as basic credential harvesters. 2020-2021: Log market infrastructure matures — Genesis Market develops into a sophisticated stolen-identity browser emulator marketplace. RedLine emerges as dominant commodity stealer. 2022-2023: Market diversification accelerates; Vidar, Raccoon v2, LummaC2, and Meduza launch. Genesis seizure (2023) produces market displacement to Russian Market and 2easy within weeks, not market contraction. 2024-2025: LummaC2 emerges as dominant platform; Microsoft DCU domain seizure creates significant disruption. Tactical shift: session token theft now prioritized over static passwords as MFA adoption grows. AI-assisted targeting for high-value corporate environments beginning to appear.'
+  },
+  2:{
+    definition:'Loader malware acts as the logistics and distribution layer of the ransomware supply chain. A loader\'s job is to infiltrate a target system and execute a secondary payload — whether a stealer, ransomware, or remote access tool. Loaders operate as Loader-as-a-Service (LaaS): operators sell access to their distribution infrastructure on a subscription basis ($100-$1,000/month). Delivery vectors include malicious Office documents, SEO poisoning (fake software downloads), malvertising, and USB propagation (Raspberry Robin). The loader layer is what bridges initial lure delivery to actual ransomware deployment — without functional loader infrastructure, ransomware groups cannot efficiently scale victim volume.',
+    western:[
+      'Operation Endgame (May 2024, Europol/FBI): largest coordinated loader takedown on record — IcedID, Bumblebee, SmokeLoader, Pikabot infrastructure simultaneously seized; €100M+ in enabled damages assessed',
+      'Operation Duck Hunt (Aug 2023, FBI): QakBot C2 seized; 700,000+ infected devices identified; $8.6M in criminal cryptocurrency seized',
+      'Microsoft DCU civil actions support domain seizure at scale alongside criminal enforcement',
+      'Sinkholing operations: FBI/CISA redirect C2 traffic to government servers, preventing operator control without alerting victims',
+      'Key lesson from Endgame: simultaneous multi-family action prevents displacement to ready alternatives; single-family action produces rapid migration',
+    ],
+    russian:[
+      'QakBot and IcedID operators believed to be RU/Eastern European-nexus based on linguistic analysis and operational pattern',
+      'Loader C2 infrastructure hosted predominantly on BPH providers (Zservers, Aeza) with Russian operational tolerance',
+      'No CIS-based loader operator arrests documented despite confirmed operator identification in some cases',
+      'Latrodectus (IcedID successor) emerged within weeks of Endgame — reconstitution enabled by RU-tolerant hosting environment',
+      'Raspberry Robin uses IoT device C2 (routers, NAS) in part to avoid datacenter-based enforcement — harder to deplatform than traditional C2',
+    ],
+    evolution:'2019-2020: Legacy banking trojans (Emotet, QakBot, TrickBot) repurposed as ransomware delivery platforms — function evolves beyond original fraud use case. 2021: Emotet infrastructure seized (Operation Ladybird, Europol) — temporary disruption only; IcedID and QakBot absorb volume. 2022-2023: QakBot seized; IcedID, Bumblebee, Pikabot operating concurrently. Market diversifies to reduce single-point-of-failure risk. 2024: Operation Endgame disrupts four major families simultaneously — most significant loader action to date. Latrodectus confirmed as IcedID successor within 3-6 months. 2025: Loader ecosystem reconstituting post-Endgame; specialization increasing (some loaders exclusively serve ransomware affiliates rather than broad criminal market).'
+  },
+  3:{
+    definition:'Crypter and packer services (Crypter-as-a-Service, CaaS) wrap malware in obfuscation layers that defeat antivirus and EDR detection at the time of deployment. The output is called FUD (Fully Undetectable). Services operate on per-build (single-use obfuscation, $20-$100) or subscription models. CaaS providers sell through criminal forums and automated Telegram bots. Detection eventually burns each stub, requiring operators to repurchase. Market is highly concentrated: academic research (arXiv 2024) confirms 1-3 top sellers dominate transaction volume on major markets. Despite its critical role in enabling all malware delivery, CaaS has received no documented major LE action as of April 2026 — a significant enforcement gap.',
+    western:[
+      'AV/EDR vendor coordination (CISA/NCSC): accelerated signature deployment burns CaaS stubs faster, compressing the FUD validity window',
+      'No documented major LE seizure of CaaS build infrastructure as of April 2026 — represents the largest unaddressed enforcement gap in the pre-access layer',
+      'Market concentration creates opportunity: identifying and prosecuting 1-3 top-reputation sellers would degrade multiple simultaneous downstream campaigns',
+      'Open-source obfuscation tooling (freely available) limits the durability of any enforcement action against commercial CaaS',
+      'CISA endpoint security guidance reduces downstream effectiveness regardless of CaaS enforcement status',
+    ],
+    russian:[
+      'CaaS providers operate predominantly from RU/CIS jurisdictions; no documented RU enforcement interest in this layer',
+      'Hosted on RU-tolerant BPH or decentralized Telegram infrastructure, making traditional hosting enforcement ineffective',
+      'RU state has no incentive to act against CaaS operators whose services are used exclusively against Western targets',
+      'Low barriers to reconstitution mean even successful enforcement produces minimal durable disruption without simultaneous downstream action',
+      'Telegram-based CaaS bots operate across jurisdictions with no single point of infrastructure to target',
+    ],
+    evolution:'2017-2019: Manual stub development by malware authors or dedicated coders; custom per-family obfuscation. 2020-2021: CaaS market formalizes on criminal forums; subscription models emerge; Telegram bot delivery automated. 2022-2023: Market consolidation documented — top 1-3 sellers per forum capture majority of volume; reputation systems on forums act as quality signal. 2024: AI-assisted obfuscation tools begin appearing, capable of generating novel stubs that evade signature-based detection more reliably. 2025-2026: Increasing integration with loader delivery pipelines — some loaders bundle CaaS obfuscation as part of the subscription, reducing friction for operators. No enforcement action in this entire period.'
+  },
+  4:{
+    definition:'Callers and social engineering operators represent the human-layer access generation component of the ransomware supply chain. The BazarCall model (dominant since 2021) involves sending phishing emails that prompt victims to call an attacker-controlled number; operators then use social engineering to convince victims to install remote access tools. Vishing (voice phishing) has evolved significantly: Scattered Spider demonstrated that sophisticated callers can bypass MFA, navigate enterprise helpdesks, and socially engineer IT administrators. AI vishing platforms (Vishing-as-a-Service) such as PlugValley now lower the technical and linguistic skill floor, enabling non-English-speaking operators to run convincing US/UK enterprise impersonation campaigns. MGM Resorts ($100M+ loss from a single vishing call) is the benchmark incident.',
+    western:[
+      'Scattered Spider prosecutions (UK/US, 2023-2024): demonstrated law enforcement can identify and arrest English-speaking vishing operators',
+      'FCC enforcement on SIM-swapping infrastructure addresses the telecom layer that enables number spoofing',
+      'Victim-side hardening is the highest-ROI lever: mandatory out-of-band verification for helpdesk calls eliminates the BazarCall attack surface entirely without requiring LE action or Russian cooperation',
+      'AI vishing platform (VaaS) enforcement: PlugValley and similar platforms represent a single high-value target whose disruption would degrade multiple simultaneous campaigns',
+      'FTC and sector regulators can mandate callback verification standards in financial and healthcare sectors — regulatory rather than LE lever',
+    ],
+    russian:[
+      'Black Basta call-center operations and BazarCall infrastructure have documented RU nexus; operators in Russia are unreachable by Western LE',
+      'Call-center labor operates from Russia, Ukraine, and Nigeria — jurisdictions with limited cooperation on cybercrime',
+      'AI vishing platforms (PlugValley) believed to operate from Russia-adjacent jurisdictions; no enforcement documented',
+      'RU state has no enforcement interest in vishing operations targeting Western enterprises',
+      'Unlike malware-layer modules, the human layer has no infrastructure to seize — operators relocate trivially',
+    ],
+    evolution:'2019-2020: Crude callback phishing; low sophistication; limited scale. 2021: BazarCall model documented at scale by Conti/Wizard Spider affiliates — structured call centers processing hundreds of victim calls simultaneously. 2022-2023: Scattered Spider demonstrates that teenage English-speaking operators can defeat enterprise security through social engineering alone; MGM ($100M+) and Caesars become landmark cases. 2024: AI vishing platforms (PlugValley, others) launch, offering real-time call scripts, voice modulation, and enterprise knowledge bases — skill floor drops dramatically. 2025: Deepfake voice cloning integration emerging; AI systems capable of impersonating known IT staff using LinkedIn-sourced voice samples. Attack volume growing as cost-per-call falls.'
+  },
+  5:{
+    definition:'Initial Access Brokers (IABs) are specialized operators who compromise networks and sell access rather than exploiting it directly. They represent the division of labor that made modern ransomware scalable: RaaS groups no longer need to compromise victims — they buy pre-compromised access. Two tiers operate concurrently. Bulk IABs use automated scanning tools (Shodan, Censys) and exploit commodity vulnerabilities; they sell access in volume at $500-$1,000 per listing, predominantly through public forum posts. Boutique IABs target specific sectors or organization types; they deliver curated access with documentation, persistence mechanisms, and privileged credentials ($2,700-$10,000+); they increasingly transact privately. Rapid7 analysis found 71.4% of observed IAB listings include domain admin or equivalent access.',
+    western:[
+      'OFAC financial designation of boutique IAB operators: high-durability action because it targets trust relationships, not just infrastructure',
+      'FBI Raspberry Robin C2 sinkholing: disrupts the automated pipeline IAB model that bridges loader delivery to access sales',
+      'Forum infiltration targeting IAB vetting mechanisms: raises transaction costs for all IAB tiers without requiring physical arrests',
+      'Operation Magnus (2024, Europol): targeted IAB-adjacent RedLine and Meta stealer infrastructure, degrading the stealer-to-IAB pipeline',
+      'Phase B sequencing requirement: IAB disruption is most effective after Phase A financial pressure is already applied — otherwise IABs absorb disruption through price adjustment and forum migration',
+    ],
+    russian:[
+      'Dominant IAB markets (Exploit.in, XSS.is, RAMP) operate from Russian-tolerant infrastructure with RU-speaking moderation teams',
+      'Boutique IAB operators predominantly RU/CIS-based; no meaningful extradition risk for operators remaining in Russia',
+      'Market has migrated toward private channels (Telegram, direct messaging) over 2023-2025, reducing LE visibility while increasing operator security',
+      'RU state monitors forum activity for intelligence value but does not enforce against IAB operators targeting Western organizations',
+      'Raspberry Robin C2 uses IoT devices globally, making Russian jurisdiction claims on infrastructure less applicable — but operators remain in CIS',
+    ],
+    evolution:'2019-2020: IAB concept emerges from RaaS specialization — early operators are former pentester criminals who recognized access had resale value. 2021: Colonial Pipeline spurs massive LE and media attention; IAB market accelerates as RaaS groups increasingly prefer to buy access rather than develop it. 2022-2023: Market matures; RAMP and DarkForums emerge as boutique IAB venues; bulk operations shift from Exploit.in visible posts toward private negotiation. 2024: 71.4% privileged-access benchmark documented by Rapid7; average boutique IAB price rises to $3,500-$5,000. Private channel migration accelerating — LE collection becoming harder. 2025: AI-assisted automated scanning enables bulk IABs to process more targets with less labor; boutique IABs increasingly offer sector-specific packages (healthcare, critical infrastructure) at premium.'
+  },
+  6:{
+    definition:'Exploit brokers occupy the highest-value, lowest-visibility position in the ransomware supply chain. They discover, acquire, or develop software vulnerabilities — particularly zero-days in widely-used enterprise software — and sell exploitation capability to criminal or state actors. The market is fully bilateral: high-value transactions occur through direct relationships, not forum posts. Gray-market vendors (Zerodium, Crowdfense) operate legally, purchasing vulnerabilities from security researchers and selling to government clients. Criminal exploit brokers operate the same model for ransomware groups. Bug bounty economics create the structural problem: when criminal markets pay 10x-100x more than vendor programs for the same vulnerability, rational researchers sell to criminal markets. CL0p\'s MOVEit zero-day campaign (2023) is the benchmark: one exploit enabled $100M+ in extortion across 2,000+ organizations.',
+    western:[
+      'Bug bounty price parity: the single highest-ROI structural lever — closing the economic gap between vendor programs and criminal markets does not require LE action or Russian cooperation',
+      'CISA patch velocity coordination: rapid deployment of patches compresses the n-day exploitation window from weeks to days for patched organizations',
+      'CVE publication timing coordination: managing disclosure windows to minimize exploitation opportunity before patches are deployed',
+      'Criminal researcher identification through signals intelligence: extremely difficult, requires intelligence-community penetration rather than LE action',
+      'Vendor notification programs: private disclosure mechanisms that reward researchers economically without requiring public disclosure that enables mass exploitation',
+    ],
+    russian:[
+      'State-adjacent researchers (RU/CN) dominate the high-value zero-day market; FSB and GRU actively use the same supply chain as criminal groups',
+      'RU state and criminal exploit use overlap significantly — some exploits purchased through the same brokers by both state and criminal buyers',
+      'No distinction between state and criminal use in practice: SVR tooling has appeared in criminal campaigns and vice versa, suggesting shared infrastructure',
+      'RU state has strong incentive to protect this market, as it benefits directly from the vulnerability supply chain',
+      'Criminal exploit broker operations are effectively invisible to traditional LE — no forum posts, no observable infrastructure, no arrest record',
+    ],
+    evolution:'2019-2020: Exploit use in ransomware primarily confined to known vulnerabilities (eternal blue legacy, VPN CVEs); true zero-day use is nation-state territory. 2021-2022: CL0p begins acquiring and weaponizing zero-days at scale — Accellion FTA, GoAnywhere MFT campaigns. Criminal zero-day use normalized. 2023: MOVEit zero-day campaign — single exploit deployed against 2,000+ organizations across 60+ countries; $100M+ estimated proceeds. Marks the clear entry of ransomware operators into the previously nation-state-only zero-day tier. 2024: Mass n-day exploitation of edge devices (Ivanti, Citrix, Palo Alto) by multiple RaaS affiliates simultaneously — coordinated exploitation of published CVEs within hours of disclosure. 2025: Zero-day and n-day exploitation now a standard RaaS affiliate capability, not a differentiator.'
+  },
+  7:{
+    definition:'RaaS (Ransomware-as-a-Service) groups are the core operators of the modern ransomware economy. Core teams (typically 5-20 members) develop and maintain the ransomware code, negotiation infrastructure, and leak sites. Affiliates (typically dozens to hundreds per brand) deploy the malware against victims and take 70-80% of ransom proceeds; core teams retain 20-30%. The RaaS model transformed ransomware from a boutique criminal operation into an industrialized franchise system. Key metrics: 7,500+ victim organizations on DLS in 2025 (record, up 50% YoY); estimated $813M in confirmed payments (Chainalysis 2025); LockBit alone claimed responsibility for 25% of all ransomware incidents at its peak. Core teams operate from Russian jurisdiction; affiliates are globally distributed. The non-payment rate is the most structurally important metric: 72% non-payment rate in 2025 (28% paid — record low) directly degrades the affiliate revenue model. Attack volume rose 50% in 2025 while total payments held flat, confirming the ecosystem is hitting a ceiling.',
+    western:[
+      'Operation Cronos (Feb 2024, Europol/FBI/NCA): LockBit infrastructure seized, 34 servers taken, 1,000+ decryption keys recovered, affiliate identities exposed — gold standard brand-level disruption',
+      'FBI Hive infiltration (2022-2023): 7-month covert access to Hive DLS; $130M in avoided victim payments; 300+ victims received decryption keys before seizure — highest-impact RaaS action on record',
+      'OFAC financial designations of RaaS operators: Conti/Wizard Spider members designated 2022; LockBit operator Dimitry Khoroshev designated 2024',
+      '2025 72% non-payment rate: compound effect of non-payment advocacy, negotiation access scaling, and financial-layer enforcement — the strongest available signal that layered pressure is working',
+      'Non-payment is the highest-durability lever: it degrades affiliate economics regardless of brand identity and requires no Russian cooperation',
+    ],
+    russian:[
+      'Core RaaS teams operate from Russia under documented de facto state tolerance (Krysha model): FSB awareness of operations does not translate to enforcement',
+      'REvil arrests (Jan 2022): FSB action was politically motivated by post-Colonial Pipeline US diplomatic pressure, not genuine enforcement — group members released, charges dropped within months',
+      'Russian state provides extradition shield: no Russian citizen has been successfully extradited for ransomware offenses; all prosecutions require arrest outside Russia',
+      'Core teams reconstitute freely within Russian jurisdiction: Conti dissolved into 6+ successor groups within 90 days; all continued operating from Russia',
+      'FSB Sandworm and RaaS operators share infrastructure in documented cases — blurring the state/criminal line and providing implicit protection',
+    ],
+    evolution:'2019: Double extortion model introduced by Maze — encryption plus data theft forces payment to prevent publication. Structural shift: ransomware permanently transformed. 2020-2021: RaaS explosion — Conti, REvil, LockBit, ALPHV, Hive all operational simultaneously; Colonial Pipeline ($4.4M) and JBS ($11M) mark peak of critical infrastructure impact. 2022: Conti collapse via 60,000 leaked internal messages; REvil briefly arrested by FSB then released. ALPHV/BlackCat launches. 2023: Hive 7-month FBI infiltration — unique case, Hive does not reconstitute. CL0p MOVEit campaign. 2024: Operation Cronos disrupts LockBit — ALPHV exits in $22M scam; RansomHub emerges as dominant successor within 90 days absorbing displaced affiliates. Non-payment rate reaches 72% (28% paid — record low). Attacks up 50% YoY but total payments plateau at ~$813M. 2025: RansomHub dominant; brand fragmentation accelerating; smaller, faster-moving groups replacing monolithic RaaS structures.'
+  },
+  8:{
+    definition:'Data Leak Sites (DLS) are the extortion infrastructure of double-extortion ransomware. When victims refuse to pay, operators publish stolen data (or threaten to) on dark web sites to coerce payment, notify victims\' customers, and signal operational health to prospective affiliates. DLS volume is a leading indicator of ecosystem health: 621 victims posted in December 2024 alone (record). The Hive DLS infiltration (FBI, 2022-2023) is the operational gold standard: 7 months of covert access during which the FBI distributed decryption keys to 300+ victims and avoided $130M in ransom payments — before seizing the infrastructure. Multi-tenant DLS platforms, which host multiple ransomware groups on shared infrastructure, represent a structural evolution that makes single-brand takedowns less effective.',
+    western:[
+      'FBI Hive covert infiltration (2022-2023): 7-month access; $130M in avoided payments; 300+ victims received keys — the only documented case where covert access was sustained long enough to materially change victim outcomes at scale',
+      'Operation Cronos LockBit DLS seizure (2024): infrastructure taken down; countdown timers reversed; affiliate identities exposed — highest psychological impact of any DLS operation',
+      'BPH enforcement (Module 09) directly compounds DLS uptime: Zservers/Media Land designation reduces available hosting for DLS operators',
+      'Multi-tenant DLS disruption is higher-value target than single-brand: one enforcement action disrupts multiple active groups simultaneously',
+      'Victim notification before seizure (Hive model) is the key differentiator — seizure alone only creates disruption; pre-seizure notification creates payment avoidance',
+    ],
+    russian:[
+      'DLS platforms hosted overwhelmingly on RU-tolerant BPH; physical servers in Russia-adjacent jurisdictions',
+      'DLS operators are embedded within the same RU/CIS criminal networks as RaaS core teams; no RU enforcement interest',
+      'Multi-tenant DLS infrastructure serves as a resilience mechanism — RU-based operators can serve multiple brands from the same physical infrastructure',
+      'RU state monitoring of DLS for intelligence value (victim organization identification) documented in analysis of leaked FSB contractor data',
+      'No documented case of Russian law enforcement action against any DLS operator',
+    ],
+    evolution:'2019: Maze introduces the DLS model — double extortion transforms ransomware economics permanently. 2020-2021: DLS adopted by virtually every major RaaS brand; Conti, REvil, LockBit, ALPHV all launch dedicated sites. 2022-2023: FBI Hive covert infiltration demonstrates the viability of covert access over seizure as primary strategy. DLS posting volume becomes the primary public metric for ecosystem health. 2024: Multi-tenant DLS platforms emerge — shared infrastructure hosts displaced groups after Cronos and ALPHV exit. Monthly posting records broken despite brand-level disruptions. December 2024: 621 victims in single month. 2025: DLS infrastructure increasingly hardened against seizure; some operators using decentralized hosting (I2P, Tor v3 only); multi-region redundancy standard practice.'
+  },
+  9:{
+    definition:'Bulletproof Hosting (BPH) providers are the infrastructure foundation of the entire ransomware ecosystem. Unlike legitimate hosting providers, BPH operators guarantee that they will not respond to abuse complaints, will not provide logs to law enforcement, and will resist legal process — for a significant premium over market rates. BPH is not merely a technical service: it is the physical infrastructure upon which leak sites, C2 servers, loader delivery, forum hosting, and cryptocurrency mixing all depend. The 2024 Zservers/Media Land designation (OFAC/UK NCA/Australia DFAT joint action) was the most significant BPH enforcement in recorded history. The Sophos finding — a single VM template image underlying 7,000+ ransomware-linked servers — illustrates both the concentration and the detection opportunity that exists but has not yet been fully exploited.',
+    western:[
+      'McColo depeering (2008, Hurricane Electric): global spam dropped 75% within hours — the gold standard for upstream ISP action; McColo never reconstituted',
+      'Zservers/Media Land joint designation (Feb 2024, OFAC/UK OFSI/Australia DFAT): most significant BPH enforcement action in history; financial isolation of designated providers',
+      'Upstream ISP and transit provider pressure (Tier-1 carriers): depeering disconnects entire BPH operations simultaneously — not addressable by server migration',
+      'Sophos VM template fingerprint (2025): identified single image underlying 7,000+ ransomware-linked servers — proactive detection tool not yet exploited at scale',
+      'Physical enforcement must follow designation within 12-18 months or designated providers continue operating (Zservers continued post-designation)',
+    ],
+    russian:[
+      'Dominant BPH providers (Zservers, Aeza, BEARHOST, Media Land) are registered in Russia or Russian-adjacent jurisdictions and operate with documented state tolerance',
+      'Zservers CEO stated publicly that RU state agencies were aware of his operations — explicit Krysha acknowledgment',
+      'RU physical infrastructure cannot be seized by Western LE; designation action freezes financial access but does not stop operations while servers remain in Russia',
+      'Aeza Group and BEARHOST continue active operations post-Zservers/Media Land designation, absorbing displaced criminal clients',
+      'BPH is the layer most directly protected by Russian state tolerance — without physical enforcement in Russia, designation creates disruption but not destruction',
+    ],
+    evolution:'2008: McColo depeering establishes the upstream ISP action model — remains the benchmark 16 years later. 2010-2018: Russian-language BPH market develops; providers offer increasingly sophisticated abuse-resistance at premium pricing. 2019-2021: Zservers and Media Land emerge as dominant providers; Troyak disruption briefly reduces capacity. 2022-2023: Criminal demand for BPH grows proportionally with ransomware volume; providers expand capacity and add redundancy features. 2024: Joint Zservers/Media Land designation — most significant action to date; Sophos VM template discovery reveals concentration. Post-designation, Aeza and BEARHOST absorb displaced clients. 2025: BPH market adapting to designation risk; providers developing financial infrastructure outside Western reach to survive future designation actions.'
+  },
+  10:{
+    definition:'Underground forums are the governance and market infrastructure of the ransomware ecosystem. They are not simply marketplaces — they provide the trust architecture that makes criminal commerce possible: reputation systems, escrow services, dispute resolution, vetting mechanisms, and recruitment pipelines. Without forums, IAB transactions cannot be trusted, RaaS affiliates cannot be recruited, and services cannot be advertised. The trust infrastructure is the actual target — not the URL. The Conti leak (2022) demonstrated this: it destroyed trust in Conti-linked forum identities across the ecosystem, which was more damaging than any server seizure. Key active platforms include Exploit.in, XSS.is, RAMP, and DarkForums. BreachForums has been seized and reconstituted three times, each time accelerating security-culture evolution among users.',
+    western:[
+      'Forum seizure (RaidForums 2022, BreachForums v1 2023, BreachForums v2 2024): demonstrated the reconstitution pattern — each seizure produces faster migration and stronger operational security, not permanent disruption',
+      'Forum infiltration and trust manipulation: highest-ROI action — implanting false information into reputation systems, escrow fraud, or identifying high-value actors through undercover operations',
+      'Conti leak model: leaked internal communications destroyed trust in dozens of linked forum identities simultaneously — intelligence operation had more impact than any server seizure',
+      'Administrator prosecution: RaidForums admin Diogo Santos Coelho arrested 2022 (UK/Europol); BreachForums admin Pompompurin arrested 2023 — demonstrates administrator identification is possible',
+      'Phase sequencing: financial rail disruption (Phase A) before forum pressure (Phase B) is required — without financial pressure applied first, criminal actors simply migrate to alternatives',
+    ],
+    russian:[
+      'Major RU-language forums (Exploit.in, XSS.is) operate from Russia-tolerant infrastructure with RU-speaking moderation teams that have operated for years without enforcement action',
+      'RU state monitors forum activity for intelligence collection but does not enforce — criminal communications on forums provide FSB with real-time visibility into Western-targeted operations',
+      'Post-Conti-leak, major RU-language forums increased vetting requirements for new members and reduced open posting — state monitoring awareness drove operational security improvements',
+      'XSS.is and Exploit.in have operated continuously since ~2010-2012 with no enforcement action despite documented links to major ransomware operations',
+      'Russian jurisdiction protection extends to forum administrators and moderators, not just malware operators',
+    ],
+    evolution:'2010-2015: RU-language forums (Exploit.in, XSS) dominate; English-language participation limited. High barriers to entry; stable long-term reputation systems. 2016-2019: Dark0de, AlphaBay, Hansa market seizures demonstrate law enforcement capability against English-language markets. 2020-2021: RaidForums rises as primary English-language criminal market; RAMP launched as RaaS-specific forum. 2022: RaidForums seized; Conti leak destroys trust in linked handles — most significant trust disruption event in the period. BreachForums v1 launches. 2023: BreachForums v1 seized and admin arrested; v2 launched within weeks. 2024: BreachForums v2 seized; v3 operational. Pattern clear: each seizure accelerates invite-gating, key-based authentication, and migration to private circles. Forums becoming less visible but not less functional.'
+  },
+  11:{
+    definition:'Cryptocurrency mixing services obscure the origin of criminal proceeds by pooling funds from multiple sources and returning equivalent amounts, minus a service fee (1-3%). Custodial mixers (Chipmixer, Blender, Sinbad) take physical possession of funds and return different coins; they are the easiest to prosecute but also the easiest to replace. Decentralized mixers (Tornado Cash, CoinJoin protocols) use smart contracts that operate without a central operator — designation is legally complex and operationally limited. The Chipmixer seizure ($3B+ in criminal proceeds, 2023) remains the largest single mixer enforcement action. The 72% victim non-payment rate in 2025 (28% paid, record low) correlates with sustained mixer and exchange enforcement — the strongest available signal that financial-layer pressure changes attacker economics. Attack volume rose 50% while payments held flat, confirming the ecosystem is hitting a ceiling.',
+    western:[
+      'OFAC Tornado Cash designation (Aug 2022): first-ever smart contract designation; landmark legal precedent; partial operational impact as protocol continues running but fiat on/off ramps disrupted',
+      'OFAC Blender.io designation (May 2022): first cryptocurrency mixer designation; established the playbook for mixer enforcement',
+      'Chipmixer seizure (Mar 2023, DOJ/Europol): $3B+ in criminal proceeds; 7 servers seized; operators identified — largest single mixer action on record',
+      'OFAC Sinbad.io designation and DOJ seizure (Nov 2023): Blender successor disrupted within 12 months of launch',
+      'Blockchain analytics coordination (Chainalysis, TRM Labs): post-mixer tracing capability increasingly effective as techniques improve; designation plus tracing creates double pressure',
+    ],
+    russian:[
+      'Chipmixer operated from RU-adjacent infrastructure with Russian-speaking operators; no prior Russian enforcement action',
+      'Mixer operators predominantly CIS-based or using CIS-origin infrastructure; Russian jurisdiction provides operational cover for custodial mixer operators',
+      'RU state has no enforcement interest in mixing services used to launder proceeds of Western-targeted ransomware',
+      'Ecosystem response to custodial mixer enforcement is migration to decentralized alternatives (CoinJoin, cross-chain bridges) — harder to designate, impossible to seize',
+      'Privacy coin on-ramps (Monero, Zcash) emerging as alternative to mixing; Monero in particular has RU-language development community with no enforcement exposure',
+    ],
+    evolution:'2016-2018: Bitcoin Fog and early custodial mixers emerge; primarily used for darknet drug market proceeds. Ransomware use limited. 2019-2021: Ransomware payment volumes drive significant mixer adoption; Chipmixer becomes dominant with $3B+ processed. 2022: Landmark year — Blender designated (May), Tornado Cash designated (Aug). Criminal ecosystem begins diversifying away from custodial mixers. 2023: Chipmixer seized; Sinbad launched and seized within 12 months. Cross-chain bridges and CoinJoin adoption accelerates. 2024: Decentralized mixing mainstream; custodial mixer market significantly reduced. 72% victim non-payment rate in 2025 (record) correlates with sustained financial-layer enforcement. 2025: Cross-chain bridge usage dominant for obfuscation; privacy coins growing; LE faces increasingly difficult attribution challenge against decentralized tools.'
+  },
+  12:{
+    definition:'Over-the-Counter (OTC) cryptocurrency brokers are the primary cash-out mechanism for large ransomware payments. Unlike exchanges with KYC requirements, OTC brokers provide bilateral, personalized conversion services for large cryptocurrency positions into fiat currency or other assets — without identity verification. High-volume criminal OTC is concentrated in Russia, particularly Moscow and St. Petersburg, where brokers operate with physical premises and in-person settlement. The SUEX-to-Garantex-to-Cryptex designation sequence (2021-2024) established the OTC enforcement playbook. The critical lesson from Garantex: designated in 2022, the exchange continued processing hundreds of millions in criminal proceeds for nearly 3 years before physical enforcement in 2025. Designation without timely physical enforcement does not stop operations — it just inconveniences them.',
+    western:[
+      'SUEX designation (Sep 2021, OFAC): first cryptocurrency exchange designation; SUEX processed hundreds of millions in ransomware proceeds; established the OTC playbook',
+      'Chatex designation (Nov 2021, OFAC): SUEX successor designated within weeks of SUEX action — demonstrated rapid follow-on capability',
+      'Garantex designation (Apr 2022) and physical enforcement (Mar 2025, Europol/DOJ): 3-year gap between designation and enforcement is the critical operational lesson',
+      'Cryptex designation (Sep 2024): $7B+ in criminal transactions identified; physical enforcement pending — gap is the key risk',
+      'Tether T3 unit freeze cooperation: USDT freeze upon wallet identification (not post-enforcement) is the underused lever — Tether has demonstrated willingness to cooperate',
+    ],
+    russian:[
+      'Garantex operated physically from Moscow with RU banking connections and explicit knowledge of regulators — classic Krysha; 3-year post-designation operation confirms state tolerance',
+      'RU Central Bank and Rosfinmonitoring have theoretical oversight of VASPs but provided no enforcement cooperation on Garantex for 3 years',
+      'OTC broker ecosystem is concentrated in Moscow because RU jurisdiction provides both the operating environment and the fiat banking access required for settlement',
+      'Post-Garantex disruption, market is fragmenting to smaller, less-visible OTC operators based in RU and UAE — jurisdictions without enforcement cooperation',
+      'RU state benefits directly from OTC proceeds flowing through the Russian financial system — structural incentive against enforcement that goes beyond passive tolerance',
+    ],
+    evolution:'2019-2020: OTC market grows with ransomware payment volumes; SUEX and Garantex emerge as dominant providers. 2021: SUEX and Chatex designated — first OTC actions; market temporarily disrupted; volumes shift to Garantex. 2022: Garantex designated; continues operating from Moscow with full knowledge of designation status. 2023: Cryptex and others expand to fill post-SUEX/Chatex gap; nested OTC-within-CEX model emerges. 2024: Cryptex designated ($7B+ identified); market fragmenting. 2025: Garantex physically seized 3 years after designation — confirms that physical enforcement is essential and designation alone is insufficient. Market migrating to UAE and smaller operators.'
+  },
+  13:{
+    definition:'Non-compliant and high-risk cryptocurrency exchanges act as the primary conversion mechanism from crypto to fiat for ransomware proceeds. They differ from OTC brokers in scale and infrastructure: exchanges process higher volumes through automated systems rather than bilateral personal relationships. Key documented examples: BTC-e (seized 2017, $4B in criminal proceeds), Bitzlato (seized 2023, $700M+), and Garantex (designated 2022, seized 2025). The Tether USDT freeze mechanism is critically important: Tether\'s T3 unit can freeze USDT at specific wallet addresses in near-real-time upon LE notification — but this tool is used post-enforcement rather than proactively at wallet identification, significantly reducing its effectiveness.',
+    western:[
+      'BTC-e seizure (Jul 2017, DOJ/Europol): $4B in criminal proceeds; operator Alexander Vinnik arrested in Greece — landmark case establishing that exchange operators face personal criminal liability',
+      'Bitzlato seizure (Jan 2023, DOJ/FinCEN): $700M+ in criminal proceeds; founder arrested; FinCEN action was first use of the special measures authority against a virtual currency exchange',
+      'Garantex physical seizure (Mar 2025): servers seized, administrators arrested — confirms physical enforcement requires international coordination and cannot rely on RU cooperation',
+      'Tether T3 real-time freeze: most underused high-value lever — proactive USDT freeze at wallet identification rather than post-enforcement would prevent proceeds from moving during prosecution timelines',
+      'Coordinated same-window enforcement (OTC + exchange simultaneously) is the untested high-value action — displacing from one to the other is prevented only if both are targeted simultaneously',
+    ],
+    russian:[
+      'Garantex operated from Moscow with active RU banking relationships; RU Central Bank and Rosfinmonitoring provided no cooperation for 3 years post-designation',
+      'Russian financial system benefits directly from VASP proceeds; Rosfinmonitoring\'s VASP registration requirement provides oversight on paper but no enforcement in practice',
+      'Post-Garantex, market is migrating to UAE-registered exchanges and smaller RU-based operators — jurisdictions with limited enforcement cooperation',
+      'RU state actors (FSB, GRU) use the same exchange infrastructure for sanctions evasion and intelligence financing, creating a structural incentive against enforcement',
+      'Exchange operators in Russia operate under the same Krysha protection model as OTC brokers — aware of LE interest, continuing operations with tacit state approval',
+    ],
+    evolution:'2017: BTC-e seizure establishes that major criminal exchanges can be disrupted with international coordination. 2018-2021: Market diversifies; Garantex emerges as dominant RU-based criminal exchange. 2022: Garantex designated; continues operating. 2023: Bitzlato seized; Garantex absorbs additional volume. 2024: Ransomware payment volumes appear to decline partly as result of exchange enforcement pressure. 2025: Garantex finally seized; market fragmenting toward UAE, CIS-adjacent jurisdictions, and nested OTC-within-compliant-CEX models. USDT freeze tool increasingly relevant as USDT becomes dominant ransomware payment currency over Bitcoin.'
+  },
+  14:{
+    definition:'Mule networks represent the final fiat-layer conversion stage: converting cryptocurrency proceeds into spendable, untraceable real-world assets. Three tiers operate simultaneously. Professional herder tier: witting operators who recruit and manage mule networks, moving funds through multiple accounts; they serve ransomware, fraud, and BEC ecosystems simultaneously. Semi-witting recruit tier: individuals recruited through fake job advertisements who move money believing it to be legitimate employment. Integration tier: real estate purchases, luxury goods acquisition, shell company capitalization, and financial instrument purchases that fully integrate proceeds into the legitimate economy. TRM Labs (2024) confirmed that 50%+ of mule-linked funds exit within 1 hour of receipt — making post-receipt recovery essentially impossible without real-time intervention capability.',
+    western:[
+      'Herder-tier prosecution: cross-ecosystem disruption value — same mule networks serve ransomware, fraud, and BEC; disrupting one network impacts multiple criminal enterprises simultaneously',
+      'Integration-stage AML enforcement (real estate, luxury goods, shell companies): operates entirely in Western jurisdictions with no Russian cooperation requirement',
+      'FinCEN SAR filing requirements: financial institution reporting creates intelligence collection layer for mule account pattern identification',
+      'Money mule awareness campaigns: reducing the recruit pool for semi-witting mules through public education',
+      'Real-time fund recovery: requires pre-negotiated bank-to-bank freeze protocols; once funds exit to real economy within the 1-hour window, recovery requires litigation',
+    ],
+    russian:[
+      'Integration stage partially occurs through Russian real estate and business fronts — Conti leaks documented Wizard Spider\'s real estate and shell company network explicitly',
+      'Rosfinmonitoring has theoretical jurisdiction over RU-side integration but no enforcement cooperation documented for ransomware proceeds',
+      'RU-side mule operations serve a dual purpose: laundering criminal proceeds while also providing financial infrastructure for RU state-linked actors',
+      'Professional herder networks based in CIS jurisdictions are unreachable by Western LE; only Western-side herders face prosecution risk',
+      'Shell company registration in Cyprus, UAE, and other RU-adjacent jurisdictions provides integration layer that is partially beyond Western regulatory reach',
+    ],
+    evolution:'2019-2020: Mule networks primarily developed for banking fraud and BEC extended to ransomware as payment volumes grow. Infrastructure already in place, criminal operators simply redirect flows. 2021-2022: Professionalization accelerates as ransomware payment volumes create significant demand; herder networks expand capacity. 2022: Conti leaks expose Wizard Spider\'s integration-stage infrastructure explicitly — real estate, shell companies, and luxury goods purchases documented. 2024: TRM Labs confirms 50%+ of funds exit within 1 hour — speed increase reflects professionalization of herder networks. Cross-jurisdiction herder networks serving multiple crime types simultaneously documented. 2025: Cryptocurrency-to-cash infrastructure increasingly sophisticated; stablecoin (USDT) use growing at integration stage because USDT-to-bank transfers are harder to identify as criminal than BTC-to-bank.'
+  },
+  15:{
+    definition:'Negotiation services is the dual-character module of the ecosystem. On the criminal side: RaaS core teams operate dedicated internal negotiation teams who manage victim communications, set ransom amounts, apply pressure through data publication threats, and process payments. Some rogue recovery firms criminally deceive victims — accepting payment while secretly paying the ransom themselves, pocketing the difference and claiming to have "decrypted" data through proprietary methods. On the defender side: legitimate incident response firms (Coveware, GuidePoint, CyberSecOp, and others) provide professional negotiation, achieving documented non-payment rates exceeding 70% for professionally managed incidents versus an estimated 30-40% without professional support. The payment decision occurs at this node. Scaling professional negotiation access to under-resourced organizations is the highest-ROI disruption action that requires no access to Russian infrastructure.',
+    western:[
+      'Scaling professional IR firm access for SMBs and critical infrastructure: CISA/NCSC coordination to ensure under-resourced organizations have professional negotiation support — each percentage point of non-payment rate growth represents hundreds of millions in avoided payments at ecosystem scale',
+      'FTC/SEC rogue recovery enforcement: rogue operators claiming to decrypt data while secretly paying ransoms represent both fraud on victims and economic support for criminal operators',
+      'Non-payment advocacy: CISA, NCSC, and FBI non-payment guidance; structured victim communication programs',
+      'Insurance market reform: cyber insurance non-payment requirements or non-coverage for certain ransomware scenarios can shift victim calculus significantly',
+      'OFAC compliance guidance: clear guidance that payment to designated RaaS operators creates sanctions liability for victim organizations — significant deterrent on the demand side',
+    ],
+    russian:[
+      'Criminal negotiation teams are embedded within RU-based RaaS core teams; no RU enforcement interest or capability to restrain',
+      'RU state benefits from ransom payments flowing into Russian financial infrastructure (OTC, exchange layers); negotiation outcomes directly affect Russian criminal revenue',
+      'Internal negotiation team members are effectively immune from prosecution as long as they remain within Russian jurisdiction',
+      'Criminal negotiators have developed sophisticated psychological pressure playbooks refined over 5+ years of operation; no Western action can degrade this operational knowledge',
+      'Rogue recovery operators partially operate from Western jurisdictions — making them accessible to enforcement in ways that criminal negotiators are not',
+    ],
+    evolution:'2019: Double extortion (data theft plus encryption) introduced by Maze — creates the negotiation as a permanent professional function; single-stage encryption ransomware only required payment mechanics. 2020-2021: Professional IR firms develop negotiation practice areas; Coveware begins publishing quarterly non-payment rate data. Criminal negotiation teams within Conti, REvil, LockBit become sophisticated organizations with scripts, pressure tactics, and payment tracking infrastructure. 2022: Coveware Q4 documents 60%+ non-payment rate for professionally managed incidents — first clear evidence of the professional negotiation value premium. 2023-2024: Non-payment rate for professionally managed incidents reaches 70%+ (Coveware). 35% ecosystem-wide payment decline reflects scaling of professional engagement and non-payment advocacy. 2025: Rogue recovery sector growing alongside legitimate IR — FTC begins attention to deceptive recovery claims.'
+  }
+};
+
+// ════════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════════
+let selectedMod = null;
+let activePhases = new Set();
+let activeTiers = new Set();
+let currentView = 'detail';
+
+// ════════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════════
+function init() {
+  buildModList();
+  buildMatrix();
+}
+
+// ════════════════════════════════════════════════════════════════════
+// MODULE LIST
+// ════════════════════════════════════════════════════════════════════
+function buildModList() {
+  const container = document.getElementById('mod-rows');
+  container.innerHTML = '';
+  MODS.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'mod-row';
+    row.id = `mrow-${m.id}`;
+    row.onclick = () => selectMod(m.id);
+    row.innerHTML = `
+      <div class="mod-num">${String(m.id).padStart(2,'0')}</div>
+      <div class="mod-info">
+        <div class="mod-name">${m.name}</div>
+        <div class="mod-sub">${m.subtitle}</div>
+        <div class="mod-badges">
+          <span class="badge badge-${m.phase}">${m.phase === 'Cross' ? 'Cross-Cut' : 'Phase ' + m.phase}</span>
+          <span class="badge badge-${m.tier}">${m.tier}</span>
+        </div>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// FILTERS
+// ════════════════════════════════════════════════════════════════════
+function togglePhase(p) {
+  const btn = document.getElementById(`f-${p}`);
+  if (activePhases.has(p)) { activePhases.delete(p); btn.classList.remove('on'); }
+  else { activePhases.add(p); btn.classList.add('on'); }
+  applyFilters();
+}
+function toggleTier(t) {
+  const btn = document.getElementById(`f-${t}`);
+  if (activeTiers.has(t)) { activeTiers.delete(t); btn.classList.remove('on'); }
+  else { activeTiers.add(t); btn.classList.add('on'); }
+  applyFilters();
+}
+function resetFilters() {
+  activePhases.clear(); activeTiers.clear();
+  ['A','B','C','Cross','CRITICAL','HIGH','MEDIUM'].forEach(x => {
+    const b = document.getElementById(`f-${x}`);
+    if(b) b.classList.remove('on');
+  });
+  applyFilters();
+}
+function applyFilters() {
+  MODS.forEach(m => {
+    const row = document.getElementById(`mrow-${m.id}`);
+    let show = true;
+    if (activePhases.size > 0 && !activePhases.has(m.phase)) show = false;
+    if (activeTiers.size > 0 && !activeTiers.has(m.tier)) show = false;
+    row.classList.toggle('phase-dim', !show);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// VIEW TOGGLE
+// ════════════════════════════════════════════════════════════════════
+function setView(v) {
+  currentView = v;
+  document.getElementById('btn-detail').classList.toggle('on', v === 'detail');
+  document.getElementById('btn-matrix').classList.toggle('on', v === 'matrix');
+  const mv = document.getElementById('matrix-view');
+  if (v === 'matrix') {
+    document.getElementById('detail-empty').style.display = 'none';
+    document.getElementById('det-header').style.display = 'none';
+    document.getElementById('det-body').style.display = 'none';
+    mv.classList.add('visible');
+  } else {
+    mv.classList.remove('visible');
+    if (selectedMod) {
+      document.getElementById('det-header').style.display = '';
+      document.getElementById('det-body').style.display = '';
+    } else {
+      document.getElementById('detail-empty').style.display = '';
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SELECT MODULE
+// ════════════════════════════════════════════════════════════════════
+function selectMod(id) {
+  selectedMod = id;
+  if (currentView === 'matrix') setView('detail');
+  MODS.forEach(m => document.getElementById(`mrow-${m.id}`).classList.toggle('active', m.id === id));
+  const m = MODS.find(x => x.id === id);
+  renderDetail(m);
+}
+
+function navigateMod(dir) {
+  if (!selectedMod) return;
+  const idx = MODS.findIndex(x => x.id === selectedMod);
+  const next = MODS[idx + dir];
+  if (next) selectMod(next.id);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// RENDER DETAIL
+// ════════════════════════════════════════════════════════════════════
+function phaseColor(p) {
+  if (p === 'A') return '#c8a040';
+  if (p === 'B') return '#7aaad8';
+  if (p === 'C') return '#d08060';
+  return '#a898c8';
+}
+function tierColor(t) {
+  if (t === 'CRITICAL') return '#e08070';
+  if (t === 'HIGH') return '#d4b060';
+  if (t === 'MEDIUM') return '#80b0d8';
+  return '#70b880';
+}
+function durColor(d) {
+  if (d.startsWith('LOW')) return '#70b880';
+  if (d.startsWith('HIGH')) return '#e08070';
+  return '#d4b060';
+}
+function rdColor(d) {
+  if (d.startsWith('LOW')) return '#70b880';
+  if (d.startsWith('HIGH')) return '#e08070';
+  return '#d4b060';
+}
+function actorClass(s) {
+  if (s === 'sanctioned' || s === 'disrupted') return 'actor-disrupted';
+  if (s === 'sanctioned') return 'actor-sanctioned';
+  if (s === 'active') return 'actor-active';
+  return 'actor-named';
+}
+function actorLabel(s) {
+  if (s === 'sanctioned') return 'SANCTIONED';
+  if (s === 'disrupted') return 'DISRUPTED/SEIZED';
+  if (s === 'active') return 'ACTIVE';
+  return '';
+}
+
+function renderDetail(m) {
+  document.getElementById('detail-empty').style.display = 'none';
+  // Header
+  const hdr = document.getElementById('det-header');
+  hdr.style.display = '';
+  hdr.innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div>
+        <div id="det-num">Module ${String(m.id).padStart(2,'0')} &nbsp;|&nbsp; ${m.layer}</div>
+        <div id="det-title">${m.name}</div>
+        <div id="det-subtitle">${m.subtitle}</div>
+        <div id="det-badges">
+          <span class="det-badge badge-${m.phase}" style="color:${phaseColor(m.phase)};border-color:${phaseColor(m.phase)}60;">${m.phase === 'Cross' ? 'Cross-Cutting' : 'Phase ' + m.phase}</span>
+          <span class="det-badge badge-${m.tier}" style="color:${tierColor(m.tier)};border-color:${tierColor(m.tier)}60;">Tier: ${m.tier}</span>
+          <span class="det-badge" style="color:${rdColor(m.replaceDiff)};border-color:${rdColor(m.replaceDiff)}60;">Replace Difficulty: ${m.replaceDiff}</span>
+          <span class="det-badge" style="color:${durColor(m.durability)};border-color:${durColor(m.durability)}60;">Durability: ${m.durability}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button onclick="navigateMod(-1)" style="padding:4px 10px;border-radius:3px;border:1px solid #1a3050;background:transparent;color:#6a8aaa;font-size:11px;cursor:pointer;">&#8592; Prev</button>
+        <button onclick="navigateMod(1)" style="padding:4px 10px;border-radius:3px;border:1px solid #1a3050;background:transparent;color:#6a8aaa;font-size:11px;cursor:pointer;">Next &#8594;</button>
+      </div>
+    </div>`;
+
+  // Body
+  const body = document.getElementById('det-body');
+  body.style.display = '';
+  body.innerHTML = '';
+
+  // KPI Strip
+  const kpiDiv = document.createElement('div');
+  kpiDiv.className = 'kpi-strip';
+  const fcRaw = m.financialCentrality || '';
+  const fcColor = fcRaw.includes('CRITICAL') ? '#e08070' : fcRaw.includes('HIGH') ? '#d4b060' : fcRaw.includes('MEDIUM') ? '#80b0d8' : '#70b880';
+  const fcDisp = fcRaw.replace(/ \(.*?\)/g,'').substring(0,18);
+  kpiDiv.innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Phase</div><div class="kpi-val" style="color:${phaseColor(m.phase)};font-size:18px;">${m.phase === 'Cross' ? 'Cross-Cut' : 'Phase ' + m.phase}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Tier</div><div class="kpi-val" style="color:${tierColor(m.tier)};font-size:18px;">${m.tier}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Disruption Durability</div><div class="kpi-val" style="color:${durColor(m.durability)};font-size:14px;margin-top:2px;">${m.durability}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Reconstitution</div><div class="kpi-val" style="color:#9ab8d4;font-size:11px;margin-top:4px;line-height:1.3;">${m.reconSpeed}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Financial Centrality</div><div class="kpi-val" style="color:${fcColor};font-size:13px;margin-top:2px;">${fcDisp}</div></div>`;
+  body.appendChild(kpiDiv);
+
+  // Definition section
+  const defd = MOD_DETAIL[m.id] || {};
+  if (defd.definition) {
+    const defSec = document.createElement('div');
+    defSec.className = 'det-section';
+    defSec.innerHTML = `<div class="det-sec-label">What It Is</div><p class="def-text">${defd.definition}</p>`;
+    body.appendChild(defSec);
+  }
+
+  // Compact dependency flow
+  const depSec = document.createElement('div');
+  depSec.className = 'det-section';
+  let depHtml = '<div class="det-sec-label">Ecosystem Position</div><div class="dep-compact">';
+  depHtml += '<span style="font-size:8px;color:#3a5878;text-transform:uppercase;letter-spacing:.8px;flex-shrink:0;">Upstream:</span>';
+  m.upstream.forEach(u => { depHtml += `<span class="dep-node">${u}</span>`; });
+  depHtml += `<span class="dep-arrow">&#8594;</span><span class="dep-center-pill">${String(m.id).padStart(2,'0')} ${m.name}</span><span class="dep-arrow">&#8594;</span>`;
+  depHtml += '<span style="font-size:8px;color:#3a5878;text-transform:uppercase;letter-spacing:.8px;flex-shrink:0;">Downstream:</span>';
+  m.downstream.forEach(d => { depHtml += `<span class="dep-node">${d}</span>`; });
+  depHtml += '</div>';
+  depSec.innerHTML = depHtml;
+  body.appendChild(depSec);
+
+  // Western / Russian / Evolution 3-col
+  if (defd.western || defd.russian || defd.evolution) {
+    const tc3i = document.createElement('div');
+    tc3i.className = 'det-3col';
+
+    if (defd.western) {
+      const wSec = document.createElement('div');
+      wSec.className = 'det-section inf-west';
+      let wHtml = '<div class="inf-label inf-label-west">&#9656; Western Influence Levers</div><ul class="inf-list inf-list-west">';
+      defd.western.forEach(w => { wHtml += `<li>${w}</li>`; });
+      wHtml += '</ul>';
+      wSec.innerHTML = wHtml;
+      tc3i.appendChild(wSec);
+    }
+
+    if (defd.russian) {
+      const rSec = document.createElement('div');
+      rSec.className = 'det-section inf-east';
+      let rHtml = '<div class="inf-label inf-label-east">&#9656; Russian Dynamics</div><ul class="inf-list inf-list-east">';
+      defd.russian.forEach(r => { rHtml += `<li>${r}</li>`; });
+      rHtml += '</ul>';
+      rSec.innerHTML = rHtml;
+      tc3i.appendChild(rSec);
+    }
+
+    if (defd.evolution) {
+      const eSec = document.createElement('div');
+      eSec.className = 'det-section inf-evo';
+      eSec.innerHTML = `<div class="inf-label inf-label-evo">&#9656; Evolution Over Time</div><p style="font-size:10.5px;color:#8090b0;line-height:1.6;margin:0;">${defd.evolution}</p>`;
+      tc3i.appendChild(eSec);
+    }
+
+    body.appendChild(tc3i);
+  }
+
+  // Actors + Timeline in 2-col
+  const twoCol = document.createElement('div');
+  twoCol.className = 'det-2col';
+
+  // Actors
+  const actorSec = document.createElement('div');
+  actorSec.className = 'det-section';
+  actorSec.innerHTML = `<div class="det-sec-label">Key Actors and Platforms</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <span style="font-size:8.5px;color:#4a6888;">&#11044; Active</span>
+      <span style="font-size:8.5px;color:#c8a040;">&#11044; Disrupted</span>
+      <span style="font-size:8.5px;color:#e08878;">&#11044; Sanctioned/Seized</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+    ${m.actors.map(a => `<span class="actor-pill ${actorClass(a.status)}" title="${actorLabel(a.status)}">${a.name}</span>`).join('')}
+    </div>`;
+  twoCol.appendChild(actorSec);
+
+  // LE Actions / Timeline (vertical list in this col)
+  const leSec = document.createElement('div');
+  leSec.className = 'det-section';
+  leSec.style.overflowY = 'auto';
+  leSec.innerHTML = `<div class="det-sec-label">Enforcement and Market Events</div>`;
+  m.timeline.forEach(ev => {
+    const evDiv = document.createElement('div');
+    evDiv.style.cssText = 'margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #0d1a2e;';
+    const dotColor = ev.type === 'LE' ? '#c83020' : ev.type === 'Designation' ? '#9a50d0' : ev.type === 'Reconstitution' ? '#3a80c8' : '#c8a020';
+    evDiv.innerHTML = `
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};flex-shrink:0;display:inline-block;"></span>
+        <span style="font-size:9px;color:${dotColor};text-transform:uppercase;letter-spacing:.8px;">${ev.type}</span>
+        <span style="font-size:9px;color:#3a5878;">${ev.year}</span>
+      </div>
+      <div style="font-size:10.5px;color:#8aaac0;margin-bottom:3px;">${ev.event}</div>
+      <div style="font-size:9.5px;color:#4a6888;font-style:italic;">${ev.outcome}</div>`;
+    leSec.appendChild(evDiv);
+  });
+  twoCol.appendChild(leSec);
+  body.appendChild(twoCol);
+
+  // Leverage Box
+  const levSec = document.createElement('div');
+  levSec.innerHTML = `
+    <div class="leverage-box">
+      <div class="leverage-label">&#9650; Disruption Leverage Assessment</div>
+      <div class="leverage-text">${m.leverage}</div>
+    </div>`;
+  body.appendChild(levSec);
+
+  // Ownership + Compounding 2-col
+  const ex = MOD_EXTRA[m.id] || {};
+  if (ex.ownership || ex.compounding) {
+    const tc2 = document.createElement('div');
+    tc2.className = 'det-2col';
+
+    if (ex.ownership && ex.ownership.length) {
+      const ownSec = document.createElement('div');
+      ownSec.className = 'det-section';
+      let ownHtml = '<div class="det-sec-label">Disruption Ownership</div><table class="own-table"><thead><tr><th>Lead Actor</th><th>Action</th><th>Priority</th></tr></thead><tbody>';
+      ex.ownership.forEach(o => {
+        const pc = o.priority==='CRITICAL'?'cell-critical':o.priority==='HIGH'?'cell-high':o.priority==='MEDIUM'?'cell-medium':'cell-low';
+        ownHtml += `<tr><td>${o.owner}</td><td style="color:#6a8aaa;font-size:9.5px;">${o.action}</td><td class="${pc}" style="white-space:nowrap;">${o.priority}</td></tr>`;
+      });
+      ownHtml += '</tbody></table>';
+      ownSec.innerHTML = ownHtml;
+      tc2.appendChild(ownSec);
+    }
+
+    if (ex.compounding && ex.compounding.length) {
+      const compSec = document.createElement('div');
+      compSec.className = 'det-section';
+      let compHtml = '<div class="det-sec-label">Compounding Actions</div><ul class="item-list">';
+      ex.compounding.forEach(c => { compHtml += `<li>${c}</li>`; });
+      compHtml += '</ul>';
+      compSec.innerHTML = compHtml;
+      tc2.appendChild(compSec);
+    }
+    body.appendChild(tc2);
+  }
+
+  // Indicators + Financial Context 2-col
+  const tc3 = document.createElement('div');
+  tc3.className = 'det-2col';
+
+  if (ex.indicators && ex.indicators.length) {
+    const indSec = document.createElement('div');
+    indSec.className = 'det-section';
+    let indHtml = '<div class="det-sec-label">Collection Indicators</div><ul class="item-list">';
+    ex.indicators.forEach(i => { indHtml += `<li>${i}</li>`; });
+    indHtml += '</ul>';
+    indSec.innerHTML = indHtml;
+    tc3.appendChild(indSec);
+  }
+
+  const finSec = document.createElement('div');
+  finSec.className = 'det-section';
+  finSec.style.display = 'flex';
+  finSec.style.flexDirection = 'column';
+  finSec.innerHTML = `
+    <div class="fin-box">
+      <div class="fin-label">&#36; Financial Context</div>
+      <div class="fin-text">${m.financialNote}</div>
+    </div>`;
+  tc3.appendChild(finSec);
+  body.appendChild(tc3);
+
+  // scroll top
+  document.getElementById('detail').scrollTop = 0;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// BUILD MATRIX
+// ════════════════════════════════════════════════════════════════════
+function buildMatrix() {
+  const mv = document.getElementById('matrix-view');
+  const dims = [
+    {key:'phase', label:'Phase'},
+    {key:'tier', label:'Tier'},
+    {key:'replaceDiff', label:'Replace Difficulty'},
+    {key:'durability', label:'Disruption Durability'},
+    {key:'reconSpeed', label:'Reconstitution Speed'},
+    {key:'leActions', label:'LE Actions To Date'},
+    {key:'financialCentrality', label:'Financial Centrality'},
+  ];
+  let html = `<div class="matrix-title">Cross-Module Comparison Matrix — Click any row to view module detail</div>
+  <table class="matrix"><thead><tr>
+    <th class="left" style="min-width:130px;">Module</th>
+    ${dims.map(d => `<th>${d.label}</th>`).join('')}
+  </tr></thead><tbody>`;
+
+  MODS.forEach(m => {
+    const cells = dims.map(d => {
+      const v = m[d.key] || '';
+      let cls = '';
+      const vl = v.toUpperCase();
+      if (vl.includes('CRITICAL')) cls = 'cell-critical';
+      else if (vl.includes('HIGH') && !vl.includes('VERY')) cls = 'cell-high';
+      else if (vl.includes('MEDIUM')) cls = 'cell-medium';
+      else if (vl.includes('LOW') || vl.includes('FAST')) cls = 'cell-low';
+      else cls = 'cell-na';
+      // shorten for display
+      let disp = v.replace(' (months)','').replace(' (weeks)','').replace(' (trust-dependent; not just infrastructure)','').replace(' (no major LE action documented)','').replace(' (no major LE action on callers specifically)','');
+      if (disp.length > 28) disp = disp.substring(0,26) + '...';
+      return `<td class="${cls}" title="${v}">${disp}</td>`;
+    });
+    html += `<tr onclick="selectMod(${m.id})">
+      <td class="mod-cell">${String(m.id).padStart(2,'0')} ${m.name}</td>
+      ${cells.join('')}
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  mv.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// KEYBOARD NAV
+// ════════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); navigateMod(1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); navigateMod(-1); }
+  if (e.key === 'm' || e.key === 'M') setView(currentView === 'matrix' ? 'detail' : 'matrix');
+});
+
+init();
+</script>
+<script data-goatcounter="https://ransomwareedp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

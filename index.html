@@ -77,6 +77,7 @@ body {
   text-decoration: none;
   border-bottom: 2px solid transparent;
   transition: color 160ms, border-color 160ms;
+  white-space: nowrap;
 }
 .nav-link:hover {
   color: #9ac8e8;
@@ -122,8 +123,8 @@ body {
   margin-left: auto;
 }
 
-/* ── MAP FEATURE CARD ─────────────────────────────────────────── */
-.map-card {
+/* ── PRIMARY MAP CARD ─────────────────────────────────────────── */
+.map-card-primary {
   background: #0c1524;
   border: 1px solid #1a3050;
   border-radius: 6px;
@@ -136,15 +137,16 @@ body {
   transition: border-color 200ms, background 200ms;
   position: relative;
   overflow: hidden;
+  margin-bottom: 12px;
 }
-.map-card::before {
+.map-card-primary::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, #2a5a88, #5a9acc, #2a5a88);
 }
-.map-card:hover {
+.map-card-primary:hover {
   border-color: #3a6a9a;
   background: #0e1c32;
 }
@@ -201,7 +203,7 @@ body {
   transition: background 160ms, border-color 160ms;
   white-space: nowrap;
 }
-.map-card:hover .cta-btn {
+.map-card-primary:hover .cta-btn {
   background: rgba(50, 100, 160, 0.3);
   border-color: #4a7aaa;
   color: #9ac8e8;
@@ -211,6 +213,153 @@ body {
   font-size: 18px;
   margin-top: 6px;
   color: #2a5a88;
+}
+
+/* ── SECONDARY TOOL CARDS ─────────────────────────────────────── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 10px;
+}
+.tool-card {
+  background: #0a1220;
+  border: 1px solid #162236;
+  border-radius: 5px;
+  padding: 20px 22px;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 160ms, background 160ms;
+  position: relative;
+}
+.tool-card:hover {
+  border-color: #2a4a6a;
+  background: #0c1828;
+}
+.tool-card-info .tool-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #2e4a68;
+  margin-bottom: 5px;
+}
+.tool-card-info .tool-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a8c0d8;
+  margin-bottom: 7px;
+  line-height: 1.3;
+}
+.tool-card:hover .tool-title {
+  color: #c8daf0;
+}
+.tool-card-info .tool-desc {
+  font-size: 11px;
+  color: #3e5a78;
+  line-height: 1.55;
+}
+.tool-card-arrow {
+  flex-shrink: 0;
+  font-size: 16px;
+  color: #1e3a58;
+  padding-top: 2px;
+}
+.tool-card:hover .tool-card-arrow {
+  color: #4a7090;
+}
+
+/* ── ARCHIVE CARD ─────────────────────────────────────────────── */
+.archive-card {
+  background: #080e1a;
+  border: 1px solid #0f1e30;
+  border-radius: 5px;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 160ms;
+  margin-top: 10px;
+}
+.archive-card:hover {
+  border-color: #1a3050;
+}
+.archive-label {
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #1e3a58;
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border: 1px solid #1a2e48;
+  border-radius: 3px;
+}
+.archive-title {
+  font-size: 11px;
+  color: #3a5878;
+}
+.archive-card:hover .archive-title {
+  color: #5a7898;
+}
+.archive-arrow {
+  margin-left: auto;
+  font-size: 11px;
+  color: #1e3a58;
+}
+
+/* ── ANALYST RESOURCE CARDS ───────────────────────────────────── */
+.analyst-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 10px;
+}
+.analyst-card {
+  background: #0a1220;
+  border: 1px solid #162236;
+  border-radius: 5px;
+  padding: 22px 24px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 160ms, background 160ms;
+}
+.analyst-card:hover {
+  border-color: #2a4a6a;
+  background: #0c1828;
+}
+.analyst-card-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #2e4a68;
+}
+.analyst-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #a8c0d8;
+  line-height: 1.3;
+}
+.analyst-card:hover .analyst-card-title {
+  color: #c8daf0;
+}
+.analyst-card-desc {
+  font-size: 11.5px;
+  color: #3e5a78;
+  line-height: 1.6;
+  flex: 1;
+}
+.analyst-card-cta {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #3a6a9a;
+  margin-top: 4px;
+}
+.analyst-card:hover .analyst-card-cta {
+  color: #5a9acc;
 }
 
 /* ── DOCUMENT GRID ─────────────────────────────────────────── */
@@ -229,7 +378,6 @@ body {
   align-items: flex-start;
   gap: 14px;
   transition: border-color 160ms, background 160ms;
-  position: relative;
 }
 .doc-card:hover {
   border-color: #2a4a6a;
@@ -244,7 +392,6 @@ body {
   width: 28px;
   padding-top: 2px;
 }
-.doc-info {}
 .doc-title {
   font-size: 12px;
   font-weight: 600;
@@ -252,9 +399,7 @@ body {
   line-height: 1.35;
   margin-bottom: 4px;
 }
-.doc-card:hover .doc-title {
-  color: #c8daf0;
-}
+.doc-card:hover .doc-title { color: #c8daf0; }
 .doc-subtitle {
   font-size: 10px;
   color: #3e5a78;
@@ -269,51 +414,7 @@ body {
   color: #2a4860;
   padding-top: 3px;
 }
-.doc-card:hover .doc-pdf-icon {
-  color: #4a7090;
-}
-
-/* ── SUPPORTING CARDS ─────────────────────────────────────────── */
-.support-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 10px;
-}
-.support-card {
-  background: #0a1220;
-  border: 1px solid #162236;
-  border-radius: 5px;
-  padding: 16px 18px;
-  text-decoration: none;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  transition: border-color 160ms, background 160ms;
-}
-.support-card:hover {
-  border-color: #2a4a6a;
-  background: #0c1828;
-}
-.support-icon {
-  font-size: 18px;
-  flex-shrink: 0;
-  padding-top: 1px;
-  opacity: 0.6;
-}
-.support-info .support-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #a8c0d8;
-  margin-bottom: 5px;
-}
-.support-card:hover .support-title {
-  color: #c8daf0;
-}
-.support-info .support-desc {
-  font-size: 10.5px;
-  color: #3e5a78;
-  line-height: 1.5;
-}
+.doc-card:hover .doc-pdf-icon { color: #4a7090; }
 
 /* ── READING ORDER BANNER ─────────────────────────────────────── */
 .reading-order-card {
@@ -352,6 +453,106 @@ body {
   flex-shrink: 0;
 }
 
+/* ── EXTERNAL REFERENCE CARD ─────────────────────────────────── */
+.ext-card {
+  background: #090f1e;
+  border: 1px solid #14263a;
+  border-radius: 5px;
+  padding: 20px 22px;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  transition: border-color 160ms, background 160ms;
+}
+.ext-card:hover {
+  border-color: #1e3a58;
+  background: #0b1428;
+}
+.ext-card-info .ext-source {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #2e4a68;
+  margin-bottom: 5px;
+}
+.ext-card-info .ext-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #8aaac0;
+  margin-bottom: 8px;
+}
+.ext-card:hover .ext-title { color: #aacce0; }
+.ext-card-info .ext-desc {
+  font-size: 11px;
+  color: #3a5878;
+  line-height: 1.6;
+  max-width: 560px;
+}
+.ext-card-info .ext-credit {
+  margin-top: 10px;
+  font-size: 10px;
+  color: #2a4a68;
+}
+.ext-card-info .ext-credit a {
+  color: #3a6a9a;
+  text-decoration: none;
+}
+.ext-card-info .ext-credit a:hover { color: #5a9acc; }
+.ext-badge {
+  flex-shrink: 0;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2a4860;
+  border: 1px solid #1a3050;
+  border-radius: 3px;
+  padding: 4px 9px;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+/* ── SUPPORTING CARDS ─────────────────────────────────────────── */
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 10px;
+}
+.support-card {
+  background: #0a1220;
+  border: 1px solid #162236;
+  border-radius: 5px;
+  padding: 16px 18px;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: border-color 160ms, background 160ms;
+}
+.support-card:hover {
+  border-color: #2a4a6a;
+  background: #0c1828;
+}
+.support-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  padding-top: 1px;
+  opacity: 0.6;
+}
+.support-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a8c0d8;
+  margin-bottom: 5px;
+}
+.support-card:hover .support-title { color: #c8daf0; }
+.support-desc {
+  font-size: 10.5px;
+  color: #3e5a78;
+  line-height: 1.5;
+}
+
 /* ── FOOTER ─────────────────────────────────────────────────────── */
 #footer {
   border-top: 1px solid #0f1a30;
@@ -379,7 +580,7 @@ body {
   .header-meta { text-align: left; }
   #nav { padding: 0 20px; overflow-x: auto; }
   #main { padding: 28px 20px 48px; }
-  .map-card { flex-direction: column; }
+  .map-card-primary { flex-direction: column; }
   #footer { padding: 16px 20px; flex-direction: column; gap: 6px; }
 }
 </style>
@@ -410,29 +611,34 @@ body {
 
 <!-- ── NAV ─────────────────────────────────────────────────────── -->
 <nav id="nav">
-  <a class="nav-link" href="#map">Interactive Map</a>
+  <a class="nav-link" href="#tools">Interactive Tools</a>
+  <a class="nav-link" href="#analyst">New Analyst Resources</a>
   <a class="nav-link" href="#framework">Framework</a>
   <a class="nav-link" href="#edp">EDP Modules</a>
   <a class="nav-link" href="#supporting">Supporting</a>
+  <a class="nav-link" href="#external">External</a>
 </nav>
 
 <!-- ── MAIN ─────────────────────────────────────────────────────── -->
 <div id="main">
 
-  <!-- MAP -->
-  <div class="section" id="map">
+  <!-- INTERACTIVE TOOLS -->
+  <div class="section" id="tools">
     <div class="section-header">
-      <span class="section-label">Primary Tool</span>
-      <span class="section-title">Interactive Map</span>
+      <span class="section-label">Primary</span>
+      <span class="section-title">Interactive Tools</span>
     </div>
-    <a class="map-card" href="ransomware-ecosystem-v1.3.html">
+
+    <!-- Primary map -->
+    <a class="map-card-primary" href="ransomware-ecosystem-v2.0.html">
       <div class="map-card-text">
-        <div class="map-version">Version 1.3 &mdash; May 2026</div>
+        <div class="map-version">Version 2.0 &mdash; May 2026 &mdash; Current</div>
         <div class="map-title">Ransomware Ecosystem Map</div>
         <div class="map-desc">
           Interactive dependency graph of the full ransomware ecosystem. Visualizes financial flow,
           infrastructure dependencies, RU Gov protection layers, and reconstitution pathways.
           Includes case studies, phase overlays, jurisdiction analysis, and teaching mode.
+          Node sidebars link directly to EDP module reference documents.
         </div>
         <div class="map-features">
           <span class="feature-tag">Payment Flow</span>
@@ -441,7 +647,7 @@ body {
           <span class="feature-tag">Backfire Risk</span>
           <span class="feature-tag">Case Studies</span>
           <span class="feature-tag">Teaching Mode</span>
-          <span class="feature-tag">Confidence Layers</span>
+          <span class="feature-tag">Module Links</span>
         </div>
       </div>
       <div class="map-cta">
@@ -449,6 +655,62 @@ body {
         <span class="cta-arrow">&#8599;</span>
       </div>
     </a>
+
+    <!-- Secondary tools -->
+    <div class="tool-grid">
+      <a class="tool-card" href="ransomware-edp-modules-v1.0.html">
+        <div class="tool-card-info">
+          <div class="tool-label">Interactive Tool &mdash; v1.0</div>
+          <div class="tool-title">EDP Module Intelligence</div>
+          <div class="tool-desc">
+            Node-by-node intelligence browser for all 15 Ecosystem Dependency Playbook modules.
+            Structured for deep-dive analysis of individual ecosystem components.
+          </div>
+        </div>
+        <div class="tool-card-arrow">&#8599;</div>
+      </a>
+    </div>
+
+    <!-- Archive -->
+    <a class="archive-card" href="ransomware-ecosystem-v1.3.html">
+      <span class="archive-label">Archived</span>
+      <span class="archive-title">Ransomware Ecosystem Map v1.3 &mdash; May 2026</span>
+      <span class="archive-arrow">&#8599;</span>
+    </a>
+  </div>
+
+  <!-- NEW ANALYST RESOURCES -->
+  <div class="section" id="analyst">
+    <div class="section-header">
+      <span class="section-label">Audience</span>
+      <span class="section-title">New Analyst Resources</span>
+      <span class="section-desc">Foundational context for analysts new to the ransomware ecosystem</span>
+    </div>
+    <div class="analyst-grid">
+
+      <a class="analyst-card" href="ransomware-expose-v1.0.html">
+        <div class="analyst-card-label">Interactive &mdash; New Analyst Edition</div>
+        <div class="analyst-card-title">Ransomware: An Expos&#233;</div>
+        <div class="analyst-card-desc">
+          A guided introduction to the ransomware ecosystem structured for analysts
+          encountering this threat space for the first time. Covers key actors,
+          mechanics, and the financial logic driving the ecosystem.
+        </div>
+        <div class="analyst-card-cta">Open &rarr;</div>
+      </a>
+
+      <a class="analyst-card" href="ransomware-for-dummies-v1.0.html">
+        <div class="analyst-card-label">Interactive &mdash; Analyst Primer</div>
+        <div class="analyst-card-title">Analyst Primer</div>
+        <div class="analyst-card-desc">
+          Plain-language walkthrough of ransomware ecosystem fundamentals.
+          Designed to build working familiarity before engaging with the
+          full dependency map or EDP module documentation.
+        </div>
+        <div class="analyst-card-cta">Open &rarr;</div>
+      </a>
+
+    </div>
   </div>
 
   <!-- FRAMEWORK DOCUMENTS -->
@@ -468,115 +730,102 @@ body {
     </a>
 
     <div class="doc-grid">
-
       <a class="doc-card" href="docs/00%20Ransomware_Framework_Overview_v1.pdf" target="_blank">
         <span class="doc-num">00</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Framework Overview</div>
           <div class="doc-subtitle">Project scope, methodology, and structural logic</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/01%20Ransomware_Framework_Glossary_v1.pdf" target="_blank">
         <span class="doc-num">01</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Glossary</div>
           <div class="doc-subtitle">Terminology and definitions used across the framework</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/02%20Ransomware_Ecosystem_Disruption_Playbook_v1.pdf" target="_blank">
         <span class="doc-num">02</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Ecosystem Disruption Playbook</div>
           <div class="doc-subtitle">Master playbook for degrading the full ecosystem</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/03%20Ransomware_Ecosystem_DependencyMap_Refined_v1.pdf" target="_blank">
         <span class="doc-num">03</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Dependency Map (Refined)</div>
           <div class="doc-subtitle">Static reference for the full ecosystem dependency structure</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/04%20RU_GOV_Protection_Framework_v1.pdf" target="_blank">
         <span class="doc-num">04</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">RU Gov Protection Framework</div>
           <div class="doc-subtitle">Russian state protection mechanisms, tolerance thresholds, and leverage</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/05%20Ransomware_Playbook_PhaseA_Nodes01-02-03_v1.pdf" target="_blank">
         <span class="doc-num">05</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Disruption Playbook: Phase A</div>
           <div class="doc-subtitle">Financial layer &mdash; Nodes 01, 02, 03</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/06%20Ransomware_Playbook_PhaseB_Nodes04-07-08_v1.pdf" target="_blank">
         <span class="doc-num">06</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Disruption Playbook: Phase B</div>
           <div class="doc-subtitle">Market layer &mdash; Nodes 04, 07, 08</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/07%20Ransomware_Playbook_PhaseC_Nodes05-06-09_v1.pdf" target="_blank">
         <span class="doc-num">07</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Disruption Playbook: Phase C</div>
           <div class="doc-subtitle">Delivery layer &mdash; Nodes 05, 06, 09</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/08%20ransomware_kpi_framework_v1.pdf" target="_blank">
         <span class="doc-num">08</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">KPI Framework</div>
           <div class="doc-subtitle">Measurable indicators for tracking ecosystem disruption</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/10%20KPI_Sourcing_Plan_v1_UPDATED.pdf" target="_blank">
         <span class="doc-num">10</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">KPI Sourcing Plan</div>
           <div class="doc-subtitle">Data sources and collection methodology for KPI tracking (updated)</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/11%20Ransomware_Group_Pressure_Tracking_Template_v1.pdf" target="_blank">
         <span class="doc-num">11</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Group Pressure Tracking Template</div>
           <div class="doc-subtitle">Per-group template for monitoring disruption pressure indicators</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/12%20Ransomware_Framework_Case_Studies_v1.pdf" target="_blank">
         <span class="doc-num">12</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Case Studies</div>
           <div class="doc-subtitle">Conti, QakBot, LockBit, BlackCat/ALPHV, Black Basta</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
     </div>
   </div>
 
@@ -588,142 +837,126 @@ body {
       <span class="section-desc">15 node-level modules</span>
     </div>
     <div class="doc-grid">
-
       <a class="doc-card" href="docs/EDP_Module01_Stealers_v1.pdf" target="_blank">
         <span class="doc-num">M01</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Stealers</div>
           <div class="doc-subtitle">Information-stealing malware: role, vendors, and disruption vectors</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module02_Loaders_v1.pdf" target="_blank">
         <span class="doc-num">M02</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Loaders</div>
           <div class="doc-subtitle">Malware delivery infrastructure and key loader operators</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module03_Crypters_v1.pdf" target="_blank">
         <span class="doc-num">M03</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Crypters</div>
           <div class="doc-subtitle">Obfuscation services enabling AV evasion</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module04_Callers_v1.pdf" target="_blank">
         <span class="doc-num">M04</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Callers</div>
           <div class="doc-subtitle">Social engineering and victim contact operations</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module05_IABs_v1.pdf" target="_blank">
         <span class="doc-num">M05</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Initial Access Brokers</div>
           <div class="doc-subtitle">Network access marketplace: structure, pricing, and interdiction</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module06_ExploitBrokers_v1.pdf" target="_blank">
         <span class="doc-num">M06</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Exploit Brokers</div>
           <div class="doc-subtitle">Vulnerability and exploit supply chain</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module07_RaaS_ScopeReduced_v1.pdf" target="_blank">
         <span class="doc-num">M07</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Ransomware-as-a-Service (RaaS)</div>
           <div class="doc-subtitle">RaaS platform structure, affiliate model, and pressure points</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module08_LeakSiteOps_v1.pdf" target="_blank">
         <span class="doc-num">M08</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Leak Site Operations</div>
           <div class="doc-subtitle">Data extortion infrastructure and takedown leverage</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module09_BPH_v1.pdf" target="_blank">
         <span class="doc-num">M09</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Bulletproof Hosting (BPH)</div>
           <div class="doc-subtitle">Resilient hosting infrastructure enabling persistent operations</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module10_UndergroundForums_v1.pdf" target="_blank">
         <span class="doc-num">M10</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Underground Forums</div>
           <div class="doc-subtitle">Criminal marketplace infrastructure: key forums and disruption vectors</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module11_CryptoMixers_v1.pdf" target="_blank">
         <span class="doc-num">M11</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Crypto Mixers</div>
           <div class="doc-subtitle">Cryptocurrency obfuscation services and financial interdiction</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module12_OTCBrokers_v1.pdf" target="_blank">
         <span class="doc-num">M12</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">OTC Brokers</div>
           <div class="doc-subtitle">Over-the-counter crypto cash-out infrastructure</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module13_MoneyLaunderers_v1.pdf" target="_blank">
         <span class="doc-num">M13</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Money Launderers</div>
           <div class="doc-subtitle">Professional laundering networks and jurisdictional exposure</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module14_MuleNetworks_v1.pdf" target="_blank">
         <span class="doc-num">M14</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Mule Networks</div>
           <div class="doc-subtitle">Human cash-out infrastructure: recruitment, structure, and interdiction</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
       <a class="doc-card" href="docs/EDP_Module15_NegotiationServices_v1.pdf" target="_blank">
         <span class="doc-num">M15</span>
-        <div class="doc-info">
+        <div>
           <div class="doc-title">Negotiation Services</div>
           <div class="doc-subtitle">Ransom negotiation intermediaries: role and leverage implications</div>
         </div>
         <span class="doc-pdf-icon">PDF</span>
       </a>
-
     </div>
   </div>
 
@@ -734,10 +967,9 @@ body {
       <span class="section-title">Supporting Materials</span>
     </div>
     <div class="support-grid">
-
       <a class="support-card" href="docs/Inside_the_Machine_Russian_Cyber_v.03.pdf" target="_blank">
         <span class="support-icon">&#128196;</span>
-        <div class="support-info">
+        <div>
           <div class="support-title">Inside the Machine: Russian Cyber</div>
           <div class="support-desc">
             Deep-dive background paper on Russian state-criminal cyber relationships,
@@ -745,8 +977,35 @@ body {
           </div>
         </div>
       </a>
-
     </div>
+  </div>
+
+  <!-- EXTERNAL REFERENCES -->
+  <div class="section" id="external">
+    <div class="section-header">
+      <span class="section-label">Third-Party</span>
+      <span class="section-title">External References</span>
+      <span class="section-desc">Referenced works by other organizations</span>
+    </div>
+    <a class="ext-card" href="https://github.com/cert-orangecyberdefense/ransomware_map" target="_blank">
+      <div class="ext-card-info">
+        <div class="ext-source">Orange Cyber Defense &mdash; WorldWatch</div>
+        <div class="ext-title">Ransomware Ecosystem Map (v29)</div>
+        <div class="ext-desc">
+          Comprehensive threat actor and ransomware group relationship map maintained by Orange Cyber Defense's
+          WorldWatch team. Documents active groups, affiliations, rebrands, and operational relationships
+          across the global ransomware landscape. A key reference for actor-level tracking alongside
+          the structural dependency analysis in this project.
+        </div>
+        <div class="ext-credit">
+          All credit to Orange Cyber Defense. View the full project and methodology at
+          <a href="https://github.com/cert-orangecyberdefense/ransomware_map" target="_blank">
+            github.com/cert-orangecyberdefense/ransomware_map
+          </a>
+        </div>
+      </div>
+      <span class="ext-badge">External &#8599;</span>
+    </a>
   </div>
 
 </div>
@@ -754,8 +1013,9 @@ body {
 <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
 <div id="footer">
   <div class="footer-credit">Developed by Reno &nbsp;&middot;&nbsp; Ransomware Ecosystem Dependency Project &nbsp;&middot;&nbsp; Open Research</div>
-  <div class="footer-version">Repository v1.3 &nbsp;&middot;&nbsp; May 2026</div>
+  <div class="footer-version">Repository v2.0 &nbsp;&middot;&nbsp; May 2026</div>
 </div>
 
+<script data-goatcounter="https://ransomwareedp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
