@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ransomware: An Exposé — New Analyst Edition</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#06080f;font-family:'Georgia','Times New Roman',serif;color:#c8cdd8;}
+body{display:flex;flex-direction:column;}
+a{color:#8aaccf;text-decoration:none;}
+
+/* HEADER */
+#hdr{padding:10px 24px;border-bottom:1px solid #1a2030;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#05070d;}
+#hdr-title{font-family:'Segoe UI',Arial,sans-serif;}
+#hdr h1{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#6a8aaa;}
+#hdr .sub{font-size:9px;color:#2a3a50;margin-top:2px;font-family:'Segoe UI',Arial,sans-serif;}
+#search-box{background:#090e18;border:1px solid #1a2030;border-radius:2px;padding:4px 10px;font-size:10px;color:#c0cfe0;width:180px;outline:none;font-family:'Segoe UI',Arial,sans-serif;}
+#search-box:focus{border-color:#3a5a7a;}
+
+/* APP LAYOUT */
+#app{display:flex;flex:1 1 0;min-height:0;overflow:hidden;}
+
+/* SIDEBAR */
+#nav{width:210px;flex-shrink:0;overflow-y:auto;border-right:1px solid #0f1520;background:#05070d;padding:12px 0;}
+.nav-head{font-size:8px;text-transform:uppercase;letter-spacing:1.6px;color:#1e2e40;padding:10px 16px 3px;font-weight:700;font-family:'Segoe UI',Arial,sans-serif;}
+.nav-link{display:block;padding:5px 16px;font-size:10px;color:#3a5068;cursor:pointer;transition:all 80ms;border-left:2px solid transparent;font-family:'Segoe UI',Arial,sans-serif;line-height:1.4;}
+.nav-link:hover{color:#8aaccf;background:#0a1020;}
+.nav-link.active{color:#8aaccf;border-left-color:#4a7aaa;background:#0b1525;}
+.nav-sub{padding-left:26px;font-size:9.5px;color:#2a3a50;}
+
+/* MAIN */
+#main{flex:1 1 0;min-height:0;overflow-y:auto;padding:0;}
+.chapter{padding:40px 50px;border-bottom:1px solid #0a0f18;max-width:980px;}
+.chapter:last-child{border-bottom:none;}
+
+/* CHAPTER HEADERS */
+.ch-label{font-family:'Segoe UI',Arial,sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:3px;color:#2a4060;margin-bottom:10px;}
+.ch-title{font-size:30px;font-weight:700;color:#d8e5f5;line-height:1.2;margin-bottom:6px;font-family:'Georgia',serif;}
+.ch-deck{font-size:14px;color:#5a7898;line-height:1.6;margin-bottom:28px;font-style:italic;font-family:'Georgia',serif;}
+
+/* BODY TEXT */
+p{font-size:13px;color:#9aaabb;line-height:1.85;margin-bottom:14px;font-family:'Georgia',serif;}
+p:last-child{margin-bottom:0;}
+p strong{color:#c0d2e5;font-weight:600;}
+h3{font-size:16px;font-weight:700;color:#b0c8e0;margin:28px 0 10px;font-family:'Georgia',serif;}
+h4{font-family:'Segoe UI',Arial,sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#3a5870;margin:22px 0 8px;}
+ul.prose-list{margin:10px 0 16px 0;padding-left:0;list-style:none;}
+ul.prose-list li{font-size:13px;color:#9aaabb;line-height:1.8;padding:3px 0 3px 16px;position:relative;font-family:'Georgia',serif;}
+ul.prose-list li::before{content:'—';position:absolute;left:0;color:#2a4060;}
+
+/* PULLQUOTE */
+.pullquote{border-left:3px solid #4a7aaa;padding:14px 20px;margin:24px 0;background:#080d18;}
+.pullquote p{font-size:15px;color:#7a9abb;line-height:1.7;font-style:italic;margin:0;}
+.pullquote cite{display:block;font-size:10px;font-family:'Segoe UI',Arial,sans-serif;color:#2a4060;margin-top:8px;letter-spacing:.5px;text-transform:uppercase;}
+
+/* SCENE OPENER */
+.scene{background:#070b14;border:1px solid #1a2030;border-left:3px solid #c85030;border-radius:3px;padding:18px 22px;margin:24px 0;}
+.scene-label{font-family:'Segoe UI',Arial,sans-serif;font-size:8.5px;text-transform:uppercase;letter-spacing:1.5px;color:#8a3010;margin-bottom:10px;font-weight:700;}
+.scene p{font-size:12.5px;color:#8a9aaa;line-height:1.8;margin-bottom:8px;}
+.scene p:last-child{margin-bottom:0;}
+
+/* INTEL BOX */
+.intel{background:#06090f;border:1px solid #1a2a1a;border-left:3px solid #4a9040;border-radius:3px;padding:14px 18px;margin:20px 0;}
+.intel-label{font-family:'Segoe UI',Arial,sans-serif;font-size:8.5px;text-transform:uppercase;letter-spacing:1.5px;color:#2a5020;margin-bottom:8px;font-weight:700;}
+.intel p{font-size:12px;color:#708070;line-height:1.7;margin-bottom:6px;}
+
+/* PROFILE CARDS */
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:20px 0;}
+.profile{background:#080c18;border:1px solid #1a2030;border-radius:4px;padding:16px;}
+.profile-role{font-family:'Segoe UI',Arial,sans-serif;font-size:8.5px;text-transform:uppercase;letter-spacing:1.5px;color:#2a4060;margin-bottom:6px;font-weight:700;}
+.profile-name{font-size:15px;font-weight:700;color:#c0d4e8;margin-bottom:2px;font-family:'Georgia',serif;}
+.profile-aka{font-size:10px;color:#3a5068;margin-bottom:10px;font-family:'Segoe UI',Arial,sans-serif;}
+.profile p{font-size:11.5px;color:#6a8098;line-height:1.65;margin-bottom:6px;}
+.profile-stat{font-family:'Segoe UI',Arial,sans-serif;font-size:9.5px;color:#c8a040;margin-top:8px;}
+
+/* STAT STRIP */
+.stat-strip{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0;}
+.stat-c{background:#080c18;border:1px solid #1a2030;border-radius:3px;padding:10px 14px;flex:1;min-width:140px;}
+.stat-v{font-family:'Segoe UI',Arial,sans-serif;font-size:20px;font-weight:700;color:#5a8aaa;line-height:1;}
+.stat-l{font-family:'Segoe UI',Arial,sans-serif;font-size:9.5px;color:#2a3a50;margin-top:4px;line-height:1.4;}
+.stat-c.red .stat-v{color:#b85040;}
+.stat-c.amber .stat-v{color:#b89030;}
+.stat-c.green .stat-v{color:#4a9050;}
+
+/* MODULE DOSSIERS */
+.dossier{background:#070a14;border:1px solid #161e2e;border-radius:4px;margin-bottom:12px;overflow:hidden;}
+.dossier-head{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:background 80ms;}
+.dossier-head:hover{background:#0a0f1c;}
+.dossier.open .dossier-head{background:#0b1020;border-bottom:1px solid #161e2e;}
+.dos-num{font-family:'Segoe UI',Arial,sans-serif;font-size:9px;font-weight:700;width:26px;height:26px;border-radius:2px;background:#0a0f1c;border:1px solid #1a2030;display:flex;align-items:center;justify-content:center;color:#2a4060;flex-shrink:0;}
+.dos-title{flex:1;}
+.dos-name{font-size:13px;font-weight:700;color:#b0c8e0;font-family:'Georgia',serif;}
+.dos-aka{font-family:'Segoe UI',Arial,sans-serif;font-size:10px;color:#2a3a50;margin-top:1px;}
+.dos-tag{font-family:'Segoe UI',Arial,sans-serif;font-size:8px;padding:2px 6px;border-radius:2px;border:1px solid;letter-spacing:.6px;text-transform:uppercase;flex-shrink:0;}
+.dos-body{display:none;padding:18px 20px;}
+.dossier.open .dos-body{display:block;}
+.dos-body p{font-size:12.5px;}
+.dos-body h5{font-family:'Segoe UI',Arial,sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:#2a4060;margin:14px 0 6px;font-weight:700;}
+.dos-body ul{list-style:none;padding:0;}
+.dos-body ul li{font-family:'Georgia',serif;font-size:12px;color:#7a8a98;padding:3px 0 3px 14px;position:relative;}
+.dos-body ul li::before{content:'›';position:absolute;left:0;color:#2a4060;}
+
+/* FINANCIAL CHAIN */
+.money-chain{display:flex;flex-direction:column;gap:0;margin:20px 0;}
+.mc-step{display:flex;gap:0;}
+.mc-line{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;}
+.mc-dot{width:12px;height:12px;border-radius:50%;border:2px solid;flex-shrink:0;}
+.mc-line-seg{flex:1;width:2px;background:#1a2030;}
+.mc-content{flex:1;padding:0 0 20px 14px;}
+.mc-step-label{font-family:'Segoe UI',Arial,sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:5px;}
+.mc-content p{font-size:12px;color:#6a7a8a;line-height:1.7;margin:0;}
+
+/* PHASE BREAKDOWN */
+.phase-trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:20px 0;}
+.phase-card{border-radius:3px;padding:16px;border:1px solid;}
+.pc-a{background:rgba(160,112,10,.07);border-color:rgba(160,112,10,.25);}
+.pc-b{background:rgba(58,108,168,.07);border-color:rgba(58,108,168,.25);}
+.pc-c{background:rgba(160,64,32,.07);border-color:rgba(160,64,32,.25);}
+.phase-card h4{margin:0 0 10px;font-family:'Georgia',serif;font-size:13px;text-transform:none;letter-spacing:0;}
+.pc-a h4{color:#c8a040;}.pc-b h4{color:#7aaad8;}.pc-c h4{color:#d08060;}
+.phase-card p{font-size:11.5px;color:#7a8a98;line-height:1.65;}
+.phase-card ul{list-style:none;padding:0;margin-top:10px;}
+.phase-card ul li{font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#5a7090;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.phase-card ul li:last-child{border-bottom:none;}
+
+/* GLOSSARY */
+.gloss{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:16px 0;}
+.ge{padding:10px 14px;border-bottom:1px solid #0a0f18;border-right:1px solid #0a0f18;}
+.ge:nth-child(even){border-right:none;}
+.gt{font-family:'Segoe UI',Arial,sans-serif;font-size:11px;font-weight:700;color:#8aaac0;margin-bottom:3px;}
+.gd{font-family:'Georgia',serif;font-size:11.5px;color:#4a6070;line-height:1.55;}
+
+/* ACTOR TABLE */
+table.at{width:100%;border-collapse:collapse;font-size:11.5px;margin:14px 0;font-family:'Segoe UI',Arial,sans-serif;}
+.at th{padding:6px 10px;text-align:left;font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#2a3a50;background:#070a12;border-bottom:1px solid #141e2c;font-weight:700;}
+.at td{padding:7px 10px;border-bottom:1px solid #0d1420;color:#7a8a98;vertical-align:top;}
+.at td:first-child{color:#a0b8cc;font-weight:600;}
+.at tr:hover td{background:#0a0f1c;}
+
+/* HIGHLIGHT */
+.highlight{background:rgba(200,160,64,.3);border-radius:1px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:#05070d;}::-webkit-scrollbar-thumb{background:#1a2030;border-radius:2px;}
+
+/* SVG diagrams */
+svg.diag{width:100%;max-width:820px;display:block;margin:20px auto;}
+
+@media(max-width:850px){
+  .phase-trio,.gloss{grid-template-columns:1fr;}
+  #nav{display:none;}
+  .chapter{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div id="hdr-title">
+    <h1>Ransomware: An Exposé &nbsp;—&nbsp; New Analyst Edition</h1>
+    <div class="sub">True-Crime Narrative Edition &nbsp;|&nbsp; v1.0 &nbsp;|&nbsp; Based on EDP Framework &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp; INTERAGENCY</div>
+  </div>
+  <input id="search-box" type="text" placeholder="Search..." autocomplete="off"/>
+</div>
+<div id="app">
+  
+<nav id="nav">
+  <div style="padding:12px 16px 6px;"><div style="font-family:'Segoe UI',Arial,sans-serif;font-size:8px;text-transform:uppercase;letter-spacing:2px;color:#1a2a3a;font-weight:700;">Ransomware Exposé</div><div style="font-family:'Segoe UI',Arial,sans-serif;font-size:8px;color:#141e2a;margin-top:2px;">New Analyst Edition</div></div>
+  <div class="nav-head">Narrative</div>
+  <a class="nav-link" onclick="scrollSec('s-open')">Prologue — The Phone Call</a>
+  <a class="nav-link" onclick="scrollSec('s-org')">Ch.1 — The Organization</a>
+  <a class="nav-link" onclick="scrollSec('s-job')">Ch.2 — The Job</a>
+  <a class="nav-link" onclick="scrollSec('s-cast')">Ch.3 — The Dossiers</a>
+  <div class="nav-head" style="margin-top:6px;">Dossiers</div>
+  <a class="nav-link nav-sub" onclick="openDos(1)">01 Stealers</a>
+  <a class="nav-link nav-sub" onclick="openDos(2)">02 Loaders</a>
+  <a class="nav-link nav-sub" onclick="openDos(3)">03 Crypters</a>
+  <a class="nav-link nav-sub" onclick="openDos(4)">04 Callers</a>
+  <a class="nav-link nav-sub" onclick="openDos(5)">05 IABs</a>
+  <a class="nav-link nav-sub" onclick="openDos(6)">06 Exploit Brokers</a>
+  <a class="nav-link nav-sub" onclick="openDos(7)">07 RaaS Groups</a>
+  <a class="nav-link nav-sub" onclick="openDos(8)">08 Leak Sites</a>
+  <a class="nav-link nav-sub" onclick="openDos(9)">09 BPH</a>
+  <a class="nav-link nav-sub" onclick="openDos(10)">10 Forums</a>
+  <a class="nav-link nav-sub" onclick="openDos(11)">11 Mixers</a>
+  <a class="nav-link nav-sub" onclick="openDos(12)">12 OTC Brokers</a>
+  <a class="nav-link nav-sub" onclick="openDos(13)">13 Exchanges</a>
+  <a class="nav-link nav-sub" onclick="openDos(14)">14 Mule Networks</a>
+  <a class="nav-link nav-sub" onclick="openDos(15)">15 Negotiation</a>
+  <div class="nav-head" style="margin-top:6px;">Analysis</div>
+  <a class="nav-link" onclick="scrollSec('s-money')">Ch.4 — Follow the Money</a>
+  <a class="nav-link" onclick="scrollSec('s-russia')">Ch.5 — The Roof (Russia)</a>
+  <a class="nav-link" onclick="scrollSec('s-takedown')">Ch.6 — How to Take Them Down</a>
+  <div class="nav-head" style="margin-top:6px;">Reference</div>
+  <a class="nav-link" onclick="scrollSec('s-glossary')">The Criminal Dictionary</a>
+  <a class="nav-link" onclick="scrollSec('s-facts')">Fast Facts</a>
+</nav>
+
+  <main id="main">
+    
+<div class="chapter" id="s-open">
+  <div class="ch-label">Prologue</div>
+  <div class="ch-title">It Started With a Phone Call</div>
+  <div class="ch-deck">The ransomware ecosystem is not a shadowy hacker in a basement. It is an organized crime enterprise with departments, franchises, suppliers, and money launderers. Here is how it actually works.</div>
+
+  <div class="scene">
+    <div class="scene-label">Las Vegas, September 2023</div>
+    <p>A young man made a phone call to the MGM Resorts IT helpdesk. He introduced himself as an employee who had lost access to his multi-factor authentication device. Standard procedure. The helpdesk representative followed protocol, verified some basic account information, and reset the credentials. Within hours, MGM Resorts' casino floors were dark. Slot machines showed error screens. Hotel guests could not check in digitally. The reservation system was down.</p>
+    <p>The eventual damage would exceed $100 million. The attacker was 19 years old. He was a member of Scattered Spider, a loosely organized group of English-speaking hackers who had discovered that the most sophisticated security infrastructure in the world could be bypassed with a convincing phone manner and access to LinkedIn.</p>
+    <p>The malware — ALPHV/BlackCat ransomware — was not theirs. They had rented it. The credentials that got them into MGM's systems had been purchased. The infrastructure they used to encrypt files had been provided by someone else entirely. The ransom, if paid, would have been laundered through a chain of cryptocurrency services, brokers, and human networks before arriving as clean money in someone's Moscow bank account.</p>
+    <p>At no point in that entire chain did any single person need to do everything. That is the point. That is why this is hard.</p>
+  </div>
+
+  <p>Modern ransomware is not a threat actor. It is a supply chain. A network of specialized criminal service markets, each contributing a component, connected by underground marketplaces, governed by reputation systems, and protected by Russian state tolerance that ranges from passive to active depending on how useful any given operator happens to be.</p>
+
+  <p>This primer is a map of that supply chain — its structure, its key players, its financial flows, and the specific levers that Western law enforcement and intelligence agencies can pull to degrade it. It is written for analysts who are encountering this ecosystem for the first time and need a foundation that does not obscure the complexity behind jargon.</p>
+
+  <div class="stat-strip">
+    <div class="stat-c red"><div class="stat-v">$813M</div><div class="stat-l">Confirmed ransomware payments in 2025 (Chainalysis) — down ~35% from 2024 peak estimates</div></div>
+    <div class="stat-c red"><div class="stat-v">7,500+</div><div class="stat-l">Victims publicly named on data leak sites in 2024 — a single-year record</div></div>
+    <div class="stat-c amber"><div class="stat-v">35%</div><div class="stat-l">Payment decline in 2024 — the strongest signal that financial disruption is working</div></div>
+    <div class="stat-c green"><div class="stat-v">70%+</div><div class="stat-l">Non-payment rate when victims receive professional incident response support</div></div>
+    <div class="stat-c"><div class="stat-v">$130M</div><div class="stat-l">In victim payments avoided by FBI's 7-month covert Hive operation alone</div></div>
+  </div>
+</div>
+
+    
+<div class="chapter" id="s-org">
+  <div class="ch-label">Chapter One</div>
+  <div class="ch-title">The Organization</div>
+  <div class="ch-deck">Nine floors of operation. Fifteen specialist services. One criminal enterprise larger than most Fortune 500 companies.</div>
+
+  <p>Forget the image of the lone hacker. The ransomware ecosystem that produced the Colonial Pipeline attack, the MGM breach, the MOVEit campaign, and seven thousand four hundred and sixty publicly named victims in 2024 operates like a mature organized crime enterprise. There are bosses, middle management, specialists, and foot soldiers. There are vendors, suppliers, and service providers who may have no idea — or may not care — whose operations they are supporting.</p>
+
+  <p>The diagram below shows how it is organized. Think of it as a nine-story building. The foundation is the infrastructure — the physical hosting that everything else depends on. At the top is the money: the OTC brokers and exchanges and mule networks that convert crypto proceeds into real-world wealth. In the middle, on the fifth floor, is the boardroom — the RaaS groups that run the operation. Every other floor exists to either supply the boardroom or process its outputs.</p>
+
+  <svg class="diag" viewBox="0 0 820 310" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="310" fill="#06080f" rx="4"/>
+  <defs><style>.el{font-family:'Segoe UI',Arial;font-size:10.5px;fill:#8aaabb;font-weight:600;}.em{font-family:'Segoe UI',Arial;font-size:9px;fill:#4a5a68;}.ep{font-family:'Segoe UI',Arial;font-size:7.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}</style></defs>
+  <text x="410" y="18" text-anchor="middle" font-family="'Segoe UI',Arial" font-size="8.5" fill="#1e2e40" letter-spacing="2">THE CRIMINAL ENTERPRISE — NINE FLOORS OF OPERATION</text>
+  <!-- Floors bottom to top, rendered top to bottom in SVG -->
+  <rect x="20" y="26" width="778" height="28" rx="2" fill="rgba(160,112,10,.2)" stroke="rgba(160,112,10,.5)" stroke-width="1"/>
+  <text x="36" y="44" class="el" fill="#c8a040">Floor 9 — The Laundry</text><text x="260" y="44" class="em">Money Launderers &amp; Exchanges (13) · Mule Networks (14)</text><text x="756" y="44" class="ep" fill="#c8a040">PHASE A</text>
+  <rect x="20" y="58" width="778" height="28" rx="2" fill="rgba(160,112,10,.15)" stroke="rgba(160,112,10,.35)" stroke-width="1"/>
+  <text x="36" y="76" class="el" fill="#b89020">Floor 8 — The Cashier</text><text x="260" y="76" class="em">OTC Brokers (12) — Moscow back offices, no questions asked</text><text x="756" y="76" class="ep" fill="#b89020">PHASE A</text>
+  <rect x="20" y="90" width="778" height="28" rx="2" fill="rgba(58,108,168,.15)" stroke="rgba(58,108,168,.35)" stroke-width="1"/>
+  <text x="36" y="108" class="el" fill="#7aaad8">Floor 7 — The Washroom</text><text x="260" y="108" class="em">Crypto Mixers (11) — Blender, Chipmixer, Tornado Cash</text><text x="756" y="108" class="ep" fill="#7aaad8">PHASE B</text>
+  <rect x="20" y="122" width="778" height="28" rx="2" fill="rgba(160,64,32,.12)" stroke="rgba(160,64,32,.3)" stroke-width="1"/>
+  <text x="36" y="140" class="el" fill="#c87050">Floor 6 — The Press Room</text><text x="260" y="140" class="em">Leak Sites (8) · Negotiators (15) — The shaming and the bargaining</text><text x="756" y="140" class="ep" fill="#c87050">PHASE C</text>
+  <rect x="20" y="154" width="778" height="28" rx="2" fill="rgba(160,64,32,.2)" stroke="rgba(160,64,32,.5)" stroke-width="1.5"/>
+  <text x="36" y="172" class="el" fill="#e08060">Floor 5 — The Boardroom ★</text><text x="260" y="172" class="em">RaaS Groups (7) — The franchise headquarters. Everything serves this floor.</text><text x="756" y="172" class="ep" fill="#e08060">PHASE C</text>
+  <rect x="20" y="186" width="778" height="28" rx="2" fill="rgba(58,108,168,.12)" stroke="rgba(58,108,168,.3)" stroke-width="1"/>
+  <text x="36" y="204" class="el" fill="#6a9ac8">Floor 4 — The Marketplace</text><text x="260" y="204" class="em">IABs (5) · Exploit Brokers (6) · Underground Forums (10)</text><text x="756" y="204" class="ep" fill="#6a9ac8">PHASE B</text>
+  <rect x="20" y="218" width="778" height="28" rx="2" fill="rgba(58,108,168,.08)" stroke="rgba(58,108,168,.2)" stroke-width="1"/>
+  <text x="36" y="236" class="el" fill="#5a8ab8">Floor 3 — The Intelligence Bureau</text><text x="260" y="236" class="em">Stealers (1) · Loaders (2) — Harvesting credentials and delivering payloads</text><text x="756" y="236" class="ep" fill="#5a8ab8">PHASE B</text>
+  <rect x="20" y="250" width="778" height="28" rx="2" fill="rgba(90,74,120,.1)" stroke="rgba(90,74,120,.3)" stroke-width="1"/>
+  <text x="36" y="268" class="el" fill="#9880c0">Floor 2 — The Con Artists</text><text x="260" y="268" class="em">Crypters (3) · Callers &amp; Spammers (4) — Disguise and deception</text><text x="756" y="268" class="ep" fill="#9880c0">CROSS-CUT</text>
+  <rect x="20" y="282" width="778" height="22" rx="2" fill="rgba(160,112,10,.25)" stroke="rgba(160,112,10,.6)" stroke-width="1.5"/>
+  <text x="36" y="297" class="el" fill="#c8a040">Floor 1 — The Real Estate (Foundation)</text><text x="300" y="297" class="em">Bulletproof Hosting (9) — The building that ignores the police</text><text x="756" y="297" class="ep" fill="#c8a040">PHASE A</text>
+</svg>
+
+  <h3>The Three Disruption Phases</h3>
+  <p>Western law enforcement and intelligence agencies have developed a three-phase framework for attacking this structure. The logic is sequential: attack the financial infrastructure first, because it takes longest to rebuild and degrades the economic incentive to reconstitute when operational pressure follows. Attack market infrastructure second. Attack operational infrastructure last — when the financial and market layers are already degraded.</p>
+
+  <div class="phase-trio">
+    <div class="phase-card pc-a">
+      <h4>Phase A: Cut the Money</h4>
+      <p>Target the financial rails before anything else. When OTC brokers and exchanges are disrupted, criminal proceeds have nowhere to go. Reconstitution becomes economically painful, not just operationally inconvenient.</p>
+      <ul><li>OTC Brokers (Module 12)</li><li>Exchanges / Launderers (Module 13)</li><li>Bulletproof Hosting (Module 09)</li></ul>
+    </div>
+    <div class="phase-card pc-b">
+      <h4>Phase B: Degrade the Markets</h4>
+      <p>While financial pressure applies, attack the trust and market infrastructure. When forums are infiltrated and IAB trust mechanisms are compromised, transaction costs rise for everyone in the ecosystem.</p>
+      <ul><li>IAB Markets (Module 05)</li><li>Underground Forums (Module 10)</li><li>Crypto Mixers (Module 11)</li></ul>
+    </div>
+    <div class="phase-card pc-c">
+      <h4>Phase C: Hit the Operations</h4>
+      <p>Direct operator action — the most visible and most satisfying — is also the least durable without Phases A and B already in place. With financial and market pressure applied, brand reconstitution becomes expensive and slow rather than trivial.</p>
+      <ul><li>RaaS Core Teams (Module 07)</li><li>Leak Sites (Module 08)</li><li>Loaders / Stealers (01, 02)</li></ul>
+    </div>
+  </div>
+</div>
+
+    
+<div class="chapter" id="s-job">
+  <div class="ch-label">Chapter Two</div>
+  <div class="ch-title">The Job</div>
+  <div class="ch-deck">Following a ransomware operation from the first phone call to the last dollar laundered — with the cast of characters at each step.</div>
+
+  <svg class="diag" viewBox="0 0 820 130" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="130" fill="#06080f" rx="4"/>
+  <defs><style>.kn{font-family:'Segoe UI',Arial;font-size:8.5px;fill:#6a8098;text-anchor:middle;font-weight:700;letter-spacing:.3px;}.ks{font-family:'Segoe UI',Arial;font-size:7.5px;fill:#2a3a4a;text-anchor:middle;}</style></defs>
+  <!-- 9 nodes -->
+  <!-- 1 -->
+  <circle cx="46" cy="52" r="22" fill="rgba(90,74,120,.25)" stroke="#7860a8" stroke-width="1.5"/>
+  <text x="46" y="48" text-anchor="middle" font-size="14" fill="#9880c0">📧</text>
+  <text x="46" y="61" text-anchor="middle" font-size="7" fill="#9880c0" font-weight="700" font-family="'Segoe UI',Arial">LURE</text>
+  <text x="46" y="88" class="kn">Callers /</text><text x="46" y="99" class="kn">Spammers</text><text x="46" y="112" class="ks">Mod 04</text>
+  <text x="78" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 2 -->
+  <circle cx="110" cy="52" r="22" fill="rgba(90,74,120,.2)" stroke="#7860a8" stroke-width="1.5"/>
+  <text x="110" y="48" text-anchor="middle" font-size="14" fill="#9880c0">⚙</text>
+  <text x="110" y="61" text-anchor="middle" font-size="7" fill="#9880c0" font-weight="700" font-family="'Segoe UI',Arial">DELIVER</text>
+  <text x="110" y="88" class="kn">Loaders /</text><text x="110" y="99" class="kn">Crypters</text><text x="110" y="112" class="ks">Mod 02-03</text>
+  <text x="142" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 3 -->
+  <circle cx="174" cy="52" r="22" fill="rgba(58,108,168,.2)" stroke="#3a6ca8" stroke-width="1.5"/>
+  <text x="174" y="48" text-anchor="middle" font-size="14" fill="#7aaad8">🔑</text>
+  <text x="174" y="61" text-anchor="middle" font-size="7" fill="#7aaad8" font-weight="700" font-family="'Segoe UI',Arial">HARVEST</text>
+  <text x="174" y="88" class="kn">Stealers /</text><text x="174" y="99" class="kn">Log Markets</text><text x="174" y="112" class="ks">Mod 01</text>
+  <text x="206" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 4 -->
+  <circle cx="238" cy="52" r="22" fill="rgba(58,108,168,.2)" stroke="#3a6ca8" stroke-width="1.5"/>
+  <text x="238" y="48" text-anchor="middle" font-size="14" fill="#7aaad8">🚪</text>
+  <text x="238" y="61" text-anchor="middle" font-size="7" fill="#7aaad8" font-weight="700" font-family="'Segoe UI',Arial">SELL ACCESS</text>
+  <text x="238" y="88" class="kn">IAB /</text><text x="238" y="99" class="kn">Exploit Broker</text><text x="238" y="112" class="ks">Mod 05-06</text>
+  <text x="270" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 5 CENTER -->
+  <circle cx="410" cy="52" r="30" fill="rgba(160,64,32,.3)" stroke="#c85030" stroke-width="2"/>
+  <text x="410" y="46" text-anchor="middle" font-size="16" fill="#e08060">💣</text>
+  <text x="410" y="62" text-anchor="middle" font-size="8" fill="#e08060" font-weight="700" font-family="'Segoe UI',Arial">DETONATE</text>
+  <text x="410" y="92" class="kn" style="font-size:9px;fill:#c87050;">RaaS Groups</text><text x="410" y="104" class="ks" style="font-size:8px;">Module 07</text>
+  <text x="302" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›  ›  ›</text>
+  <text x="454" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›  ›  ›</text>
+  <!-- 6 -->
+  <circle cx="506" cy="52" r="22" fill="rgba(160,64,32,.18)" stroke="#c85030" stroke-width="1.5"/>
+  <text x="506" y="48" text-anchor="middle" font-size="14" fill="#e08060">📢</text>
+  <text x="506" y="61" text-anchor="middle" font-size="7" fill="#e08060" font-weight="700" font-family="'Segoe UI',Arial">EXTORT</text>
+  <text x="506" y="88" class="kn">Leak Sites /</text><text x="506" y="99" class="kn">Negotiators</text><text x="506" y="112" class="ks">Mod 08+15</text>
+  <text x="538" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 7 -->
+  <circle cx="570" cy="52" r="22" fill="rgba(160,112,10,.2)" stroke="#c8a030" stroke-width="1.5"/>
+  <text x="570" y="48" text-anchor="middle" font-size="14" fill="#c8a040">🔀</text>
+  <text x="570" y="61" text-anchor="middle" font-size="7" fill="#c8a040" font-weight="700" font-family="'Segoe UI',Arial">WASH</text>
+  <text x="570" y="88" class="kn">Crypto</text><text x="570" y="99" class="kn">Mixers</text><text x="570" y="112" class="ks">Mod 11</text>
+  <text x="602" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 8 -->
+  <circle cx="634" cy="52" r="22" fill="rgba(160,112,10,.18)" stroke="#c8a030" stroke-width="1.5"/>
+  <text x="634" y="48" text-anchor="middle" font-size="14" fill="#c8a040">💱</text>
+  <text x="634" y="61" text-anchor="middle" font-size="7" fill="#c8a040" font-weight="700" font-family="'Segoe UI',Arial">CASH OUT</text>
+  <text x="634" y="88" class="kn">OTC /</text><text x="634" y="99" class="kn">Exchanges</text><text x="634" y="112" class="ks">Mod 12-13</text>
+  <text x="666" y="56" text-anchor="middle" font-size="12" fill="#1a2a3a" font-family="'Segoe UI',Arial">›</text>
+  <!-- 9 -->
+  <circle cx="698" cy="52" r="22" fill="rgba(160,112,10,.15)" stroke="#c8a030" stroke-width="1.5"/>
+  <text x="698" y="48" text-anchor="middle" font-size="14" fill="#c8a040">🏠</text>
+  <text x="698" y="61" text-anchor="middle" font-size="7" fill="#c8a040" font-weight="700" font-family="'Segoe UI',Arial">INTEGRATE</text>
+  <text x="698" y="88" class="kn">Mule</text><text x="698" y="99" class="kn">Networks</text><text x="698" y="112" class="ks">Mod 14</text>
+</svg>
+
+  <h3>Act One: Getting In</h3>
+
+  <p>The entry point varies, but it almost always involves one of three routes: someone was tricked (a phishing email, a phone call, a malicious advertisement); a credential was already for sale (an IAB listing from a stealer-harvested log); or a vulnerability was already known and exploited (an n-day in a VPN appliance, a zero-day in a file transfer platform).</p>
+
+  <p>The <strong>caller or spammer</strong> is often the first human contact. Their job is deception — convincing an IT helpdesk employee that a password reset is legitimate, getting a finance employee to open an attachment, manufacturing the moment of trust that every subsequent technical step depends on. In the Scattered Spider model, this is a phone call. In the BazarCall model, it is an email that prompts the victim to call the attacker. In the AI vishing model, it is an automated system with a cloned voice that sounds like the victim's actual colleague.</p>
+
+  <p>The <strong>loader</strong> executes on the victim's machine and calls home. It does not carry the ransomware itself — that comes later. First, it establishes persistence. It identifies the environment. It downloads a stealer to harvest credentials. It begins the slow, methodical process of understanding the network it has just entered. This phase can last hours. In sophisticated operations, it lasts weeks.</p>
+
+  <div class="pullquote">
+    <p>"The time between initial access and ransomware deployment — the 'dwell time' — has dropped from an average of 16 days in 2021 to under 24 hours in some 2024 campaigns. Operators are getting faster. Defenders have less time to find them."</p>
+    <cite>— Multiple incident response firm reports, 2024</cite>
+  </div>
+
+  <h3>Act Two: The Sale</h3>
+
+  <p>In many operations, the affiliate who eventually deploys the ransomware was not involved in any of the above. They bought access. An <strong>Initial Access Broker</strong> listed the corporate VPN credentials on a dark web forum — documented, priced, and waiting for a buyer. The affiliate purchased them, verified the access, and began planning the deployment. The broker never interacted with the victim. Never knew what the affiliate would do. Never faced meaningful legal risk.</p>
+
+  <p>This is the division of labor that made ransomware scalable. Compromising a network is skilled work. Deploying ransomware across a complex enterprise is different skilled work. Laundering the proceeds is yet another specialized skill. The RaaS model fragments these specializations deliberately — each actor knows only their piece, reducing risk and allowing each function to be optimized independently.</p>
+
+  <h3>Act Three: The Detonation</h3>
+
+  <p>The <strong>RaaS affiliate</strong> has been inside the network for some time before they move. They escalate privileges. They identify domain controllers. They find the backup systems — and quietly delete or encrypt them first. They exfiltrate the most sensitive data available: financial records, patient files, legal documents, personnel records. Then they detonate.</p>
+
+  <p>On a Tuesday morning in an organization somewhere, hundreds of employees arrive at workstations showing identical ransom notes. The note has a URL, a Bitcoin address, and a countdown clock. It is professionally formatted. It includes the organization's name and a sample of stolen data to demonstrate the exfiltration is real. The negotiations are about to begin.</p>
+
+  <h3>Act Four: The Money</h3>
+
+  <p>If payment occurs — and in 35% of cases, it does not — the cryptocurrency moves through a well-established chain. <strong>Mixing</strong> first: the payment goes through Chipmixer, or Tornado Cash, or CoinJoin, or a cross-chain bridge. The traceability chain breaks. Then <strong>OTC brokers</strong> in Moscow convert large positions to fiat in bilateral meetings — no paperwork, no KYC, a fee of 1-5%, an understanding of what is not discussed. Then <strong>exchanges</strong> process volume. Then <strong>mule networks</strong> layer the fiat through account chains, real estate purchases, and shell company transactions, until it is indistinguishable from legitimate wealth.</p>
+
+  <p>TRM Labs confirmed in 2024 that more than half of mule-linked funds exit within one hour of receipt. By the time the victim has finished calling their cyber insurance carrier, the money is already in a Moscow apartment.</p>
+</div>
+
+    
+<div class="chapter" id="s-cast">
+  <div class="ch-label">Chapter Three</div>
+  <div class="ch-title">The Dossiers</div>
+  <div class="ch-deck">Fifteen criminal service markets, each explained as what it actually is. Click any dossier to open it.</div>
+
+  
+<div class="dossier" id="dos-1" onclick="toggleDos(1)">
+  <div class="dossier-head">
+    <div class="dos-num">01</div>
+    <div class="dos-title">
+      <div class="dos-name">The Pickpocket Factory</div>
+      <div class="dos-aka">Stealers — Module 01</div>
+    </div>
+    <span class="dos-tag badge bB">Phase B</span>
+    <span class="dos-tag badge bHIGH">HIGH</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>On a server farm somewhere east of Moscow, an automated system is processing 400,000 stolen credential packages an hour. Each package — called a 'log' — contains the usernames, passwords, banking session tokens, and cryptocurrency keys scraped from one infected computer. A forum operator is pricing them. Corporate logins go for $50. A login to a healthcare network's VPN? $3,000. It's sold before breakfast.</p></div>
+    <h5>How It Works</h5>
+    <p>Infostealer malware runs silently on infected machines, vacuuming up everything of value and shipping it home. The malware itself is rented — LummaC2, RedLine, Vidar — subscription services starting around $200/month. The output is sold on log markets (Russian Market, 2easy) that operate like commodity exchanges for stolen identity.</p>
+    <h5>Why It Matters</h5>
+    <p>This is the raw material layer. Every credential the ransomware affiliate uses to walk into a victim's network started here. Stealers are the agricultural sector of the criminal economy — they grow the crop that the rest of the supply chain processes.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Microsoft DCU seized 2,300+ LummaC2 domains in May 2025 — the largest single infrastructure strike against any stealer family to date</li><li>Genesis Market seizure (2023): FBI notified 920,000 victims. Volume shifted to Russian Market within weeks — the infrastructure was gone, the market was not</li><li>The tactical shift of 2024: session token theft now prioritized over static passwords as enterprises adopt MFA. Operators adapt faster than defenders patch.</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The credential factory that produces the raw material for every access-based ransomware attack.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-2" onclick="toggleDos(2)">
+  <div class="dossier-head">
+    <div class="dos-num">02</div>
+    <div class="dos-title">
+      <div class="dos-name">The Delivery Drivers</div>
+      <div class="dos-aka">Loaders — Module 02</div>
+    </div>
+    <span class="dos-tag badge bB">Phase B</span>
+    <span class="dos-tag badge bHIGH">HIGH</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>'QakBot is down.' In the summer of 2023, that message circulated through criminal forums within hours of the FBI seizing QakBot's command-and-control infrastructure. By the time the FBI was issuing press releases, QakBot's operators were already standing up Pikabot. When Pikabot got swept up in Operation Endgame in 2024 alongside IcedID, Bumblebee, and SmokeLoader, their successor — Latrodectus — was already in testing. This is what reconstitution looks like in real time.</p></div>
+    <h5>How It Works</h5>
+    <p>Loaders are the delivery trucks of the malware ecosystem. Their job is simple: get onto a machine and execute whatever the operator sends next. They are rented by the week or month — Loader-as-a-Service, $100-$1,000 depending on the infrastructure quality and the delivery vector. Raspberry Robin spreads through USB drives and infected IoT devices. Gootloader hijacks search engine results for legal document searches. Bumblebee pretended to be software installers.</p>
+    <h5>Why It Matters</h5>
+    <p>Without loaders, ransomware groups either need to handle initial access themselves (expensive, slow) or buy access from IABs. Loaders industrialize the front door of every attack.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Operation Endgame (May 2024): Europol and FBI simultaneously seized infrastructure for IcedID, Bumblebee, SmokeLoader, and Pikabot. Called the largest loader operation on record. Latrodectus was in active deployment within three months</li><li>Operation Duck Hunt (2023): FBI sinkholed QakBot's C2, notifying 700,000 victims. QakBot operators had Pikabot ready before the press conference was over</li><li>The lesson from Endgame: single-family takedowns produce rapid migration. Simultaneous multi-family action forces operators to rebuild from scratch rather than pivot to a ready alternative</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The delivery trucks that get malware inside the building — rented by the month, replaced within weeks of disruption.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-3" onclick="toggleDos(3)">
+  <div class="dossier-head">
+    <div class="dos-num">03</div>
+    <div class="dos-title">
+      <div class="dos-name">The Disguise Artists</div>
+      <div class="dos-aka">Crypters — Module 03</div>
+    </div>
+    <span class="dos-tag badge bX">Cross-Cut</span>
+    <span class="dos-tag badge bMEDI">MEDIUM</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>A researcher at a major antivirus company discovered something interesting in 2024: on the major criminal forums, three sellers were responsible for the majority of all obfuscation sales. Three people, providing the invisibility cloak for the majority of malware targeting Western organizations. None of them had ever faced a law enforcement action. None of them ever have.</p></div>
+    <h5>How It Works</h5>
+    <p>Crypter-as-a-Service provides the obfuscation layer that makes malware undetectable to antivirus scanners at delivery. FUD — Fully Undetectable — is the product. It burns fast: AV vendors detect and signature the new stubs within days, so operators repurchase constantly. The market runs through criminal forums and automated Telegram bots. Open all day, every day. Accepts crypto.</p>
+    <h5>Why It Matters</h5>
+    <p>Every piece of malware in the delivery chain — stealers, loaders, ransomware payloads — needs to survive endpoint detection on arrival. Crypters are the last line of offense before the defender's first line of defense.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>No major law enforcement action against any CaaS operator as of April 2026. This is the most significant gap in the enforcement record</li><li>Market concentration creates a paradox and an opportunity: 1-3 sellers dominate volume on each major forum, meaning a single prosecution disrupts supply for hundreds of downstream operators simultaneously</li><li>AV/EDR coordination (CISA) is the primary counter-measure available: accelerating signature deployment compresses the FUD validity window from weeks to hours</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The invisibility cloaks — the obfuscation services that let malware walk past your antivirus scanner undetected.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-4" onclick="toggleDos(4)">
+  <div class="dossier-head">
+    <div class="dos-num">04</div>
+    <div class="dos-title">
+      <div class="dos-name">The Con Artists</div>
+      <div class="dos-aka">Callers and Spammers — Module 04</div>
+    </div>
+    <span class="dos-tag badge bX">Cross-Cut</span>
+    <span class="dos-tag badge bMEDI">MEDIUM</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>In September 2023, a teenager called the MGM Resorts IT helpdesk. He claimed to be an employee who had lost access to his account. The helpdesk representative — following standard procedure — reset his credentials. Within hours, MGM Resorts' operations were locked. The casino floors went dark. Slot machines stopped paying out. The eventual damage: $100 million, plus remediation. The teenager was 19 years old and a member of Scattered Spider.</p></div>
+    <h5>How It Works</h5>
+    <p>Social engineering operators bridge the gap between technical malware delivery and human vulnerability. The BazarCall model sends phishing emails that prompt victims to call attacker-controlled numbers; trained operators on the other end convince IT staff to install 'remote support' tools. AI vishing platforms (Vishing-as-a-Service, such as PlugValley) now provide real-time call scripts, voice modulation, and enterprise org charts to operators who may not even speak English as a first language.</p>
+    <h5>Why It Matters</h5>
+    <p>Social engineering attacks bypass every technical control. Firewalls, EDR, MFA — none of it matters if a trained operator can convince an IT administrator to disable it themselves.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Scattered Spider prosecutions (2023-2024): UK and US arrested multiple members, demonstrating that English-speaking operators are identifiable and prosecutable</li><li>Victim-side hardening: mandatory out-of-band verification for all helpdesk credential resets eliminates the BazarCall attack surface entirely — no law enforcement action required</li><li>The AI vishing frontier: PlugValley and similar platforms let a non-English speaker run a convincing IT helpdesk impersonation in any accent. The skill floor is dropping to zero</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The con artists who convince IT helpdesks to hand over the keys — technically the lowest-cost, highest-impact initial access vector in the ecosystem.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-5" onclick="toggleDos(5)">
+  <div class="dossier-head">
+    <div class="dos-num">05</div>
+    <div class="dos-title">
+      <div class="dos-name">The Real Estate Agents</div>
+      <div class="dos-aka">Initial Access Brokers — Module 05</div>
+    </div>
+    <span class="dos-tag badge bB">Phase B</span>
+    <span class="dos-tag badge bHIGH">HIGH</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>On RAMP forum, the listing reads: 'Domain Admin access — Fortune 500 healthcare company, US, 40,000 seats. VPN access confirmed. AV identified, evasion possible. Asking $8,500.' Below it, another: 'US logistics firm, 12,000 seats, domain admin. $3,200 OBO.' The broker who listed them compromised both networks last week. He will never deploy ransomware himself. That's someone else's job.</p></div>
+    <h5>How It Works</h5>
+    <p>Initial Access Brokers are specialists who compromise networks and sell the access rather than exploiting it themselves. The division of labor that made ransomware scalable. Two tiers: bulk IABs use automated scanning tools and sell commodity access ($500-$1,000); boutique IABs target specific sectors, document privileged access, and sell curated packages to discerning buyers ($2,700-$10,000+). Rapid7 found 71.4% of observed listings include domain admin or equivalent — not just a foothold, a kingdom.</p>
+    <h5>Why It Matters</h5>
+    <p>IABs decoupled the compromise function from the ransomware deployment function. RaaS groups no longer need to find victims — they shop for them. This is why ransomware scaled so rapidly after 2019.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>OFAC financial designation of boutique IABs: targets trust relationships, not just infrastructure — higher durability than server seizure</li><li>FBI Raspberry Robin C2 sinkholing: disrupts the automated pipeline that feeds bulk IABs at scale</li><li>The market is migrating away from public forum listings toward private channels — LE visibility is declining as security culture among IABs improves post-2022</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The brokers who sell pre-compromised corporate network access, making network intrusion a commodity that ransomware groups can simply purchase.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-6" onclick="toggleDos(6)">
+  <div class="dossier-head">
+    <div class="dos-num">06</div>
+    <div class="dos-title">
+      <div class="dos-name">The Arms Dealers</div>
+      <div class="dos-aka">Exploit Brokers — Module 06</div>
+    </div>
+    <span class="dos-tag badge bCRIT">Phase B</span>
+    <span class="dos-tag badge bCRIT">CRITICAL</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>In May 2023, CL0p had a zero-day. It was a vulnerability in MOVEit, a file transfer software used by thousands of enterprises for HR and payroll data. CL0p didn't just hit one target — they hit all of them simultaneously. Over the following weeks, 2,000+ organizations across 60 countries discovered their data was already gone. The ransom demands began arriving by letter, addressed to executives by name. The exploit itself had probably cost CL0p under $1 million. The extortion proceeds are estimated at over $100 million.</p></div>
+    <h5>How It Works</h5>
+    <p>Exploit brokers occupy the highest-value, lowest-visibility position in the supply chain. They acquire software vulnerabilities — often zero-days, often in widely-used enterprise platforms — and sell exploitation capability to whoever pays. The economics are grotesque: vendors pay $50,000 for a critical vulnerability report; criminal markets pay $500,000-$2,000,000 for the same information held privately. When researchers make that choice, the math is the math.</p>
+    <h5>Why It Matters</h5>
+    <p>A single quality zero-day enables simultaneous mass-scale attacks against every unpatched instance globally. It is qualitatively different from any other access method — not one victim, but thousands.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Bug bounty price parity is the structural fix: when vendor programs pay at criminal-market rates, researchers have no rational incentive to sell to criminals. No law enforcement required, no Russian cooperation required</li><li>Rapid patch deployment (CISA coordination) compresses the exploitation window from weeks to days — not eliminating zero-day risk but significantly limiting its reach</li><li>CL0p's MOVEit campaign is the benchmark: one exploit, 2,000+ victims, $100M+ proceeds. The calculus for investing in zero-day capability is now clearly established among top-tier criminal operators</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The arms dealers who sell software vulnerabilities, enabling mass-scale attacks against thousands of organizations from a single exploit.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-7" onclick="toggleDos(7)">
+  <div class="dossier-head">
+    <div class="dos-num">07</div>
+    <div class="dos-title">
+      <div class="dos-name">The Franchise Headquarters</div>
+      <div class="dos-aka">RaaS Groups — Module 07</div>
+    </div>
+    <span class="dos-tag badge bCRIT">Phase C</span>
+    <span class="dos-tag badge bCRIT">CRITICAL</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>At its peak, Conti had an org chart. There were departments: development, HR, negotiations, infrastructure, OSINT. There were performance reviews. Employees had salaries — junior developers earned around $1,500/month; senior operators earned multiples of that plus bonuses for successful deployments. There was a training program for new affiliates. When a researcher embedded in Conti's operations leaked 60,000 internal messages to journalists in 2022, the world got its first clear look at what a $180 million criminal enterprise's internal culture actually looks like. It looked like a startup.</p></div>
+    <h5>How It Works</h5>
+    <p>RaaS (Ransomware-as-a-Service) groups are the franchise headquarters of the criminal ecosystem. Core teams of 5-20 members develop and maintain the ransomware code, negotiation infrastructure, and victim-facing leak sites. Affiliates — sometimes hundreds of them — rent the tools, deploy against victims, and take 70-80% of proceeds. The core team takes 20-30% for doing none of the dangerous work. In 2025: 7,500+ victim organizations on DLS (record, up 50% YoY); $813M in confirmed payments (Chainalysis); LockBit claimed responsibility for 25% of all ransomware incidents at its peak.</p>
+    <h5>Why It Matters</h5>
+    <p>RaaS groups are the revenue engine that the entire ecosystem exists to serve. Every other module — stealers, IABs, BPH, mixers, OTC brokers — either feeds them inputs or processes their outputs.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Operation Cronos (Feb 2024): LockBit infrastructure seized; 34 servers taken; 1,000+ decryption keys recovered; affiliates exposed by name. RansomHub absorbed LockBit's affiliates within 60-90 days</li><li>FBI Hive infiltration (2022-2023): 7-month covert access; $130M in avoided victim payments; 300+ victims received decryption keys before seizure. Hive never reconstituted — the only documented case</li><li>72% victim non-payment rate in 2025 (record; 28% paid): the compound result of financial-layer enforcement, improved IR, and growing non-payment advocacy. Attack volume rose 50% but total payments held at ~$813M — the ecosystem is running harder for the same revenue</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The franchise headquarters that runs the ransomware brand, takes 20-30% of all proceeds, and provides the tools and infrastructure that affiliates use to attack victims.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-8" onclick="toggleDos(8)">
+  <div class="dossier-head">
+    <div class="dos-num">08</div>
+    <div class="dos-title">
+      <div class="dos-name">The Public Shaming Board</div>
+      <div class="dos-aka">Leak Site Ops — Module 08</div>
+    </div>
+    <span class="dos-tag badge bHIGH">Phase C</span>
+    <span class="dos-tag badge bHIGH">HIGH</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>In December 2024, 621 organizations found their names on ransomware data leak sites in a single month — a record. Each listing was accompanied by a sample of stolen data, a countdown clock, and a message: pay, or the rest goes public. The targets included hospitals, utilities, law firms, and school districts. Some paid. Most did not. The data went up regardless.</p></div>
+    <h5>How It Works</h5>
+    <p>Data Leak Sites are the extortion infrastructure of double-extortion ransomware. When victims refuse to pay, operators publish stolen data — triggering regulatory investigations, notifying customers, and permanently damaging reputations. The DLS ecosystem has evolved: multi-tenant platforms now host multiple ransomware brands on shared infrastructure, meaning single-brand takedowns no longer take down the platform. They just remove one tenant.</p>
+    <h5>Why It Matters</h5>
+    <p>The DLS model permanently transformed ransomware. Even organizations with perfect backup practices now face a separate, independent extortion vector that has nothing to do with their ability to restore their systems.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>FBI Hive covert infiltration: 7 months of covert DLS access; $130M in avoided payments; 300+ victims received decryption keys BEFORE seizure. The key finding: covert access that helps victims is worth more than seizure that just removes the platform</li><li>Operation Cronos LockBit DLS seizure: FBI reversed the countdown timers to taunt operators — maximum psychological impact; tactical brilliance</li><li>Multi-tenant platforms are the evolution: RansomHub DLS hosts multiple groups. One seizure, multiple tenants disrupted simultaneously — but also one platform survives the disruption of any individual brand</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The public shaming board that publishes stolen victim data to coerce payment — the extortion mechanism that works even against organizations with good backups.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-9" onclick="toggleDos(9)">
+  <div class="dossier-head">
+    <div class="dos-num">09</div>
+    <div class="dos-title">
+      <div class="dos-name">The Criminal Landlord</div>
+      <div class="dos-aka">Bulletproof Hosting — Module 09</div>
+    </div>
+    <span class="dos-tag badge bCRIT">Phase A</span>
+    <span class="dos-tag badge bCRIT">CRITICAL</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>On February 11, 2024, the US Treasury designated Zservers and Media Land LLC. The press release was unusually specific: Zservers' CEO had publicly stated that Russian state agencies were aware of his operations. He was not making a complaint. He was making a guarantee. The designation froze Western financial access. His servers kept running.</p></div>
+    <h5>How It Works</h5>
+    <p>Bulletproof Hosting providers are the criminal landlords — they rent server space with an explicit, advertised guarantee: no cooperation with law enforcement, no logs provided, no response to abuse complaints. They charge a premium for this guarantee. Zservers, Aeza, BEARHOST, Media Land — these companies operate with the full knowledge of Russian authorities and the full protection that entails. A Sophos investigation in 2025 identified a single virtual machine template image underlying over 7,000 active ransomware-linked servers.</p>
+    <h5>Why It Matters</h5>
+    <p>BPH is the physical foundation of the entire ecosystem. Every leak site, every C2 server, every loader delivery platform, every forum runs on BPH somewhere in its infrastructure. Disrupting BPH is the only single action that simultaneously degrades all dependent modules.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Upstream ISP depeering (McColo model, 2008): Hurricane Electric cut McColo's internet access; global spam dropped 75% within hours. McColo never recovered. This is the gold standard and it requires only carrier cooperation — not Russian state cooperation</li><li>Zservers/Media Land joint designation (2024): most significant BPH enforcement action in history. Aeza and BEARHOST absorbed the displaced clients within months — the market did not contract, it redistributed</li><li>Sophos VM template fingerprint: 7,000+ ransomware-linked servers sharing a single underlying image. A detection opportunity that has not yet been exploited at scale</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The criminal landlords who provide the untouchable hosting that every other module depends on — operating with Russian state awareness and protection.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-10" onclick="toggleDos(10)">
+  <div class="dossier-head">
+    <div class="dos-num">10</div>
+    <div class="dos-title">
+      <div class="dos-name">The Criminal Stock Exchange</div>
+      <div class="dos-aka">Underground Forums — Module 10</div>
+    </div>
+    <span class="dos-tag badge bHIGH">Phase B</span>
+    <span class="dos-tag badge bHIGH">HIGH</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>When Conti's internal messages leaked in 2022, the most damaging thing wasn't what they revealed about Conti. It was what they revealed about the forum identities linked to Conti operators. On the forums where criminal transactions happen, reputation is everything. Those handles — built over years, verified through thousands of transactions — were burned overnight. The intelligence operation that produced the leak caused more sustained damage to the ecosystem's trust infrastructure than any server seizure in the period.</p></div>
+    <h5>How It Works</h5>
+    <p>Underground forums are the governance layer of the criminal economy. They are not just marketplaces — they are the institution that makes criminal commerce possible: reputation systems where operators build years of verified transaction history; escrow services where funds are held during deals; dispute resolution where trusted forum moderators adjudicate contract violations; recruitment boards where RaaS groups post affiliate job listings. Exploit.in and XSS.is have operated continuously since approximately 2010-2012 with no law enforcement action.</p>
+    <h5>Why It Matters</h5>
+    <p>Without forums, criminal transactions cannot be trusted. IAB sales require escrow. Affiliate recruitment requires reputation. Service procurement requires verified seller histories. Destroy the trust infrastructure and you raise transaction costs for every actor in the ecosystem simultaneously.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Trust manipulation > seizure: the Conti leak simultaneously burned handles, destroyed verified transaction histories, and collapsed trust in Conti-linked forum identities. No server seizure achieves that</li><li>BreachForums was seized three times (v1 2023, v2 2024) and reconstituted within weeks each time — forum URLs are not the target; administrator identification and trust destruction are</li><li>Forum infiltration and manipulation: implanting false reputation data, operating as a trusted escrow service, or exposing transaction records destroys what took operators years to build</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The criminal stock exchange that provides the trust infrastructure making all transactions in the ecosystem possible — operating continuously with no law enforcement action for over a decade.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-11" onclick="toggleDos(11)">
+  <div class="dossier-head">
+    <div class="dos-num">11</div>
+    <div class="dos-title">
+      <div class="dos-name">The Money Laundromat</div>
+      <div class="dos-aka">Crypto Mixers — Module 11</div>
+    </div>
+    <span class="dos-tag badge bHIGH">Phase B</span>
+    <span class="dos-tag badge bHIGH">HIGH</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>When the FBI seized Chipmixer's servers in March 2023, they found 7 servers and $46 million in cryptocurrency. What they did not find was the $3 billion that had already passed through. Chipmixer had processed ransomware proceeds, darknet market funds, and North Korean state-sanctioned crypto theft for years. It charged between 1-3% for its services and ran entirely without KYC. The operators were known pseudonymously to the criminal community. Their service was essential. When it went down, the ecosystem shifted to Sinbad.io within weeks. Sinbad was seized nine months later. The ecosystem shifted again.</p></div>
+    <h5>How It Works</h5>
+    <p>Cryptocurrency mixing services pool funds from multiple criminal and (sometimes unwitting) legitimate sources and return equivalent amounts, breaking the blockchain traceability chain. Custodial mixers take physical possession of funds. Decentralized mixers (Tornado Cash, CoinJoin protocols) use smart contracts with no central operator — harder to seize, harder to prosecute, harder to disrupt.</p>
+    <h5>Why It Matters</h5>
+    <p>Without mixing, every ransom payment is a public blockchain transaction traceable from the victim's wallet to the criminal's wallet. Mixing is the technical mechanism that makes crypto criminally useful.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Tornado Cash designation (Aug 2022): first-ever OFAC designation of a smart contract. Partial operational impact — the protocol kept running, but fiat on/off ramps for US-nexus actors were severed</li><li>Chipmixer seizure (Mar 2023): $3B+ in criminal proceeds traced. 7 servers. Largest single mixer enforcement. Ecosystem shifted to decentralized alternatives within weeks</li><li>72% non-payment rate in 2025 (28% paid, record low) correlates with sustained financial-layer enforcement. Attacks up 50% YoY; payments held flat at ~$813M. Strongest available evidence that financial-layer disruption changes the ecosystem's economics</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The money laundromat that makes ransomware crypto untraceable — and the enforcement of which, along with exchanges, correlates with the record-low 28% victim payment rate in 2025.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-12" onclick="toggleDos(12)">
+  <div class="dossier-head">
+    <div class="dos-num">12</div>
+    <div class="dos-title">
+      <div class="dos-name">The Moscow Back Office</div>
+      <div class="dos-aka">OTC Brokers — Module 12</div>
+    </div>
+    <span class="dos-tag badge bCRIT">Phase A</span>
+    <span class="dos-tag badge bCRIT">CRITICAL</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>Garantex operated out of a Moscow office tower. After the US Treasury designated it in April 2022, it kept operating out of the same office tower. For three years, it processed hundreds of millions of dollars in criminal cryptocurrency proceeds from that building, under that designation, with full knowledge of Russian authorities. It took until March 2025 — 1,064 days after designation — for Europol and the US DOJ to coordinate the physical seizure of its servers and the arrest of its administrators. Three years. The designation was not the disruption. The arrest was the disruption.</p></div>
+    <h5>How It Works</h5>
+    <p>OTC brokers provide bilateral, personalized cryptocurrency-to-fiat conversion for large holdings — no KYC, no reporting, no questions. High-volume criminal OTC is concentrated in Russia, particularly Moscow and St. Petersburg, where brokers operate with physical offices and in-person settlement. Fees run 1-5%. SUEX, Chatex, Garantex, and Cryptex represent the documented enforcement sequence from 2021-2024.</p>
+    <h5>Why It Matters</h5>
+    <p>OTC brokers are the primary mechanism for converting large ransomware payments into spendable fiat currency. Without them, the money exists only as cryptocurrency that cannot safely enter the legitimate economy.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>SUEX designation (Sep 2021): first cryptocurrency exchange designation; processed hundreds of millions in ransomware proceeds; established the OTC enforcement playbook</li><li>Garantex lesson: designated April 2022, seized March 2025. Three years of continued operation under designation. The gap between designation and physical enforcement is the primary vulnerability of the designation model</li><li>Tether T3 real-time USDT freeze: Tether has demonstrated willingness to freeze USDT at specific addresses. Using this at wallet identification — not post-enforcement — is the underused lever that no one has fully exploited yet</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The Moscow back offices that convert criminal cryptocurrency to spendable fiat — operating under US sanctions for three years before anyone physically closed the door.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-13" onclick="toggleDos(13)">
+  <div class="dossier-head">
+    <div class="dos-num">13</div>
+    <div class="dos-title">
+      <div class="dos-name">The Corrupt Banks</div>
+      <div class="dos-aka">Exchanges and Launderers — Module 13</div>
+    </div>
+    <span class="dos-tag badge bCRIT">Phase A</span>
+    <span class="dos-tag badge bCRIT">CRITICAL</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>BTC-e processed four billion dollars in criminal proceeds. Its operator, Alexander Vinnik, was a Russian national who made the mistake of vacationing in Greece in 2017. US and Greek authorities arrested him on the beach. He subsequently spent years fighting extradition to multiple countries simultaneously — France, Greece, the US, Russia — in a jurisdictional battle that itself illustrates how difficult it is to pursue even identified, arrested criminal operators in this ecosystem. He was eventually extradited to the United States in 2022.</p></div>
+    <h5>How It Works</h5>
+    <p>Non-compliant exchanges process criminal cryptocurrency at volume, converting it to fiat through automated systems rather than bilateral personal relationships. They are the industrial-scale version of OTC brokers — less personalized, higher throughput. BTC-e ($4B seized 2017), Bitzlato ($700M seized 2023), and Garantex (designated 2022, seized 2025) are the documented examples. Tether (USDT) has become the dominant currency at this layer — replacing Bitcoin as the preferred ransomware payment vehicle because of its price stability.</p>
+    <h5>Why It Matters</h5>
+    <p>Exchanges are the scaling mechanism for criminal cash-out. OTC handles large single transactions; exchanges handle volume. Both layers are required for the full proceeds to reach the real economy.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Coordinated OTC-plus-exchange action in the same enforcement window: this has not been done at scale. Each time one is designated, proceeds migrate to the other. Simultaneous action prevents displacement</li><li>Tether T3 real-time freeze: USDT freeze upon wallet identification, not post-enforcement, would eliminate the gap between when funds move and when enforcement catches up</li><li>The Bitzlato prosecution was the first use of FinCEN's 'special measures' authority against a virtual currency exchange — a new enforcement tool whose potential has not been fully exploited</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The corrupt exchange infrastructure that converts ransomware proceeds to fiat at scale — and whose disruption, coordinated with OTC enforcement, produced the 2024 payment decline.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-14" onclick="toggleDos(14)">
+  <div class="dossier-head">
+    <div class="dos-num">14</div>
+    <div class="dos-title">
+      <div class="dos-name">The Human Chain</div>
+      <div class="dos-aka">Mule Networks — Module 14</div>
+    </div>
+    <span class="dos-tag badge bMED">Phase C</span>
+    <span class="dos-tag badge bMEDI">MEDIUM</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>The mule recruiter posted on LinkedIn. The job description mentioned 'financial transaction processing' and 'remote work.' The pay was $3,000 a month. Thousands of people applied. The recruiter selected carefully: people with clean banking histories, no criminal record, plausible professional backgrounds. Their job was to receive wire transfers, withdraw cash, and send it somewhere else. Most of them had no idea they were moving ransomware proceeds. TRM Labs confirmed in 2024 that more than half of the funds entering mule accounts exit within one hour of arrival.</p></div>
+    <h5>How It Works</h5>
+    <p>Mule networks are the human chain that converts criminal fiat into real-world untraceable assets. Three tiers operate simultaneously. Professional herder operators manage networks of mule accounts and understand exactly what they are doing. Semi-witting recruits — hired through fake job ads — move money believing it is legitimate employment. The integration layer converts the proceeds into real estate, luxury goods, shell company capitalization, and financial instruments.</p>
+    <h5>Why It Matters</h5>
+    <p>Without mule networks, criminal proceeds remain traceable to cryptocurrency wallets or bank accounts subject to seizure. Mule networks complete the conversion to real-world wealth that cannot be easily recovered.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Herder-tier prosecution disrupts ransomware, fraud, and business email compromise simultaneously — the same networks serve multiple crime types. A single herder takedown has cross-ecosystem value</li><li>Integration-stage enforcement operates entirely within Western jurisdiction: real estate registries, beneficial ownership disclosure requirements, luxury goods AML. No Russian cooperation required</li><li>50%+ of funds exit within 1 hour: the implication is that post-receipt recovery requires real-time bank-to-bank freeze capability, pre-negotiated and ready to activate. It is not a future capability problem — it is a process problem</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The human chain that converts cryptocurrency proceeds into real estate, cash, and luxury goods — and whose disruption requires no Russian cooperation.</div>
+  </div>
+</div>
+
+<div class="dossier" id="dos-15" onclick="toggleDos(15)">
+  <div class="dossier-head">
+    <div class="dos-num">15</div>
+    <div class="dos-title">
+      <div class="dos-name">The Negotiation Table</div>
+      <div class="dos-aka">Negotiation Services — Module 15</div>
+    </div>
+    <span class="dos-tag badge bX">Cross-Cut</span>
+    <span class="dos-tag badge bMEDI">MEDIUM</span>
+  </div>
+  <div class="dos-body">
+    <div class="scene"><div class="scene-label">Scene</div><p>The incident response firm got the call at 2am. The hospital's systems were down. Patient records inaccessible. The ransom note, found on every workstation, demanded $4.5 million in Bitcoin within 72 hours. The IR firm's lead negotiator began typing. She had been in this exact situation hundreds of times. She knew the group's negotiation patterns — how fast they move, where they flex, what they will accept. She also knew that 70% of the time, she would find a way through this without the hospital paying a dollar. She was right.</p></div>
+    <h5>How It Works</h5>
+    <p>The negotiation module has two sides that operate simultaneously. Criminal side: RaaS core teams field dedicated internal negotiation teams who manage victim communications, apply DLS pressure, process payments. Some rogue recovery firms deceptively accept victim fees while secretly paying ransoms, claiming to have 'decrypted' data through proprietary means. Defender side: legitimate IR firms (Coveware, GuidePoint, CyberSecOp) negotiate professionally, achieving 70%+ non-payment rates for professionally managed incidents versus an estimated 30-40% without support.</p>
+    <h5>Why It Matters</h5>
+    <p>The payment decision occurs at this node. Everything else in the ecosystem is prologue to this moment. Scaling professional access to this node is the single highest-ROI disruption action that requires no Russian cooperation, no law enforcement action, and no technical capability.</p>
+    <h5>What the Record Shows</h5>
+    <ul><li>Every percentage point of non-payment rate growth at ecosystem scale represents hundreds of millions in avoided payments. 72% ecosystem-wide in 2025 (record; 28% paid). 80%+ for professionally managed incidents. The gap has narrowed but the absolute dollar value of each percentage point remains enormous</li><li>Rogue recovery operator enforcement (FTC, SEC): firms that secretly pay ransoms while claiming to decrypt data commit fraud on victims AND provide economic support to criminal operators. Both problems are addressable in Western jurisdiction</li><li>Scaling professional IR access to SMBs and critical infrastructure sectors is a policy lever, not a technical one — it requires CISA/NCSC coordination and potentially subsidized access programs for under-resourced sectors</li></ul>
+    <div style="margin-top:14px;padding:10px 14px;background:#080d18;border-left:2px solid #2a4060;border-radius:2px;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5px;color:#c8a040;font-style:italic;">The negotiation table where the ransom is either paid or avoided — and where professional support achieves 70%+ non-payment, the most powerful disruption lever not requiring Russian cooperation.</div>
+  </div>
+</div>
+</div>
+
+    
+<div class="chapter" id="s-money">
+  <div class="ch-label">Chapter Four</div>
+  <div class="ch-title">Follow the Money</div>
+  <div class="ch-deck">From the moment a victim sends Bitcoin to the moment it becomes a Moscow apartment — and the specific points where Western enforcement can intercept it.</div>
+
+  <p>Every ransomware payment begins as cryptocurrency and ends as real-world wealth. Between those two points, it passes through a series of criminal service providers who each take a cut, add a layer of obfuscation, and hand it to the next person in the chain. The chain is fast — in some cases, funds reach the real economy within hours of the victim paying. Here is how it moves.</p>
+
+  <div class="money-chain">
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#c85030;border-color:#e06040;"></div><div class="mc-line-seg"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#c85030;">Step 1 — Victim Pays</div><p>Cryptocurrency (increasingly USDT rather than Bitcoin, for price stability) sent to attacker-controlled wallets. Average payment: approximately $2.7M for large enterprise victims in 2024. 72% of victims declined to pay in 2025 — record high non-payment rate (28% paid). Each declined payment is a dollar the ecosystem does not receive, regardless of brand.</p></div>
+    </div>
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#b07030;border-color:#d09040;"></div><div class="mc-line-seg"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#b07030;">Step 2 — The Split</div><p>Within minutes, the RaaS core team splits the payment: 70-80% to the affiliate who deployed the ransomware; 20-30% retained by the core team who built and maintained the tools. The affiliate takes the operational risk. The core team takes the safe money. This is the franchise model that makes RaaS economically rational for all parties.</p></div>
+    </div>
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#8040a0;border-color:#a060c0;"></div><div class="mc-line-seg"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#9060b0;">Step 3 — The Wash (Module 11)</div><p>Funds enter mixing services to break the blockchain traceability chain. Chipmixer processed over $3 billion before its seizure in 2023. Its successors — Sinbad.io, and then decentralized alternatives like CoinJoin and cross-chain bridges — handle the next generation of proceeds. Custodial mixers can be seized. Decentralized protocols cannot. The ecosystem has noticed.</p></div>
+    </div>
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#8a7020;border-color:#c8a030;"></div><div class="mc-line-seg"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#b09030;">Step 4 — The Moscow Cashier (Module 12)</div><p>Large positions converted through OTC brokers in physical offices in Moscow and St. Petersburg. No KYC. No paper trail. A fee of 1-5% and an understanding that certain questions are not asked. SUEX (2021), Chatex (2021), Garantex (2022-2025), and Cryptex (2024) represent the documented enforcement sequence. The Garantex lesson: designated in April 2022, continued operating from the same Moscow address until March 2025. Designation is not seizure.</p></div>
+    </div>
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#6a8020;border-color:#90a830;"></div><div class="mc-line-seg"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#8a9830;">Step 5 — The Exchange (Module 13)</div><p>Volume conversion through non-compliant exchanges. BTC-e ($4 billion, seized 2017). Bitzlato ($700 million, seized 2023). Garantex again, at this layer too. Tether's T3 unit can freeze USDT in real time at specific wallet addresses — but this capability is used post-enforcement rather than at wallet identification, a gap that significantly reduces its impact.</p></div>
+    </div>
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#304a80;border-color:#4a6aaa;"></div><div class="mc-line-seg"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#5a7aaa;">Step 6 — The Human Chain (Module 14)</div><p>Fiat layered through mule account chains. Professional herder operators manage networks of recruited mules who move funds through bank accounts, believing they are doing legitimate financial processing work. Over 50% of mule-linked funds exit within one hour of receipt. Recovery at this stage requires real-time bank-to-bank freeze capability that is pre-negotiated and ready to activate — not a future capability problem, a current process problem.</p></div>
+    </div>
+    <div class="mc-step">
+      <div class="mc-line"><div class="mc-dot" style="background:#206040;border-color:#308050;"></div></div>
+      <div class="mc-content"><div class="mc-step-label" style="color:#408060;">Step 7 — Real Economy Integration</div><p>Proceeds enter the legitimate economy: real estate purchases, luxury goods, shell company capitalization, financial instruments. Conti's internal messages, leaked in 2022, documented Wizard Spider's property portfolio and shell company network in specific detail. Integration-stage action operates entirely within Western jurisdiction — no Russian cooperation required. Beneficial ownership registries, real estate AML requirements, and luxury goods reporting are the tools.</p></div>
+    </div>
+  </div>
+
+  <div class="intel">
+    <div class="intel-label">The Untested High-Value Action</div>
+    <p>Coordinated OTC-plus-exchange designation in the same enforcement window — simultaneous, not sequential — has not been done at scale. Each time one layer is designated, proceeds migrate to the other. Both layers depend on Russian jurisdiction for their physical operations. Both can be designated simultaneously. The Garantex lesson applies to both: physical enforcement must follow designation within 12-18 months, or the gap allows continued operation. The Tether T3 real-time freeze, applied at wallet identification rather than post-enforcement, is the single most underused lever available today.</p>
+  </div>
+</div>
+
+    
+<div class="chapter" id="s-russia">
+  <div class="ch-label">Chapter Five</div>
+  <div class="ch-title">The Roof</div>
+  <div class="ch-deck">Why Russian jurisdiction matters, what the FSB actually provides, and what Western actors can do without asking Moscow's permission.</div>
+
+  <p>The Russian word for it is <em>krysha</em> — roof. In organized crime, it means protection provided by a more powerful party. In the ransomware context, it describes the relationship between RaaS operators and the Russian state apparatus: FSB officers are aware of ransomware operations targeting Western victims, do not enforce against them, and in some cases benefit from them through intelligence access or plausible deniability cover for state-directed operations.</p>
+
+  <p>This is not the same as the Russian state directing ransomware attacks. Most ransomware operations are financially motivated criminal enterprises that happen to operate in a jurisdiction that protects them from Western law enforcement. The FSB's interest is primarily intelligence collection and the strategic advantage of deniable capability that criminal ransomware operators provide. The operators' interest is a quiet life in a country that will not extradite them.</p>
+
+  <div class="pullquote">
+    <p>"The CEO of Zservers — one of the most significant bulletproof hosting providers supporting ransomware infrastructure — publicly stated that Russian state agencies were aware of his operations. He was not making a complaint. He was offering a guarantee to prospective clients."</p>
+    <cite>— OFAC Designation Documentation, February 2024</cite>
+  </div>
+
+  <h3>What the Protection Actually Provides</h3>
+  <p>The Krysha model offers operators four concrete things:</p>
+  <ul class="prose-list">
+    <li><strong>A domestic non-prosecution guarantee.</strong> No Russian court will pursue a ransomware operator for crimes against Western victims. This has held without exception across the entire documented history of the ecosystem.</li>
+    <li><strong>An extradition shield.</strong> Russia's constitution prohibits the extradition of Russian citizens. Every Russian-national ransomware operator who remains inside Russia is unreachable by Western prosecution, regardless of the quality of the evidence.</li>
+    <li><strong>Physical infrastructure protection.</strong> BPH providers, OTC brokers, and exchanges that operate physically within Russia can continue operating even after Western financial designation. Garantex proved this for 1,064 days.</li>
+    <li><strong>Reconstitution freedom.</strong> When a brand is disrupted, core team members can regroup, relaunch, and recruit new affiliates without fear of domestic interference. Conti dissolved into six successor groups in 90 days. All operated from Russia. All continued operating.</li>
+  </ul>
+
+  <h3>What the Protection Does Not Provide</h3>
+  <p>The protection is not absolute, and its limits are important:</p>
+  <ul class="prose-list">
+    <li><strong>FSB arrests are possible when politically motivated.</strong> REvil was briefly arrested in January 2022 after US diplomatic pressure following Colonial Pipeline and Kaseya. The arrests lasted months. The charges were subsequently dropped. This was not law enforcement — it was political signaling, and both sides understood it as such.</li>
+    <li><strong>Operators arrested outside Russia face prosecution.</strong> Alexander Vinnik (BTC-e) was arrested in Greece. Mikhail Vasinskyi (REvil/Kaseya) was arrested in Poland. The protection only covers the geography. Operators who travel to non-cooperative third countries become vulnerable.</li>
+    <li><strong>Western-nexus financial assets are seizable.</strong> OFAC designations, Tether freezes, and exchange seizures work on assets with Western financial connections regardless of where the operators physically are.</li>
+  </ul>
+
+  <h3>What Works Without Russian Cooperation</h3>
+  <p>A substantial proportion of the most effective disruption tools available require zero Russian cooperation. This is underappreciated in the policy conversation:</p>
+  <ul class="prose-list">
+    <li><strong>Upstream ISP depeering of BPH providers.</strong> Requires only Tier-1 carrier cooperation — which is entirely within Western jurisdiction. McColo depeering (2008) remains the gold standard: 75% global spam reduction within hours.</li>
+    <li><strong>OFAC designation and Tether T3 freeze.</strong> Severs Western financial access and freezes USDT at specific wallet addresses. Works regardless of operator location.</li>
+    <li><strong>Non-payment advocacy and professional IR scaling.</strong> Operates entirely on the victim side. 70% non-payment rate for professionally managed incidents versus 35% ecosystem-wide. Scaling access to under-resourced organizations is a policy lever, not a technical one.</li>
+    <li><strong>Integration-stage AML enforcement.</strong> Real estate registries, beneficial ownership requirements, luxury goods reporting — all entirely within Western jurisdiction.</li>
+    <li><strong>Forum infiltration and trust manipulation.</strong> Intelligence operations. The Conti leak burned the Conti ecosystem more effectively than any technical action in the period — and it required human intelligence penetration, not law enforcement cooperation.</li>
+  </ul>
+</div>
+
+    
+<div class="chapter" id="s-takedown">
+  <div class="ch-label">Chapter Six</div>
+  <div class="ch-title">How to Take Them Down</div>
+  <div class="ch-deck">What has worked, what hasn't, and the specific actions that degrade the ecosystem durably rather than temporarily.</div>
+
+  <h3>The Hive Model — The Gold Standard</h3>
+  <p>In the summer of 2022, the FBI quietly obtained access to Hive ransomware's infrastructure. For seven months, they watched. They collected decryption keys. They identified victims. And when victims contacted Hive to negotiate ransom payments, the FBI quietly provided them with decryption keys — before anyone paid. By the time the FBI publicly seized Hive's servers in January 2023, the operation had provided decryption keys to more than 300 victims and avoided an estimated $130 million in ransom payments.</p>
+
+  <p>Hive never reconstituted. It is the only major RaaS brand in the historical record that was disrupted and did not come back. The reason is not the server seizure — server seizures produce 30-90 day disruptions, reliably. The reason is that the FBI had seven months to identify and warn operators and victims in ways that permanently disrupted the trust relationships that made Hive functional. The operational intelligence collected during those seven months informed subsequent operations against affiliated actors.</p>
+
+  <div class="pullquote">
+    <p>"We hacked the hackers." — FBI Director Christopher Wray, January 2023</p>
+    <cite>— Department of Justice Press Release, January 26, 2023</cite>
+  </div>
+
+  <h3>The Cronos Model — Effective But Not Durable</h3>
+  <p>Operation Cronos (February 2024) took down LockBit. Thirty-four servers seized. One thousand decryption keys recovered. Affiliates exposed by name on the seized leak site. The countdown timers on LockBit's victim listings were reversed to count down to the revelation of LockBit's administrator's identity — a piece of psychological warfare that deserves recognition.</p>
+
+  <p>Within sixty to ninety days, LockBit's affiliates had largely migrated to RansomHub. LockBit itself attempted a relaunch with diminished capacity. The brand was severely damaged. The ecosystem absorbed the disruption. This is the pattern for brand-level takedowns without Phase A/B financial pressure: significant short-term impact, limited long-term durability.</p>
+
+  <h3>The Garantex Lesson — Designation Is Not Enough</h3>
+  <p>On April 5, 2022, OFAC designated Garantex. On March 6, 2025, Europol and the DOJ finally seized Garantex's servers and arrested its administrators. In between: 1,064 days of continued operation from the same Moscow office building, processing hundreds of millions of dollars in criminal proceeds, under active sanctions, with the full knowledge of Russian authorities.</p>
+
+  <p>The lesson is structural, not specific to Garantex: financial designation without physical enforcement within 12-18 months does not stop operations. It inconveniences them. Every currently-designated entity that remains physically operational is an open gap in the enforcement record.</p>
+
+  <h3>The Numbers That Matter</h3>
+  <p>The 72% victim non-payment rate in 2025 (28% paid, record low) is the most important data point in the recent history of ransomware disruption. It correlates with sustained financial-layer enforcement — mixer and exchange actions, OTC designation — and growing non-payment advocacy and professional IR access. Attack volume rose 50% in 2025 while total payments held flat at ~$813M: the ecosystem is running harder for the same revenue. Causation is not proven, but the direction and magnitude are consistent with financial-layer enforcement producing ecosystem-level behavioral change, not just brand-level disruption that reconstitutes in 90 days.</p>
+
+  <h3>The Five Actions That Matter Most</h3>
+  <ul class="prose-list">
+    <li><strong>Scale professional IR access to under-resourced organizations.</strong> 70%+ non-payment rate for professionally managed incidents. 35% ecosystem-wide. That gap is the opportunity. CISA/NCSC coordination. Subsidized access programs for healthcare, education, and critical infrastructure sectors. No Russian cooperation required.</li>
+    <li><strong>Pursue simultaneous OTC-plus-exchange enforcement.</strong> When one is designated, proceeds migrate to the other. Both require physical enforcement within 12-18 months of designation, not years later.</li>
+    <li><strong>Deploy the Tether T3 freeze proactively.</strong> USDT freeze at wallet identification, not post-enforcement. The tool exists. The cooperation exists. The protocol for proactive use has not been fully developed.</li>
+    <li><strong>Exploit the Sophos VM template fingerprint.</strong> A single image underlying 7,000+ ransomware-linked servers. Proactive detection at scale. The infrastructure identification is done. The enforcement action is not.</li>
+    <li><strong>Pursue covert access before seizure.</strong> The Hive model. Seven months of victim support is worth more than a press release. Every decryption key distributed before seizure is a payment avoided, an operator's leverage destroyed, and a victim who does not contribute to the ecosystem's revenue.</li>
+  </ul>
+</div>
+
+    
+<div class="chapter" id="s-glossary">
+  <div class="ch-label">Reference</div>
+  <div class="ch-title">The Criminal Dictionary</div>
+  <div class="ch-deck">Terms you will encounter. Defined without euphemism.</div>
+  <div class="gloss">
+    <div class="ge"><div class="gt">RaaS</div><div class="gd">Ransomware-as-a-Service. A franchise model: core developers provide the tools; affiliates deploy them against victims and pay a 20-30% royalty on proceeds.</div></div>
+<div class="ge"><div class="gt">Affiliate</div><div class="gd">The field operator in the RaaS model. Does the actual network compromise and ransomware deployment. Keeps 70-80% of ransom proceeds.</div></div>
+<div class="ge"><div class="gt">IAB</div><div class="gd">Initial Access Broker. A specialist who compromises networks and sells the access to others rather than exploiting it directly.</div></div>
+<div class="ge"><div class="gt">BPH</div><div class="gd">Bulletproof Hosting. Infrastructure providers who guarantee non-cooperation with law enforcement and are explicitly marketed to criminal clients.</div></div>
+<div class="ge"><div class="gt">OTC Broker</div><div class="gd">Over-the-Counter cryptocurrency broker. Converts large positions to fiat without KYC. Concentrated in Moscow.</div></div>
+<div class="ge"><div class="gt">MaaS</div><div class="gd">Malware-as-a-Service. Any malware sold as a rental product — stealers, loaders, ransomware itself.</div></div>
+<div class="ge"><div class="gt">Double Extortion</div><div class="gd">The model introduced by Maze in 2019: encrypt data AND steal it, threatening publication to coerce payment even from organizations with good backups.</div></div>
+<div class="ge"><div class="gt">DLS</div><div class="gd">Data Leak Site. Dark web infrastructure where operators post stolen victim data as extortion pressure.</div></div>
+<div class="ge"><div class="gt">Krysha</div><div class="gd">Russian criminal slang for 'roof' — protection provided by state actors (FSB) through awareness and non-enforcement, not active direction.</div></div>
+<div class="ge"><div class="gt">Log</div><div class="gd">A package of stolen data from one infected machine — credentials, session tokens, system info — sold on dark web markets.</div></div>
+<div class="ge"><div class="gt">FUD</div><div class="gd">Fully Undetectable. Malware that has been obfuscated to evade antivirus and EDR at delivery. Burns quickly as AV vendors update signatures.</div></div>
+<div class="ge"><div class="gt">OFAC</div><div class="gd">Office of Foreign Assets Control. US Treasury division that administers sanctions. Cryptocurrency designations are the primary financial enforcement tool.</div></div>
+<div class="ge"><div class="gt">Mule</div><div class="gd">A person (witting or unwitting) who moves criminal proceeds through their bank accounts as part of a layering chain.</div></div>
+<div class="ge"><div class="gt">Vishing</div><div class="gd">Voice phishing. Phone calls — increasingly AI-generated — used to socially engineer victims into providing credentials or installing tools.</div></div>
+<div class="ge"><div class="gt">Depeering</div><div class="gd">Upstream carrier action cutting a downstream provider's internet access entirely. The McColo model. The gold standard for infrastructure disruption.</div></div>
+<div class="ge"><div class="gt">Dwell Time</div><div class="gd">The period between initial access and ransomware detonation. Has fallen from an average 16 days in 2021 to under 24 hours in some 2024 campaigns.</div></div>
+<div class="ge"><div class="gt">Non-payment Rate</div><div class="gd">Percentage of victims who decline to pay. 35% ecosystem-wide in 2024. 70%+ for professionally managed incidents.</div></div>
+<div class="ge"><div class="gt">Phase A/B/C</div><div class="gd">The three-phase disruption sequence: financial infrastructure (A), market infrastructure (B), operational infrastructure (C). Sequence is critical.</div></div>
+  </div>
+</div>
+
+    
+<div class="chapter" id="s-facts">
+  <div class="ch-label">Reference</div>
+  <div class="ch-title">Fast Facts</div>
+  <div class="ch-deck">The numbers, the operations, and the things that actually matter for a briefing.</div>
+
+  <h3>The Numbers</h3>
+  <div class="stat-strip">
+    <div class="stat-c red"><div class="stat-v">$813M</div><div class="stat-l">Confirmed 2025 ransom payments (Chainalysis)</div></div>
+    <div class="stat-c green"><div class="stat-v">72%</div><div class="stat-l">Non-payment rate 2025 — record high (28% paid)</div></div>
+    <div class="stat-c red"><div class="stat-v">7,500+</div><div class="stat-l">Victims named on DLS platforms in 2024</div></div>
+    <div class="stat-c green"><div class="stat-v">70%+</div><div class="stat-l">Non-payment rate with professional IR</div></div>
+    <div class="stat-c red"><div class="stat-v">$3B+</div><div class="stat-l">Criminal proceeds through Chipmixer (seized 2023)</div></div>
+    <div class="stat-c amber"><div class="stat-v">$100M+</div><div class="stat-l">MGM Resorts loss from one vishing call</div></div>
+  </div>
+
+  <h3>Operations That Defined the Period</h3>
+  <table class="at">
+    <thead><tr><th>Operation</th><th>Target</th><th>Year</th><th>The Real Outcome</th></tr></thead>
+    <tbody>
+      <tr><td>FBI Hive Infiltration</td><td>Hive RaaS</td><td>2022-23</td><td>7-month covert access. $130M in avoided payments. Hive did not reconstitute — the only documented case. The model to replicate.</td></tr>
+      <tr><td>Operation Cronos</td><td>LockBit</td><td>2024</td><td>34 servers. 1,000+ keys. Affiliates exposed. RansomHub absorbed them in 60-90 days. Effective disruption, not durable disruption.</td></tr>
+      <tr><td>Operation Endgame</td><td>IcedID, Bumblebee, SmokeLoader, Pikabot</td><td>2024</td><td>Largest loader takedown on record. Latrodectus was deployed within months. Demonstrated the value of simultaneous multi-family action.</td></tr>
+      <tr><td>Garantex Seizure</td><td>Garantex OTC/Exchange</td><td>2025</td><td>Seized 1,064 days after designation. Defines the gap problem. Designation without enforcement is inconvenience, not disruption.</td></tr>
+      <tr><td>Chipmixer Seizure</td><td>Chipmixer</td><td>2023</td><td>$3B+ in criminal proceeds. 7 servers. Largest mixer action. Ecosystem shifted to decentralized alternatives within weeks.</td></tr>
+      <tr><td>Zservers Designation</td><td>Zservers BPH</td><td>2024</td><td>Most significant BPH designation in history. Physical servers still in Russia. The designation is not the seizure.</td></tr>
+      <tr><td>LummaC2 Domain Seizure</td><td>LummaC2 stealer</td><td>2025</td><td>2,300+ domains. Microsoft DCU civil action. Largest stealer infrastructure action. Operations disrupted, reconstituting.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Five Things to Know Before Any Briefing</h3>
+  <ul class="prose-list">
+    <li><strong>Non-payment is the most powerful lever available.</strong> 70% non-payment for professionally managed incidents. 35% ecosystem-wide. Scaling access to professional IR is a policy decision, not a technical one, and it requires no Russian cooperation.</li>
+    <li><strong>Brand disruptions produce 30-90 day gaps, not permanent disruptions.</strong> The brand is a label. The affiliates, the infrastructure, the criminal relationships — those persist. Durable disruption requires financial and market layer pressure before and during operational actions.</li>
+    <li><strong>Designation without physical enforcement within 12-18 months does not stop operations.</strong> Garantex. Three years. Every currently-designated entity that remains physically operational is an open gap.</li>
+    <li><strong>The financial layer correlates with the record-low 72% non-payment rate in 2025 (28% paid).</strong> The strongest signal available that financial disruption changes ecosystem economics. Coordinated OTC-plus-exchange enforcement in the same window, with proactive Tether freezes, is the untested high-value action.</li>
+    <li><strong>The target is the ecosystem, not the brand.</strong> Attributing an attack to LockBit or RansomHub is less analytically useful than identifying which infrastructure nodes enabled it and which are actionable. Brands change. The nodes persist.</li>
+  </ul>
+</div>
+
+  </main>
+</div>
+<script>
+function scrollSec(id) {
+  const el = document.getElementById(id);
+  if (el) document.getElementById('main').scrollTo({top: el.offsetTop - 8, behavior:'smooth'});
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+}
+function toggleDos(id) {
+  document.getElementById('dos-'+id).classList.toggle('open');
+}
+function openDos(id) {
+  const el = document.getElementById('dos-'+id);
+  if (!el) return;
+  el.classList.add('open');
+  document.getElementById('main').scrollTo({top: el.offsetParent.offsetTop + el.offsetTop - 12, behavior:'smooth'});
+}
+const searchBox = document.getElementById('search-box');
+if (searchBox) {
+  searchBox.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    document.querySelectorAll('.highlight').forEach(el => { el.outerHTML = el.innerHTML; });
+    if (q.length < 2) return;
+    const main = document.getElementById('main');
+    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+      if (!node.parentElement || ['SCRIPT','STYLE'].includes(node.parentElement.tagName)) return;
+      const idx = node.textContent.toLowerCase().indexOf(q);
+      if (idx === -1) return;
+      const span = document.createElement('span');
+      const before = document.createTextNode(node.textContent.substring(0, idx));
+      const match = document.createElement('mark');
+      match.className = 'highlight';
+      match.textContent = node.textContent.substring(idx, idx + q.length);
+      const after = document.createTextNode(node.textContent.substring(idx + q.length));
+      span.appendChild(before); span.appendChild(match); span.appendChild(after);
+      node.parentNode.replaceChild(span, node);
+    });
+    const first = main.querySelector('.highlight');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+}
+const main = document.getElementById('main');
+const secs = ['s-open','s-org','s-job','s-cast','s-money','s-russia','s-takedown','s-glossary','s-facts'];
+main && main.addEventListener('scroll', () => {
+  let active = secs[0];
+  secs.forEach(id => { const el = document.getElementById(id); if (el && el.offsetTop - 60 <= main.scrollTop) active = id; });
+  document.querySelectorAll('.nav-link:not(.nav-sub)').forEach(l => l.classList.remove('active'));
+  const idx = secs.indexOf(active);
+  const links = document.querySelectorAll('.nav-link:not(.nav-sub)');
+  if (links[idx]) links[idx].classList.add('active');
+});
+</script>
+<script data-goatcounter="https://ransomwareedp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
