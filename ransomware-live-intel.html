@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Intelligence Feed — Ransomware Ecosystem</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #070b16;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: #c0cfe0;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+#header {
+  border-bottom: 1px solid #1a2a44;
+  padding: 28px 48px 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+.title-block h1 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #5a9acc;
+  margin-bottom: 6px;
+}
+.title-block .project-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: #d6e5f4;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.title-block .tagline {
+  font-size: 12px;
+  color: #5e7a98;
+  line-height: 1.6;
+  max-width: 560px;
+}
+.header-meta {
+  text-align: right;
+  font-size: 10.5px;
+  color: #4e6e8e;
+  line-height: 2;
+  flex-shrink: 0;
+}
+.header-meta .meta-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #2e4a68;
+}
+#nav {
+  padding: 0 48px;
+  border-bottom: 1px solid #0f1a30;
+  display: flex;
+  gap: 0;
+  background: #060d1a;
+  align-items: center;
+}
+.nav-link {
+  display: inline-block;
+  padding: 11px 18px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #4e6e8e;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 160ms, border-color 160ms;
+  white-space: nowrap;
+}
+.nav-link:hover, .nav-link.active {
+  color: #9ac8e8;
+  border-bottom-color: #2a5a88;
+}
+.nav-live-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #3a9a6a;
+  margin-right: 7px;
+  animation: pulse 2s infinite;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── MAIN ─────────────────────────────────────────────────────── */
+#main {
+  padding: 40px 48px 64px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ── STATS BAR ────────────────────────────────────────────────── */
+#stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.stat-card {
+  background: #0a1220;
+  border: 1px solid #162236;
+  border-radius: 5px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1a3a5c, #3a7aaa, #1a3a5c);
+}
+.stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #2e4a68;
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #7ab0d8;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-value.loading { color: #1e3a58; font-size: 22px; }
+.stat-sub {
+  font-size: 10px;
+  color: #2e4a68;
+  margin-top: 5px;
+}
+
+/* ── TWO-COL LAYOUT ───────────────────────────────────────────── */
+#content-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── SECTION HEADERS ──────────────────────────────────────────── */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #0f1a30;
+}
+.panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #5a9acc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-count {
+  font-size: 9px;
+  color: #2e4a68;
+  padding: 2px 8px;
+  border: 1px solid #1a3050;
+  border-radius: 10px;
+}
+
+/* ── FILTERS ──────────────────────────────────────────────────── */
+#filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-select {
+  background: #0a1220;
+  border: 1px solid #1a3050;
+  border-radius: 4px;
+  color: #6a8aaa;
+  font-size: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.filter-select:focus {
+  border-color: #2a5a88;
+  color: #9ac8e8;
+}
+.filter-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2e4a68;
+}
+#search-input {
+  background: #0a1220;
+  border: 1px solid #1a3050;
+  border-radius: 4px;
+  color: #9ab0c8;
+  font-size: 11px;
+  padding: 6px 12px;
+  outline: none;
+  font-family: inherit;
+  flex: 1;
+  min-width: 160px;
+}
+#search-input::placeholder { color: #2a4060; }
+#search-input:focus { border-color: #2a5a88; }
+.filter-clear {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2e4a68;
+  cursor: pointer;
+  padding: 6px 10px;
+  border: 1px solid #1a2a44;
+  border-radius: 4px;
+  background: none;
+  font-family: inherit;
+  transition: color 150ms, border-color 150ms;
+}
+.filter-clear:hover { color: #5a8aaa; border-color: #2a4a68; }
+
+/* ── VICTIM ROWS ──────────────────────────────────────────────── */
+#victim-list { display: flex; flex-direction: column; gap: 6px; }
+.victim-row {
+  background: #0a1220;
+  border: 1px solid #111e32;
+  border-radius: 4px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: start;
+  transition: border-color 140ms, background 140ms;
+  cursor: default;
+}
+.victim-row:hover {
+  border-color: #1e3a5a;
+  background: #0c1828;
+}
+.victim-row.new-entry {
+  animation: slideIn 0.4s ease;
+  border-color: #1a3a5a;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.victim-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #b0c8e0;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.victim-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.victim-group {
+  font-size: 10px;
+  font-weight: 700;
+  color: #4a7aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.victim-country {
+  font-size: 10px;
+  color: #3a5878;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.victim-sector {
+  font-size: 9px;
+  color: #2e4a68;
+  padding: 1px 6px;
+  border: 1px solid #1a2e48;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.victim-website {
+  font-size: 9.5px;
+  color: #2e4a68;
+}
+.victim-right { text-align: right; flex-shrink: 0; }
+.victim-date {
+  font-size: 10px;
+  color: #2e4a68;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.victim-new-badge {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #3a9a6a;
+  border: 1px solid #1a5a3a;
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* ── LOAD MORE ────────────────────────────────────────────────── */
+#load-more-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1px solid #1a2e48;
+  border-radius: 4px;
+  color: #3a5878;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 150ms, color 150ms;
+}
+#load-more-btn:hover { border-color: #2a4a6a; color: #6a8aaa; }
+
+/* ── GROUPS PANEL ─────────────────────────────────────────────── */
+#groups-panel { display: flex; flex-direction: column; gap: 6px; }
+.group-row {
+  background: #0a1220;
+  border: 1px solid #111e32;
+  border-radius: 4px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color 140ms;
+}
+.group-row:hover { border-color: #1e3a5a; }
+.group-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8ab0d0;
+}
+.group-status {
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.group-status.active {
+  color: #3a9a6a;
+  border: 1px solid #1a5a3a;
+  background: rgba(40, 120, 80, 0.08);
+}
+.group-status.unknown {
+  color: #3a5878;
+  border: 1px solid #1a2e48;
+}
+.group-victims {
+  font-size: 9px;
+  color: #2e4a68;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── LAST UPDATED ────────────────────────────────────────────── */
+#last-updated {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #0f1a30;
+  font-size: 10px;
+  color: #1e3a58;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── SKELETON LOADER ─────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #0c1828 25%, #0e1e34 50%, #0c1828 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 3px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-row {
+  height: 60px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+}
+
+/* ── ERROR STATE ──────────────────────────────────────────────── */
+.error-msg {
+  padding: 20px;
+  text-align: center;
+  color: #3a5878;
+  font-size: 11px;
+  border: 1px solid #0f1a30;
+  border-radius: 4px;
+}
+
+/* ── CYBERATTACKS TAB ─────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #0f1a30;
+}
+.tab-btn {
+  padding: 9px 16px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #3a5878;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  border-bottom: 2px solid transparent;
+  transition: color 150ms, border-color 150ms;
+  position: relative;
+  bottom: -1px;
+}
+.tab-btn:hover { color: #7ab0d8; }
+.tab-btn.active { color: #5a9acc; border-bottom-color: #2a5a88; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  #content-grid { grid-template-columns: 1fr; }
+  #stats-bar { grid-template-columns: repeat(2, 1fr); }
+  #main { padding: 24px 20px 48px; }
+  #header { padding: 20px; flex-direction: column; align-items: flex-start; }
+  #nav { padding: 0 20px; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div class="title-block">
+    <h1>Ransomware Ecosystem Dependency Project</h1>
+    <div class="project-name">Live Intelligence Feed</div>
+    <div class="tagline">
+      Real-time ransomware activity — recent victims, active groups, and cyberattack data
+      sourced from ransomware.live. Auto-refreshes every 5 minutes.
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-label">Source</div>
+    ransomware.live
+    <br>
+    <div class="meta-label">Refresh</div>
+    <span id="refresh-countdown">5:00</span>
+    <br>
+    <div class="meta-label">Status</div>
+    <span id="api-status">Connecting...</span>
+  </div>
+</div>
+
+<nav id="nav">
+  <a class="nav-link" href="index.html">&#8592; Repository Home</a>
+  <a class="nav-link active"><span class="nav-live-dot"></span>Live Intel</a>
+  <a class="nav-link" href="#victims">Recent Victims</a>
+  <a class="nav-link" href="#groups">Active Groups</a>
+</nav>
+
+<div id="main">
+
+  <!-- STATS BAR -->
+  <div id="stats-bar">
+    <div class="stat-card">
+      <div class="stat-label">Active Groups Tracked</div>
+      <div class="stat-value loading" id="stat-groups">—</div>
+      <div class="stat-sub">ransomware groups</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Recent Victim Posts</div>
+      <div class="stat-value loading" id="stat-victims">—</div>
+      <div class="stat-sub">last batch loaded</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Countries Affected</div>
+      <div class="stat-value loading" id="stat-countries">—</div>
+      <div class="stat-sub">in recent victims</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Most Active Group</div>
+      <div class="stat-value loading" style="font-size:16px;padding-top:6px;" id="stat-top-group">—</div>
+      <div class="stat-sub" id="stat-top-group-count"></div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT GRID -->
+  <div id="content-grid">
+
+    <!-- LEFT: VICTIMS FEED -->
+    <div id="victims">
+      <div class="panel-header">
+        <span class="panel-title">
+          <span class="nav-live-dot"></span>
+          Recent Victim Posts
+        </span>
+        <span class="panel-count" id="victim-count-badge">Loading...</span>
+      </div>
+
+      <!-- TABS -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('victims')">Ransomware Victims</button>
+        <button class="tab-btn" onclick="switchTab('cyberattacks')">Cyberattacks</button>
+      </div>
+
+      <!-- FILTERS -->
+      <div id="filter-bar">
+        <span class="filter-label">Filter:</span>
+        <input type="text" id="search-input" placeholder="Search victim name or website..." oninput="applyFilters()">
+        <select class="filter-select" id="filter-group" onchange="applyFilters()">
+          <option value="">All Groups</option>
+        </select>
+        <select class="filter-select" id="filter-country" onchange="applyFilters()">
+          <option value="">All Countries</option>
+        </select>
+        <button class="filter-clear" onclick="clearFilters()">Clear</button>
+      </div>
+
+      <!-- VICTIM LIST -->
+      <div id="victim-list">
+        <!-- skeletons -->
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+      </div>
+
+      <button id="load-more-btn" onclick="loadMore()" style="display:none;">Load More Victims</button>
+    </div>
+
+    <!-- RIGHT: GROUPS PANEL -->
+    <div id="groups">
+      <div class="panel-header">
+        <span class="panel-title">Active Groups</span>
+        <span class="panel-count" id="groups-count-badge">Loading...</span>
+      </div>
+      <div id="groups-panel">
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+      </div>
+    </div>
+
+  </div><!-- end content-grid -->
+
+  <div id="last-updated">
+    <span class="nav-live-dot" style="animation:none;opacity:0.4;"></span>
+    Data provided by <a href="https://ransomware.live" target="_blank" style="color:#2e4a68;text-decoration:none;">ransomware.live</a>
+    &nbsp;|&nbsp; Last fetched: <span id="fetch-time">—</span>
+    &nbsp;|&nbsp; All times UTC
+  </div>
+
+</div><!-- end main -->
+
+<script>
+const API_BASE = 'https://api-pro.ransomware.live/v2';
+const API_KEY  = '696a6e71-2a23-4840-aa16-4b030ec716e1';
+const API_HEADERS = { 'X-Api-Key': API_KEY };
+let allVictims = [];
+let allCyberattacks = [];
+let filteredVictims = [];
+let currentTab = 'victims';
+let visibleCount = 40;
+let refreshInterval;
+let countdownInterval;
+let countdownSeconds = 300;
+
+// ── COUNTRY CODE LOOKUP ──────────────────────────────────────────
+const countryNames = {
+  US:'United States',GB:'United Kingdom',DE:'Germany',FR:'France',CA:'Canada',
+  AU:'Australia',IT:'Italy',ES:'Spain',NL:'Netherlands',CH:'Switzerland',
+  SE:'Sweden',NO:'Norway',DK:'Denmark',FI:'Finland',BE:'Belgium',AT:'Austria',
+  PL:'Poland',CZ:'Czech Republic',RO:'Romania',HU:'Hungary',PT:'Portugal',
+  GR:'Greece',BR:'Brazil',MX:'Mexico',AR:'Argentina',CL:'Chile',CO:'Colombia',
+  JP:'Japan',KR:'South Korea',CN:'China',IN:'India',SG:'Singapore',TW:'Taiwan',
+  HK:'Hong Kong',TH:'Thailand',MY:'Malaysia',ID:'Indonesia',PH:'Philippines',
+  ZA:'South Africa',NG:'Nigeria',EG:'Egypt',IL:'Israel',TR:'Turkey',
+  SA:'Saudi Arabia',AE:'UAE',RU:'Russia',UA:'Ukraine',LT:'Lithuania',
+  LV:'Latvia',EE:'Estonia',SK:'Slovakia',SI:'Slovenia',HR:'Croatia',
+  RS:'Serbia',BG:'Bulgaria',MK:'North Macedonia',AL:'Albania',BA:'Bosnia',
+  ME:'Montenegro',NZ:'New Zealand',IR:'Iran',PK:'Pakistan',BD:'Bangladesh',
+  LK:'Sri Lanka',VN:'Vietnam',MM:'Myanmar',KE:'Kenya',GH:'Ghana',TZ:'Tanzania',
+  ET:'Ethiopia',MA:'Morocco',TN:'Tunisia',DZ:'Algeria',LY:'Libya',
+  QA:'Qatar',KW:'Kuwait',BH:'Bahrain',JO:'Jordan',LB:'Lebanon',
+  CY:'Cyprus',MT:'Malta',LU:'Luxembourg',IS:'Iceland',IE:'Ireland',
+  CL:'Chile','--':'Unknown'
+};
+
+function getCountryName(code) {
+  if (!code) return '';
+  return countryNames[code.toUpperCase()] || code.toUpperCase();
+}
+
+// ── FETCH ────────────────────────────────────────────────────────
+async function fetchData() {
+  document.getElementById('api-status').textContent = 'Fetching...';
+  document.getElementById('api-status').style.color = '#3a6a9a';
+
+  try {
+    const [victimsRes, groupsRes, attacksRes] = await Promise.allSettled([
+      fetch(`${API_BASE}/recentvictims`, { headers: API_HEADERS }),
+      fetch(`${API_BASE}/groups`,        { headers: API_HEADERS }),
+      fetch(`${API_BASE}/recentcyberattacks`, { headers: API_HEADERS })
+    ]);
+
+    if (victimsRes.status === 'fulfilled' && victimsRes.value.ok) {
+      allVictims = await victimsRes.value.json();
+      if (!Array.isArray(allVictims)) allVictims = [];
+      renderVictims();
+      populateFilters();
+    } else {
+      document.getElementById('victim-list').innerHTML =
+        '<div class="error-msg">Could not load victim data from ransomware.live. The API may be temporarily unavailable.</div>';
+    }
+
+    if (groupsRes.status === 'fulfilled' && groupsRes.value.ok) {
+      const groups = await groupsRes.value.json();
+      renderGroups(Array.isArray(groups) ? groups : []);
+    }
+
+    if (attacksRes.status === 'fulfilled' && attacksRes.value.ok) {
+      allCyberattacks = await attacksRes.value.json();
+      if (!Array.isArray(allCyberattacks)) allCyberattacks = [];
+    }
+
+    document.getElementById('fetch-time').textContent = new Date().toUTCString().replace(' GMT','') + ' UTC';
+    document.getElementById('api-status').textContent = 'Live';
+    document.getElementById('api-status').style.color = '#3a9a6a';
+
+  } catch (e) {
+    document.getElementById('api-status').textContent = 'Error';
+    document.getElementById('api-status').style.color = '#9a3a3a';
+    document.getElementById('victim-list').innerHTML =
+      '<div class="error-msg">Network error connecting to ransomware.live. Check your connection and try refreshing.</div>';
+  }
+}
+
+// ── RENDER VICTIMS ───────────────────────────────────────────────
+function renderVictims() {
+  const now = new Date();
+  const cutoff24h = new Date(now - 24 * 60 * 60 * 1000);
+
+  // Apply filters
+  const searchVal = document.getElementById('search-input').value.toLowerCase();
+  const groupVal = document.getElementById('filter-group').value;
+  const countryVal = document.getElementById('filter-country').value;
+
+  filteredVictims = (currentTab === 'victims' ? allVictims : allCyberattacks).filter(v => {
+    const name = (v.victim || v.name || '').toLowerCase();
+    const site = (v.website || v.url || '').toLowerCase();
+    if (searchVal && !name.includes(searchVal) && !site.includes(searchVal)) return false;
+    if (groupVal && (v.group || '').toLowerCase() !== groupVal.toLowerCase()) return false;
+    if (countryVal && (v.country || '').toUpperCase() !== countryVal.toUpperCase()) return false;
+    return true;
+  });
+
+  document.getElementById('victim-count-badge').textContent =
+    `${filteredVictims.length.toLocaleString()} entries`;
+
+  const container = document.getElementById('victim-list');
+  const slice = filteredVictims.slice(0, visibleCount);
+
+  if (slice.length === 0) {
+    container.innerHTML = '<div class="error-msg">No entries match current filters.</div>';
+    document.getElementById('load-more-btn').style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = slice.map((v, i) => {
+    const attackDate = v.attackdate || v.date || v.published || '';
+    const isNew = attackDate ? new Date(attackDate) > cutoff24h : false;
+    const name = v.victim || v.name || v.title || 'Unknown';
+    const group = v.group || v.gang || '';
+    const country = v.country || '';
+    const sector = v.activity || v.sector || v.category || '';
+    const website = v.website || v.url || '';
+    const displayDate = attackDate ? attackDate.split('T')[0] : '';
+
+    return `<div class="victim-row${i < 3 && currentTab === 'victims' ? ' new-entry' : ''}">
+      <div>
+        <div class="victim-name">${escHtml(name)}</div>
+        <div class="victim-meta">
+          ${group ? `<span class="victim-group">${escHtml(group)}</span>` : ''}
+          ${country ? `<span class="victim-country">&#127760; ${escHtml(getCountryName(country))}</span>` : ''}
+          ${sector ? `<span class="victim-sector">${escHtml(sector)}</span>` : ''}
+          ${website ? `<span class="victim-website">${escHtml(website)}</span>` : ''}
+        </div>
+      </div>
+      <div class="victim-right">
+        <div class="victim-date">${displayDate}</div>
+        ${isNew ? '<span class="victim-new-badge">24h</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('load-more-btn').style.display =
+    filteredVictims.length > visibleCount ? 'block' : 'none';
+
+  // Update stats
+  updateStats();
+}
+
+function updateStats() {
+  const source = currentTab === 'victims' ? allVictims : allCyberattacks;
+  document.getElementById('stat-victims').textContent = source.length.toLocaleString();
+  document.getElementById('stat-victims').classList.remove('loading');
+
+  const countries = new Set(source.map(v => v.country).filter(Boolean));
+  document.getElementById('stat-countries').textContent = countries.size;
+  document.getElementById('stat-countries').classList.remove('loading');
+
+  // Top group
+  const groupCounts = {};
+  source.forEach(v => {
+    const g = v.group || v.gang || '';
+    if (g) groupCounts[g] = (groupCounts[g] || 0) + 1;
+  });
+  const topGroup = Object.entries(groupCounts).sort((a,b) => b[1]-a[1])[0];
+  if (topGroup) {
+    const el = document.getElementById('stat-top-group');
+    el.textContent = topGroup[0];
+    el.classList.remove('loading');
+    document.getElementById('stat-top-group-count').textContent = `${topGroup[1]} recent victims`;
+  }
+}
+
+// ── RENDER GROUPS ────────────────────────────────────────────────
+function renderGroups(groups) {
+  document.getElementById('stat-groups').textContent = groups.length;
+  document.getElementById('stat-groups').classList.remove('loading');
+
+  // Count victims per group from allVictims
+  const victimCounts = {};
+  allVictims.forEach(v => {
+    const g = (v.group || '').toLowerCase();
+    if (g) victimCounts[g] = (victimCounts[g] || 0) + 1;
+  });
+
+  // Sort: groups with most recent victims first
+  const sorted = [...groups].sort((a, b) => {
+    const ac = victimCounts[(a.name||'').toLowerCase()] || 0;
+    const bc = victimCounts[(b.name||'').toLowerCase()] || 0;
+    return bc - ac;
+  });
+
+  document.getElementById('groups-count-badge').textContent = `${groups.length} groups`;
+
+  document.getElementById('groups-panel').innerHTML = sorted.map(g => {
+    const name = g.name || g.group || 'Unknown';
+    const status = g.status || 'active';
+    const isActive = status.toLowerCase() === 'active' || !g.status;
+    const count = victimCounts[name.toLowerCase()];
+
+    return `<div class="group-row">
+      <span class="group-name">${escHtml(name)}</span>
+      <span class="group-status ${isActive ? 'active' : 'unknown'}">${isActive ? 'Active' : escHtml(status)}</span>
+      ${count ? `<span class="group-victims">${count} recent</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────
+function populateFilters() {
+  const groups = [...new Set(allVictims.map(v => v.group || '').filter(Boolean))].sort();
+  const countries = [...new Set(allVictims.map(v => v.country || '').filter(Boolean))].sort();
+
+  const gSel = document.getElementById('filter-group');
+  const existing = gSel.value;
+  gSel.innerHTML = '<option value="">All Groups</option>' +
+    groups.map(g => `<option value="${escHtml(g)}"${g===existing?'selected':''}>${escHtml(g)}</option>`).join('');
+
+  const cSel = document.getElementById('filter-country');
+  const existingC = cSel.value;
+  cSel.innerHTML = '<option value="">All Countries</option>' +
+    countries.map(c => `<option value="${escHtml(c)}"${c===existingC?'selected':''}>${escHtml(getCountryName(c))} (${escHtml(c)})</option>`).join('');
+}
+
+function applyFilters() {
+  visibleCount = 40;
+  renderVictims();
+}
+
+function clearFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-group').value = '';
+  document.getElementById('filter-country').value = '';
+  applyFilters();
+}
+
+function loadMore() {
+  visibleCount += 40;
+  renderVictims();
+}
+
+// ── TABS ─────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  visibleCount = 40;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('filter-group').innerHTML = '<option value="">All Groups</option>';
+  document.getElementById('filter-country').innerHTML = '<option value="">All Countries</option>';
+
+  if (tab === 'victims') {
+    populateFilters();
+    renderVictims();
+  } else {
+    const source = allCyberattacks;
+    const groups = [...new Set(source.map(v => v.group||v.gang||'').filter(Boolean))].sort();
+    const countries = [...new Set(source.map(v => v.country||'').filter(Boolean))].sort();
+    document.getElementById('filter-group').innerHTML = '<option value="">All Groups</option>' +
+      groups.map(g => `<option value="${escHtml(g)}">${escHtml(g)}</option>`).join('');
+    document.getElementById('filter-country').innerHTML = '<option value="">All Countries</option>' +
+      countries.map(c => `<option value="${escHtml(c)}">${escHtml(getCountryName(c))} (${escHtml(c)})</option>`).join('');
+    renderVictims();
+  }
+}
+
+// ── AUTO-REFRESH ─────────────────────────────────────────────────
+function startCountdown() {
+  countdownSeconds = 300;
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    countdownSeconds--;
+    const m = Math.floor(countdownSeconds / 60);
+    const s = countdownSeconds % 60;
+    document.getElementById('refresh-countdown').textContent =
+      `${m}:${s.toString().padStart(2,'0')}`;
+    if (countdownSeconds <= 0) {
+      fetchData();
+      startCountdown();
+    }
+  }, 1000);
+}
+
+// ── UTIL ─────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+fetchData();
+startCountdown();
+</script>
+</body>
+</html>
