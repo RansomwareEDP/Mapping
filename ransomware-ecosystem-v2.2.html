@@ -1486,6 +1486,7 @@ function renderNodePanel(d){
   const tabsEl = document.getElementById('panel-tabs');
   tabsEl.style.display = (hasAnnex||hasHistory) ? 'flex' : 'none';
   const hTabEl=document.getElementById('tab-history'); if(hTabEl) hTabEl.style.display=hasHistory?'':'none';
+  const iTabEl=document.getElementById('tab-intel');   if(iTabEl) iTabEl.style.display=hasAnnex?'':'none';
   /* render appropriate tab */
   if(currentTab==='history' && hasHistory){ document.getElementById('selectionBadges').innerHTML=''; renderHistoryTab(d); return; }
   if(hasAnnex && currentTab === 'intel'){
