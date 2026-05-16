@@ -591,9 +591,14 @@ body {
 </div><!-- end main -->
 
 <script>
-const API_BASE = 'https://api-pro.ransomware.live/v2';
-const API_KEY  = '696a6e71-2a23-4840-aa16-4b030ec716e1';
+const API_BASE    = 'https://api-pro.ransomware.live/v2';
+const API_KEY     = '696a6e71-2a23-4840-aa16-4b030ec716e1';
+const CORS_PROXY  = 'https://corsproxy.io/?';
 const API_HEADERS = { 'X-Api-Key': API_KEY };
+
+function proxyUrl(endpoint) {
+  return CORS_PROXY + encodeURIComponent(API_BASE + endpoint);
+}
 let allVictims = [];
 let allCyberattacks = [];
 let filteredVictims = [];
@@ -636,9 +641,9 @@ async function fetchData() {
 
   try {
     const [victimsRes, groupsRes, attacksRes] = await Promise.allSettled([
-      fetch(`${API_BASE}/recentvictims`, { headers: API_HEADERS }),
-      fetch(`${API_BASE}/groups`,        { headers: API_HEADERS }),
-      fetch(`${API_BASE}/recentcyberattacks`, { headers: API_HEADERS })
+      fetch(proxyUrl('/recentvictims'),      { headers: API_HEADERS }),
+      fetch(proxyUrl('/groups'),             { headers: API_HEADERS }),
+      fetch(proxyUrl('/recentcyberattacks'), { headers: API_HEADERS })
     ]);
 
     if (victimsRes.status === 'fulfilled' && victimsRes.value.ok) {
