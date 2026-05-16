@@ -591,13 +591,36 @@ body {
 </div><!-- end main -->
 
 <script>
-const API_BASE    = 'https://api-pro.ransomware.live/v2';
+const FREE_API    = 'https://api.ransomware.live/v2';
+const PRO_API     = 'https://api-pro.ransomware.live/v2';
 const API_KEY     = '696a6e71-2a23-4840-aa16-4b030ec716e1';
 const CORS_PROXY  = 'https://corsproxy.io/?';
-const API_HEADERS = { 'X-Api-Key': API_KEY };
 
-function proxyUrl(endpoint) {
-  return CORS_PROXY + encodeURIComponent(API_BASE + endpoint);
+async function apiFetch(endpoint) {
+  const attempts = [
+    // 1. Free API direct (public, CORS likely enabled, no key needed)
+    { url: FREE_API + endpoint, headers: {} },
+    // 2. PRO API direct
+    { url: PRO_API + endpoint, headers: { 'X-Api-Key': API_KEY } },
+    // 3. Free API via proxy
+    { url: CORS_PROXY + encodeURIComponent(FREE_API + endpoint), headers: {} },
+    // 4. PRO API via proxy
+    { url: CORS_PROXY + encodeURIComponent(PRO_API + endpoint), headers: { 'X-Api-Key': API_KEY } },
+  ];
+  let lastErr = '';
+  for (const attempt of attempts) {
+    try {
+      const res = await fetch(attempt.url, { headers: attempt.headers });
+      if (res.ok) {
+        const data = await res.json();
+        return { ok: true, data };
+      }
+      lastErr = `HTTP ${res.status} from ${attempt.url}`;
+    } catch (e) {
+      lastErr = `Network error: ${e.message} (${attempt.url})`;
+    }
+  }
+  return { ok: false, error: lastErr };
 }
 let allVictims = [];
 let allCyberattacks = [];
@@ -640,30 +663,29 @@ async function fetchData() {
   document.getElementById('api-status').style.color = '#3a6a9a';
 
   try {
-    const [victimsRes, groupsRes, attacksRes] = await Promise.allSettled([
-      fetch(proxyUrl('/recentvictims'),      { headers: API_HEADERS }),
-      fetch(proxyUrl('/groups'),             { headers: API_HEADERS }),
-      fetch(proxyUrl('/recentcyberattacks'), { headers: API_HEADERS })
+    const [victimsRes, groupsRes, attacksRes] = await Promise.all([
+      apiFetch('/recentvictims'),
+      apiFetch('/groups'),
+      apiFetch('/recentcyberattacks'),
     ]);
 
-    if (victimsRes.status === 'fulfilled' && victimsRes.value.ok) {
-      allVictims = await victimsRes.value.json();
-      if (!Array.isArray(allVictims)) allVictims = [];
+    if (victimsRes.ok) {
+      allVictims = Array.isArray(victimsRes.data) ? victimsRes.data : [];
       renderVictims();
       populateFilters();
     } else {
       document.getElementById('victim-list').innerHTML =
-        '<div class="error-msg">Could not load victim data from ransomware.live. The API may be temporarily unavailable.</div>';
+        `<div class="error-msg">Could not load victim data after 4 attempts.<br><br>
+        Last error: <span style="color:#5a7898;font-size:10px;">${escHtml(victimsRes.error)}</span><br><br>
+        This may be a temporary outage. Try refreshing in a few minutes.</div>`;
     }
 
-    if (groupsRes.status === 'fulfilled' && groupsRes.value.ok) {
-      const groups = await groupsRes.value.json();
-      renderGroups(Array.isArray(groups) ? groups : []);
+    if (groupsRes.ok) {
+      renderGroups(Array.isArray(groupsRes.data) ? groupsRes.data : []);
     }
 
-    if (attacksRes.status === 'fulfilled' && attacksRes.value.ok) {
-      allCyberattacks = await attacksRes.value.json();
-      if (!Array.isArray(allCyberattacks)) allCyberattacks = [];
+    if (attacksRes.ok) {
+      allCyberattacks = Array.isArray(attacksRes.data) ? attacksRes.data : [];
     }
 
     document.getElementById('fetch-time').textContent = new Date().toUTCString().replace(' GMT','') + ' UTC';
