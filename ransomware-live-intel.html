@@ -663,21 +663,48 @@ async function fetchData() {
   document.getElementById('api-status').style.color = '#3a6a9a';
 
   try {
-    const [victimsRes, groupsRes, attacksRes] = await Promise.all([
-      apiFetch('/recentvictims'),
+    // Build list of last 12 months to fetch
+    const now = new Date();
+    const monthEndpoints = [];
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      monthEndpoints.push(`/victims/${d.getFullYear()}/${d.getMonth() + 1}`);
+    }
+
+    const [groupsRes, attacksRes, ...monthResults] = await Promise.all([
       apiFetch('/groups'),
       apiFetch('/recentcyberattacks'),
+      ...monthEndpoints.map(ep => apiFetch(ep)),
     ]);
 
-    if (victimsRes.ok) {
-      allVictims = Array.isArray(victimsRes.data) ? victimsRes.data : [];
+    // Combine all monthly victim data and deduplicate
+    const seen = new Set();
+    allVictims = [];
+    for (const res of monthResults) {
+      if (res.ok && Array.isArray(res.data)) {
+        for (const v of res.data) {
+          const key = (v.victim || '') + '|' + (v.group || '') + '|' + (v.attackdate || '');
+          if (!seen.has(key)) {
+            seen.add(key);
+            allVictims.push(v);
+          }
+        }
+      }
+    }
+
+    // Sort by date descending
+    allVictims.sort((a, b) => {
+      const da = new Date(a.attackdate || a.date || 0);
+      const db = new Date(b.attackdate || b.date || 0);
+      return db - da;
+    });
+
+    if (allVictims.length > 0) {
       renderVictims();
       populateFilters();
     } else {
       document.getElementById('victim-list').innerHTML =
-        `<div class="error-msg">Could not load victim data after 4 attempts.<br><br>
-        Last error: <span style="color:#5a7898;font-size:10px;">${escHtml(victimsRes.error)}</span><br><br>
-        This may be a temporary outage. Try refreshing in a few minutes.</div>`;
+        `<div class="error-msg">Could not load victim data. This may be a temporary outage — try refreshing in a few minutes.</div>`;
     }
 
     if (groupsRes.ok) {
