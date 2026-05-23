@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ransomware Ecosystem v2.0 — Reno</title>
+<title>Ransomware Ecosystem v2.2 — Reno</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
@@ -270,10 +270,10 @@ body.present #exit-present-btn { display: block; }
 <div id="class-banner-top"></div>
 <div id="header">
   <div class="title-block">
-    <h1>Ransomware Ecosystem — v2.0</h1>
+    <h1>Ransomware Ecosystem — v2.2</h1>
     <div class="sub">Scroll to zoom · Drag to pan · Click node to inspect · Search to filter · Phase / Jurisdiction / Backfire / Collection Posture / Case Study overlays</div>
   </div>
-  <div class="meta" style="text-align:right;line-height:1.9;"><span id="node-stats" style="color:#4e6e8e;font-size:9px;"></span><br><span id="reno-tip-trigger" style="cursor:help;border-bottom:1px dotted #4a7aaa;color:#8aaac8;font-size:10px;transition:color 120ms;">Developed by Reno</span><span style="color:#4e6e8e;font-size:10px;"> · Published 11 May 2026 · v2.1 · Delta: Mar–Apr 2026</span></div>
+  <div class="meta" style="text-align:right;line-height:1.9;"><span id="node-stats" style="color:#4e6e8e;font-size:9px;"></span><br><span id="reno-tip-trigger" style="cursor:help;border-bottom:1px dotted #4a7aaa;color:#8aaac8;font-size:10px;transition:color 120ms;">Developed by Reno</span><span style="color:#4e6e8e;font-size:10px;"> · Published 11 May 2026 · v2.2 · Delta: Mar–Apr 2026</span></div>
   <div class="mode-toggle-wrap">
     <button class="mode-btn" id="mode-present" data-tip="Presentation mode — hides controls, enlarges labels, focuses the map" style="border-color:#3a6040;color:#70a880;">Present</button>
     <button class="mode-btn active" id="mode-analyst" data-tip="Standard mode — explore freely, click nodes to inspect" >Analyst</button>
@@ -309,13 +309,17 @@ body.present #exit-present-btn { display: block; }
   <div class="ctrl-sep"></div>
   <button class="reset-btn" id="export-csv-btn" data-tip="Download all node and edge data as a CSV file" style="color:#6a9abc;border-color:#2a4a68;">Export CSV</button>
   <div class="ctrl-sep"></div>
-  <button class="analysis-btn" id="btn-highcontrast" data-tip="High contrast — boosts text and edge legibility" style="border-color:#5a7a9880;color:#7a9ab8bb;">Hi-Con</button>
+  <button class="analysis-btn" id="btn-highcontrast" data-tip="High contrast — boosts text and edge legibility" style="border-color:#5a7a9880;color:#7a9ab8bb;">High Contrast</button>
   <div class="ctrl-sep"></div>
   <button class="reset-btn" id="share-btn" data-tip="Copy a permalink that restores your current filter state" style="color:#8a9acc;border-color:#2a3a60;">⧉ Share View</button>
+  <div class="ctrl-sep" style="margin-left:auto;"></div>
+  <span class="ctrl-label">Search:</span>
+  <input type="text" id="search-input" placeholder="filter nodes…" autocomplete="off" spellcheck="false"/>
+  <span id="search-count"></span>
 </div>
 
 <div id="controls2">
-  <span class="ctrl-label">Case Studies:</span>
+  <span class="ctrl-label" data-tip="Click any case to highlight involved nodes and load operation analysis">Case Study Views:</span>
   <button class="case-btn" id="case-conti" data-case="conti">Conti Collapse (2022)</button>
   <button class="case-btn" id="case-qakbot" data-case="qakbot">QakBot / Duck Hunt (2023)</button>
   <button class="case-btn" id="case-lockbit" data-case="lockbit">LockBit / Cronos (2024)</button>
@@ -331,10 +335,6 @@ body.present #exit-present-btn { display: block; }
   <div class="ctrl-sep"></div>
   <button class="analysis-btn delta-btn" id="btn-delta" data-tip="Colors nodes by monthly status from EDP reports: DISRUPTED (red pulse), DEGRADED (orange), RECONSTITUTING (amber), NOTABLE (blue). Badge shows event count. Click any node for full history.">Monthly Delta</button>
   <button class="analysis-btn posture-btn" id="btn-posture" data-tip="Colors nodes by collection posture: COLLECT-ONLY (purple), COLLECT-THEN-ACT (amber). Based on EDP Intel Annexes. Nodes without annex data are unchanged.">Collect Posture</button>
-  <div class="ctrl-sep" style="margin-left:auto;"></div>
-  <span class="ctrl-label">Search:</span>
-  <input type="text" id="search-input" placeholder="filter nodes…" autocomplete="off" spellcheck="false"/>
-  <span id="search-count"></span>
 </div>
 
 <div id="ctrl-tooltip"></div>
@@ -2364,8 +2364,7 @@ document.getElementById('export-btn').onclick = function() {
     if (q === 'reno') {
       nodeElems.classed('search-dim', false);
       edgeElems.classed('dimmed', false);
-      cnt.textContent = 'skill issue detected';
-      cnt.style.color = '#5a9acc';
+      cnt.textContent = '';
       if (eggOverlay) eggOverlay.style.display = 'flex';
       return;
     }
@@ -2603,7 +2602,7 @@ document.getElementById('share-btn').onclick = function() {
     tip.style.display = 'block';
     tip.style.borderLeftColor = '#5a9acc';
     tip.innerHTML = '<h3 style="color:#5a9acc;margin-bottom:4px;">Developed by Reno</h3>'
-      + '<div style="color:#8aaac0;font-size:11px;line-height:1.6;">This is the weaponization of Reno\'s Brain.<br>User discretion is advised!</div>';
+      + '<div style="color:#8aaac0;font-size:11px;line-height:1.6;">This is the weaponization of Reno\'s Brain.<br>Find the seam. Apply the pressure.</div>';
     const r = el.getBoundingClientRect();
     tip.style.left = Math.max(4, r.right - tip.offsetWidth) + 'px';
     tip.style.top  = (r.bottom + 6) + 'px';
@@ -2632,8 +2631,7 @@ document.getElementById('share-btn').onclick = function() {
     if (q === 'reno') {
       nodeElems.classed('search-dim', false);
       edgeElems.classed('dimmed', false);
-      cnt.textContent = 'skill issue detected';
-      cnt.style.color = '#5a9acc';
+      cnt.textContent = '';
       overlay.style.display = 'flex';
       return;
     }
