@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Library — Ransomware Ecosystem Disruption Project</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #070b16;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: #c0cfe0;
+  min-height: 100vh;
+}
+
+/* HEADER */
+#header {
+  border-bottom: 1px solid #1a2a44;
+  padding: 28px 48px 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+.title-block h1 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #5a9acc;
+  margin-bottom: 6px;
+}
+.title-block .project-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: #d6e5f4;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.title-block .tagline {
+  font-size: 12px;
+  color: #5e7a98;
+  line-height: 1.6;
+  max-width: 560px;
+}
+.header-meta {
+  text-align: right;
+  font-size: 10.5px;
+  color: #4e6e8e;
+  line-height: 2;
+  flex-shrink: 0;
+}
+.header-meta .meta-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #2e4a68;
+}
+
+/* NAV */
+#nav {
+  padding: 0 48px;
+  border-bottom: 1px solid #0f1a30;
+  display: flex;
+  gap: 0;
+  background: #060d1a;
+}
+.nav-link {
+  display: inline-block;
+  padding: 11px 18px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #4e6e8e;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 160ms, border-color 160ms;
+  white-space: nowrap;
+}
+.nav-link:hover {
+  color: #9ac8e8;
+  border-bottom-color: #2a5a88;
+}
+.nav-link.nav-back {
+  color: #2e4a68;
+  border-right: 1px solid #0f1a30;
+  padding-right: 20px;
+  margin-right: 4px;
+}
+.nav-link.nav-back:hover {
+  color: #6a9ac8;
+}
+
+/* MAIN */
+#main {
+  padding: 40px 48px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* SECTION */
+.section {
+  margin-bottom: 56px;
+}
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #0f1a30;
+}
+.section-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #2e4a68;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #5a9acc;
+}
+.section-desc {
+  font-size: 11px;
+  color: #4a6880;
+  margin-left: auto;
+}
+
+/* MONTHLY REPORT CARDS (larger, prominent) */
+.monthly-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 12px;
+}
+.monthly-card {
+  background: #0c1524;
+  border: 1px solid #1a3050;
+  border-radius: 6px;
+  padding: 22px 26px;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  transition: border-color 200ms, background 200ms;
+  position: relative;
+  overflow: hidden;
+}
+.monthly-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #2a5a88, #5a9acc, #2a5a88);
+}
+.monthly-card:hover {
+  border-color: #3a6a9a;
+  background: #0e1c32;
+}
+.monthly-month {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2e5a88;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 2px;
+  min-width: 48px;
+  text-align: center;
+}
+.monthly-card:hover .monthly-month {
+  color: #4a7aaa;
+}
+.monthly-body .monthly-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #3a6a9a;
+  margin-bottom: 5px;
+}
+.monthly-body .monthly-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a8c0d8;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.monthly-card:hover .monthly-title {
+  color: #c8daf0;
+}
+.monthly-body .monthly-desc {
+  font-size: 11px;
+  color: #3e5a78;
+  line-height: 1.5;
+}
+.monthly-badge {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2a4860;
+  padding: 3px 7px;
+  border: 1px solid #1a3a58;
+  border-radius: 3px;
+  align-self: flex-start;
+}
+.monthly-card:hover .monthly-badge {
+  color: #4a7090;
+  border-color: #2a5a80;
+}
+
+/* DOCUMENT GRID */
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.doc-card {
+  background: #0a1220;
+  border: 1px solid #162236;
+  border-radius: 5px;
+  padding: 14px 16px;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 160ms, background 160ms;
+}
+.doc-card:hover {
+  border-color: #2a4a6a;
+  background: #0c1828;
+}
+.doc-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2e4a68;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  width: 32px;
+  padding-top: 2px;
+  text-align: center;
+}
+.doc-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a8c0d8;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.doc-card:hover .doc-title { color: #c8daf0; }
+.doc-subtitle {
+  font-size: 10px;
+  color: #3e5a78;
+  line-height: 1.4;
+}
+.doc-badge {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2a4860;
+  padding-top: 3px;
+}
+.doc-card:hover .doc-badge { color: #4a7090; }
+
+/* SUPPORT CARDS */
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 10px;
+}
+.support-card {
+  background: #0a1220;
+  border: 1px solid #162236;
+  border-radius: 5px;
+  padding: 20px 22px;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: border-color 160ms, background 160ms;
+}
+.support-card:hover {
+  border-color: #2a4a6a;
+  background: #0c1828;
+}
+.support-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  opacity: 0.5;
+  padding-top: 2px;
+}
+.support-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a8c0d8;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.support-card:hover .support-title { color: #c8daf0; }
+.support-desc {
+  font-size: 11px;
+  color: #3e5a78;
+  line-height: 1.55;
+}
+
+/* READING ORDER NOTE */
+.reading-order-banner {
+  background: #080f1e;
+  border: 1px solid #1a2e4a;
+  border-left: 3px solid #2a5a88;
+  border-radius: 4px;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  transition: border-color 160ms;
+}
+.reading-order-banner:hover {
+  border-color: #2a5a88;
+  border-left-color: #5a9acc;
+}
+.rob-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #3a6a9a;
+  flex-shrink: 0;
+}
+.rob-text {
+  font-size: 11.5px;
+  color: #6a8aaa;
+}
+.rob-link {
+  font-size: 10px;
+  color: #3a6a9a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.reading-order-banner:hover .rob-link { color: #5a9acc; }
+
+/* PAGE COUNT */
+.count-tag {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #2e4a68;
+  padding: 2px 7px;
+  border: 1px solid #1a2e48;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div class="title-block">
+    <h1>Ransomware Ecosystem Disruption Project</h1>
+    <div class="project-name">Document Library</div>
+    <div class="tagline">Framework documents, monthly intelligence reports, and ecosystem dependency modules</div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-label">Classification</div>
+    UNCLASSIFIED<br>
+    <div class="meta-label" style="margin-top:8px">Updated</div>
+    May 2026
+  </div>
+</div>
+
+<div id="nav">
+  <a class="nav-link nav-back" href="../">&#8592; Mapping Hub</a>
+  <a class="nav-link" href="#monthly">Monthly Reports</a>
+  <a class="nav-link" href="#framework">Framework</a>
+  <a class="nav-link" href="#edp">EDP Modules</a>
+  <a class="nav-link" href="#supporting">Supporting</a>
+</div>
+
+<div id="main">
+
+  <!-- MONTHLY REPORTS -->
+  <div class="section" id="monthly">
+    <div class="section-header">
+      <span class="section-label">Series</span>
+      <span class="section-title">Monthly Activity Reports</span>
+      <span class="section-desc">EDP monthly intelligence summaries — newest first</span>
+    </div>
+    <div class="monthly-grid">
+      <a class="monthly-card" href="../docs/EDP_Monthly_2026-04.pdf" target="_blank">
+        <div class="monthly-month">APR</div>
+        <div class="monthly-body">
+          <div class="monthly-label">EDP Monthly — April 2026</div>
+          <div class="monthly-title">April 2026 Activity Summary</div>
+          <div class="monthly-desc">Ransomware ecosystem activity, dependency pressure indicators, and disruption events</div>
+        </div>
+        <div class="monthly-badge">PDF</div>
+      </a>
+      <a class="monthly-card" href="../docs/EDP_Monthly_2026-03.pdf" target="_blank">
+        <div class="monthly-month">MAR</div>
+        <div class="monthly-body">
+          <div class="monthly-label">EDP Monthly — March 2026</div>
+          <div class="monthly-title">March 2026 Activity Summary</div>
+          <div class="monthly-desc">Ransomware ecosystem activity, dependency pressure indicators, and disruption events</div>
+        </div>
+        <div class="monthly-badge">PDF</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- FRAMEWORK DOCUMENTS -->
+  <div class="section" id="framework">
+    <div class="section-header">
+      <span class="section-label">Series</span>
+      <span class="section-title">Framework Documents</span>
+      <span class="section-desc">Core framework — 13 documents</span>
+    </div>
+    <a class="reading-order-banner" href="../docs/Reading%20Order.pdf" target="_blank">
+      <span class="rob-label">Start here</span>
+      <span class="rob-text">New to the framework? The Reading Order document maps the recommended sequence and dependencies between documents.</span>
+      <span class="rob-link">Reading Order &#8594;</span>
+    </a>
+    <div class="doc-grid">
+      <a class="doc-card" href="../docs/00%20Ransomware_Framework_Overview_v1.pdf" target="_blank">
+        <span class="doc-num">00</span>
+        <div>
+          <div class="doc-title">Framework Overview</div>
+          <div class="doc-subtitle">Ecosystem structure, analytical approach, and document map</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/01%20Ransomware_Framework_Glossary_v1.pdf" target="_blank">
+        <span class="doc-num">01</span>
+        <div>
+          <div class="doc-title">Glossary</div>
+          <div class="doc-subtitle">Standardized terminology for ecosystem actors, nodes, and pressure levers</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/02%20Ransomware_Ecosystem_Disruption_Playbook_v1.pdf" target="_blank">
+        <span class="doc-num">02</span>
+        <div>
+          <div class="doc-title">Ecosystem Disruption Playbook</div>
+          <div class="doc-subtitle">Master disruption strategy: leverage points, sequencing, and coordination</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/03%20Ransomware_Ecosystem_DependencyMap_Refined_v1.pdf" target="_blank">
+        <span class="doc-num">03</span>
+        <div>
+          <div class="doc-title">Dependency Map (Refined)</div>
+          <div class="doc-subtitle">Structural dependency relationships across all ecosystem nodes</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/04%20RU_GOV_Protection_Framework_v1.pdf" target="_blank">
+        <span class="doc-num">04</span>
+        <div>
+          <div class="doc-title">RU Gov Protection Framework</div>
+          <div class="doc-subtitle">State tolerance model: political protection mechanisms and jurisdictional leverage</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/05%20Ransomware_Playbook_PhaseA_Nodes01-02-03_v1.pdf" target="_blank">
+        <span class="doc-num">05</span>
+        <div>
+          <div class="doc-title">Disruption Playbook: Phase A</div>
+          <div class="doc-subtitle">Access layer — Nodes 01, 02, 03</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/06%20Ransomware_Playbook_PhaseB_Nodes04-07-08_v1.pdf" target="_blank">
+        <span class="doc-num">06</span>
+        <div>
+          <div class="doc-title">Disruption Playbook: Phase B</div>
+          <div class="doc-subtitle">Execution layer — Nodes 04, 07, 08</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/07%20Ransomware_Playbook_PhaseC_Nodes05-06-09_v1.pdf" target="_blank">
+        <span class="doc-num">07</span>
+        <div>
+          <div class="doc-title">Disruption Playbook: Phase C</div>
+          <div class="doc-subtitle">Delivery layer — Nodes 05, 06, 09</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/08%20ransomware_kpi_framework_v1.pdf" target="_blank">
+        <span class="doc-num">08</span>
+        <div>
+          <div class="doc-title">KPI Framework</div>
+          <div class="doc-subtitle">Measurable indicators for tracking ecosystem disruption pressure</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/10%20KPI_Sourcing_Plan_v1_UPDATED.pdf" target="_blank">
+        <span class="doc-num">10</span>
+        <div>
+          <div class="doc-title">KPI Sourcing Plan</div>
+          <div class="doc-subtitle">Data sources and collection methodology for KPI tracking</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/11%20Ransomware_Group_Pressure_Tracking_Template_v1.pdf" target="_blank">
+        <span class="doc-num">11</span>
+        <div>
+          <div class="doc-title">Group Pressure Tracking Template</div>
+          <div class="doc-subtitle">Per-group template for monitoring disruption pressure indicators</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/12%20Ransomware_Framework_Case_Studies_v1.pdf" target="_blank">
+        <span class="doc-num">12</span>
+        <div>
+          <div class="doc-title">Case Studies</div>
+          <div class="doc-subtitle">Conti, QakBot, LockBit, BlackCat/ALPHV, Black Basta</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- EDP MODULES -->
+  <div class="section" id="edp">
+    <div class="section-header">
+      <span class="section-label">Series</span>
+      <span class="section-title">Ecosystem Dependency Playbook Modules</span>
+      <span class="section-desc">15 node-level modules</span>
+    </div>
+    <div class="doc-grid">
+      <a class="doc-card" href="../docs/EDP_Module01_Stealers_v1.pdf" target="_blank">
+        <span class="doc-num">M01</span>
+        <div>
+          <div class="doc-title">Stealers</div>
+          <div class="doc-subtitle">Information-stealing malware: role, vendors, and disruption vectors</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module02_Loaders_v1.pdf" target="_blank">
+        <span class="doc-num">M02</span>
+        <div>
+          <div class="doc-title">Loaders</div>
+          <div class="doc-subtitle">Malware delivery infrastructure and key loader operators</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module03_Crypters_v1.pdf" target="_blank">
+        <span class="doc-num">M03</span>
+        <div>
+          <div class="doc-title">Crypters</div>
+          <div class="doc-subtitle">Obfuscation services enabling AV evasion</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module04_Callers_v1.pdf" target="_blank">
+        <span class="doc-num">M04</span>
+        <div>
+          <div class="doc-title">Callers</div>
+          <div class="doc-subtitle">Social engineering and victim contact operations</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module05_IABs_v1.pdf" target="_blank">
+        <span class="doc-num">M05</span>
+        <div>
+          <div class="doc-title">Initial Access Brokers</div>
+          <div class="doc-subtitle">Network access marketplace: structure, pricing, and interdiction</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module06_ExploitBrokers_v1.pdf" target="_blank">
+        <span class="doc-num">M06</span>
+        <div>
+          <div class="doc-title">Exploit Brokers</div>
+          <div class="doc-subtitle">Vulnerability and exploit supply chain</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module07_RaaS_ScopeReduced_v1.pdf" target="_blank">
+        <span class="doc-num">M07</span>
+        <div>
+          <div class="doc-title">Ransomware-as-a-Service</div>
+          <div class="doc-subtitle">RaaS platform structure, affiliate model, and pressure points</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module08_LeakSiteOps_v1.pdf" target="_blank">
+        <span class="doc-num">M08</span>
+        <div>
+          <div class="doc-title">Leak Site Operations</div>
+          <div class="doc-subtitle">Data extortion infrastructure and takedown leverage</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module09_BPH_v1.pdf" target="_blank">
+        <span class="doc-num">M09</span>
+        <div>
+          <div class="doc-title">Bulletproof Hosting</div>
+          <div class="doc-subtitle">Resilient hosting infrastructure enabling persistent operations</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module10_UndergroundForums_v1.pdf" target="_blank">
+        <span class="doc-num">M10</span>
+        <div>
+          <div class="doc-title">Underground Forums</div>
+          <div class="doc-subtitle">Criminal marketplace infrastructure: key forums and disruption vectors</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module11_CryptoMixers_v1.pdf" target="_blank">
+        <span class="doc-num">M11</span>
+        <div>
+          <div class="doc-title">Crypto Mixers</div>
+          <div class="doc-subtitle">Cryptocurrency obfuscation services and financial interdiction</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module12_OTCBrokers_v1.pdf" target="_blank">
+        <span class="doc-num">M12</span>
+        <div>
+          <div class="doc-title">OTC Brokers</div>
+          <div class="doc-subtitle">Over-the-counter crypto cash-out infrastructure</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module13_MoneyLaunderers_v1.pdf" target="_blank">
+        <span class="doc-num">M13</span>
+        <div>
+          <div class="doc-title">Money Launderers</div>
+          <div class="doc-subtitle">Professional laundering networks and jurisdictional exposure</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module14_MuleNetworks_v1.pdf" target="_blank">
+        <span class="doc-num">M14</span>
+        <div>
+          <div class="doc-title">Mule Networks</div>
+          <div class="doc-subtitle">Human cash-out infrastructure: recruitment, structure, and interdiction</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+      <a class="doc-card" href="../docs/EDP_Module15_NegotiationServices_v1.pdf" target="_blank">
+        <span class="doc-num">M15</span>
+        <div>
+          <div class="doc-title">Negotiation Services</div>
+          <div class="doc-subtitle">Ransom negotiation intermediaries: role and leverage implications</div>
+        </div>
+        <span class="doc-badge">PDF</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- SUPPORTING MATERIALS -->
+  <div class="section" id="supporting">
+    <div class="section-header">
+      <span class="section-label">Additional</span>
+      <span class="section-title">Supporting Materials</span>
+    </div>
+    <div class="support-grid">
+      <a class="support-card" href="../docs/Inside_the_Machine_Russian_Cyber_v.03.pdf" target="_blank">
+        <span class="support-icon">&#128196;</span>
+        <div>
+          <div class="support-title">Inside the Machine: Russian Cyber</div>
+          <div class="support-desc">
+            Deep-dive background paper on Russian state-criminal cyber relationships,
+            structural enablement, and the political economy of ransomware tolerance.
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
