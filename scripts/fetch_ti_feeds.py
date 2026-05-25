@@ -4,11 +4,11 @@ fetch_ti_feeds.py
 -----------------
 Pulls RSS feeds from major threat intelligence sources, filters each feed
 for articles relevant to tracked ransomware groups, and writes results to
-data/ti-feed.json.
+groups/data/ti-feed.json.
 
 Run by GitHub Actions on schedule. Also safe to run locally.
 
-Output format (data/ti-feed.json):
+Output format (groups/data/ti-feed.json):
   Array of objects:
     { "group": "lynx", "title": "...", "url": "...", "source": "...", "date": "ISO8601" }
 """
@@ -127,7 +127,7 @@ def match_group(entry, keywords):
 
 
 def main():
-    output_path = Path("data/ti-feed.json")
+    output_path = Path("groups/data/ti-feed.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     print("Fetching TI blog RSS feeds...")
@@ -162,7 +162,7 @@ def main():
     # Also write per-group files so each HTML page fetches only its own feed
     for group in KEYWORDS:
         group_items = [r for r in results if r["group"] == group]
-        Path(f"data/ti-feed-{group}.json").write_text(
+        Path(f"groups/data/ti-feed-{group}.json").write_text(
             json.dumps(group_items, indent=2, ensure_ascii=False)
         )
 
