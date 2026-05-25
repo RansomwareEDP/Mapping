@@ -26,24 +26,52 @@ jobs:
         run: pip install feedparser requests
 
       # -------------------------------------------------------
-      # ransomware.live Pro API - victim data per group
-      # Your Pro API key is stored as a GitHub Actions secret:
-      # Settings -> Secrets and variables -> Actions -> New repository secret
-      # Name: RL_PRO_KEY   Value: your key
+      # ransomware.live - fetch victims by month, filter by group
+      # Uses the same public API approach as the live intel page.
       # -------------------------------------------------------
-      - name: Pull ransomware.live Pro - victim data
-        env:
-          RL_PRO_KEY: ${{ secrets.RL_PRO_KEY }}
+      - name: Pull ransomware.live victim data by group
         run: |
-          for group in lynx qilin akira lockbit dragonforce conti; do
-            echo "Fetching $group..."
-            curl -sf \
-              -H "X-Api-Key: $RL_PRO_KEY" \
-              -H "Accept: application/json" \
-              "https://api-pro.ransomware.live/v2/victims/$group" \
-              -o "groups/data/$group.json" \
-              || echo "[]" > "groups/data/$group.json"
-          done
+          python3 - <<'PYEOF'
+          import json, urllib.request, datetime, pathlib
+
+          BASE   = 'https://api.ransomware.live/v2'
+          GROUPS = ['lynx', 'qilin', 'akira', 'lockbit', 'dragonforce', 'conti']
+
+          # Fetch last 6 months of victim data
+          all_victims = []
+          now = datetime.datetime.utcnow()
+          for i in range(6):
+              month_date = (now.replace(day=1) - datetime.timedelta(days=i * 28))
+              url = f"{BASE}/victims/{month_date.year}/{month_date.month}"
+              try:
+                  req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0'})
+                  with urllib.request.urlopen(req, timeout=15) as r:
+                      data = json.loads(r.read())
+                      if isinstance(data, list):
+                          all_victims.extend(data)
+                          print(f"  {month_date.year}/{month_date.month}: {len(data)} victims")
+              except Exception as e:
+                  print(f"  Warning {url}: {e}")
+
+          # Deduplicate
+          seen = set()
+          unique = []
+          for v in all_victims:
+              key = str(v.get('victim','')) + str(v.get('group','')) + str(v.get('attackdate',''))
+              if key not in seen:
+                  seen.add(key)
+                  unique.append(v)
+          print(f"Total unique victims across all groups: {len(unique)}")
+
+          # Write per-group JSON files
+          for group in GROUPS:
+              items = [v for v in unique if (v.get('group') or '').lower() == group]
+              items.sort(key=lambda x: x.get('attackdate', ''), reverse=True)
+              pathlib.Path(f'groups/data/{group}.json').write_text(
+                  json.dumps(items, indent=2, ensure_ascii=False)
+              )
+              print(f"  {group}: {len(items)} victims")
+          PYEOF
 
       # -------------------------------------------------------
       # TI blog RSS feed parser - recent articles per group
