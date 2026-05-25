@@ -38,9 +38,9 @@ jobs:
           for group in lynx qilin akira lockbit dragonforce conti; do
             echo "Fetching $group..."
             curl -sf \
-              -H "X-API-KEY: $RL_PRO_KEY" \
+              -H "X-Api-Key: $RL_PRO_KEY" \
               -H "Accept: application/json" \
-              "https://api-pro.ransomware.live/victims/$group" \
+              "https://api-pro.ransomware.live/v2/victims/$group" \
               -o "groups/data/$group.json" \
               || echo "[]" > "groups/data/$group.json"
           done
