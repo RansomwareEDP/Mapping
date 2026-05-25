@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DragonForce | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-cartel { background: #6c3483; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* CLUSTER TAG */
+.cluster-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 14px;
+  margin: 2px 4px 2px 0; vertical-align: middle;
+}
+.cluster-confirmed { background: var(--green-soft); color: var(--green); border: 1px solid var(--green); }
+.cluster-credible  { background: var(--blue-soft);  color: var(--blue);  border: 1px solid var(--blue); }
+.cluster-inference { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber); }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Analytical profiles compiled from open-source intelligence</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item active" href="dragonforce.html">
+      <span class="group-dot dot-active"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      Luna Moth
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#le">LE &amp; Regulatory Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">DragonForce</div>
+    <div class="hero-subtitle">Ransomware Cartel &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; White-Label RaaS</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">High Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-raas">RaaS</span>
+      <span class="badge badge-cartel">Cartel Model</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Late 2023</div>
+        <div class="kpi-sub">First victims Dec 2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Claimed Victims</div>
+        <div class="kpi-value">363+</div>
+        <div class="kpi-sub">DLS listings, late 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">UK Retail Impact</div>
+        <div class="kpi-value">&pound;440M</div>
+        <div class="kpi-sub">M&amp;S + Co-op, Apr 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Affiliate Split</div>
+        <div class="kpi-value">80/20</div>
+        <div class="kpi-sub">80% affiliate, 20% core</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Actions</div>
+        <div class="kpi-value">4 Arrests</div>
+        <div class="kpi-sub">NCA, July 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+      <p>DragonForce is a profit-motivated ransomware operation that emerged in late 2023 and rapidly evolved from a standard Ransomware-as-a-Service program into what it publicly styles as a "ransomware cartel." As of mid-2026 it remains fully operational, with over 363 claimed victims across retail, logistics, technology, industrial, and government sectors. Its defining feature is a white-label affiliate model: partners can operate entirely independent brands and extortion portals on DragonForce's backend infrastructure, enabling operational resilience against law enforcement disruption of any single brand.</p>
+      <p>The group attracted global attention in April-May 2025 when affiliates, operating in conjunction with social-engineering actors assessed as linked to the Scattered Spider cluster (UNC3944), breached three major UK retailers. The combined financial impact of the Marks &amp; Spencer and Co-op attacks was classified as a single combined cyber event with assessed impact of £270 million to £440 million ($363M to $592M). The UK National Crime Agency arrested four individuals in July 2025 in connection with these incidents, though no charges against DragonForce core operators have been filed.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Common name</td><td>DragonForce; DragonForce Ransomware Cartel (DFRC)</td></tr>
+            <tr><td>Aliases</td><td>DragonForce Ransomware, DFRC; distinct from DragonForce Malaysia (hacktivist collective)</td></tr>
+            <tr><td>Vendor tracking designations</td><td><strong>Water Tambanakua</strong> (Trend Micro); by name only: Group-IB, Fortinet, WatchGuard, Sophos, Barracuda, Broadcom/Symantec, SentinelOne, Blackpoint Cyber, Intel 471, Darktrace; CrowdStrike, Secureworks, Microsoft, Mandiant, Unit 42: no separate named cluster designation confirmed in open sources as of May 2026</td></tr>
+            <tr><td>Operational model</td><td>RaaS (2023-early 2025); white-label cartel model (March 2025 onward)</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (encryption + data publication threat)</td></tr>
+            <tr><td>Revenue split</td><td>80% affiliate / 20% core operator</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Unknown; possible CIS nexus (CREDIBLE LOW; see Section 08)</td></tr>
+            <tr><td>Code lineage</td><td>LockBit 3.0 and Conti v3 builders (opportunistic reuse; no personnel continuity implied)</td></tr>
+            <tr><td>LE disruption status</td><td>4 arrests (NCA, July 2025); no infrastructure seizure; no OFAC sanctions as of May 2026</td></tr>
+            <tr><td>Decryptor availability</td><td>No public universal decryptor available</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: DLS + BRANDING -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--e4ad8313-0f94-45d8-b187-d52571d51285/dragonforce-ohio-lottery-post.png?preferwebp=true&quality=95"
+               alt="Ohio Lottery on DragonForce leak site"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DragonForce DLS: Victim Listing</strong>
+            The Ohio Lottery published on the DragonForce Dedicated Leak Site (DragonLeaks). Among the group's earliest high-profile victims, posted in December 2023. The DLS follows a standard name-and-shame format with countdown timers and data release threats.
+            <span class="img-source">Source: Barracuda Networks / FalconFeeds, 2024</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--fc9aaf15-35a5-4299-927f-0f7e42b3fe1d/dragonforce-ransomhub-portal.png?preferwebp=true&quality=95"
+               alt="DragonForce affiliate administration portal"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DragonForce Affiliate Portal</strong>
+            The cartel's white-label affiliate panel, here adapted for former RansomHub affiliates after DragonForce claimed the defunct group in April 2025. Affiliates access campaign management, payload builders, victim tracking, and negotiation tools through this interface.
+            <span class="img-source">Source: Barracuda Networks / GuidePoint Security, 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--1e986f71-37cf-4d60-bedb-5879ec34e2f8/dragonforce-raas-recruitment-post.png?preferwebp=true&quality=95"
+               alt="DragonForce RaaS recruitment post on underground forum"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Underground Forum Recruitment Post</strong>
+            DragonForce's RaaS recruitment advertisement on a dark web forum circa early 2024. Post highlights the 80% revenue share, full tooling stack, and support services. Advertising on RAMP (Russian Anonymous Market Place) in Russian is confirmed.
+            <span class="img-source">Source: Barracuda Networks / Specops, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--77be2c48-93a6-4b47-9d78-5f977242aa15/dragonforce-cartel-announcement-post.jpg?preferwebp=true&quality=95"
+               alt="DragonForce cartel announcement post, March 2025"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Cartel Announcement Post</strong>
+            DragonForce's March 19, 2025 announcement repositioning the group as a cartel and inviting other ransomware operators to partner. This post marks the structural pivot from centralized RaaS to a decentralized criminal coalition.
+            <span class="img-source">Source: Barracuda Networks / Secureworks, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--f4f14cdd-59ad-4401-aaca-bf4a6e9996d5/dragonforce-maylasia-denies-ransomware-ties.jpg?preferwebp=true&quality=95"
+               alt="DragonForce Malaysia official denial statement"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DragonForce Malaysia: Official Denial</strong>
+            Official statement from the DragonForce Malaysia hacktivist collective on their Telegram channel, explicitly denying any connection to the ransomware group. The statement describes their struggle as "against oppression, not extortion." Shared naming remains the primary evidence linking the two entities.
+            <span class="img-source">Source: Barracuda Networks / SOCRadar, 2025</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence Timeline</div>
+        <p>DragonForce Ransomware first appeared publicly in late 2023, with the Ohio Lottery (December 2023) and Yakult Australia among its earliest documented victims. A dedicated leak site ("DragonLeaks") and formal RaaS affiliate program followed in early 2024. By June 2024 the group was actively recruiting affiliates via the RAMP underground forum. In March 2025 the operators publicly announced a shift to a "cartel" model. The operation has been continuously active since its emergence.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Code Lineage: LockBit 3.0 and Conti</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Multiple independent technical analyses confirm that DragonForce's ransomware payloads draw on leaked builder code from LockBit 3.0 and Conti v3. Early samples were closely copied from the LockBit 3.0/Black builder family; later samples shifted toward a Conti v3 derived code base. Crypto stacks are generally AES + RSA, with some ChaCha8 variants documented for speed optimization. This reflects opportunistic reuse of publicly available leaked builders and does <em>not</em> imply organizational continuity with LockBit or Conti leadership structures. Confidence in code overlap: <strong>CONFIRMED</strong> (Group-IB, Trend Micro, Loginsoft, Barracuda, SOCRadar, Resecurity, Barracuda independently report this).</p>
+        <p>The practical implication for attribution: the vendor designations <strong>Wizard Spider</strong> (CrowdStrike) and <strong>Gold Ulrick</strong> (Secureworks) describe the parent Conti organization. Neither designation applies to DragonForce. DragonForce is not a Conti successor in the personnel-continuity sense; it is a separate operation that weaponized leaked Conti tooling. Trend Micro's designation <strong>Water Tambanakua</strong> is specific to DragonForce.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">DragonForce Malaysia Origin Hypothesis</div>
+        <div class="conf conf-credible">Credible Low</div>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Supporting Evidence</div>
+            <div class="pillar-title">Shared Name and Timing Overlap</div>
+            <div class="pillar-body">Both groups use the "DragonForce" name. DragonForce Malaysia (DFM) publicly discussed building ransomware in 2023. Some researchers note possible Malaysia-region infrastructure links and ideological target overlap in early DragonForce Ransomware activity.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Counter-Evidence</div>
+            <div class="pillar-title">Explicit Denial and Distinct Infrastructure</div>
+            <div class="pillar-body">DFM officially denied on its Telegram channel any connection to, or responsibility for, the ransomware group. DragonForce Ransomware's infrastructure, TTPs, and target selection differ materially from DFM's hacktivist model. No payment infrastructure, credential access, or data exfiltration has been linked to DFM operations.</div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Assessment:</strong> The Malaysia origin hypothesis is contested. Available evidence rests on naming overlap and timing coincidence rather than technical attribution. SentinelOne notes no verified Malaysian victims and no identified CIS rule exceptions for Malaysia. Confidence: <strong>CREDIBLE LOW</strong>. Analysts should flag both the hypothesis and the denial for tracking without treating either as settled.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Cartel Evolution: Three Operational Phases</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Standard RaaS (Late 2023 to Early 2024)</div>
+              <div class="phase-desc">Core operator team develops and maintains infrastructure; affiliates conduct intrusions under the DragonForce brand. Single leak site. Centralized management.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Formal RaaS Program (Early 2024 to February 2025)</div>
+              <div class="phase-desc">Formal affiliate advertising on RAMP and underground forums. 80/20 revenue split publicly advertised. 93 claimed victims by end of 2024. Victim count grows from 82 (Aug 2024, Group-IB) to 136 by March 2025 (Sophos).</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Cartel / White-Label Model (March 2025 Onward)</div>
+              <div class="phase-desc">March 19, 2025: DragonForce publicly announces cartel structure. Affiliates can operate fully independent brands ("RansomBay" documented as first known sub-brand). Backend infrastructure, tooling, file hosting, and DLS platform shared. Within 24 hours of announcement, DragonForce defaced BlackLock and Mamona competitor sites. April 2025: DragonForce claims RansomHub after its infrastructure goes dark April 1. Sub-brand portals created for displaced RansomHub affiliates.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Cartel Structure and White-Label Services</div>
+        <p>DragonForce operates as a criminal service platform rather than a single operational unit. The core team provides infrastructure, while affiliated operators and sub-brands conduct intrusions. This model is designed explicitly to decouple the tooling from any individual brand, reducing law enforcement leverage against the central operation.</p>
+        <p>Services provided to cartel members include: administration and client management panels; encryption payload builders with configurable parameters; ransom note generators; negotiation tooling and victim communication portals; file storage and hosting for exfiltrated data; Tor-based DLS infrastructure with custom .onion domains; and dedicated technical support and negotiation assistance for affiliates.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Recruitment and Revenue Structure</div>
+        <ul class="content-list">
+          <li><strong>Revenue split:</strong> 80% to affiliates, 20% retained by core operators. Publicly advertised on underground forums including RAMP.</li>
+          <li><strong>Recruitment channels:</strong> RAMP (Russian-language dark web forum), Telegram-adjacent channels, and direct outreach to displaced affiliates from disrupted groups (e.g., RansomHub, BlackLock).</li>
+          <li><strong>Entry requirements:</strong> Prior intrusion experience and ability to obtain initial access. Targeting rules include a stated prohibition on attacks within Russia and other former Soviet Union states (CIS) and a self-reported avoidance of healthcare organizations. Enforcement of these rules across all affiliates is not independently verified.</li>
+          <li><strong>White-label option:</strong> Partners may operate entirely under a different brand name with separate DLS portals on DragonForce infrastructure. The "RansomBay" sub-brand is the first documented example, incorporating elements of the DragonForce logo while operating under a distinct identity.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior and Extortion Tactics</div>
+        <p>DragonForce employs double extortion as its core pressure mechanism: data is exfiltrated prior to encryption, creating two independent leverage points. Payment deadlines are enforced with countdown timers on the DLS. Ransom demands for large enterprises have been reported in the multi-million dollar range, with negotiation reductions of 30-60% reported across multiple incidents.</p>
+        <p>In high-profile campaigns, the group has escalated beyond victim communications to direct outreach to executives (M&amp;S CEO) and media engagement (BBC). Data auction threats and harassment of victim customers or partners have also been documented. Victim communication takes place through Tor-accessible chat portals linked via unique IDs in ransom notes.</p>
+        <p>For victims with functional backups, DragonForce's primary remaining leverage is the data publication threat. The group advertises that paying the ransom prevents onward sale or publication of exfiltrated data, though no mechanism enforces this commitment.</p>
+      </div>
+
+    </section>
+
+    <!-- SECTION 04: TECHNICAL PROFILE -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <p>DragonForce and its affiliates use a range of initial access methods. Phishing with malicious attachments or links is a documented baseline approach. Exploitation of public-facing vulnerabilities has been confirmed across multiple incidents:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CVE</th><th>Product</th><th>Type</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">CVE-2021-44228</td><td>Apache Log4j (Log4Shell)</td><td>Remote Code Execution</td><td><span class="conf conf-confirmed" style="margin:0;padding:3px 8px;font-size:10px;">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2023-46805</td><td>Ivanti Connect Secure</td><td>Authentication Bypass</td><td><span class="conf conf-confirmed" style="margin:0;padding:3px 8px;font-size:10px;">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2024-21887</td><td>Ivanti Connect Secure</td><td>Command Injection</td><td><span class="conf conf-credible" style="margin:0;padding:3px 8px;font-size:10px;">Credible</span></td></tr>
+              <tr><td class="mono">CVE-2024-21893</td><td>Ivanti Connect Secure</td><td>Path Traversal (SSRF)</td><td><span class="conf conf-credible" style="margin:0;padding:3px 8px;font-size:10px;">Credible</span></td></tr>
+              <tr><td class="mono">CVE-2024-21412</td><td>Microsoft Windows SmartScreen</td><td>Security Feature Bypass</td><td><span class="conf conf-credible" style="margin:0;padding:3px 8px;font-size:10px;">Credible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Affiliates also leverage stolen or cracked credentials and valid account access. In the UK retail incidents, initial access was obtained via social engineering against IT helpdesk services (voice phishing/vishing targeting service desk contractors), consistent with Scattered Spider/UNC3944 TTPs rather than DragonForce-specific tooling.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Post-Exploitation and Lateral Movement</div>
+        <ul class="content-list">
+          <li><strong>Backdoor and C2:</strong> SystemBC for persistent backdoor access; SimpleHelp RMM software exploited for remote control; Cobalt Strike-compatible beacons for C2 communications.</li>
+          <li><strong>Credential access:</strong> Mimikatz for credential harvesting; NTDS.dit (Active Directory database) theft to enable quiet authenticated lateral movement at scale.</li>
+          <li><strong>Defense evasion:</strong> Bring-Your-Own-Vulnerable-Driver (BYOVD) techniques to disable EDR and security tooling; XDR/EDR bypass capabilities advertised in RaaS recruitment materials.</li>
+          <li><strong>Deployment:</strong> Domain controllers and scripts used for mass deployment of encryptors across networks; administrator account creation for persistence.</li>
+          <li><strong>Exfiltration:</strong> Data exfiltration precedes encryption; exfiltrated material stored on DragonForce-controlled file hosting infrastructure.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <p>DragonForce implements hybrid encryption: AES symmetric encryption per file with asymmetric RSA key wrapping as the primary scheme; ChaCha8 variants have been observed in some samples for increased throughput speed. Multi-threaded encryption is supported to maximize speed on target systems. Volume shadow copies are deleted to impede recovery. File extensions are modified post-encryption.</p>
+        <div class="conf-block confirmed">
+          <strong>No public decryptor available.</strong> As of May 2026, no universal decryptor for DragonForce has been released on No More Ransom or via any vendor publication. Victims without viable backups or ransomed keys are effectively locked out. The implementation is described by multiple analysts as adequately secure in practice despite borrowing from known codebases.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Coverage and Variants</div>
+        <p>DragonForce targets Windows environments as its baseline. Cross-platform capabilities derived from the LockBit and Conti leaked code expand coverage to Linux, VMware ESXi (confirmed in M&amp;S attack: virtual machines encrypted), BSD platforms, and some NAS devices. The VMware ESXi targeting variant was specifically weaponized in the April 2025 UK retail campaign to encrypt virtual machines supporting e-commerce and payment processing at scale.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>DragonForce's affiliate rules, documented by The Register and Barracuda, explicitly prohibit attacks on Russia and other former Soviet Union states (CIS). Whether this constraint is implemented at the binary level (keyboard/locale check) or enforced only through affiliate rules is not confirmed in available technical analyses. The Perplexity research document notes that public binary analyses do not consistently document explicit CIS keyboard checks; however, the affiliate-rule prohibition is separately confirmed. The combination of RAMP advertising (Russian-language forum), CIS exclusion rules, and use of tools common in Russian-speaking criminal ecosystems collectively constitute a credible (though not confirmed) CIS nexus indicator. Confidence: <strong>CREDIBLE</strong>.</p>
+      </div>
+
+    </section>
+
+    <!-- SECTION 05: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>DragonForce demands ransoms in Bitcoin as the primary payment channel. Scattered references to privacy coin support exist in open sources but are not consistently documented. Bitcoin's traceability makes on-chain forensics possible in principle; however, as noted below, no major blockchain analytics firm has published a detailed DragonForce-specific analysis.</p>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Affiliate Share</div>
+            <div class="metric-val">80%</div>
+            <div class="metric-note">Of each ransom payment</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Core Operator Share</div>
+            <div class="metric-val">20%</div>
+            <div class="metric-note">Retained by DragonForce core</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">UK Retail Impact</div>
+            <div class="metric-val">&pound;270-440M</div>
+            <div class="metric-note">M&amp;S + Co-op, single event classification</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">OFAC Sanctions</div>
+            <div class="metric-val">None</div>
+            <div class="metric-note">As of May 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Analysis and Laundering</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>TRM Labs, Chainalysis, and Elliptic have not published dedicated DragonForce blockchain forensics in open sources as of May 2026. This is a material intelligence gap. In the absence of published on-chain analysis, generic RaaS laundering patterns are the relevant reference: multi-stage wallet hopping, use of mixing or coin-swap services, and eventual cash-out through less regulated exchanges. These patterns are <strong>inferred</strong> from the broader RaaS ecosystem; they are not specifically documented for DragonForce.</p>
+        <p>The high-profile nature of the UK retail attacks (£270M-£440M classified as a single combined event) increases the probability that on-chain analysis is ongoing at law enforcement level and may not be publicly disclosed until indictments or forfeiture proceedings materialize.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Regulatory Status</div>
+        <p>As of May 2026, no OFAC designations, UK OFSI sanctions, or EU asset freeze designations have been publicly announced targeting DragonForce, its core operators, or named wallet addresses. The July 2025 NCA arrests have not yet resulted in publicly disclosed forfeiture orders. Any organization considering ransom payment should treat DragonForce as high-risk from a sanctions-compliance standpoint notwithstanding the absence of a formal designation, given the UK charges and ongoing NCA investigation.</p>
+      </div>
+
+    </section>
+
+    <!-- SECTION 06: VICTIM PROFILE -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Count Growth Curve</div>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">Aug 2023 to Aug 2024</div>
+            <div class="metric-val">82</div>
+            <div class="metric-note">Group-IB (CONFIRMED)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">March 2025</div>
+            <div class="metric-val">136</div>
+            <div class="metric-note">Sophos DLS count (CONFIRMED)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Mid-2025</div>
+            <div class="metric-val">170+</div>
+            <div class="metric-note">Bridewell estimate (CREDIBLE)</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Late 2025</div>
+            <div class="metric-val">363+</div>
+            <div class="metric-note">GBHackers DLS count (CREDIBLE)</div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Note:</strong> DLS victim counts represent only victims publicly listed. In the cartel model, affiliates operating under sub-brands may publish to separate portals; the true total victim count across all DragonForce infrastructure is likely higher than DLS figures indicate.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector and Geography Breakdown</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Notable Victims</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Retail</td><td>Marks &amp; Spencer (UK), Co-op Group (UK), Harrods (UK)</td><td>CONFIRMED</td></tr>
+              <tr><td>Lottery / Government-adjacent</td><td>Ohio Lottery (USA); Palau government</td><td>CONFIRMED</td></tr>
+              <tr><td>Food and beverage</td><td>Yakult Australia</td><td>CONFIRMED</td></tr>
+              <tr><td>Industrial / OT</td><td>15+ industrial targets Q1 2025 per Dragos</td><td>CREDIBLE</td></tr>
+              <tr><td>Logistics / Shipping</td><td>Unnamed; documented in Group-IB and Bridewell reporting</td><td>CREDIBLE</td></tr>
+              <tr><td>Technology / MSP</td><td>MSP via SimpleHelp RMM exploitation</td><td>CONFIRMED</td></tr>
+              <tr><td>Luxury retail</td><td>Belk (USA) claimed on DLS</td><td>CREDIBLE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Geographic distribution: Origins concentrated in the Asia-Pacific and Middle East region (consistent with DFM overlap theory); subsequent expansion into the United Kingdom, Continental Europe, and North America. The UK retail campaign (April-May 2025) and confirmed US targeting suggest active geographic expansion. Dragos and Mandiant both note threat actor interest in expanding the UK retail campaign model to US retail targets.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Targeting Criteria and Stated Exclusions</div>
+        <p>DragonForce publicly claims avoidance of healthcare targets. The group's BleepingComputer statement: "We don't attack cancer patients or anything heart related, we'd rather send them money and help them." This is a self-reported constraint and remains unverified across all affiliate activity. Analysts should treat healthcare avoidance as a <strong>soft, non-verified constraint</strong> that may not hold under the cartel/white-label model where affiliate enforcement is decentralized.</p>
+        <p>Affiliate rules prohibit attacks on Russia and former Soviet Union states (CIS). No prohibition on attacks against Malaysian entities has been identified (SentinelOne, Barracuda). Organizations in the retail, logistics, technology, and industrial sectors in the UK, US, and Australia should treat DragonForce as an active threat as of May 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">UK Retail Campaign: High-Profile Case Study</div>
+        <p>The April-May 2025 UK retail campaign is DragonForce's most consequential documented operation to date. Marks &amp; Spencer's network was penetrated as early as February 2025; encryptors targeting VMware ESXi hosts were deployed in April 2025. Co-op confirmed exposure of over 10,000 members' personal data. Harrods restricted internet access after a claimed breach. The combined M&amp;S and Co-op incidents were classified by the Cyber Monitoring Centre as a single combined cyber event with financial impact of £270M to £440M.</p>
+        <p>M&amp;S confirmed to a UK Parliamentary committee on July 8, 2025 that the attack was DragonForce ransomware, deployed by actors "loosely aligned" with Scattered Spider. Initial access was obtained via social engineering against TCS (Tata Consultancy Services), the contractor running M&amp;S's IT helpdesk. The Scattered Spider/DragonForce combination reflects the cartel's value proposition: access specialists (Scattered Spider) can partner with DragonForce infrastructure for payload delivery and extortion management.</p>
+      </div>
+
+    </section>
+
+    <!-- SECTION 07: LE RESPONSE -->
+    <section class="section" id="le">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">NCA Arrests: July 10, 2025</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The UK National Crime Agency (NCA) announced on July 10, 2025 the arrest of four individuals in connection with the cyberattacks on Marks &amp; Spencer, Co-op, and Harrods. The arrests were made in West Midlands and London. Suspects were arrested on suspicion of Computer Misuse Act offenses, blackmail, money laundering, and participating in the activities of an organized crime group. Electronic devices were seized for forensic analysis. The NCA did not publicly name the "organized crime group," but reporting links the suspects to Scattered Spider / The Com rather than to DragonForce core operators.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Detail</th><th>Information</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Arrest date</td><td>July 10, 2025</td><td>NCA (CONFIRMED)</td></tr>
+              <tr><td>Number arrested</td><td>4</td><td>NCA (CONFIRMED)</td></tr>
+              <tr><td>Ages / demographics</td><td>Two aged 19, one aged 17, one woman aged 20</td><td>NCA (CONFIRMED)</td></tr>
+              <tr><td>Named suspects (Krebs reporting)</td><td>Owen David Flowers (aliases: bo764, Holy, Nazi); Thalha Jubair (aliases: Earth2Star, Operator) &mdash; both 19-year-olds; Jubair also alleged former LAPSUS$ core member and Doxbin administrator</td><td>Krebs on Security (CREDIBLE, single source)</td></tr>
+              <tr><td>Charges</td><td>Computer Misuse Act offenses, blackmail, money laundering, organized crime participation</td><td>NCA (CONFIRMED)</td></tr>
+              <tr><td>Infrastructure seized</td><td>None; DragonForce DLS and operations continue</td><td>CONFIRMED</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>Analytical note:</strong> The July 2025 arrests targeted individuals assessed as Scattered Spider / The Com members who used DragonForce infrastructure, not DragonForce's core operators. No arrests of DragonForce operators, developers, or cartel leadership have been publicly reported as of May 2026. The infrastructure disruption risk from these arrests is low; the operational impact falls on the Scattered Spider intrusion cluster, not on DragonForce's cartel model.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Additional LE and Regulatory Actions</div>
+        <p>There are no publicly disclosed indictments, US or EU court documents, or OFAC/OFSI sanctions dedicated to DragonForce core operators as of May 2026. No FBI/CISA joint advisory, UK NCSC dedicated advisory, or Europol action targeting DragonForce specifically has been issued. DragonForce has not received the "Tier-1" law enforcement focus that LockBit or REvil attracted prior to their disruptions.</p>
+        <p>Approximately a dozen total Scattered Spider members have been arrested in the eighteen months preceding May 2026 across multiple law enforcement operations. This pressure on the Scattered Spider access layer may affect DragonForce's most capable affiliate channel but leaves the cartel infrastructure intact.</p>
+      </div>
+
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Primary Motivation</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>DragonForce's ransomware operations are unambiguously profit-motivated. Ransom monetization is the operational center of gravity. No pattern of politically motivated targeting, ideological messaging aligned with state interests, or gratuitous destruction inconsistent with financial incentives has been documented.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS / Russia Nexus Assessment</div>
+        <div class="conf conf-credible">Credible Low</div>
+        <p>No confirmed organizational relationship between DragonForce and Russian intelligence services (FSB, SVR, GRU) exists in open sources. However, several indicators constitute a credible (low-confidence) CIS nexus signal:</p>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Indicator 1 &mdash; Credible</div>
+            <div class="pillar-title">CIS Exclusion in Affiliate Rules</div>
+            <div class="pillar-body">Affiliate rules explicitly prohibit attacks on Russia and former Soviet states. This pattern is characteristic of CIS-based criminal operations seeking informal safe harbor. Source: The Register, Barracuda.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Indicator 2 &mdash; Credible</div>
+            <div class="pillar-title">RAMP Forum Advertising</div>
+            <div class="pillar-body">DragonForce actively advertised on RAMP, a Russian-language dark web forum. The majority of RAMP users communicate in Russian. Active recruitment on Russian-language criminal infrastructure is consistent with CIS operator base.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Indicator 3 &mdash; Credible</div>
+            <div class="pillar-title">Tool Overlap with Russian Ecosystem</div>
+            <div class="pillar-body">Use of SystemBC, Mimikatz, and Cobalt Strike. These tools are widely used across the CIS cybercrime ecosystem but are not exclusive to it. Code base drawn from LockBit 3.0 and Conti, both Russian-nexus operations.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Accusation &mdash; Single Source, Low Confidence</div>
+            <div class="pillar-title">RansomHub FSB Accusation</div>
+            <div class="pillar-body">RansomHub spokesperson "Koley" accused DragonForce of working as an agent of Russia's FSB, posting "You use feds to steal and shutdown others. We know." This is a self-interested accusation from a rival criminal group with no corroboration. Some industry analysts support the hypothesis. Confidence: ANALYST INFERENCE only.</div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Overall assessment:</strong> DragonForce should be treated as a financially motivated cybercriminal cartel with a possible CIS nexus that has not been confirmed. The Malaysia origin hypothesis and a Russia/CIS hypothesis are not mutually exclusive; the group may have founders or operators in multiple jurisdictions. Mandiant (Google) has <em>not</em> formally attributed DragonForce to any state-sponsored cluster. Analysts should watch for future law enforcement disclosures or on-chain attribution that could resolve the jurisdictional question. Current confidence in any specific attribution: <strong>CREDIBLE LOW</strong>.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">UNC3944 / Scattered Spider Nexus</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Mandiant (Google Threat Intelligence Group) reported that threat actors used TTPs consistent with UNC3944 (Scattered Spider) in the UK retail attacks, deploying DragonForce ransomware. This is a <em>use relationship</em> (Scattered Spider affiliates using DragonForce infrastructure), not an organizational merger. Mandiant has <em>not</em> formally attributed the UK retail intrusions to Scattered Spider; the characterization is "tactics consistent with." CrowdStrike, Microsoft, and Fenix24 reportedly assessed Scattered Spider involvement based on the M&amp;S investigation; Google TIG stated it had not independently confirmed Scattered Spider attribution.</p>
+        <p>Practically: Scattered Spider's social engineering capabilities and native English fluency complement DragonForce's infrastructure and payload delivery, creating a potent combined capability against Western enterprises. The cartel model explicitly facilitates this type of partnership without requiring formal membership.</p>
+      </div>
+
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <p>The following cluster relationships are assessed with two-tier confidence (anchor relationship / extension claims):</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group</th><th>Relationship</th><th>Anchor Confidence</th><th>Extension Confidence</th><th>Vendor Coverage</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Scattered Spider / UNC3944</strong></td>
+                <td>Access affiliate; used DragonForce payloads in UK retail campaign</td>
+                <td>CREDIBLE (Mandiant, CrowdStrike, M&amp;S Parliamentary testimony)</td>
+                <td>CREDIBLE (ongoing use relationship plausible given cartel model)</td>
+                <td>Mandiant, Bridewell, Acronis, Realize Security; Google TIG does not formally confirm attribution</td>
+              </tr>
+              <tr>
+                <td><strong>RansomHub</strong></td>
+                <td>DragonForce claimed RansomHub April 2025 after RansomHub went dark April 1; sub-brand portal created</td>
+                <td>CONFIRMED (The Hacker News, Barracuda, GuidePoint, Sophos)</td>
+                <td>CREDIBLE (displaced affiliates migrating to DFRC sub-brands)</td>
+                <td>Sophos, Barracuda, GuidePoint, CyberExpress; RansomHub "Koley" disputes hostile takeover framing</td>
+              </tr>
+              <tr>
+                <td><strong>RansomBay</strong></td>
+                <td>First documented white-label sub-brand; former RansomHub affiliate operating on DragonForce infrastructure</td>
+                <td>CONFIRMED (Barracuda, RansomLook)</td>
+                <td>N/A (sub-brand, not separate group)</td>
+                <td>Barracuda, RansomLook</td>
+              </tr>
+              <tr>
+                <td><strong>BlackLock</strong></td>
+                <td>Rival defaced within 24 hours of DFRC cartel announcement (March 2025)</td>
+                <td>CONFIRMED (Secureworks, The Hacker News)</td>
+                <td>ANALYST INFERENCE (hostile relationship; BlackLock affiliation with DFRC not assessed)</td>
+                <td>Secureworks, Sophos, The Hacker News; Mandiant, Recorded Future have not published formal assessment</td>
+              </tr>
+              <tr>
+                <td><strong>DragonForce Malaysia</strong></td>
+                <td>Possible founding relationship or shared personnel; contested</td>
+                <td>CREDIBLE LOW (naming overlap, timing, some targeting overlap)</td>
+                <td>CREDIBLE LOW (DFM denies; no technical link established)</td>
+                <td>WatchGuard, Barracuda, SOCRadar note the linkage hypothesis; SentinelOne, Barracuda note counter-evidence</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding and Exit Signals</div>
+        <p>The structural change in March 2025 was an expansion, not a rebrand or exit. DragonForce has not gone dark, changed names, or shown infrastructure shutdown signals. The cartel model actively absorbs displaced affiliates from disrupted groups (RansomHub, BlackLock), which strengthens rather than weakens the operation over time. The March 2025 pivot is explicitly designed to be resilient to the kind of single-brand takedowns that disrupted LockBit and ALPHV.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators</div>
+        <ul class="content-list">
+          <li><strong>Victim growth trajectory:</strong> 82 (Aug 2024) to 363+ (late 2025) represents more than a fourfold increase in approximately fifteen months. The growth rate accelerated post-cartel announcement.</li>
+          <li><strong>Capability evolution:</strong> Multi-platform payload coverage (Windows, Linux, ESXi, BSD, NAS), cross-industry targeting including OT/ICS environments, and documented social engineering partnerships indicate ongoing capability development.</li>
+          <li><strong>Model innovation as resilience:</strong> White-label cartel structure specifically decouples the operational brand from infrastructure, reducing the enforcement leverage that dismantled LockBit. This is an adaptive response to the LE disruption model.</li>
+          <li><strong>LE pressure level:</strong> Four arrests (July 2025) targeting peripheral actors (Scattered Spider affiliates), not core operators. Infrastructure intact. Current LE pressure level: moderate (elevated investigation, no takedown).</li>
+          <li><strong>Competitive dynamics:</strong> DragonForce's aggressive rival targeting (BlackLock defacement, RansomHub absorption) reflects an intent to consolidate market share. If successful, this concentrates more ransomware affiliate activity under a single infrastructure, increasing overall attack volume.</li>
+        </ul>
+        <div class="callout callout-alert">
+          <strong>Intelligence gaps:</strong> (1) No published blockchain forensics from TRM Labs, Chainalysis, or Elliptic; wallet clustering and financial flows unknown. (2) Core operator identities unconfirmed; no named individuals from DragonForce's central team. (3) Jurisdictional question unresolved; Malaysia vs. Russia/CIS vs. mixed origin. (4) Full scope of sub-brands operating on DragonForce infrastructure is not publicly mapped. (5) No CISA/FBI or NCSC joint advisory dedicated to DragonForce as of May 2026.
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+
+      <button class="source-toggle" onclick="document.getElementById('src-list').classList.toggle('open')">
+        &#9660; Toggle source list
+      </button>
+
+      <div id="src-list" class="source-list open">
+        <div class="source-category">Primary Research and Technical Analysis</div>
+        <div class="source-item"><span class="source-num">1</span><a href="https://www.group-ib.com/blog/dragonforce-ransomware/" target="_blank">Group-IB: DragonForce Ransomware Group (Masked Actors profile)</a></div>
+        <div class="source-item"><span class="source-num">2</span><a href="https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-dragonforce" target="_blank">Trend Micro: Ransomware Spotlight: DragonForce (Water Tambanakua)</a></div>
+        <div class="source-item"><span class="source-num">3</span><a href="https://www.loginsoft.com/post/dragonforce-ransomware-technical-analysis-and-mitigation-strategies" target="_blank">Loginsoft: DragonForce Ransomware Technical Analysis and Mitigation Strategies</a></div>
+        <div class="source-item"><span class="source-num">4</span><a href="https://www.resecurity.com/blog/article/dragonforce-ransomware-reverse-engineering-report" target="_blank">Resecurity: DragonForce Ransomware Reverse Engineering Report</a></div>
+        <div class="source-item"><span class="source-num">5</span><a href="https://www.attackiq.com/2025/05/23/emulating-dragonforce-ransomware/" target="_blank">AttackIQ: Emulating DragonForce Ransomware (2025)</a></div>
+        <div class="source-item"><span class="source-num">6</span><a href="https://www.fortiguard.com/threat-actor/6251/dragonforce-ransomware" target="_blank">Fortinet FortiGuard: DragonForce Ransomware Threat Actor</a></div>
+        <div class="source-item"><span class="source-num">7</span><a href="https://www.intel471.com/blog/threat-hunting-case-study-dragonforce" target="_blank">Intel 471: Threat Hunting Case Study: DragonForce</a></div>
+        <div class="source-item"><span class="source-num">8</span><a href="https://www.darktrace.com/blog/tracking-a-dragon-investigating-a-dragonforce-affiliated-ransomware-attack-with-darktrace" target="_blank">Darktrace: Tracking a Dragon: DragonForce-affiliated Attack Analysis</a></div>
+
+        <div class="source-category">Cartel Model and Ecosystem</div>
+        <div class="source-item"><span class="source-num">9</span><a href="https://news.sophos.com/en-us/2025/05/21/dragonforce-targets-rivals-in-a-play-for-dominance/" target="_blank">Sophos: DragonForce Targets Rivals in a Play for Dominance</a></div>
+        <div class="source-item"><span class="source-num">10</span><a href="https://blog.barracuda.com/2025/06/09/dragonforce-ransomware-cartel-vs--everybody" target="_blank">Barracuda Networks: DragonForce Ransomware Cartel vs. Everybody (June 2025)</a></div>
+        <div class="source-item"><span class="source-num">11</span><a href="https://www.levelblue.com/blogs/spiderlabs-blog/the-godfather-of-ransomware-inside-dragonforces-cartel-ambitions" target="_blank">LevelBlue / SpiderLabs: The Godfather of Ransomware &mdash; DragonForce Cartel Ambitions</a></div>
+        <div class="source-item"><span class="source-num">12</span><a href="https://thehackernews.com/2025/04/ransomhub-went-dark-april-1-affiliates.html" target="_blank">The Hacker News: RansomHub Went Dark April 1; DragonForce Claimed Control</a></div>
+        <div class="source-item"><span class="source-num">13</span><a href="https://thecyberexpress.com/dragonforce-claims-to-be-taking-over-ransomhub/" target="_blank">Cyber Express: DragonForce Claims To Be Taking Over RansomHub</a></div>
+
+        <div class="source-category">UK Retail Campaign and Scattered Spider</div>
+        <div class="source-item"><span class="source-num">14</span><a href="https://www.bridewell.com/insights/blogs/detail/who-are-dragonforce-ransomware-group" target="_blank">Bridewell: Who Are DragonForce Ransomware Group?</a></div>
+        <div class="source-item"><span class="source-num">15</span><a href="https://industrialcyber.co/ransomware/mandiant-links-dragonforce-ransomware-attacks-on-uk-retailers-to-unc3944-tactics-highlighting-links-to-ransomhub/" target="_blank">Industrial Cyber: Mandiant Links DragonForce UK Retail Attacks to UNC3944 Tactics</a></div>
+        <div class="source-item"><span class="source-num">16</span><a href="https://www.bleepingcomputer.com/news/security/deep-dive-into-dragonforce-ransomware-and-its-scattered-spider-connection/" target="_blank">BleepingComputer: Deep Dive Into DragonForce Ransomware and Its Scattered Spider Connection</a></div>
+        <div class="source-item"><span class="source-num">17</span><a href="https://www.picussecurity.com/resource/blog/dragonforce-ransomware-attacks-retail-giants" target="_blank">Picus Security: Retail Under Fire: Inside DragonForce Ransomware Attacks on Industry Giants</a></div>
+        <div class="source-item"><span class="source-num">18</span><a href="https://www.infosecurity-magazine.com/news/dragonforce-goup-ms-coop-harrods/" target="_blank">Infosecurity Magazine: Inside DragonForce, the Group Tied to M&amp;S, Co-op and Harrods Hacks</a></div>
+
+        <div class="source-category">Law Enforcement and Arrests</div>
+        <div class="source-item"><span class="source-num">19</span><a href="https://thehackernews.com/2025/07/four-arrested-in-440m-cyber-attack-on.html" target="_blank">The Hacker News: Four Arrested in &pound;440M Cyber Attack on M&amp;S, Co-op, and Harrods (July 2025)</a></div>
+        <div class="source-item"><span class="source-num">20</span><a href="https://www.nationalcrimeagency.gov.uk/news/retail-cyber-attacks-nca-arrest-four-for-attacks-on-m-s-co-op-and-harrods" target="_blank">UK National Crime Agency: NCA Arrests Four for Retail Cyber Attacks (July 2025)</a></div>
+        <div class="source-item"><span class="source-num">21</span><a href="https://krebsonsecurity.com/2025/07/uk-charges-four-in-scattered-spider-ransom-group/" target="_blank">Krebs on Security: UK Charges Four in Scattered Spider Ransom Group</a></div>
+
+        <div class="source-category">Victim Tracking and General Reference</div>
+        <div class="source-item"><span class="source-num">22</span><a href="https://www.ransomware.live/group/dragonforce" target="_blank">Ransomware.live: DragonForce Group Profile</a></div>
+        <div class="source-item"><span class="source-num">23</span><a href="https://socradar.io/blog/dark-web-profile-dragonforce-ransomware/" target="_blank">SOCRadar: Dark Web Profile: DragonForce Ransomware</a></div>
+        <div class="source-item"><span class="source-num">24</span><a href="https://www.watchguard.com/wgrd-security-hub/ransomware-tracker/dragonforce" target="_blank">WatchGuard: DragonForce Ransomware Tracker</a></div>
+        <div class="source-item"><span class="source-num">25</span><a href="https://www.theregister.com/2025/05/15/dragonforce_ransomware_uk_retail_attacks/" target="_blank">The Register: What We Know About DragonForce Ransomware</a></div>
+        <div class="source-item"><span class="source-num">26</span><a href="https://www.dragos.com/blog/dragos-industrial-ransomware-analysis-q1-2025/" target="_blank">Dragos: Industrial Ransomware Analysis Q1 2025</a></div>
+        <div class="source-item"><span class="source-num">27</span><a href="https://www.broadcom.com/support/security-center/protection-bulletin/dragonforce-ransomware-s-campaign-intensifies-in-2025" target="_blank">Broadcom / Symantec: DragonForce Ransomware Campaign Intensifies in 2025</a></div>
+        <div class="source-item"><span class="source-num">28</span><a href="https://gbhackers.com/dragonforce-ransomware-group/" target="_blank">GBHackers: DragonForce Ransomware Group Targets 363 Companies</a></div>
+        <div class="source-item"><span class="source-num">29</span><a href="https://www.sentinelone.com/blog/dragonforce-ransomware-gang-from-hacktivists-to-high-street-extortionists/" target="_blank">SentinelOne: DragonForce Ransomware: From Hacktivists to High-Street Extortionists</a></div>
+        <div class="source-item"><span class="source-num">30</span><a href="https://msspalert.com/news/dragonforce-ransomware-group-exploits-msps-rmm-software-in-attacks" target="_blank">MSSP Alert: DragonForce Exploits MSP's RMM Software</a></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="page-footer">
+    Ransomware EDP Threat Actor Library &bull; DragonForce Analytical Profile &bull; Last updated May 2026 &bull; ransomwareedp.github.io
+  </div>
+
+</main>
+</div>
+
+<script>
+// Sidebar active section tracking
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector(`.section-nav a[href="#${entry.target.id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

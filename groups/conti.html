@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conti | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--text); background: var(--gray-100); line-height: 1.6; }
+.topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--navy); display: flex; align-items: center; padding: 0 24px; border-bottom: 2px solid var(--accent); }
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+.sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--navy-mid); position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+.group-list { padding: 0 12px 8px; }
+.group-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.15s; color: var(--gray-400); margin-bottom: 2px; }
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag { margin-left: auto; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; color: var(--gray-400); border: 1px solid var(--navy-light); border-radius: 4px; padding: 1px 5px; text-transform: uppercase; }
+.section-nav { padding: 0 12px; }
+.section-nav a { display: block; padding: 7px 12px; border-radius: 6px; font-size: 12.5px; color: var(--gray-400); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px; }
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+.section-nav .sub { padding-left: 24px; font-size: 12px; }
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: #555; color: #fff; }
+.badge-diaspora { background: #8e44ad; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-red { background: var(--accent-soft); border-left: 4px solid var(--accent); }
+.callout-blue { background: var(--blue-soft); border-left: 4px solid var(--blue); }
+.callout-amber { background: var(--amber-soft); border-left: 4px solid var(--amber); }
+.callout-navy { background: var(--navy-mid); border-left: 4px solid var(--navy-light); color: var(--gray-300); }
+.callout p { margin-bottom: 6px; }
+.callout p:last-child { margin-bottom: 0; }
+.pillar { border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+.pillar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.pillar-body { font-size: 13px; color: var(--gray-800); line-height: 1.6; }
+.attr-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+.attr-table tr { border-bottom: 1px solid var(--gray-200); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td:first-child { font-weight: 600; color: var(--gray-600); width: 200px; padding: 8px 14px 8px 0; vertical-align: top; }
+.attr-table td:last-child { padding: 8px 0; color: var(--gray-800); }
+.source-list { padding: 0; list-style: none; }
+.source-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-200); font-size: 12.5px; }
+.source-item:last-child { border-bottom: none; }
+.source-num { font-weight: 700; color: var(--accent); min-width: 30px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+.leaked-quote { background: var(--navy); border-left: 3px solid var(--accent); padding: 14px 18px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+.leaked-quote p { color: var(--gray-300); font-style: italic; font-size: 13px; margin-bottom: 4px; }
+.leaked-quote .quote-attr { color: var(--gray-400); font-size: 11px; font-style: normal; font-weight: 600; letter-spacing: 0.04em; }
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+.successor-link { color: var(--blue); text-decoration: none; font-weight: 600; }
+.successor-link:hover { text-decoration: underline; }
+.lineage-banner { background: linear-gradient(135deg, var(--navy) 0%, #1a1a2e 100%); border: 1px solid var(--navy-light); border-radius: 10px; padding: 20px 24px; margin: 20px 0; }
+.lineage-banner-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
+.lineage-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lineage-node { background: var(--navy-light); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: #fff; text-decoration: none; white-space: nowrap; }
+.lineage-node.current { background: var(--accent); border-color: var(--accent); }
+.lineage-node.successor { background: #6c3483; border-color: #6c3483; }
+.lineage-node:hover { opacity: 0.85; }
+.lineage-arrow { color: var(--gray-400); font-size: 14px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware <span>EDP</span> &nbsp;&bull;&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">ransomwareedp.github.io &nbsp;&bull;&nbsp; Analytical Profiles</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item active" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-dim"></span>
+      Akira
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      Luna Moth
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#leaks">The Conti Leaks</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#le">LE &amp; Regulatory Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory &amp; Diaspora</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Threat Actor Profile &nbsp;&bull;&nbsp; Ransomware-as-a-Service</div>
+  <div class="hero-title">Conti</div>
+  <div class="hero-subtitle">Wizard Spider / GOLD ULRICK &nbsp;&bull;&nbsp; Russia-based &nbsp;&bull;&nbsp; Active Dec 2019 &ndash; May 2022 &nbsp;&bull;&nbsp; Diaspora ongoing</div>
+  <div class="hero-badges">
+    <span class="badge badge-defunct">Brand Defunct</span>
+    <span class="badge badge-diaspora">Diaspora Active</span>
+    <span class="badge badge-raas">RaaS (Hybrid)</span>
+    <span class="badge badge-critical">Critical Infrastructure</span>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Lifetime Revenue</div>
+      <div class="kpi-value">$2.7B</div>
+      <div class="kpi-sub">Ryuk/Conti combined est.</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">2021 Revenue Alone</div>
+      <div class="kpi-value">$180M</div>
+      <div class="kpi-sub">Highest of any group that year</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Confirmed Victims</div>
+      <div class="kpi-value">1,000+</div>
+      <div class="kpi-sub">47 US states + 31 countries</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Peak Workforce</div>
+      <div class="kpi-value">100+</div>
+      <div class="kpi-sub">Salaried employees</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Leaked Messages</div>
+      <div class="kpi-value">170K+</div>
+      <div class="kpi-sub">Internal Jabber logs, 2022</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Known Successors</div>
+      <div class="kpi-value">6+</div>
+      <div class="kpi-sub">Akira, Black Basta, Royal, others</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 01: OVERVIEW
+════════════════════════════════════════════════════ -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Executive Summary and Group Overview</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Overall Assessment</div>
+    <p>Conti was the most financially destructive ransomware operation ever documented. Operated by the Russia-based Wizard Spider criminal syndicate, it generated an estimated $180 million in extortion revenue in 2021 alone and accumulated over $2.7 billion across its full operational lifetime (Ryuk and Conti combined). Conti evolved from the TrickBot/Ryuk ecosystem into a full-spectrum Ransomware-as-a-Service empire, run with the organizational structure, HR departments, and professional divisions of a legitimate technology company.</p>
+    <p>Its implosion in May 2022 was triggered not by law enforcement, but by an internal actor: a Ukrainian security researcher who, incensed by Conti's public declaration of support for Russia's invasion of Ukraine, leaked nearly two years of internal communications. The brand collapsed; the organization did not. Core operators dispersed into a constellation of successor groups including Akira, Black Basta, Royal/BlackSuit, and others that continue operating as of May 2026. Conti is the progenitor of the most consequential criminal diaspora in ransomware history.</p>
+    <div class="conf conf-confirmed">Confirmed</div>
+    <p>The Conti brand is defunct as of May 19, 2022. The core operating network, centered on the individual identified as Vitaly Kovalev (alias "Stern"), remains active through successor entities, with shared laundering infrastructure confirmed by TRM Labs through 2026. [1][4][6]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Quick-Reference Attributes</div>
+    <table class="attr-table">
+      <tr><td>Status</td><td><strong>DEFUNCT</strong> (Conti brand, May 2022) / <strong>ACTIVE</strong> (diaspora entities, 2026)</td></tr>
+      <tr><td>First Observed</td><td>December 2019 (Conti deployments); antecedent Ryuk activity from September 2018</td></tr>
+      <tr><td>Brand Shuttered</td><td>May 19, 2022 (AdvIntel confirmation)</td></tr>
+      <tr><td>Operator</td><td>Wizard Spider (CrowdStrike); GOLD ULRICK (Secureworks, Conti operators specifically)</td></tr>
+      <tr><td>Origin</td><td>Russia (Saint Petersburg assessed; UAE operations hub from ~2020)</td></tr>
+      <tr><td>Revenue Model</td><td>Hybrid RaaS: salaried core employees + limited affiliate revenue-sharing</td></tr>
+      <tr><td>Max Single Demand</td><td>$25 million (documented FBI figure)</td></tr>
+      <tr><td>Encryption</td><td>AES-256 (initial); ChaCha stream cipher (from August 2020, selective)</td></tr>
+      <tr><td>CIS Exclusion</td><td>Confirmed behavioral exclusion; binary kill-switch assessed but less publicly documented than peers</td></tr>
+      <tr><td>Decryptor Available</td><td>Bitdefender free decryptor (limited applicability; pre-key-rotation variants only)</td></tr>
+      <tr><td>US Reward Outstanding</td><td>$10M for leadership ID/location; $5M for arrest/conviction of conspirators</td></tr>
+      <tr><td>Successor Profiles</td><td><a class="successor-link" href="akira.html">Akira</a> &nbsp;|&nbsp; Black Basta (defunct) &nbsp;|&nbsp; Royal/BlackSuit &nbsp;|&nbsp; Karakurt</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Operational Timeline</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Event</th></tr></thead>
+        <tbody>
+          <tr><td>Dec 2019</td><td>First observed Conti deployments, distributed via TrickBot</td></tr>
+          <tr><td>Jun 2020</td><td>CrowdStrike first observes Conti in Big Game Hunting campaigns; full transition from Ryuk</td></tr>
+          <tr><td>Aug 2020</td><td>Conti "Conti News" data leak site launched; ChaCha encryption adopted for speed</td></tr>
+          <tr><td>Oct 2020</td><td>NSA disrupts TrickBot botnet; internal chats document Conti's real-time reaction</td></tr>
+          <tr><td>Jan 2021</td><td>Emotet international law enforcement takedown forces Conti reorganization</td></tr>
+          <tr><td>May 2021</td><td>Ireland HSE attack; near-complete shutdown of national health IT network; $20M demand</td></tr>
+          <tr><td>Aug 2021</td><td>Disgruntled affiliate leaks Conti operational playbook (precursor leak)</td></tr>
+          <tr><td>Sep 2021</td><td>CISA/FBI/NSA joint advisory; 400+ documented attacks publicly acknowledged</td></tr>
+          <tr><td>Dec 2021</td><td>Conti is first professional ransomware group to adopt Log4Shell (CVE-2021-44228)</td></tr>
+          <tr><td>Feb 25, 2022</td><td>Conti posts pro-Russia statement on Ukraine invasion</td></tr>
+          <tr><td>Feb 27, 2022</td><td>@ContiLeaks begins publishing internal Jabber logs; 60,000+ messages first tranche</td></tr>
+          <tr><td>Mar 2022</td><td>Conti source code and TrickBot administrator materials leaked; attacks surge despite leaks</td></tr>
+          <tr><td>Apr&ndash;May 2022</td><td>Costa Rica attacks; first cyberattack to trigger a national state of emergency</td></tr>
+          <tr><td>May 19, 2022</td><td>Conti brand officially shuttered; all infrastructure taken offline (AdvIntel)</td></tr>
+          <tr><td>Sep 2023</td><td>DOJ unseals three federal indictments against nine Russian nationals; OFAC/FCDO sanction 11</td></tr>
+          <tr><td>May 2025</td><td>GangExposed begins publishing identities of Conti/TrickBot leadership; BKA names Kovalev</td></tr>
+          <tr><td>May 2026</td><td>Deniss Zolotarjovs sentenced to 102 months: first major custodial sentence for Conti network</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+  <div class="img-gallery">
+    <div class="img-panel tall">
+      <img src="https://krebsonsecurity.com/wp-content/uploads/2021/10/continews.png" alt="Conti News data leak site showing victim listings and access-for-sale notices" onerror="this.style.display='none'">
+      <div class="img-caption">
+        <strong>Conti News: Victim Shaming Blog</strong>
+        The "Conti News" data leak site listed compromised organizations with stolen data archives, countdown timers, and links to negotiate. In late 2021, Conti updated the site to sell network access to non-paying victims alongside the standard extortion listings.
+        <span class="img-source">Source: Krebs on Security, October 2021</span>
+      </div>
+    </div>
+    <div class="img-panel tall">
+      <img src="https://thedfirreport.com/wp-content/uploads/3584-6.png" alt="Conti dark web negotiation portal as seen by victims" onerror="this.style.display='none'">
+      <div class="img-caption">
+        <strong>Conti Dark Web Negotiation Portal</strong>
+        Victims accessed this Tor-based portal via a unique link embedded in the ransom note. The portal included a countdown timer tied to automatic data publication. The threat actors used this interface to communicate ransom demands and engage in negotiations.
+        <span class="img-source">Source: The DFIR Report, May 2021</span>
+      </div>
+    </div>
+  </div>
+  <div class="img-gallery three-col">
+    <div class="img-panel">
+      <img src="https://thedfirreport.com/wp-content/uploads/2021/05/image-16-1024x447.png" alt="Conti ransom note CONTI_README.txt delivered to victims" onerror="this.style.display='none'">
+      <div class="img-caption">
+        <strong>Conti Ransom Note (CONTI_README.txt)</strong>
+        Delivered as a plaintext .txt file in every encrypted folder. The note maintained a professional tone, identified the stolen data categories, and directed the victim to the dark web negotiation portal.
+        <span class="img-source">Source: The DFIR Report, May 2021</span>
+      </div>
+    </div>
+    <div class="img-panel">
+      <img src="https://www.varonis.com/hubfs/Blog_Contileaks_Var2_BlogHero_202202_FNL.png" alt="Varonis ContiLeaks analysis banner showing the scale of the 2022 data breach" onerror="this.style.display='none'">
+      <div class="img-caption">
+        <strong>ContiLeaks: The 2022 Breach</strong>
+        The February 2022 data leak by a Ukrainian insider constituted one of the most comprehensive exposures of any criminal organization in cybersecurity history. Leaked materials included 170,000+ chat messages, source code, and HR records.
+        <span class="img-source">Source: Varonis, February 2022</span>
+      </div>
+    </div>
+    <div class="img-panel myth">
+      <img src="https://www.varonis.com/hs-fs/hubfs/fig1.png" alt="Initial @ContiLeaks Twitter post announcing the data leak on February 27, 2022" onerror="this.style.display='none'">
+      <div class="img-caption">
+        <strong>@ContiLeaks: The First Post</strong>
+        The @ContiLeaks Twitter account launched on February 27, 2022 with this initial message, 48 hours after Conti's pro-Russia declaration. The account published internal Jabber logs, proving the leaker had backend infrastructure access that Conti had not detected.
+        <span class="img-source">Source: Varonis / VXUnderground, 2022</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 02: LINEAGE
+════════════════════════════════════════════════════ -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Lineage and Organizational Heritage</span>
+  </div>
+
+  <div class="lineage-banner">
+    <div class="lineage-banner-title">Wizard Spider Ecosystem: Lineage Flow</div>
+    <div class="lineage-flow">
+      <span class="lineage-node">Hermes (2017)</span>
+      <span class="lineage-arrow">&#8594;</span>
+      <span class="lineage-node">Ryuk (Sep 2018)</span>
+      <span class="lineage-arrow">&#8594;</span>
+      <span class="lineage-node current">Conti (Dec 2019)</span>
+      <span class="lineage-arrow">&#8594;</span>
+      <a class="lineage-node successor" href="akira.html">Akira</a>
+      <span class="lineage-arrow">/</span>
+      <span class="lineage-node successor">Black Basta</span>
+      <span class="lineage-arrow">/</span>
+      <span class="lineage-node successor">Royal</span>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Ryuk-to-Conti Transition</div>
+    <div class="conf conf-confirmed">Confirmed: High Confidence</div>
+    <p>Conti is a technical evolution of Ryuk ransomware, developed and operated by the same core group that CrowdStrike designates WIZARD SPIDER. CrowdStrike first observed Wizard Spider deploying TrickBot for financial fraud in 2016; the group deployed Ryuk in September 2018 for large-scale big game hunting; and between March and June 2020 the group completed its transition to Conti. The Ryuk-Conti-Wizard Spider lineage is corroborated by independent code analysis from multiple vendors, blockchain forensics from TRM Labs, personnel overlap documented in leaked chats, and infrastructure continuity across all three phases. No credible vendor disputes this lineage. [2][9][22]</p>
+
+    <div class="pillar">
+      <div class="pillar-label">Evidentiary Pillar 1: Code Overlap</div>
+      <div class="pillar-body">Security analysts identify Conti as a technical evolution of Ryuk, maintaining similar obfuscation techniques while introducing a faster, multi-threaded encryption engine. The Conti source code leaked in March 2022 allowed researchers to confirm shared architecture with Ryuk. Avast Threat Labs later identified Conti code similarities in Akira, extending the lineage forward. [8][9]</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-label">Evidentiary Pillar 2: Personnel Continuity (Leaked Chats)</div>
+      <div class="pillar-body">Senior Conti developer identified as "Professor" (subsequently identified as Vladimir Kvitko) remarked upon reading a security firm's Ryuk analysis: "adf.bat: this is my fucking batch file," confirming direct overlap between the Ryuk and Conti development teams. BleepingComputer's Lawrence Abrams summarized: "Feels like same managers were running both Ryuk and Conti, with a slow migration to Conti in June 2020. However, based on chats, some affiliates didn't know that Ryuk and Conti were run by the same people." [23]</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-label">Evidentiary Pillar 3: Blockchain Forensics (TRM Labs)</div>
+      <div class="pillar-body">TRM Labs' on-chain analysis found that funds for salaries paid by a core Conti member were derived from a known Ryuk ransomware address. On-chain salary wallet mapping corroborated both the Conti-Ryuk tie and, separately, links between Conti and successor group laundering infrastructure through 2026. [22][4]</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-label">Evidentiary Pillar 4: Infrastructure Continuity</div>
+      <div class="pillar-body">Conti was distributed through the same TrickBot and Emotet ("Booz"/"Buza") infrastructure used by Ryuk. Chat logs confirm shared access to the Emotet platform and show Conti leadership gradually absorbing full operational control of TrickBot, BazarLoader, and Emotet infrastructure. By the time Conti shuttered, it had become a cybercrime syndicate rather than a simple ransomware operation. [23][24]</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Vendor Designation Disambiguation</div>
+    <div class="callout callout-amber">
+      <p><strong>Critical Rule:</strong> WIZARD SPIDER (CrowdStrike) and GOLD ULRICK (Secureworks) are distinct designations applied at different organizational levels. WIZARD SPIDER covers the umbrella criminal organization; GOLD ULRICK specifically designates the Conti ransomware operators. These must not be conflated. Mandiant's UNC1878 covers Wizard Spider broadly and predates the Conti era.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Vendor</th><th>Designation</th><th>Scope</th></tr></thead>
+        <tbody>
+          <tr><td>CrowdStrike</td><td>WIZARD SPIDER</td><td>Umbrella organization; Conti is a WIZARD SPIDER capability/sub-operation</td></tr>
+          <tr><td>Secureworks</td><td>GOLD ULRICK</td><td>Conti ransomware operators specifically (not the broader Wizard Spider entity)</td></tr>
+          <tr><td>Mandiant</td><td>UNC1878</td><td>Wizard Spider parent organization; predates Conti era, applied broadly</td></tr>
+          <tr><td>Palo Alto Unit 42</td><td>Conti Ransomware Gang</td><td>Tracked as part of "Ransom Cartel" ecosystem; no distinct proprietary name</td></tr>
+          <tr><td>Recorded Future</td><td>Conti</td><td>Rated second most prolific ransomware as of June 2024 tracker</td></tr>
+          <tr><td>Microsoft</td><td>TrickBot Group / Conti</td><td>No widely published distinct Microsoft-proprietary designation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Note: Secureworks uses GOLD BLACKBURN for broader TrickBot-related criminal activity. Researchers should verify which designation a given vendor report is applying before drawing cross-vendor comparisons.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 03: THE CONTI LEAKS
+════════════════════════════════════════════════════ -->
+<section class="section" id="leaks">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">The Conti Leaks</span>
+  </div>
+
+  <div class="conf conf-confirmed">Confirmed: Primary Source Material</div>
+  <p>The Conti Leaks constitute the most comprehensive exposure of a criminal organization in cybersecurity history. The events unfolded across two major waves, beginning on February 27, 2022, and produced materials that form the evidentiary backbone for the majority of definitive Conti analysis. What follows is the authoritative account of the leak sequence and its investigative significance. [1][2][10]</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Precursor: The Affiliate Playbook Leak (August 2021)</div>
+    <p>Prior to the major 2022 leaks, a disgruntled Conti affiliate leaked the group's operational playbook in August 2021, revealing step-by-step intrusion procedures, tool preferences, and exploitation techniques. This prompted the September 2021 CISA/FBI/NSA joint advisory. The playbook leak was an early warning of internal tensions, particularly between affiliates who felt their treatment or revenue share was inadequate relative to the core team's salaried model. [11][43]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">First Wave: Jabber Logs (February 27, 2022)</div>
+    <p>The catalytic event was Conti's February 25, 2022 public statement of support for Russia's invasion of Ukraine:</p>
+    <div class="leaked-quote">
+      <p>"The Conti Team is officially announcing a full support of Russian government... If anybody will decide to organize a cyberattack or any war activities against Russia, we are going to use all our possible resources to strike back at the critical infrastructures of an enemy."</p>
+      <span class="quote-attr">Conti public statement, February 25, 2022</span>
+    </div>
+    <p>Within 48 hours, on February 27, 2022, a new Twitter account @ContiLeaks began publishing internal Jabber/XMPP chat logs. According to Brian Krebs and Hold Security founder Alex Holden, the leaker was a Ukrainian security researcher acting on patriotic motivation: <em>"The person releasing this is a Ukrainian and a patriot. He's seeing that Conti is supporting Russia in its invasion of Ukraine, and this is his way to stop them in his mind at least."</em> [10]</p>
+    <p>The initial leak contained 339 JSON files covering January 29, 2021 to February 27, 2022. Subsequent releases extended coverage to June 22, 2020 to November 16, 2020, ultimately totaling over 170,000 internal chat messages. [2][24]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">What the Leaks Revealed: The Krebs Four-Part Series</div>
+    <p>Krebs on Security published a landmark four-part investigative series based entirely on the leaked logs, constituting the definitive public analysis of Conti's internal operations:</p>
+    <ul class="content-list">
+      <li><strong>Part I: Evasion.</strong> How Conti detected and responded to law enforcement operations. Internal reaction when the NSA compromised TrickBot in September 2020 ("The one who made this garbage did it very well... It's just some kind of sabotage." - leader "Hof"). Crucially: Russian investigators were aware of the TrickBot/Conti investigation but had assured the group the inquiry would be closed by mid-November 2021. [10]</li>
+      <li><strong>Part II: The Office.</strong> Day-to-day operations, HR practices, salaries, and organizational structure. Documented pervasive burnout, employees pleading for time off, and leaders demanding 24/7 availability. Annual summer vacations in Crimea. Conti's effort to fund legal defense for arrested TrickBot coder Alla Witte, and the cynical suggestion to leverage that relationship for inside intelligence: "Let's try to find a way to her lawyer right now and offer him to directly sell the data bypassing her." [10][23]</li>
+      <li><strong>Part III: Weaponry.</strong> Conti's $60,000 legitimate Cobalt Strike license acquisition (via a $30,000 front company payment). Subscriptions to Crunchbase Pro and ZoomInfo for victim research. EDR tools (CrowdStrike Sentinel, Cylance) used to surveil its own administrators. A corrupt recovery firm negotiator nicknamed "The Spaniard" (described as Romanian, working for a large Canadian recovery firm). A journalist on payroll for 5% of payments to pressure non-paying victims. [23]</li>
+      <li><strong>Part IV: Cryptocrime.</strong> Founder Stern's obsession with building a proprietary peer-to-peer cryptocurrency platform in Rust, modeled on Ethereum/Polkadot. A $100,000 writing contest on Exploit forum to solicit crypto platform ideas. Evidence of involvement in the SQUID pump-and-dump of October 2021. DDoS-based crypto market manipulation. [40]</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Second Wave: Source Code and TrickBot Materials (March 2022)</div>
+    <p>On March 2, 2022, @ContiLeaks posted fresh logs, demonstrating the infiltrator retained access to infrastructure Conti had not detected. A separate account, @TrickBotLeaks, posted names, photos, and personal information of TrickBot administrators before being suspended within 24 hours.</p>
+    <p>The full leaked corpus included: 60,000+ internal Jabber messages (first tranche); full Conti Locker v2 source code; administrator panel source code; decryptor tool source code; Bitcoin addresses and wallet data; negotiation logs; infrastructure documentation; phishing templates; HR materials; and screenshots of the live Conti control panel with compromised host telemetry. [1][30][44]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Immediate Operational Impact</div>
+    <div class="conf conf-confirmed">Confirmed</div>
+    <p>The leaks initially had minimal operational impact. Secureworks (GOLD ULRICK tracking) noted that Conti victim postings actually increased in March 2022, reaching the second-highest monthly total since January 2021. The deeper damage was reputational and jurisdictional: the Conti brand became toxic for affiliates; victims paying Conti risked OFAC sanctions exposure; and the $15 million U.S. government bounty announced in May 2022 made the brand operationally untenable. The organization's response was strategic dissolution rather than destruction. [13][15][41]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">The GangExposed Intelligence Operation (May 2025)</div>
+    <p>In May 2025, a figure operating as GangExposed launched what The Register described as a "high-stakes intelligence war" against Conti's former leadership. GangExposed published detailed dossiers using OSINT, darknet database purchases, and claimed access to a leaked FSB border control database acquired for approximately $250,000. [18][19]</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Alias</th><th>Real Name (GangExposed)</th><th>BKA/DOJ Corroboration</th><th>Current Status</th></tr></thead>
+        <tbody>
+          <tr><td>Stern / Ben / Demon</td><td>Vitaly Nikolaevich Kovalev, 36 (Russian)</td><td>Confirmed by BKA May 2025; Interpol Red Notice issued</td><td>At large in Russia; net worth assessed &gt;$500M crypto</td></tr>
+          <tr><td>Professor</td><td>Vladimir Viktorovich Kvitko, 39 (Russian; relocated to Dubai ~2020)</td><td>US Rewards for Justice; $10M bounty; "burned" by GangExposed publication</td><td>Dubai; assessed actively involved in ongoing operations</td></tr>
+          <tr><td>Target</td><td>Unidentified (State Dept photo released Aug 2022)</td><td>$10M US bounty; identity not yet publicly confirmed</td><td>At large</td></tr>
+          <tr><td>Mango</td><td>Mikhail Mikhailovich Tsaryov</td><td>DOJ indictment (Sep 2023); GangExposed corroboration</td><td>At large in Russia</td></tr>
+          <tr><td>Defender</td><td>Andrey Yuryevich Zhuykov</td><td>DOJ indictment; UK NCA sanction (Sep 2023)</td><td>At large in Russia</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conf conf-credible">Credible</div>
+    <p>GangExposed's methodology and identity remain unverified. The Kovalev identification is treated as CONFIRMED given independent BKA corroboration. Other identifications are rated CREDIBLE. Technisanct/FalconFeeds assessed the source likely has insider access; other researchers assessed GangExposed could be a former criminal burning former associates. GangExposed stated goals: identify all ~50 key participants, disrupt the Blockchain Life crypto legitimization scheme, and deprive operators of UAE safe haven. [18]</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 04: OPERATIONAL MODEL
+════════════════════════════════════════════════════ -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">Operational Model</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Hybrid RaaS Structure: The Salaried Core</div>
+    <div class="conf conf-confirmed">Confirmed</div>
+    <p>Conti operated a hybrid model unique among ransomware groups. CISA noted in its September 2021 advisory: "It is likely that Conti developers pay the deployers of the ransomware a wage rather than a percentage of the proceeds from a successful attack." The leaked chats confirmed this assessment: Conti maintained a dedicated, salaried workforce of 65-100+ employees paid bimonthly in Bitcoin, with limited external affiliate participation for specific access-broker roles.</p>
+    <p>Most low-level employees (testers, coders, administrators) earned $1,000&ndash;$2,000/month. High-performing coders could earn $5,000&ndash;$10,000/month. Senior managers confirmed to Stern on July 18, 2021 that the group employed 62 people; by July 30, payroll had grown to 87. [10][11][23]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Internal Organizational Structure</div>
+    <p>The leaked chats documented a corporate-like internal structure with departments, separate budgets, and staff schedules:</p>
+    <ul class="content-list">
+      <li><strong>Coders:</strong> Programmers writing malicious code and integrating new capabilities</li>
+      <li><strong>Testers:</strong> Workers testing Conti malware against antivirus products, checking every ~4 hours for new Windows Defender updates</li>
+      <li><strong>Administrators:</strong> Infrastructure setup, teardown, VPN and server maintenance</li>
+      <li><strong>Reverse Engineers ("Reversers"):</strong> Disassembling code, studying commercial security products, finding vulnerabilities</li>
+      <li><strong>Penetration Testers / Hackers:</strong> Front-line operators conducting network intrusions</li>
+      <li><strong>OSINT Team:</strong> Using Crunchbase Pro, ZoomInfo, SignalHire, Shodan, and Spiderfoot Pro for victim research and financial intelligence</li>
+      <li><strong>HR Department:</strong> Actively recruiting from Russian job boards (including legitimate employment platforms) and cybercrime forums; reviewing 25&ndash;35% of relevant CVs on employment platforms</li>
+    </ul>
+    <p>Conti also maintained what the leaked chats identified as relationships with external access brokers, paying 25&ndash;30% of ransom proceeds for specific network access. This was considered suboptimal given its cut into profit margins. [23]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Targeting Strategy: Big Game Hunting</div>
+    <p>Conti practiced "big game hunting" exclusively, targeting organizations with over $100 million in annual revenue. Ransom demands were typically set as a percentage of the victim's annual revenues. Operators used Crunchbase Pro and ZoomInfo to research victims' insurance coverage, earnings, and investor contacts for leverage. [10][23]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Negotiation Model and Double Extortion</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Element</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Ransom range</td><td>Up to $25 million per incident (single-victim maximum, FBI documented)</td></tr>
+          <tr><td>Reduction behavior</td><td>Reductions common; experienced negotiators could bring demands down substantially (e.g., sub-$100M revenue companies sometimes capped near $1M)</td></tr>
+          <tr><td>Payment deadline</td><td>Countdown timer on victim's dark web page; expiry triggered automatic data publication</td></tr>
+          <tr><td>Communication channels</td><td>Dark web negotiation portal; ProtonMail; VoIP calls</td></tr>
+          <tr><td>Corrupt insider negotiator</td><td>"The Spaniard" (Romanian, large Canadian recovery firm): maintained sympathetic relationship, shared victim internal deliberations with Conti operators</td></tr>
+          <tr><td>Journalist on payroll</td><td>As of March 2021, "Alarm" claimed access to a journalist who would write pressure articles against non-paying victims for 5% of payout</td></tr>
+          <tr><td>Double extortion</td><td>Primary demand for decryption key; separate demand for data non-publication. Paying for decryption did NOT guarantee data destruction</td></tr>
+          <tr><td>HSE precedent</td><td>Ireland HSE provided free decryptor after refusal to pay, but Conti reserved right to publish stolen data. Demonstrates keys and data are separate extortion levers</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 05: TECHNICAL CAPABILITIES
+════════════════════════════════════════════════════ -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">Technical Capabilities</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Initial Access Vectors</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Vector</th><th>Detail</th><th>Period</th></tr></thead>
+        <tbody>
+          <tr><td>TrickBot infections</td><td>Primary initial vector through 2021; distributed via malspam</td><td>2019&ndash;2021</td></tr>
+          <tr><td>BazarLoader / BazarBackdoor</td><td>Replaced TrickBot as primary delivery by March 2021 as TrickBot detections improved</td><td>2021&ndash;2022</td></tr>
+          <tr><td>Spear-phishing (malicious Excel)</td><td>Macros or links to Google Drive-hosted malware; IcedID dropper files also used</td><td>Throughout</td></tr>
+          <tr><td>CVE-2018-13379</td><td>FortiGate SSL VPN path traversal; widely exploited across ransomware groups</td><td>Throughout</td></tr>
+          <tr><td>ProxyShell chain</td><td class="mono">CVE-2021-34473, CVE-2021-34523, CVE-2021-31207</td><td>Aug 2021+</td></tr>
+          <tr><td>Log4Shell</td><td class="mono">CVE-2021-44228</td><td>Dec 13, 2021+; Conti first professional group to weaponize; targeted VMware vCenter</td></tr>
+          <tr><td>PrintNightmare</td><td class="mono">CVE-2021-1675</td><td>Referenced in CISA/FBI/NSA advisory</td></tr>
+          <tr><td>Stolen/weak RDP credentials</td><td>Sourced from access brokers and credential markets</td><td>Throughout</td></tr>
+          <tr><td>Fake software / SEO poisoning</td><td>Documented in CISA advisory</td><td>2021+</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-red">
+      <p><strong>Log4Shell First-Mover Significance:</strong> AdvIntel confirmed Conti was the first professional ransomware operation to adopt and embed CVE-2021-44228 in their attack chain, beginning December 13, 2021, targeting VMware vCenter servers. Within days, the attack chain extended to Emotet deployment followed by Cobalt Strike. This first-mover capability was a consistent Conti signature: rapid weaponization of critical CVEs before patching could occur at scale.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Post-Exploitation and Lateral Movement</div>
+    <ul class="content-list">
+      <li><strong>Cobalt Strike:</strong> $60,000 legitimate license acquired via front company. Used for network reconnaissance, lateral movement, and in-memory payload execution.</li>
+      <li><strong>Mimikatz / LSASS credential dumping:</strong> Privilege escalation; overpass-the-hash Kerberos ticket acquisition documented in DFIR case studies.</li>
+      <li><strong>BumbleBee loader:</strong> Replaced BazarLoader in later operations (2022).</li>
+      <li><strong>SystemBC:</strong> Proxy/C2 tunneler for persistent access.</li>
+      <li><strong>PsExec + SMB:</strong> Lateral movement to distribute Cobalt Strike beacons across domain-joined systems.</li>
+      <li><strong>AnyDesk / RDP:</strong> Legitimate remote access tools for persistence; RDP sometimes proxied through IcedID process.</li>
+      <li><strong>GPO modification:</strong> Used to disable Windows Defender across domain; force-updated via Cobalt Strike beacon.</li>
+      <li><strong>Rclone / Mega.nz / dedicated VPS:</strong> Data exfiltration tooling; Rclone to cloud storage and purpose-built VPS instances for high-volume exfiltration.</li>
+    </ul>
+    <p>The Conti playbook leak revealed a highly professional approach to dwell time: operators spent weeks inside networks before deploying ransomware. The Ireland HSE attack illustrates this: initial access on March 18, 2021, via a malicious Excel attachment; ransomware detonation not until May 14, 2021, eight weeks later, during which attackers moved across 180 systems and multiple domains. [37]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Encryption Implementation</div>
+    <ul class="content-list">
+      <li><strong>Algorithm:</strong> AES-256 (initial); ChaCha stream cipher adopted August 2020 for selective, high-speed file encryption.</li>
+      <li><strong>Throughput:</strong> Multi-threaded engine using up to 32 simultaneous CPU threads. ZDNet documented Conti as using "32 simultaneous CPU threads for blazing-fast encryption" (July 2020).</li>
+      <li><strong>Key management:</strong> Asymmetric RSA wrapper around symmetric session key; public key embedded in binary, private key held by attackers.</li>
+      <li><strong>Variants:</strong> Encrypted file extension <span class="mono">.ODMUA</span> in some documented variants; ransom note named CONTI_README.txt.</li>
+      <li><strong>Decryptor:</strong> Bitdefender released a free Conti decryption tool after source code leak; applicability limited to variants encrypted before certain key rotation events.</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">CIS Exclusion</div>
+    <div class="conf conf-confirmed">Confirmed (behavioral); Credible (binary-level implementation)</div>
+    <p>Conti's consistent avoidance of CIS-region targets across more than 1,000 confirmed attacks, with no known exceptions, is an operational signature consistent with an implicit non-prosecution understanding with Russian authorities. Binary analysis indicates Conti checks for Russian keyboard layout installation as a kill switch, consistent with the standard CIS-exclusion pattern used by other Russia-based groups. The behavioral exclusion is documented across all major sector-targeting data; the specific binary implementation details are less publicly documented than peers such as REvil. [9]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Linux / VMware ESXi Variant</div>
+    <p>Conti developed a dedicated Linux/ESXi variant targeting VMware virtual machine infrastructure, consistent with the group's enterprise-focused targeting. This variant was documented by SentinelOne and became a direct template for successor groups. <a class="successor-link" href="akira.html">Akira</a> inherited the Conti ESXi playbook and extended it with additional VMware-targeting capabilities documented in joint FBI/CISA advisories. [39]</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 06: FINANCIAL INFRASTRUCTURE
+════════════════════════════════════════════════════ -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <span class="section-title">Financial Infrastructure</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Revenue and Cryptocurrency Operations</div>
+    <div class="conf conf-confirmed">Confirmed</div>
+    <p>Conti demanded payment exclusively in Bitcoin (BTC). Chainalysis identified Conti generating at least $180 million in 2021, the highest of any ransomware group that year. Total lifetime revenue across Ryuk/Conti operations is assessed at approximately $2.7 billion. The UK NCA and Chainalysis jointly assessed Conti and TrickBot attempted to extort more than $800 million from victims including hospitals, schools, local authorities, and businesses. [5][17][40]</p>
+    <ul class="content-list">
+      <li><strong>Payroll:</strong> $1,000&ndash;$2,000/month for most employees; $5,000&ndash;$10,000 for senior coders; distributed in Bitcoin bimonthly</li>
+      <li><strong>Ransom receipts:</strong> Single highest documented payment: $25M; Ireland HSE demanded $20M (not paid)</li>
+      <li><strong>Costa Rica:</strong> $20M demand; government refused; no payment made</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">On-Chain Laundering and Financial Schemes</div>
+    <p>Krebs on Security's deep analysis of leaked chats (Part IV: Cryptocrime) documented extensive laundering and investment schemes directed personally by founder "Stern" (Kovalev): [40]</p>
+    <ul class="content-list">
+      <li><strong>Proprietary crypto platform:</strong> Kovalev was developing a peer-to-peer cryptocurrency platform in Rust, modeled on Ethereum/Polkadot with integrated NFT, DeFi, and DEX functionality, intended as a vehicle to legitimize illicit proceeds.</li>
+      <li><strong>$100,000 crypto article contest:</strong> Sponsored on the Russian-language Exploit cybercrime forum to solicit intellectual property for the platform while simultaneously serving as criminal recruitment.</li>
+      <li><strong>SQUID pump-and-dump:</strong> Evidence in chat logs suggests Conti involvement in the October&ndash;November 2021 SQUID token scam, which appreciated from $0.01 to $2,856 before the developers extracted approximately $3.38 million.</li>
+      <li><strong>DDoS-driven crypto manipulation:</strong> An internal scheme involving DDoSing small cryptocurrency mining pools, then posing as distressed users in Discord to drive prices down before purchasing.</li>
+      <li><strong>Blockchain Life Forum:</strong> GangExposed's 2025 investigation revealed Kovalev and associate Khitrov organized the "Blockchain Life" forum as a legitimization vehicle for illicitly obtained cryptocurrency earnings.</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Blockchain Forensics: TRM Labs and Chainalysis</div>
+    <div class="conf conf-confirmed">Confirmed (TRM Labs 2022; extended to diaspora 2026)</div>
+    <p>TRM Labs corroborated Conti-Ryuk blockchain ties through salary wallet analysis and on-chain transaction mapping, confirming shared financial infrastructure across both phases of Wizard Spider ransomware operations. In a separate 2023 analysis, TRM documented Conti's re-emergence as three successor groups. TRM Labs' 2026 reporting on Akira specifically confirmed that Conti's successor ecosystem (including Akira) continued sharing laundering infrastructure, providing blockchain continuity evidence linking the diaspora to the original Conti network. [22][4]</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 07: VICTIM PROFILE
+════════════════════════════════════════════════════ -->
+<section class="section" id="victims">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <span class="section-title">Victim Profile and Targeting</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Scale</div>
+    <ul class="content-list">
+      <li>Over 1,000 attacks confirmed globally (FBI/CISA advisory, updated)</li>
+      <li>DOJ 2023 indictment figures: more than 900 victims in approximately 47 U.S. states, D.C., Puerto Rico, and approximately 31 foreign countries</li>
+      <li>$180M revenue in 2021 alone (Chainalysis); ~$2.7B total (Ryuk/Conti lifetime)</li>
+      <li>Over $150M in ransom payments per State Department figures at time of $15M reward announcement</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Sector Targeting</div>
+    <p>Conti deliberately focused on sectors with low tolerance for downtime and high pressure to pay. Healthcare was the most systematically targeted sector; the FBI documented at least 16 Conti attacks on U.S. healthcare and first-responder networks by May 2021 alone.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sector</th><th>Targeting Priority</th><th>Rationale</th></tr></thead>
+        <tbody>
+          <tr><td>Healthcare / Hospitals</td><td>Highest</td><td>Life-critical downtime pressure; low tolerance for delay; data sensitivity</td></tr>
+          <tr><td>Emergency Services / First Responders</td><td>High</td><td>911 dispatch, EMS; non-negotiable uptime dependency</td></tr>
+          <tr><td>Government (local/national)</td><td>High</td><td>Political pressure to restore services; large IT budgets imply capacity to pay</td></tr>
+          <tr><td>Education</td><td>Moderate-High</td><td>Student/staff data leverage; large datasets</td></tr>
+          <tr><td>Critical Infrastructure</td><td>Moderate-High</td><td>Utilities, transportation; operational impact amplifies ransom pressure</td></tr>
+          <tr><td>Private Enterprise ($100M+ revenue)</td><td>High (policy minimum)</td><td>Big game hunting threshold; all commercial targets filtered by revenue floor</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Geographic Distribution</div>
+    <p>Primary targets concentrated in North America (~75% U.S.-based per early FBI figures). Significant European targeting documented (UK: 149 known victims, £27 million extracted per NCA). Consistent behavioral exclusion of CIS-region targets across all documented attacks. [17][28]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">High-Profile Victims</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Victim</th><th>Date</th><th>Impact</th><th>Notable Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Ireland HSE (Health Service Executive)</td><td>May 2021</td><td>Near-complete shutdown of national health IT; cancer screenings and appointments canceled; 80%+ encryption</td><td>Cost estimated &gt;$600M to remediate. Conti provided free decryptor after government refusal to pay $20M demand, but threatened data publication. First access: March 18, 2021 via malicious Excel attachment. Eight weeks of dwell time before detonation. [12][23]</td></tr>
+          <tr><td>Government of Costa Rica</td><td>Apr&ndash;May 2022</td><td>~30 government institutions including Ministry of Finance; national state of emergency declared</td><td>First cyberattack to trigger a national emergency declaration globally. $20M demand; government refused. Used as cover for Conti brand dissolution. [14][42]</td></tr>
+          <tr><td>Broward County Public Schools</td><td>Mar 2021</td><td>School district encrypted; $40M ransom demand; threat to release student data</td><td>Notable for targeting of minors' educational records as leverage</td></tr>
+          <tr><td>Scripps Health (California)</td><td>May 2021</td><td>Major California health system; patient care disrupted</td><td>Specific DOJ indictment filed against Maksim Galochkin for this attack [16]</td></tr>
+          <tr><td>Advantech</td><td>Nov 2020</td><td>Industrial IoT manufacturer; 3 GB of data stolen</td><td>Early high-profile Conti DLS posting [24]</td></tr>
+          <tr><td>City of Tulsa</td><td>May 2021</td><td>Government network compromise</td><td>Named in BleepingComputer reporting [24]</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 08: LAW ENFORCEMENT
+════════════════════════════════════════════════════ -->
+<section class="section" id="le">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <span class="section-title">Law Enforcement and Regulatory Response</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Federal Indictments (September 2023)</div>
+    <div class="conf conf-confirmed">Confirmed</div>
+    <p>On September 7, 2023, the DOJ unsealed three federal indictments across three jurisdictions, charging nine Russian nationals:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Jurisdiction</th><th>Charges</th><th>Max Penalty</th><th>Named Defendants</th></tr></thead>
+        <tbody>
+          <tr><td>N.D. Ohio (TrickBot conspiracy)</td><td>Conspiracy to violate CFAA; wire fraud conspiracy; money laundering conspiracy</td><td>62 years</td><td>Galochkin, Rudenskiy, Tsarev, Zhuykov, Putilin, Loguntsov, Mikhaylov, Karyagin, Khaliullin</td></tr>
+          <tr><td>M.D. Tennessee (Conti conspiracy)</td><td>Conspiring to use Conti ransomware against U.S. targets 2020&ndash;Jun 2022</td><td>25 years</td><td>Galochkin, Rudenskiy, Tsarev, Zhuykov</td></tr>
+          <tr><td>S.D. California (Scripps Health)</td><td>Specific attack on Scripps Health May 1, 2021; impaired medical care</td><td>20 years</td><td>Maksim Galochkin specifically</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>All named defendants remain at large in Russia as of May 2026. [16]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Prior and Subsequent Apprehensions</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Individual</th><th>Role</th><th>Action</th><th>Outcome</th></tr></thead>
+        <tbody>
+          <tr><td>Alla Witte</td><td>TrickBot programmer (Latvian national)</td><td>Arrested 2021; charged</td><td>Pleaded guilty to conspiracy to commit computer fraud; sentenced to 32 months, June 2023</td></tr>
+          <tr><td>Vladimir Dunaev</td><td>TrickBot developer (Russian national)</td><td>Arrested; in U.S. custody in Cleveland</td><td>Pending trial as of 2024</td></tr>
+          <tr><td>Deniss Zolotarjovs</td><td>Conti-linked organization (Latvian, based Moscow); operated under Conti, Karakurt, Royal, TommyLeaks, SchoolBoys, Akira brands</td><td>Arrested in Georgia Dec 2023; extradited to U.S.</td><td>Pleaded guilty July 2025 to conspiracy to commit money laundering and wire fraud; sentenced to 102 months May 2026. First major custodial sentence in Conti network. [6][47]</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">OFAC and UK FCDO Sanctions (September 2023)</div>
+    <div class="conf conf-confirmed">Confirmed</div>
+    <p>The U.S. OFAC and UK FCDO simultaneously sanctioned 11 Russian nationals connected to Conti and TrickBot: Andrey Zhuykov, Maksim Galochkin, Maksim Rudenskiy, Mikhail Tsarev, Dmitry Putilin, Maksim Khaliullin, Sergey Loguntsov, Vadym Valiakhmetov, Artem Kurov, Mikhail Chernov, and Alexander Mozhaev. Sanctions prohibit financial transactions and enable asset seizure by U.S. and UK governments. [17]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Government Advisories and Rewards</div>
+    <ul class="content-list">
+      <li><strong>May 2021:</strong> FBI alert specifically warning healthcare sector; 16 attacks on healthcare/first responder networks documented</li>
+      <li><strong>September 2021:</strong> Joint CISA/FBI/NSA advisory documenting 400+ attacks, TTPs, and mitigations</li>
+      <li><strong>May 2022:</strong> State Department Rewards for Justice: up to $10M for Conti leadership identification/location; up to $5M for arrest/conviction</li>
+      <li><strong>August 2022:</strong> Rewards for Justice expanded: five specific operators named; photograph of "Target" released publicly</li>
+      <li><strong>May 2025:</strong> BKA Germany names Vitaly Kovalev as Conti/TrickBot founder; Interpol Red Notice issued</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 09: ATTRIBUTION AND STATE NEXUS
+════════════════════════════════════════════════════ -->
+<section class="section" id="attribution">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <span class="section-title">Attribution and State Nexus</span>
+  </div>
+
+  <div class="conf conf-credible">Credible-to-High: Implicit State Toleration. Formal tasking: Unconfirmed.</div>
+
+  <div class="subsection">
+    <div class="subsection-title">Direct Evidence from Leaked Chats</div>
+    <p>The leaked Jabber logs contain the most direct documentation of Conti's communication with Russian law enforcement available in open-source reporting. In October 2021, Conti member "Kagas" wrote to Stern:</p>
+    <div class="leaked-quote">
+      <p>"Our old case was resumed... The Americans officially requested information about Russian hackers... Next Tuesday, the investigator called us for a conversation, but for now, it's like [we're being called on as] witnesses. That way if the case is suspended, they can't interrogate us in any way."</p>
+      <span class="quote-attr">Conti member "Kagas" to Stern, October 2021 (leaked chat log)</span>
+    </div>
+    <p>A separate Conti member immediately reported that the group's contacts had assured it the Russian-side investigation would go nowhere and would be closed by mid-November 2021. This same period saw Russian investigators appearing more interested in pursuing REvil members than Conti, culminating in the January 2022 FSB arrests of REvil, which many analysts assessed as a political gesture timed to the Ukraine buildup. The leaked chats also reference Liteyny Avenue in Saint Petersburg, home to FSB offices, in a context suggesting external contact with a helpful government-adjacent source. [10][22]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Vendor Assessments</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Vendor</th><th>Assessment</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td>Mandiant</td><td>"At least a portion of actors involved with CONTI ransomware are based in Russia and some criminals operating from there already have documented ties with Russian intelligence apparatus. More recently, publicly reported chat logs suggest that a key player in CONTI operations may have intended to provide support for government projects."</td><td>Feb 2022</td></tr>
+          <tr><td>U.S. Department of State</td><td>Explicitly labeled Conti a "Russian government-linked ransomware-as-a-service (RaaS) group" in August 2022 Rewards for Justice announcement. Strongest public U.S. government characterization; falls short of confirming formal intelligence relationship.</td><td>Aug 2022</td></tr>
+          <tr><td>Recorded Future (Dark Covenant 3.0)</td><td>Documents ongoing pattern of Russian government tolerance for cybercriminal activity in exchange for geopolitical utility; Conti cited as defining case study in protected criminal enterprise model.</td><td>Oct 2025</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Assessment Summary</div>
+    <p>The available evidence supports a moderate-to-high confidence assessment of implicit state toleration. Conti received advance warning from Russian investigators, operated openly in Russia without prosecution, and consistently avoided CIS targets across 1,000+ documented attacks. The leaked chats document direct back-channel communication between Conti leadership and Russian law enforcement. A formal, active intelligence-sharing or tasking relationship cannot be confirmed from public evidence. The operational distinction is likely: Conti's ransomware attacks generated hard currency and geopolitical leverage that served Russian state interests without requiring formal direction. The protected criminal enterprise model eliminates the state's deniability costs while preserving its operational benefits.</p>
+    <div class="conf conf-inference">Analyst Inference: Active FSB tasking</div>
+    <p>The reference to Liteyny Avenue (FSB headquarters street) in leaked communications, combined with the demonstrated advance warning of law enforcement inquiries, is consistent with an active FSB liaison relationship rather than passive tolerance. This remains analyst inference; the chats establish contact but not formal tasking. [10][48]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Named Individuals (Confirmed Attribution)</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Alias</th><th>Real Name</th><th>Age</th><th>Nationality</th><th>Role</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Stern / Ben / Demon</td><td>Vitaly Nikolaevich Kovalev</td><td>36</td><td>Russian</td><td>Founder/CEO of TrickBot and Conti; supreme leader</td><td>BKA Germany; GangExposed 2025 [25][19]</td></tr>
+          <tr><td>Professor</td><td>Vladimir Viktorovich Kvitko</td><td>39</td><td>Russian (Dubai)</td><td>Senior general; offshore operations; Dubai hub</td><td>GangExposed 2025; US RFJ bounty [26][18]</td></tr>
+          <tr><td>Mango</td><td>Mikhail Mikhailovich Tsaryov</td><td>N/A</td><td>Russian</td><td>Mid-level manager; day-to-day operations</td><td>DOJ indictment 2023; GangExposed [16][18]</td></tr>
+          <tr><td>Defender</td><td>Andrey Yuryevich Zhuykov</td><td>N/A</td><td>Russian</td><td>Lead systems administrator</td><td>DOJ indictment; UK NCA sanction [16][17]</td></tr>
+          <tr><td>Bentley</td><td>Maksim Galochkin</td><td>N/A</td><td>Russian</td><td>Crypter / obfuscation; indicted in three jurisdictions</td><td>DOJ indictment [16]</td></tr>
+          <tr><td>Buza</td><td>Maksim Rudenskiy</td><td>N/A</td><td>Russian</td><td>Developer supervisor</td><td>DOJ indictment [16]</td></tr>
+          <tr><td>Target</td><td>Unidentified</td><td>N/A</td><td>Assessed Russian</td><td>Senior leader; luxury assets (Ferrari, Maybach)</td><td>US RFJ $10M bounty; photo released Aug 2022 [27]</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 10: TRAJECTORY AND DIASPORA
+════════════════════════════════════════════════════ -->
+<section class="section" id="trajectory">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <span class="section-title">Trajectory Assessment and Diaspora</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Why Conti Collapsed</div>
+    <p>The Conti collapse was an own-goal triggered by geopolitics. The group's public declaration of support for Russia's invasion of Ukraine was catastrophically ill-considered:</p>
+    <ul class="content-list">
+      <li>It exposed the group's Russian identity and state alignment to affiliates who had operational security reasons to maintain deniability</li>
+      <li>It triggered the Ukrainian insider who had penetrated Conti's infrastructure to act, releasing the most comprehensive criminal organization leak in cybercrime history</li>
+      <li>It made the Conti brand a liability for victims: paying Conti created sanctions violation exposure under OFAC</li>
+      <li>It caused direct internal fracture along ethnic lines, with Ukrainian members becoming adversaries</li>
+    </ul>
+    <p>AdvIntel's Boguslavskiy and Kremez concluded: "The Conti brand, not the organization itself, is shutting down." The Costa Rica attack served simultaneously as a final high-profile operation, cover for migrating members and infrastructure, and a capability demonstration to affiliates considering defection to competing groups. [15][14]</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Predecessor and Absorbed Infrastructure</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Group</th><th>Relationship to Conti</th><th>Evidence Basis</th><th>Confidence</th></tr></thead>
+        <tbody>
+          <tr><td>TrickBot</td><td>Absorbed by Conti; shared personnel and leadership</td><td>Chat logs; DOJ indictments confirm shared defendants</td><td>CONFIRMED</td></tr>
+          <tr><td>Ryuk</td><td>Technical and personnel predecessor</td><td>Code overlap; personnel (Professor's code comment); TRM Labs blockchain forensics</td><td>CONFIRMED</td></tr>
+          <tr><td>Emotet ("Booz")</td><td>Distribution partner and platform</td><td>Chat logs confirm deep integration; Emotet had 50+ coders referenced</td><td>CONFIRMED</td></tr>
+          <tr><td>BazarLoader/BazarBackdoor</td><td>Distribution vehicle replacing TrickBot</td><td>CISA advisory; security research</td><td>CONFIRMED</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Successor and Diaspora Groups</div>
+    <div class="callout callout-blue">
+      <p><strong>Court-Confirmed Cluster:</strong> The DOJ's May 2026 sentencing of Deniss Zolotarjovs provides court-confirmed documentation of the Conti cluster model. His organization used ransom note brands including Conti, Karakurt, Royal, TommyLeaks, SchoolBoys Ransomware, and Akira, confirming these were overlapping operational identities used by the same core actor network, not independent organizations. [6][47]</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Group</th><th>Relationship</th><th>Status (May 2026)</th><th>Key Evidence</th><th>Confidence</th><th>Profile</th></tr></thead>
+        <tbody>
+          <tr><td>Black Basta</td><td>Conti offshoot; emerged April 2022</td><td>Defunct (Feb 2025, own chat leak)</td><td>Shared TTPs; Black Basta leaked chats confirmed former Conti actors; TRM Labs blockchain analysis</td><td>HIGH (Analyst1, TRM Labs) [49][50]</td><td>N/A</td></tr>
+          <tr><td>Karakurt</td><td>Conti side operation / extortion-only branch</td><td>Active (reduced)</td><td>Blockchain analysis: direct wallet connections to Conti; Arctic Wolf and Chainalysis corroboration; Zolotarjovs sentence confirms overlap [51]</td><td>HIGH</td><td>N/A</td></tr>
+          <tr><td>Royal / BlackSuit</td><td>Conti member continuation; assessed core Wizard Spider tier</td><td>Active as BlackSuit</td><td>BushidoToken threat intel; shared personnel and infrastructure indicators; FBI advisory confirms Conti connection [52]</td><td>MEDIUM-HIGH</td><td>N/A</td></tr>
+          <tr><td><a class="successor-link" href="akira.html">Akira</a></td><td>Conti operator continuation; affiliate and mid-tier operator continuity</td><td><strong>Active (2026)</strong></td><td>Blockchain evidence (TRM Labs 2026); shared laundering infrastructure; Russian-language artifacts; US sanctions and Zolotarjovs sentence confirm Conti lineage [4][6]</td><td>HIGH</td><td><a class="successor-link" href="akira.html">View Profile &rarr;</a></td></tr>
+          <tr><td>BlackByte</td><td>Conti spinoff</td><td>Active (reduced)</td><td>AdvIntel/Kremez assessment; infrastructure overlap [15]</td><td>MEDIUM</td><td>N/A</td></tr>
+          <tr><td>Diavol</td><td>Conti/TrickBot sub-operation</td><td>Largely dormant</td><td>Code and infrastructure analysis; Arctic Wolf [51]</td><td>MEDIUM-HIGH</td><td>N/A</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conf conf-inference">Analyst Inference: Cyclical Collapse Pattern</div>
+    <p>The February 2025 Black Basta internal chat leak followed the same pattern as the original Conti leak: an insider/disgruntled member published internal communications, directly contributing to the group's dissolution. The Conti diaspora appears condemned to repeat the cycle. The organizational model of large, salaried, multi-ethnic workforces creates structural insider threat exposure that pure-affiliate models do not share. Each generation of Conti-lineage groups inherits both the operational playbook and this structural vulnerability.</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Intelligence Gaps (May 2026)</div>
+    <ul class="content-list">
+      <li><strong>"Target" identity:</strong> Despite a $10M U.S. bounty and GangExposed's stated intent to identify him, Target's real name has not been publicly confirmed</li>
+      <li><strong>Full financial scope:</strong> Total cryptocurrency holdings and current wallet infrastructure of the Conti diaspora are partially mapped but not fully documented</li>
+      <li><strong>Formal state intelligence relationship:</strong> The exact nature of FSB involvement or passive tolerance remains an open question; leaked chats establish back-channel contact but not formal tasking</li>
+      <li><strong>GangExposed identity and motivation:</strong> Source's own identity, access method, and motivations remain unconfirmed; possibility that GangExposed is state-adjacent cannot be ruled out</li>
+      <li><strong>Akira/Royal operational leadership:</strong> Actor overlap assessed with high confidence; full attribution of current operational leadership to specific former Conti individuals is incomplete in public reporting</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 11: SOURCES
+════════════════════════════════════════════════════ -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <span class="section-title">Sources</span>
+  </div>
+  <ul class="source-list">
+    <div class="source-item"><span class="source-num">[1]</span><span>Rapid7 Blog: Conti Ransomware Group Internal Chats Leaked, March 2022: <a href="https://www.rapid7.com/blog/post/2022/03/01/conti-ransomware-group-internal-chats-leaked-over-russia-ukraine-conflict/" target="_blank">rapid7.com</a></span></div>
+    <div class="source-item"><span class="source-num">[2]</span><span>BleepingComputer: Conti ransomware gang chats leaked by pro-Ukraine member, February 2022: <a href="https://www.bleepingcomputer.com/news/security/conti-ransomware-gang-chats-leaked-by-pro-ukraine-member/" target="_blank">bleepingcomputer.com</a></span></div>
+    <div class="source-item"><span class="source-num">[4]</span><span>CybelAngel: Akira Ransomware: The Conti Successor Targeting the West, April 2026: <a href="https://cybelangel.com/blog/akira-ransomware-conti-successor-russian-threat-actor-profile/" target="_blank">cybelangel.com</a></span></div>
+    <div class="source-item"><span class="source-num">[5]</span><span>Krebs on Security: Conti Ransomware Group Diaries, Part IV: Cryptocrime: <a href="https://krebsonsecurity.com/2022/03/conti-ransomware-group-diaries-part-iv-cryptocrime/" target="_blank">krebsonsecurity.com</a></span></div>
+    <div class="source-item"><span class="source-num">[6]</span><span>DOJ: Member of Prolific Russian Ransomware Group Sentenced to Prison, May 2026: <a href="https://www.justice.gov/opa/pr/member-prolific-russian-ransomware-group-sentenced-prison" target="_blank">justice.gov</a></span></div>
+    <div class="source-item"><span class="source-num">[8]</span><span>Conti Unpacked: Understanding Ransomware Development As a Business: <a href="https://www.rapid7.com/blog/post/2021/12/06/conti-unpacked-understanding-ransomware-development-as-a-business/" target="_blank">rapid7.com</a></span></div>
+    <div class="source-item"><span class="source-num">[9]</span><span>CrowdStrike: WIZARD SPIDER Update: Resilient, Reactive and Resolute, 2020: <a href="https://www.crowdstrike.com/blog/wizard-spider-adversary-update/" target="_blank">crowdstrike.com</a></span></div>
+    <div class="source-item"><span class="source-num">[10]</span><span>Krebs on Security: Conti Ransomware Group Diaries, Part I: Evasion: <a href="https://krebsonsecurity.com/2022/03/conti-ransomware-group-diaries-part-i-evasion/" target="_blank">krebsonsecurity.com</a></span></div>
+    <div class="source-item"><span class="source-num">[11]</span><span>CISA/FBI/NSA Advisory AA21-265A: Conti Ransomware, September 2021: <a href="https://www.cisa.gov/news-events/alerts/2021/09/22/conti-ransomware" target="_blank">cisa.gov</a></span></div>
+    <div class="source-item"><span class="source-num">[12]</span><span>HSE Conti Cyber Attack Post Incident Review, 2021: <a href="https://www.hse.ie/eng/services/publications/conti-cyber-attack-on-the-hse-full-report.pdf" target="_blank">hse.ie</a></span></div>
+    <div class="source-item"><span class="source-num">[13]</span><span>Secureworks / ZScaler: Conti ransomware operations surge despite recent leak, 2022: <a href="https://www.zscaler.com/blogs/security-research/conti-ransomware-attacks-persist-updated-version-despite-leaks" target="_blank">zscaler.com</a></span></div>
+    <div class="source-item"><span class="source-num">[14]</span><span>Morphisec: Conti Ransomware Group = Costa Rican Nightmare, 2022: <a href="https://blog.morphisec.com/conti-ransomware-group-costa-rica" target="_blank">morphisec.com</a></span></div>
+    <div class="source-item"><span class="source-num">[15]</span><span>BleepingComputer: Conti Ransomware Operation Shut Down After Splitting into Smaller Groups, 2022: <a href="https://www.bleepingcomputer.com/news/security/conti-ransomware-operation-shut-down-after-splitting-into-smaller-groups/" target="_blank">bleepingcomputer.com</a></span></div>
+    <div class="source-item"><span class="source-num">[16]</span><span>DOJ: Multiple Foreign Nationals Charged in Connection with Trickbot Malware and Conti Ransomware Conspiracies, September 2023: <a href="https://www.justice.gov/opa/pr/multiple-foreign-nationals-charged-connection-trickbot-malware-and-conti-ransomware" target="_blank">justice.gov</a></span></div>
+    <div class="source-item"><span class="source-num">[17]</span><span>UK FCDO / U.S. Treasury: UK and US sanction Conti and Trickbot ransomware gang members, September 2023: <a href="https://www.gov.uk/government/news/uk-and-us-sanction-members-of-the-conti-ransomware-gang" target="_blank">gov.uk</a></span></div>
+    <div class="source-item"><span class="source-num">[18]</span><span>The Register: Mysterious leaker GangExposed outs Conti ransomware kingpins, May 2025: <a href="https://www.theregister.com/2025/05/31/gangexposed_coni_ransomware_leaks/" target="_blank">theregister.com</a></span></div>
+    <div class="source-item"><span class="source-num">[19]</span><span>BleepingComputer: Germany doxxes Conti ransomware and TrickBot ring leader, 2025: <a href="https://www.bleepingcomputer.com/news/security/germany-doxxes-conti-ransomware-and-trickbot-ring-leader/" target="_blank">bleepingcomputer.com</a></span></div>
+    <div class="source-item"><span class="source-num">[22]</span><span>TRM Labs: TRM Analysis Corroborates Suspected Ties Between Conti and Ryuk: <a href="https://www.trmlabs.com/resources/blog/analysis-corroborates-suspected-ties-between-conti-and-ryuk-ransomware-groups-and-wizard-spider" target="_blank">trmlabs.com</a></span></div>
+    <div class="source-item"><span class="source-num">[23]</span><span>Krebs on Security: Conti Ransomware Group Diaries, Part II: The Office: <a href="https://krebsonsecurity.com/2022/03/conti-ransomware-group-diaries-part-ii-the-office/" target="_blank">krebsonsecurity.com</a></span></div>
+    <div class="source-item"><span class="source-num">[24]</span><span>BleepingComputer: Conti ransomware shuts down operation, rebrands into smaller units: <a href="https://www.bleepingcomputer.com/news/security/conti-ransomware-shuts-down-operation-rebrands-into-smaller-units/" target="_blank">bleepingcomputer.com</a></span></div>
+    <div class="source-item"><span class="source-num">[25]</span><span>SecurityWeek: Alleged Conti, TrickBot Gang Leader Unmasked, 2025: <a href="https://www.securityweek.com/alleged-conti-trickbot-gang-leader-unmasked/" target="_blank">securityweek.com</a></span></div>
+    <div class="source-item"><span class="source-num">[27]</span><span>U.S. Rewards for Justice: US offers $10M reward for info on five Conti ransomware members, August 2022: <a href="https://rewardsforjustice.net/rewards/conti-ransomware-variant/" target="_blank">rewardsforjustice.net</a></span></div>
+    <div class="source-item"><span class="source-num">[30]</span><span>Bitdefender: Free Conti Ransomware Decryptor Released, 2022: <a href="https://www.bitdefender.com/blog/labs/free-conti-decryptor-released/" target="_blank">bitdefender.com</a></span></div>
+    <div class="source-item"><span class="source-num">[37]</span><span>HSE/Panaseer: What the Irish Cyber Attack Tells Us About Security Controls (March-May 2021 timeline): <a href="https://www.panaseer.com/security-blog/what-the-irish-cyber-attack-tells-us-about-security-controls" target="_blank">panaseer.com</a></span></div>
+    <div class="source-item"><span class="source-num">[40]</span><span>Krebs on Security: Conti Ransomware Group Diaries, Part IV: Cryptocrime: <a href="https://krebsonsecurity.com/2022/04/conti-ransomware-group-diaries-part-iv-cryptocrime/" target="_blank">krebsonsecurity.com</a></span></div>
+    <div class="source-item"><span class="source-num">[41]</span><span>U.S. State Department: US Government Offers $15M Reward for Info on Conti Actors, May 2022: <a href="https://rewardsforjustice.net/rewards/conti-ransomware-variant/" target="_blank">rewardsforjustice.net</a></span></div>
+    <div class="source-item"><span class="source-num">[42]</span><span>Reuters/AP: Costa Rica declares national emergency after Conti ransomware attack, May 2022</span></div>
+    <div class="source-item"><span class="source-num">[47]</span><span>CyberScoop: Latvian national sentenced for ransomware attacks run by former Conti leaders, 2026: <a href="https://cyberscoop.com/latvian-russia-ransomware-conti-sentenced/" target="_blank">cyberscoop.com</a></span></div>
+    <div class="source-item"><span class="source-num">[48]</span><span>Wired UK: Leaked Ransomware Docs Show Conti Helping Putin From the Shadows, March 2022: <a href="https://www.wired.co.uk/article/conti-ransomware-russia" target="_blank">wired.co.uk</a></span></div>
+    <div class="source-item"><span class="source-num">[49]</span><span>Analyst1: Black Basta Threat Actor Profile: <a href="https://analyst1.com/blog/threat-actor-profile-black-basta" target="_blank">analyst1.com</a></span></div>
+    <div class="source-item"><span class="source-num">[51]</span><span>Arctic Wolf: The Karakurt Web: Threat Intel and Blockchain Analysis: <a href="https://arcticwolf.com/resources/blog/karakurt-web/" target="_blank">arcticwolf.com</a></span></div>
+    <div class="source-item"><span class="source-num">[52]</span><span>BushidoToken: The Continuity of Conti, 2022: <a href="https://blog.bushidotoken.net/2022/11/the-continuity-of-conti.html" target="_blank">bushidotoken.net</a></span></div>
+  </ul>
+</section>
+
+</div><!-- /content -->
+</main><!-- /main -->
+</div><!-- /layout -->
+
+<footer style="background: var(--navy); color: var(--gray-400); font-size: 11.5px; padding: 20px 48px; text-align: center; margin-left: var(--sidebar-w);">
+  Profile compiled May 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+</footer>
+
+<script>
+const navLinks = document.querySelectorAll('.section-nav a');
+const sections = document.querySelectorAll('section[id]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
