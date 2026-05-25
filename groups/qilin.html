@@ -359,6 +359,199 @@ html { scroll-behavior: smooth; }
   .main { padding: 0; }
   .content { padding: 0 24px; }
 }
+
+/* DARK MODE TOGGLE BUTTON */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* VICTIM STRIP */
+.victim-strip {
+  margin: 20px 40px 0;
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.victim-strip-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gray-600);
+}
+.victim-strip-sub {
+  font-weight: 400; letter-spacing: 0; text-transform: none;
+  color: var(--gray-400); font-size: 10px; margin-left: 4px;
+}
+.victim-row {
+  display: flex; align-items: center; gap: 0;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 12px;
+}
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+
+/* "DEVELOPED BY RENO" CREDIT */
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .victim-meta { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+
+/* LIVE DATA INDICATORS */
+.topbar-live {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400);
+  letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative;
+  display: inline-block;
+  width: 7px; height: 7px;
+  flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent;
+  border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+.live-badge {
+  display: inline-block;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #27ae60;
+  border: 1px solid #27ae60;
+  border-radius: 3px;
+  padding: 1px 4px;
+  vertical-align: middle;
+  margin-left: 5px;
+  line-height: 1.4;
+}
+
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+
+/* RECENT REPORTING SECTION */
+.feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+
+.feed-card {
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+.feed-empty {
+  grid-column: 1 / -1;
+  font-size: 13px; color: var(--gray-400);
+  padding: 20px 0;
+  font-style: italic;
+}
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+
 </style>
 </head>
 <body>
@@ -366,7 +559,12 @@ html { scroll-behavior: smooth; }
 <!-- TOP BAR -->
 <header class="topbar">
   <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
-  <div class="topbar-tag">Analytical profiles compiled from open-source intelligence</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed…</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
 </header>
 
 <div class="layout">
@@ -422,6 +620,7 @@ html { scroll-behavior: smooth; }
     <a href="#le">LE &amp; Regulatory Response</a>
     <a href="#attribution">Attribution &amp; Nexus</a>
     <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#recent-reporting">Recent Reporting</a>
     <a href="#sources">Sources</a>
   </nav>
 </aside>
@@ -431,7 +630,7 @@ html { scroll-behavior: smooth; }
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated <span id="hero-last-updated">May 2026</span></div>
     <div class="hero-title">Qilin</div>
     <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Cross-Platform (Go / Rust)</div>
     <div class="hero-badges">
@@ -445,10 +644,15 @@ html { scroll-behavior: smooth; }
         <div class="kpi-value">Jul 2022</div>
         <div class="kpi-sub">As "Agenda"; rebranded ~late 2022</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">2025 Claimed Victims</div>
-        <div class="kpi-value">~958</div>
-        <div class="kpi-sub">72 in April 2025 alone (Group-IB)</div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Total Victims (DLS) <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-victim-count">958+</div>
+        <div class="kpi-sub" id="kpi-victim-sub">As of May 2026</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Countries Targeted <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-country-count">72+</div>
+        <div class="kpi-sub" id="kpi-country-sub">Via ransomware.live</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Peak Market Share</div>
@@ -470,6 +674,15 @@ html { scroll-behavior: smooth; }
         <div class="kpi-value">Standalone</div>
         <div class="kpi-sub">No confirmed predecessor group</div>
       </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live Pro</span>
+      </div>
+      <div id="victim-list"></div>
     </div>
   </div>
 
@@ -1013,6 +1226,20 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
+    <!-- SECTION: RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Recent Reporting <span class="live-badge" style="font-size:10px;vertical-align:middle;">LIVE</span></h2>
+      </div>
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:4px;">
+        Open-source reporting from monitored threat intelligence sources. Refreshed automatically every 8 hours via ransomware.live and major TI blog feeds. Authored analysis above is unaffected by this feed.
+      </p>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent reporting&hellip;</div>
+      </div>
+    </section>
+
     <!-- SOURCES -->
     <section class="section" id="sources">
       <div class="section-header">
@@ -1063,28 +1290,188 @@ html { scroll-behavior: smooth; }
   </div><!-- /content -->
 
   <div class="page-footer">
-    Ransomware EDP &bull; Threat Actor Library &bull; Qilin Profile &bull; Last updated May 2026 &bull; Open-source intelligence only
+    Ransomware EDP &bull; Threat Actor Library &bull; Qilin Profile &bull; Last updated <span id="footer-last-updated">May 2026</span> &bull; Open-source intelligence only &bull; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    <span class="reno-credit">Developed by Reno</span>
   </div>
 
 </main>
 </div><!-- /layout -->
 
 <script>
-// Sidebar active section highlighting on scroll
-const sectionEls = document.querySelectorAll('.section[id]');
+// ---------------------------------------------------------------
+// DARK MODE
+// ---------------------------------------------------------------
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+
+  updateToggle();
+
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// ---------------------------------------------------------------
+// LIVE DATA LOADER
+// ---------------------------------------------------------------
+(async function loadLiveData() {
+  const BASE = './data/';
+
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'qilin.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-qilin.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    // --- Victim count, countries, and last 5 victims strip ---
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+
+      if (Array.isArray(victims) && victims.length > 0) {
+        const countries = new Set(victims.map(v => v.country).filter(Boolean));
+        if (countries.size > 0) {
+          const cel = document.getElementById('kpi-country-count');
+          if (cel) cel.textContent = countries.size + '+';
+        }
+
+        const sorted = [...victims]
+          .filter(v => v.published || v.date || v.discovered || v.attackdate)
+          .sort((a, b) => {
+            const da = new Date(a.published || a.date || a.discovered);
+            const db = new Date(b.published || b.date || b.discovered);
+            return db - da;
+          })
+          .slice(0, 5);
+
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.published || v.date || v.discovered || v.attackdate;
+            const dateStr = rawDate
+              ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.post_title || v.victim || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    // --- Topbar refresh timestamp ---
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1
+          ? 'Intelligence data refreshed just now'
+          : diffH === 1
+            ? 'Intelligence data refreshed 1h ago'
+            : diffH < 24
+              ? `Intelligence data refreshed ${diffH}h ago`
+              : `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+
+        document.getElementById('topbar-refresh-label').textContent = label;
+        document.getElementById('topbar-live').style.display = 'flex';
+
+        const subLabel = 'Via ransomware.live Pro — ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const vs = document.getElementById('kpi-victim-sub');
+        const cs = document.getElementById('kpi-country-sub');
+        if (vs) vs.textContent = subLabel;
+        if (cs) cs.textContent = subLabel;
+
+        const dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        const hlu = document.getElementById('hero-last-updated');
+        const flu = document.getElementById('footer-last-updated');
+        if (hlu) hlu.textContent = dateLabel;
+        if (flu) flu.textContent = dateLabel;
+      }
+    }
+
+    // --- Recent Reporting feed ---
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date
+          ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta">` +
+          `<span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+
+// ---------------------------------------------------------------
+// Scroll spy for sidebar section nav
+const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.section-nav a');
 
-function updateNav() {
-  let current = '';
-  sectionEls.forEach(sec => {
-    if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
   });
-  navLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-  });
-}
-window.addEventListener('scroll', updateNav, { passive: true });
-updateNav();
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(section => observer.observe(section));
 </script>
+
 </body>
 </html>
