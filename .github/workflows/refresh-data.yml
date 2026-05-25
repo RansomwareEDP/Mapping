@@ -1,0 +1,70 @@
+name: Refresh intelligence data
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'   # Every 8 hours: 00:00, 08:00, 16:00 UTC
+  workflow_dispatch:          # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write         # Needed to commit updated data files back to repo
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install feedparser requests
+
+      # -------------------------------------------------------
+      # ransomware.live Pro API - victim data per group
+      # Your Pro API key is stored as a GitHub Actions secret:
+      # Settings -> Secrets and variables -> Actions -> New repository secret
+      # Name: RL_PRO_KEY   Value: your key
+      # -------------------------------------------------------
+      - name: Pull ransomware.live Pro - victim data
+        env:
+          RL_PRO_KEY: ${{ secrets.RL_PRO_KEY }}
+        run: |
+          for group in lynx qilin akira lockbit dragonforce conti; do
+            echo "Fetching $group..."
+            curl -sf \
+              -H "X-API-KEY: $RL_PRO_KEY" \
+              -H "Accept: application/json" \
+              "https://api-pro.ransomware.live/victims/$group" \
+              -o "groups/data/$group.json" \
+              || echo "[]" > "groups/data/$group.json"
+          done
+
+      # -------------------------------------------------------
+      # TI blog RSS feed parser - recent articles per group
+      # -------------------------------------------------------
+      - name: Parse TI blog RSS feeds
+        run: python3 scripts/fetch_ti_feeds.py
+
+      # -------------------------------------------------------
+      # Timestamp file - tells the HTML when data was last refreshed
+      # -------------------------------------------------------
+      - name: Write last-updated timestamp
+        run: |
+          echo "{\"updated\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > groups/data/last-updated.json
+
+      # -------------------------------------------------------
+      # Commit updated data files back to the repo
+      # GitHub Pages will serve the new JSON within minutes
+      # -------------------------------------------------------
+      - name: Commit and push data updates
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add groups/data/
+          git diff --staged --quiet \
+            || git commit -m "Auto: data refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push
