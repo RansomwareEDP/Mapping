@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akira | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* ── LAYOUT ── */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+/* Group list */
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+/* Section nav */
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+.section-nav .sub { padding-left: 24px; font-size: 12px; }
+
+/* ── MAIN CONTENT ── */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* ── CONTENT SECTIONS ── */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* ── CONFIDENCE LABELS ── */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr {
+  background: var(--navy);
+}
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* ── METRIC GRID (in-page) ── */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* ── SOURCE LIST ── */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* ── INTERNAL DATA BADGE ── */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* ── PILLAR CARDS ── */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* ── LAUNDERING PHASES ── */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* ── FOOTER ── */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* ── IMAGE GALLERY ── */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* ── SCROLL BEHAVIOR ── */
+html { scroll-behavior: smooth; }
+
+/* ── PRINT ── */
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Analytical profiles compiled from open-source intelligence</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item active" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      Luna Moth
+      <span class="coming-tag">Soon</span>
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      More groups
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#origin">Origin &amp; Lineage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#targeting">Targeting</a>
+    <a href="#victims">Victim Data</a>
+    <a href="#financial">Financial Profile</a>
+    <a href="#attribution">Attribution &amp; Nexus</a>
+    <a href="#disruption">Disruption History</a>
+    <a href="#status">Status &amp; Trajectory</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">Akira</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Conti Diaspora</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-raas">RaaS</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Mar 2023</div>
+        <div class="kpi-sub">39+ months active</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Victims</div>
+        <div class="kpi-value">1,492</div>
+        <div class="kpi-sub">71 countries &mdash; May 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Revenue</div>
+        <div class="kpi-value">$244M+</div>
+        <div class="kpi-sub">Through Sep 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">2025 Revenue</div>
+        <div class="kpi-value">$150M</div>
+        <div class="kpi-sub">#1 by proceeds, 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">No takedowns, no sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Conti</div>
+        <div class="kpi-sub">Wizard Spider diaspora</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Overview</h2>
+      </div>
+      <p>Akira is a Russian-nexus ransomware operation that emerged in March 2023 as part of the post-Conti diaspora. Operating as a Ransomware-as-a-Service (RaaS) enterprise, the group employs double extortion: data is exfiltrated prior to encryption, creating two independent leverage points against victims. Within its first year, Akira claimed over 250 victims and extracted approximately $42 million in ransom payments. By late 2025, it had become the single most prolific ransomware strain by annual revenue.</p>
+      <p>The group is tracked across the threat intelligence community under multiple aliases. No infrastructure takedown, domain seizure, or law enforcement operation targeting Akira specifically has been publicly announced as of May 2026.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Tracking aliases</td><td>PUNK SPIDER (CrowdStrike), GOLD SAHARA (Secureworks), Storm-1567 (Microsoft), Howling Scorpius (Unit 42)</td></tr>
+            <tr><td>Lineage</td><td>Conti diaspora &mdash; shared heritage with Wizard Spider / Gold Ulrick (the parent Conti organization); not itself designated Wizard Spider</td></tr>
+            <tr><td>Operational model</td><td>Ransomware-as-a-Service; closed RaaS with central operator control</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (encryption + data publication threat); also offers decryption and deletion as separate purchasable options</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia / post-Soviet region (CREDIBLE)</td></tr>
+            <tr><td>LE disruption status</td><td>None confirmed as of May 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: DLS + BRANDING + ANIME REFERENCE -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2024/04/akira-mainpage.png.webp"
+               alt="Akira DLS home page"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Akira DLS: Home Page</strong>
+            Navigation is entirely CLI-based. Visitors interact by typing commands into a terminal prompt. The -leaks command lists victims; -contacts opens communications. The group's retro green-screen aesthetic is deliberate branding referencing 1980s computing.
+            <span class="img-source">Source: SOCRadar, April 2024</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--791b6ebc-c9a5-4f90-93fb-43b841efc47f/akira-stanford.jpg?quality=95&preferwebp=true"
+               alt="Akira DLS victim listing with Stanford University"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Akira DLS: Victim Listing</strong>
+            Stanford University shown at the top of the Akira leak site listing. High-profile names are published prominently to maximize pressure. Victims are listed chronologically with data volume and magnet link access.
+            <span class="img-source">Source: Barracuda Networks / Bitdefender, 2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.trellix.com/en-us/img/newsroom/stories/akira-ransomware-1.jpg"
+               alt="Akira DLS terminal interface"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Akira DLS: Terminal Interface</strong>
+            The command-line interface shown in an early 2023 observation. Green-on-black monochrome styling evokes 1980s green-screen CRT terminals.
+            <span class="img-source">Source: Trellix / BleepingComputer, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2024/04/easter-eggs.png.webp"
+               alt="Akira DLS interface detail"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Akira DLS: Interface Detail</strong>
+            The DLS uses exactly five accepted commands. No easter eggs or hidden functions were identified by researchers. All victim interaction and communications pass through this interface.
+            <span class="img-source">Source: SOCRadar, April 2024</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://socradar.io/wp-content/uploads/2024/04/akira-movie.jpg.webp"
+               alt="Akira 1988 cyberpunk anime film"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Naming Reference: Akira (1988)</strong>
+            Japanese cyberpunk animated film. The protagonist, Akira, is a destructive and uncontrollable force set in post-apocalyptic Neo-Tokyo. The group's branding is assessed as a deliberate reference to this cultural touchstone (ANALYST INFERENCE).
+            <span class="img-source">Source: SOCRadar / IMDb</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ORIGIN -->
+    <section class="section" id="origin">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Origin &amp; Lineage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence</div>
+        <p>Akira was first observed in <strong>March 2023</strong>, with the earliest leak site discovery dated April 26, 2023. It is assessed as unrelated to a prior strain that used the same name and .akira extension in 2017. The group name is assessed as a likely allusion to the 1988 Japanese animated film of the same name (ANALYST INFERENCE; no authoritative confirmation).</p>
+        <p>Akira emerged precisely during the window in which Conti affiliates required new operational infrastructure following Conti's May 2022 public dissolution. The timing aligns with the documented dispersal of Conti personnel into successor operations including Black Basta (April 2022), BlackByte, Karakurt, Royal/BlackSuit, and Akira.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Origin</div>
+        <div class="conf conf-credible">Credible &mdash; multiple independent source types converge</div>
+        <p>TRM Labs assesses Akira's developers are located in Russia or the broader post-Soviet region, citing non-VPN IP observations tied to Russia and Russian-language operator communications on dark web forums. S-RM Intelligence corroborates this assessment. The Canadian Centre for Cyber Security assessed Akira as "very likely connected" to former Conti personnel. No founding member or leadership identity has been publicly confirmed.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Conti Lineage: Four-Pillar Evidence Assessment</div>
+        <p>Attribution to former Conti / Wizard Spider personnel rests on four independent evidentiary pillars. <strong>Wizard Spider</strong> is CrowdStrike's tracking designation for the Russia-based eCrime group that operated TrickBot, Ryuk, and Conti as sequential campaigns. Secureworks tracks the same core cluster as <strong>Gold Ulrick</strong>.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-title">Blockchain Forensics</div>
+            <div class="pillar-body">Arctic Wolf Labs traced three separate Bitcoin transactions in which Akira operators sent proceeds totaling over $600,000 directly to wallet addresses previously associated with Conti/Wizard Spider leadership. TRM Labs confirmed overlapping on-chain infrastructure. This is the strongest evidentiary pillar.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-title">Code and Behavioral Signatures</div>
+            <div class="pillar-body">Avast Threat Labs concluded Akira's encryptor creators were "at least inspired by" leaked Conti sources, noting similarities in string obfuscation, encryption routines, and extension exclusion lists. Caveat: because Conti source code was publicly leaked February 2022, code overlap alone does not prove personnel continuity.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3 &mdash; Confirmed (presence) / Credible (interpretation)</div>
+            <div class="pillar-title">Language Artifacts</div>
+            <div class="pillar-body">Akira affiliates communicate in Russian on dark web forums. The binary contains a hard-coded check for Russian keyboard layout but does <em>not</em> halt execution when detected &mdash; a deliberate deviation from standard CIS-exclusion behavior that may be intended to obscure attribution.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 4 &mdash; Credible</div>
+            <div class="pillar-title">Temporal &amp; Operational Context</div>
+            <div class="pillar-body">Akira emerged in March 2023 &mdash; precisely when Conti affiliates required new infrastructure post-dissolution. Analyst1 (February 2026) describes the post-Conti network as "a loose federation of rebranded cells sharing tooling and infrastructure rather than a unified hierarchy."</div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Overall assessment:</strong> Akira is most accurately described as part of the Conti/Wizard Spider diaspora &mdash; a separate operational entity staffed by former Conti-affiliated operators carrying shared TTPs, laundering infrastructure, and operational playbook. It is not Conti rebranded in the formal sense. The Wizard Spider core operator tier is assessed as having moved primarily into Royal/BlackSuit; Akira represents affiliate and mid-tier operator continuity with leadership-level financial linkage through the blockchain evidence.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Tracking Designations: Disambiguation</div>
+        <p><strong>Wizard Spider</strong> (CrowdStrike) and <strong>Gold Ulrick</strong> (Secureworks) designate the core Russia-based criminal organization that operated TrickBot, Ryuk, and Conti. Neither designation has been extended to Akira or any specific Conti successor group. They describe shared heritage, not operational identity.</p>
+        <p>Akira's own vendor-specific tracking designations are: <strong>PUNK SPIDER</strong> (CrowdStrike, first flagged April 2023, defined as the Big Game Hunting adversary responsible for developing and maintaining Akira ransomware), <strong>GOLD SAHARA</strong> (Secureworks), <strong>Storm-1567</strong> (Microsoft), and <strong>Howling Scorpius</strong> (Palo Alto Unit 42).</p>
+        <p>The Royal/BlackSuit branch is tracked separately by CrowdStrike as <strong>ROYAL SPIDER</strong>, confirming organizational separation between the two major post-Conti successor streams. Secureworks maintains a parallel separation: GOLD SAHARA covers Akira while a distinct designation covers the Royal/BlackSuit lineage. The practical implication: Wizard Spider and Gold Ulrick are correct as shared heritage designators for the parent organization, but the operational aliases for Akira itself are exclusively PUNK SPIDER, GOLD SAHARA, Storm-1567, and Howling Scorpius.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <p>Akira operates as a closed RaaS enterprise (Unit 42 characterization). The affiliate revenue split is not publicly confirmed; Blackpoint Cyber assesses an 80/20 split (80% affiliate, 20% operator) consistent with the modern RaaS standard. S-RM Intelligence notes that Akira maintains control over ransom demands and the discounts affiliates can offer, indicating operator-side leverage even when affiliates conduct individual attacks. The affiliate pool is heterogeneous: S-RM observed "considerable variation in tooling and methodologies among different Akira affiliates."</p>
+        <p>TRM Labs' on-chain analysis confirms that early payment flows (2023) can be grouped by likely affiliate based on consistent wallet behaviors, providing the clearest structural evidence of the affiliate layer.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Double Extortion Mechanic</div>
+        <p>Akira employs a sequential extortion model:</p>
+        <ul class="content-list">
+          <li><strong>Exfiltration first:</strong> Data is exfiltrated prior to encryption. In some 2025 incidents, exfiltration completed within two hours of initial access.</li>
+          <li><strong>Encryption extortion:</strong> Victims must pay for decryption keys to restore systems.</li>
+          <li><strong>Publication threat:</strong> Victims must pay separately to prevent data publication on Akira's Tor-based Dedicated Leak Site (DLS).</li>
+          <li><strong>Disaggregated payment option:</strong> Akira uniquely offers victims the ability to pay for decryption or data deletion separately &mdash; a tactic to lower the payment threshold for victims with functional backups.</li>
+        </ul>
+        <p>Beginning in early 2024, Akira temporarily abandoned encryption entirely, focusing on exfiltration-only extortion &mdash; assessed by Cisco Talos as reflecting developer retooling time for a new encryptor. Full double extortion resumed by mid-to-late 2024.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <p>Negotiation is conducted through a TOR-based portal accessed via a unique ID from the ransom note. Ransomware.live has archived 61 negotiation chat logs spanning May 2023 through April 2025.</p>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Avg. Demand Reduction <span class="internal-badge">Internal</span></div>
+            <div class="metric-val">62.1%</div>
+            <div class="metric-note">Off initial demand (Q4 2023, n=10)</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Median Reduction <span class="internal-badge">Internal</span></div>
+            <div class="metric-val">52.7%</div>
+            <div class="metric-note">Range: 37.5% to 96.0%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Avg. Days to Payment <span class="internal-badge">Internal</span></div>
+            <div class="metric-val">22 days</div>
+            <div class="metric-note">Median: 21 days &mdash; min 1, max 63</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Attack to Publication</div>
+            <div class="metric-val">54.5 days</div>
+            <div class="metric-note">Average per ransomware.live</div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Analytical note:</strong> Internal data from Q4 2023 shows negotiation reductions ranging from 37.5% to 96.0% off initial demand &mdash; including a $10M initial demand settled at $400K (96% reduction) and a $3M demand settled at $250K (91.7% reduction). This data challenges the claim that "operators maintain tight control over the floor." In practice, the floor is highly flexible under sustained negotiation pressure.
+        </div>
+        <ul class="content-list">
+          <li>Negotiations begin promptly, often within hours of encryption deployment</li>
+          <li>Operators demonstrate familiarity with victim financials (revenue, insurance coverage)</li>
+          <li>Ransom demands are set opportunistically based on victim profile</li>
+          <li>Publication threat escalates during stalled negotiations</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 4: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Profile</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Malware Variants</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Variant</th><th>Language</th><th>Extension</th><th>Period</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Akira v1</td><td>C++</td><td class="mono">.akira</td><td>Mar&ndash;Jul 2023</td><td>Initial release; Avast decryptor released Jun 2023</td></tr>
+              <tr><td>Akira v1 (patched)</td><td>C++</td><td class="mono">.akira</td><td>Jul 2023+</td><td>Fixed decryption flaw; ransom note: akira_readme.txt</td></tr>
+              <tr><td>Megazord</td><td>Rust</td><td class="mono">.powerranges</td><td>Aug 2023+</td><td>Rust-based; deployed alongside C++ variants</td></tr>
+              <tr><td>Akira v2</td><td>Rust</td><td class="mono">.akira / .aki</td><td>2023&ndash;2024</td><td>Additional Rust variant; multiple extension variants</td></tr>
+              <tr><td>Akira (C++ return)</td><td>C++</td><td class="mono">.akira</td><td>Sep 2024+</td><td>Talos: reversion to C++ after retooling period</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Scheme</div>
+        <p><strong>Hybrid encryption:</strong> ChaCha20 stream cipher for file content, RSA-4096 for key protection. Provides speed (symmetric ChaCha20) while protecting keys asymmetrically, preventing brute-force recovery without the operator-held private key. Volume Shadow Copies (VSS) deleted via PowerShell/WMI to prevent recovery.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Hypervisor Targeting</div>
+        <ul class="content-list">
+          <li><strong>VMware ESXi (April 2023+):</strong> Linux variant uses esxcli and vim-cmd to gracefully shut down VMs before encrypting virtual disk files.</li>
+          <li><strong>Nutanix AHV (June 2025):</strong> First documented attack against Nutanix hypervisor environments. Directly encrypts .qcow2 files without native management commands.</li>
+          <li><strong>Microsoft Hyper-V:</strong> Also targeted per updated CISA advisory.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Methods</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>VPN exploitation without MFA</strong></td><td>Dominant vector. Brute force, credential stuffing, or IAB purchase.</td></tr>
+              <tr><td>CVE exploitation</td><td>Primarily Cisco ASA/FTD and SonicWall. See CVE table below.</td></tr>
+              <tr><td>Remote Desktop Protocol (RDP)</td><td>Stolen or brute-forced credentials</td></tr>
+              <tr><td>Spear phishing</td><td>Credential harvesting</td></tr>
+              <tr><td>SSH exploitation</td><td>Router IP tunneling</td></tr>
+              <tr><td>Valid credentials (IAB purchase)</td><td>~19.5% of Akira victims had infostealer infection in credential markets</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key CVEs Exploited</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">CVE-2020-3259</td><td>Cisco ASA/FTD</td><td>7.5</td><td>Information disclosure</td></tr>
+              <tr><td class="mono">CVE-2023-20269</td><td>Cisco ASA/FTD</td><td>N/A</td><td>Authentication bypass</td></tr>
+              <tr><td class="mono">CVE-2024-40766</td><td>SonicWall SonicOS SSL-VPN</td><td>9.3</td><td>Improper access control</td></tr>
+              <tr><td class="mono">CVE-2024-37085</td><td>VMware ESXi</td><td>N/A</td><td>Authentication bypass</td></tr>
+              <tr><td class="mono">CVE-2023-27532</td><td>Veeam Backup and Replication</td><td>N/A</td><td>Missing authentication</td></tr>
+              <tr><td class="mono">CVE-2024-40711</td><td>Veeam Backup and Replication</td><td>N/A</td><td>Deserialization</td></tr>
+              <tr><td class="mono">CVE-2023-28252</td><td>Windows CLFS</td><td>N/A</td><td>Privilege escalation</td></tr>
+              <tr><td class="mono">CVE-2022-40684</td><td>Fortinet FortiOS</td><td>N/A</td><td>Authentication bypass</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Kill Chain Toolset</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Tools</th></tr></thead>
+            <tbody>
+              <tr><td>Discovery</td><td>Advanced IP Scanner, BloodHound, Masscan, SharpHound, AdFind, SoftPerfect NetScan</td></tr>
+              <tr><td>Credential Access</td><td>Mimikatz, LaZagne, Rubeus, SharpDomainSpray (Kerberoasting, LSASS dump)</td></tr>
+              <tr><td>Persistence</td><td>Local/domain account creation (e.g., itadm), added to administrator group</td></tr>
+              <tr><td>Lateral Movement</td><td>RDP, SSH, MobaXterm, Impacket (wmiexec.py), CrackMapExec, NetExec</td></tr>
+              <tr><td>C2 / Remote Access</td><td>AnyDesk, TeamViewer, MeshAgent, RustDesk, ScreenConnect; Ngrok/Cloudflared for tunneling</td></tr>
+              <tr><td>Defense Evasion</td><td>PowerTool (Zemana driver abuse), EDR uninstall, POORTRY/BurntCigar BYOVD, log clearing</td></tr>
+              <tr><td>Exfiltration</td><td>FileZilla, WinSCP, RClone (to Mega), WinRAR, Temp.sh</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: TARGETING -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Distribution (ransomware.live, May 2026)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Victim Count</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Manufacturing</td><td>352</td><td>Largest single sector</td></tr>
+              <tr><td>Business Services</td><td>313</td><td></td></tr>
+              <tr><td>Construction</td><td>132</td><td></td></tr>
+              <tr><td>Technology</td><td>129</td><td></td></tr>
+              <tr><td>Consumer Services</td><td>96</td><td></td></tr>
+              <tr><td>Healthcare, Finance, Education, Legal</td><td>Significant</td><td>No formal sector exclusions documented</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Dragos reported Akira linked to 83 industrial-sector incidents in Q1 2025 alone, representing approximately 12% of all tracked industrial ransomware activity that quarter. Between April 2024 and April 2025, the November 2025 CISA advisory documented Akira attacking 34 financial organizations. FinCEN identified Akira as the most-reported ransomware variant in Bank Secrecy Act filings for the 2022&ndash;2024 review period.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Country</th><th>Victim Count</th><th>% of Total</th></tr></thead>
+            <tbody>
+              <tr><td>United States</td><td>830</td><td>55.6%</td></tr>
+              <tr><td>Canada</td><td>77</td><td>5.2%</td></tr>
+              <tr><td>Germany</td><td>67</td><td>4.5%</td></tr>
+              <tr><td>United Kingdom</td><td>38</td><td>2.5%</td></tr>
+              <tr><td>Italy</td><td>34</td><td>2.3%</td></tr>
+              <tr><td>Other (66 countries)</td><td>446</td><td>29.9%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No CIS-region victims documented in any open-source database. Country data from internal records (Q3 2025+) confirms US dominance with additional payments confirmed from Spain, Canada, Ireland, United Kingdom, and Australia.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Profile and Selection Model</div>
+        <p><strong>Primary profile:</strong> Small-to-medium enterprises (SMEs). S-RM Intelligence documented 86% of Akira victims have fewer than 1,000 employees.</p>
+        <p><strong>Selection model:</strong> Primarily opportunistic, driven by available initial access (VPN exposure) rather than deliberate sector pre-selection. However, affiliates are assessed to exercise judgment in prioritizing targets with critical data dependencies, cyber insurance, and high operational disruption sensitivity.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Data</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Leak Site Victims</div>
+          <div class="metric-val">1,492</div>
+          <div class="metric-note">As of May 22, 2026</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">FBI-Confirmed Victims</div>
+          <div class="metric-val">342+</div>
+          <div class="metric-note">Through Nov 2025 advisory</div>
+        </div>
+        <div class="metric-card highlight">
+          <div class="metric-label">Internal Case Records <span class="internal-badge">Internal</span></div>
+          <div class="metric-val">85</div>
+          <div class="metric-note">64 with confirmed payment</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Data Leak Rate</div>
+          <div class="metric-val">23%</div>
+          <div class="metric-note">79 of 342 named victims (S-RM)</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Quarterly Victim Volume</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Approx. Victims</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Q2&ndash;Q4 2023</td><td>~250 (partial year)</td><td>ANALYST INFERENCE for quarterly; CONFIRMED annual</td></tr>
+              <tr><td>2024 (full year)</td><td>~430</td><td>CREDIBLE (FBI advisory reference)</td></tr>
+              <tr><td>Jan 1&ndash;Dec 11, 2025</td><td>~980</td><td>CONFIRMED (TRM Labs)</td></tr>
+              <tr><td>Q1 2026</td><td>~150+</td><td>CREDIBLE; 84 in March alone (second most active month on record)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Named Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Date</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Stanford University</td><td>Education</td><td>Sep 2023</td><td>27,000 individuals notified</td></tr>
+              <tr><td>Nissan Australia</td><td>Automotive</td><td>Jan 2024</td><td>100,000 customers' data compromised</td></tr>
+              <tr><td>Tietoevry (Finland)</td><td>IT Services</td><td>Jan 2024</td><td>Major Finnish IT provider; disrupted multiple Swedish client systems</td></tr>
+              <tr><td>Lush Cosmetics (UK)</td><td>Retail</td><td>2023</td><td>Confirmed victim</td></tr>
+              <tr><td>Toronto Zoo</td><td>Public Institution</td><td>Jan 2024</td><td>Canadian critical infrastructure</td></tr>
+              <tr><td>Stoli Group</td><td>Food and Beverage</td><td>2024</td><td>Evidence of strategic coordination (Halcyon)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Financial Profile</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Documented Revenue</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source</th><th>Period</th><th>Amount</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>FBI/CISA Joint Advisory (Apr 2024)</td><td>By Jan 2024</td><td>$42M</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+              <tr><td>FinCEN Financial Trend Analysis (Dec 2025)</td><td>Apr 2023&ndash;Dec 2024</td><td>$120.9M (376 BSA filings)</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+              <tr><td>FBI/CISA Updated Advisory (Nov 2025)</td><td>Through Sep 2025</td><td>$244.17M</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+              <tr><td>TRM Labs Intel Library</td><td>2025 full year</td><td>$150M</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Akira was identified as the <strong>most prolific ransomware strain by total ransom proceeds in 2025</strong>, collecting $150M, nearly twice the second most active strain. FinCEN named Akira the most-reported variant in BSA data for the 2022&ndash;2024 review period.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Profile <span class="internal-badge">Internal Data &mdash; 85 cases</span></div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Median Payment</div>
+            <div class="metric-val">$200,000</div>
+            <div class="metric-note">Confirmed (n=64 payments)</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Mean Payment</div>
+            <div class="metric-val">$423,851</div>
+            <div class="metric-note">Confirmed (n=64 payments)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Minimum</div>
+            <div class="metric-val">$43,000</div>
+            <div class="metric-note">Confirmed</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Maximum</div>
+            <div class="metric-val">$3,000,000</div>
+            <div class="metric-note">Confirmed</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total Confirmed Paid</div>
+            <div class="metric-val">$27.1M</div>
+            <div class="metric-note">64 confirmed payments</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Wallet Type</div>
+            <div class="metric-val">100%</div>
+            <div class="metric-note">Bitcoin (bc1 SegWit) across all records</div>
+          </div>
+        </div>
+        <p style="margin-top:12px">Published demand range (open source): <strong>$200,000 to over $4 million USD</strong>. Demands set opportunistically based on victim financial profile, insurance coverage, and assessed data value.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Laundering Infrastructure: Four Documented Phases</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">I</div>
+            <div class="phase-body">
+              <div class="phase-title">2023 &mdash; Affiliate-Level Clustering</div>
+              <div class="phase-desc">Payment flows grouped by affiliate based on consistent on-chain behaviors, including reused intermediary addresses. Maximum on-chain visibility for attribution purposes.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">II</div>
+            <div class="phase-body">
+              <div class="phase-title">Early&ndash;Mid 2024 &mdash; WanChain Bridge Centralization</div>
+              <div class="phase-desc">Shift to centralized laundering via WanChain bridge. Most victim payments funneled through a single WanChain address before dispersal to multiple global VASPs for cash-out.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">III</div>
+            <div class="phase-body">
+              <div class="phase-title">Late 2024 &mdash; Defiway Bridge</div>
+              <div class="phase-desc">Transition to Defiway bridge. Critically, Fog ransomware used the same Defiway approach during this period &mdash; providing on-chain evidence of infrastructure sharing or operational cooperation between Akira and Fog.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">IV</div>
+            <div class="phase-body">
+              <div class="phase-title">August 2025&ndash;Present &mdash; Per-Victim Addresses + HTX</div>
+              <div class="phase-desc">Each payment passes through a unique intermediary address, then aggregates across two consolidation addresses, before off-ramping at HTX (formerly Huobi). Admin-affiliate revenue split occurs only after funds reach the shared VASP cash-out address, keeping the split opaque on-chain.</div>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Connected group signal (Akira-Fog: CONFIRMED):</strong> Chainalysis (2025 Crypto Crime Report) confirmed Akira and Fog employed identical laundering methods distinct from all other ransomware strains. Arctic Wolf documented shared IP infrastructure between Akira and Fog affiliates in late 2024. Sophos X-Ops designated the combined Akira-Fog activity as <strong>STAC 5881</strong> (Sophos Threat Activity Cluster 5881), characterizing the two groups as operating within a unified affiliate infrastructure sharing initial access methods, credential abuse patterns, and on-chain laundering tradecraft. The Akira-Fog connection does not require single-operator control; evidence points to deliberate infrastructure sharing at the affiliate layer.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution &amp; Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Jurisdiction</div>
+        <div class="conf conf-credible">Credible &mdash; Russia or broader post-Soviet region</div>
+        <p>Evidence basis: Russian-language operator communications on dark web forums; non-VPN IP observations tied to Russia; wallet infrastructure overlapping with Conti-affiliated addresses tied to formally sanctioned Russia-based operators. No contradicting evidence in open source.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; No keyboard-layout kill switch present in binary</div>
+        <p>The Akira binary does <strong>not</strong> contain the standard kill switch that halts execution when a Russian keyboard layout is detected &mdash; a deliberate deviation from virtually all other Russian-linked ransomware families. Despite the absence of the technical safeguard, no CIS-region victims appear in any open-source database.</p>
+        <div class="conf-block inference">
+          <strong>ANALYST INFERENCE:</strong> Operator-level targeting guidance to affiliates produces the same CIS-exclusion outcome through a different mechanism. The absence of the technical kill switch may be a deliberate choice to obscure Russia-origin attribution while achieving the same practical result.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Arrests and Named Individuals</div>
+        <div class="callout callout-alert">
+          <strong>As of May 2026:</strong> No indictments, OFAC sanctions, or criminal charges have been publicly filed against any member of Akira's core operating team. TRM Labs (March 2026) states explicitly that Akira has not been subject to OFAC sanctions, criminal indictments, or a law enforcement disruption operation.
+        </div>
+        <p>One confirmed arrest is tied to the Conti organizational entity that operated Akira:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Individual</td><td>Deniss Zolotarjovs, 35, Latvian national residing in Moscow</td></tr>
+              <tr><td>Arrest</td><td>Georgia (country), December 2023</td></tr>
+              <tr><td>Transfer</td><td>U.S. custody, August 2024</td></tr>
+              <tr><td>Outcome</td><td>Pleaded guilty July 2025; sentenced 102 months (8.5 years), May 3, 2026</td></tr>
+              <tr><td>Role</td><td>Ransom negotiation escalator; weaponized sensitive personal data (including children's health records) to pressure non-paying victims</td></tr>
+              <tr><td>Scope</td><td>June 2021&ndash;August 2023; 54+ companies; $56M+ documented losses across 13 confirmed victims</td></tr>
+              <tr><td>Critical nuance</td><td>Involvement predates Akira's March 2023 standalone emergence. Prosecution covers organizational continuity between the Conti-led parent entity and Akira as a successor brand &mdash; not Akira-specific post-2023 activity.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>DOJ sentencing documents explicitly name Akira as one of the brands used by a Conti-led organization whose members "included multiple former Russian law enforcement officers" who "co-opted Russian government databases and law enforcement connections." The organization also paid bribes to exempt members from military conscription and maintained a structured presence in St. Petersburg.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Services Nexus Assessment</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; No confirmed direct RIS nexus. Ecosystem-level intelligence-adjacent relationships documented at organizational level.</div>
+        <p>No publicly confirmed direct tasking or control relationship between Akira's operators and Russian state intelligence services (FSB, SVR, or GRU) exists as of May 2026. However, the post-Conti/Wizard Spider ecosystem has documented intelligence-adjacent relationships:</p>
+        <ul class="content-list">
+          <li><strong>Recorded Future Dark Covenant 3.0 (October 2025):</strong> Leaked Conti communications show senior Conti figures provided data to both GRU and SVR. One operator ("Professor") maintained a paid informant or bribery relationship with SVR contacts.</li>
+          <li><strong>Vitalii Kovalev</strong> (Conti alias: Stern/Bentley): Assessed by German BKA and confirmed via leaked Qakbot developer chats as "linked to the FSB."</li>
+          <li><strong>DOJ sentencing documents (Zolotarjovs):</strong> Organization described as including "multiple former Russian law enforcement officers" who "co-opted Russian government databases."</li>
+        </ul>
+        <div class="conf-block inference">
+          <strong>Framework assessment (Recorded Future):</strong> Russia's posture toward groups like this is characterized as "conditional controlled impunity" &mdash; not uniform protection, but a managed market where groups useful to the state are insulated while peripheral facilitators are sacrificed under Western pressure. Given Akira's financial scale ($244M+) and Wizard Spider heritage, it fits the category that would receive insulation rather than exposure. A protection relationship should be treated as <strong>likely but unconfirmed</strong> pending source-level intelligence.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: DISRUPTION -->
+    <section class="section" id="disruption">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Disruption History &amp; Known Vulnerabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Avast Decryptor (June 2023)</div>
+        <p>The only confirmed technical disruption action: Avast released a free decryptor on <strong>June 29, 2023</strong> targeting the original C++ Windows variant. Akira patched the encryption flaw within <strong>four days</strong> (July 2, 2023), demonstrating active development capacity. A Rust-based Megazord variant followed in August 2023. No publicly released decryptor exists for any subsequent Akira variant as of May 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Tinyhack GPU Brute-Force Method (March 2025)</div>
+        <div class="callout callout-warning">
+          <strong>Exploitable technical vulnerability confirmed for Linux/ESXi variant (2024).</strong> Patch status not confirmed in open source as of May 2026.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Root cause</td><td>generate_random() calls get_current_time_nanosecond() as seed &mdash; insufficiently random. Passed through 1,500 rounds SHA-256 via Yarrow256 PRNG.</td></tr>
+              <tr><td>Attack method</td><td>Known-plaintext attack against VMware file headers (flat-VMDK, sesparse, NVRAM). ESXi timestamps constrain the search space.</td></tr>
+              <tr><td>Search space</td><td>~4.5 quadrillion pairs &mdash; practical with GPU acceleration</td></tr>
+              <tr><td>Practical cost</td><td>16 x RTX 4090 GPUs (cloud-rentable); ~10 hours recovery time; ~$261 per second-range searched</td></tr>
+              <tr><td>Status</td><td>Full source published to GitHub (March 2025). Patch status unconfirmed.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Government Advisories</div>
+        <ul class="content-list">
+          <li><strong>April 18, 2024 (AA24-109A):</strong> FBI, CISA, Europol EC3, Netherlands NCSC-NL. Original advisory covering TTPs and IOCs through February 2024.</li>
+          <li><strong>November 13, 2025 (AA24-109A Rev.):</strong> FBI, CISA, DC3, HHS, Europol EC3, France OFAC, Germany LKA-BW, Netherlands NCSC-NL. Added Nutanix AHV targeting, expanded CVE list including SonicWall CVE-2024-40766.</li>
+        </ul>
+        <p>Both advisories constitute information operations (victim notification, IOC sharing) rather than direct disruption. No infrastructure seizures or arrests resulted.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">No Infrastructure Takedown</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; Zero law enforcement disruption events as of May 2026</div>
+        <p>Akira has operated for over 39 months without a direct law enforcement disruption event, making it one of the most durable major ransomware operations in the post-Conti period. No WAIS-scoreable events on record.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operational Vulnerabilities</div>
+        <ul class="content-list">
+          <li><strong>Geographic exposure:</strong> Zolotarjovs arrest in Georgia demonstrates that travel outside Russia to non-extradition-treaty countries is an exploitable exposure point.</li>
+          <li><strong>On-chain attribution:</strong> Centralized laundering infrastructure (Defiway, WanChain, HTX) creates durable attribution opportunities. TRM Labs has successfully grouped affiliate payment flows through wallet cluster analysis and identified the primary cash-out exchange.</li>
+          <li><strong>Affiliate trust fragmentation:</strong> Recorded Future documented increasing affiliate disputes across the RaaS ecosystem post-Operation Endgame, including non-payment scams &mdash; a pattern affecting Akira's peer groups and a potential OPSEC exposure vector.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 10: STATUS -->
+    <section class="section" id="status">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Status &amp; Trajectory</h2>
+      </div>
+
+      <div class="callout callout-alert">
+        <strong>Fully Operational.</strong> Akira's leak site was last accessed May 23, 2026 with victims posted as recently as May 22, 2026. In April 2026, Qilin surpassed Akira as the most active group for that month &mdash; Akira remains closely behind at roughly the same activity level as March.
+      </div>
+
+      <div class="metric-grid" style="margin-top:20px">
+        <div class="metric-card">
+          <div class="metric-label">Total Victims</div>
+          <div class="metric-val">1,492</div>
+          <div class="metric-note">71 countries, May 2026</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">2025 Victims</div>
+          <div class="metric-val">~980</div>
+          <div class="metric-note">Jan 1&ndash;Dec 11, 2025</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">YoY Volume Change</div>
+          <div class="metric-val">+120%</div>
+          <div class="metric-note">2024 to 2025</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Strife Events</div>
+          <div class="metric-val">Zero</div>
+          <div class="metric-note">No rebranding, fragmentation signals</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Trajectory Assessment</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; Continued high-tempo operations at or above 2025 levels</div>
+        <p>All trajectory indicators are uniformly expansionary: volume rising, revenue rising, geographic expansion continuing, capability expanding (Nutanix AHV added June 2025, kill chain accelerating to sub-4 hours per Halcyon April 2026), and laundering sophistication increasing through four phase rotations in three years.</p>
+        <p>The absence of any law enforcement disruption event combined with rising revenue and victim volume suggests Akira has established a durable operational posture. The broader TRM-identified cluster (Fog, Frag, Anubis sharing laundering infrastructure) suggests Akira may function as an <strong>operational hub</strong> anchoring a wider affiliate ecosystem &mdash; consistent with a mature RaaS structure where high-trust affiliates work across multiple brands simultaneously.</p>
+        <div class="conf-block confirmed" style="margin-bottom:12px">
+          <strong>CONFIRMED &mdash; Akira-Fog cluster:</strong> Arctic Wolf shared IP infrastructure; TRM Defiway bridge sharing; Sophos STAC 5881 designation. Evidence is multi-source and independent.
+        </div>
+        <div class="conf-block credible">
+          <strong>CREDIBLE &mdash; Frag-Akira relationship:</strong> TRM Labs assessed Frag as a potential Akira extension based on shared wallet clusters and identical bridge infrastructure. Sophos X-Ops and Agger Labs characterize Frag as a technique-sharing actor rather than a direct Akira extension. BlackFog tracks Frag as independent. Neither Mandiant nor Recorded Future have published a formal assessment. TRM on-chain evidence supports affiliation-level overlap; organizational integration is not established.
+        </div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? 'Hide sources' : 'Show all sources'">Show all sources</button>
+      <div class="source-list">
+        <div class="source-category">Primary Government Sources</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>FBI/CISA/EC3/NCSC-NL Joint Advisory AA24-109A, April 18, 2024 &mdash; <a href="https://www.ic3.gov/CSA/2024/240418.pdf" target="_blank">ic3.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>FBI/CISA Updated Advisory AA24-109A Rev., November 13, 2025 &mdash; <a href="https://www.ic3.gov/CSA/2025/251113.pdf" target="_blank">ic3.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>FinCEN Financial Trend Analysis on Ransomware, December 2025 &mdash; <a href="https://www.fincen.gov/news/news-releases/fincen-issues-financial-trend-analysis-ransomware" target="_blank">fincen.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>Canadian Centre for Cyber Security: Ransomware Threat Outlook 2025&ndash;2027 &mdash; <a href="https://www.cyber.gc.ca/en/guidance/ransomware-threat-outlook-2025-2027" target="_blank">cyber.gc.ca</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>DOJ: Member of Prolific Russian Ransomware Group Sentenced, May 2026 &mdash; <a href="https://www.justice.gov/opa/pr/member-prolific-russian-ransomware-group-sentenced-prison" target="_blank">justice.gov</a></span></div>
+        <div class="source-category">Threat Intelligence Reports</div>
+        <div class="source-item"><span class="source-num">[6]</span><span>TRM Labs: Akira Ransomware Threat Profile (March 2026) &mdash; <a href="https://www.trmlabs.com/resources/intel-library/akira" target="_blank">trmlabs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>TRM Labs: New Disruption Opportunities in the Evolving Ransomware Ecosystem (April 2026) &mdash; <a href="https://www.trmlabs.com/resources/blog/new-disruption-opportunities-in-the-evolving-ransomware-ecosystem" target="_blank">trmlabs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Recorded Future: Dark Covenant 3.0 (October 2025) &mdash; <a href="https://www.recordedfuture.com/research/dark-covenant-3-controlled-impunity-and-russias-cybercriminals" target="_blank">recordedfuture.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>CybelAngel: Akira Ransomware &mdash; The Conti Successor Targeting the West (April 2026) &mdash; <a href="https://cybelangel.com/blog/akira-ransomware-conti-successor-russian-threat-actor-profile/" target="_blank">cybelangel.com</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Palo Alto Unit 42: Threat Assessment Howling Scorpius (December 2024) &mdash; <a href="https://unit42.paloaltonetworks.com/threat-assessment-howling-scorpius-akira-ransomware/" target="_blank">unit42.paloaltonetworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Cisco Talos: Akira Ransomware Continues to Evolve (October 2024) &mdash; <a href="https://blog.talosintelligence.com/akira-ransomware-continues-to-evolve/" target="_blank">talosintelligence.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>S-RM Intelligence: Ransomware in Focus: Meet Akira (October 2024) &mdash; <a href="https://www.s-rminform.com/latest-thinking/ransomware-in-focus-meet-akira" target="_blank">s-rminform.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Dragos: Industrial Ransomware Analysis Q1 2025 &mdash; <a href="https://www.dragos.com/blog/dragos-industrial-ransomware-analysis-q1-2025" target="_blank">dragos.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>Chainalysis: 2025 Crypto Crime Report</span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Tinyhack: Decrypting Akira Linux/ESXi Variant Using GPUs (March 2025) &mdash; <a href="https://tinyhack.com/2025/03/13/decrypting-encrypted-files-from-akira-ransomware-linux-esxi-variant-2024-using-a-bunch-of-gpus/" target="_blank">tinyhack.com</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>Arete: Ransomware Trends and Data Insights March 2026 &mdash; <a href="https://areteir.com/resources/ransomware-trends-data-insights-march-2026" target="_blank">areteir.com</a></span></div>
+        <div class="source-category">Victim and Financial Data</div>
+        <div class="source-item"><span class="source-num">[17]</span><span>Ransomware.live: Akira Group Profile (accessed May 2026) &mdash; <a href="https://www.ransomware.live/group/akira" target="_blank">ransomware.live</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Internal data &mdash; 85 confirmed case records, 2023 Q2 through 2026 Q1</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled May 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// Active section highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LockBit | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-degraded { background: #7d5316; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-multi { background: #1a5276; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr {
+  background: var(--navy);
+}
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* SCROLL */
+html { scroll-behavior: smooth; }
+
+/* PRINT */
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Analytical profiles compiled from open-source intelligence</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-dim"></span>
+      Akira
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item active" href="lockbit.html">
+      <span class="group-dot dot-active"></span>
+      LockBit
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Capabilities</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#le">LE &amp; Regulatory Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">LockBit</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Multi-Version Lineage (1.0 through 5.0) &nbsp;&bull;&nbsp; Operation Cronos Survivor</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical Threat</span>
+      <span class="badge badge-degraded">Post-Disruption</span>
+      <span class="badge badge-raas">RaaS</span>
+      <span class="badge badge-multi">Multi-Platform</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Late 2019</div>
+        <div class="kpi-sub">As ABCD ransomware; renamed Jan 2020</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Victims</div>
+        <div class="kpi-value">2,500+</div>
+        <div class="kpi-sub">2,000+ per DOJ (Feb 2024); more since</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Revenue</div>
+        <div class="kpi-value">$120M+</div>
+        <div class="kpi-sub">Through Feb 2024 per DOJ / FBI</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Peak Market Share</div>
+        <div class="kpi-value">~44%</div>
+        <div class="kpi-sub">Global ransomware incidents, 2022-2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Active Versions</div>
+        <div class="kpi-value">6</div>
+        <div class="kpi-sub">1.0/ABCD, 2.0/Red, 3.0/Black, Green, 4.0, 5.0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-sub">Op Cronos (Feb 2024); admin panel breach (May 2025)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: EXECUTIVE SUMMARY AND GROUP OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>LockBit is the most prolific ransomware-as-a-service (RaaS) ecosystem on record. First appearing in late 2019 as "ABCD ransomware," it evolved through six major code branches and maintained global dominance from 2021 through 2023, peaking at roughly 44% of all identified ransomware incidents and generating more than $120 million in confirmed ransom receipts. The U.S. Department of Justice attributed more than 2,000 confirmed victims across all critical infrastructure sectors and all major geographic regions except the CIS. A 10-country law enforcement coalition (Operation Cronos, February 2024) achieved an unprecedented disruption, seizing 34+ servers, 200+ cryptocurrency wallets, and more than 7,000 decryption keys. Despite this, LockBit rebuilt, releasing versions 4.0 (February 2025) and 5.0 (September 2025). A second blow arrived in May 2025 when an unknown actor hacked and defaced the LockBit admin panel, leaking an affiliate database covering December 2024 through April 2025. As of May 2026, LockBit remains a functioning RaaS with continuing technical development but a materially degraded brand, reduced affiliate confidence, and a market share well below its 2022 peak.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>CrowdStrike designation</td><td><strong>BITWISE SPIDER</strong> (developer of LockBit ransomware and StealBit exfiltration tool; not a parent-organization designator)</td></tr>
+            <tr><td>Secureworks designation</td><td><strong>GOLD MYSTIC</strong> (operator of the LockBit RaaS scheme since mid-2019)</td></tr>
+            <tr><td>Trend Micro designation</td><td><strong>Water Selkie</strong></td></tr>
+            <tr><td>Mandiant / Google designation</td><td>No formal APT/FIN designation for the LockBit core; Mandiant tracks Evil Corp affiliates using LockBit as <strong>UNC2165</strong> (a distinct cluster, not the LockBit operator group)</td></tr>
+            <tr><td>CISA / IC3 designation</td><td>"LockBit" and "LockBit 3.0" in StopRansomware advisories; no specific threat-cluster name</td></tr>
+            <tr><td>Lineage</td><td>Independent origin; no Conti parent-child relationship. LockBit Green (2023) incorporates leaked Conti source code but was developed as a variant, not a succession</td></tr>
+            <tr><td>Operational model</td><td>RaaS; 80/20 revenue split (80% affiliate, 20% operator) per Chainalysis and TRM Labs on-chain analysis</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (encryption + data publication) from v2.0; triple extortion (adding DDoS/harassment) from v3.0</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia (CONFIRMED: CIS avoidance code, Russian-language forums, identified operator Khoroshev from Voronezh, no domestic prosecution)</td></tr>
+            <tr><td>LE disruption status</td><td>Operation Cronos (Feb 2024) and anonymous admin panel breach (May 2025); operative but degraded as of May 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: DLS AND BRANDING -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://techcrunch.com/wp-content/uploads/2024/02/LockBit-takedown.png"
+               alt="LockBit dark web leak site seized by Operation Cronos, February 2024"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LockBit DLS: Operation Cronos Seizure Banner</strong>
+            The LockBit data leak site at the moment of the February 19, 2024 seizure. The banner confirms NCA control in coordination with FBI and the Operation Cronos task force. Prior to seizure, this site listed active victims with countdown timers, proof-of-breach packages, and full data dumps for non-paying organizations.
+            <span class="img-source">Source: TechCrunch (screenshot), February 2024</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://techcrunch.com/wp-content/uploads/2024/02/LockBit-takedown1.png"
+               alt="LockBit seized dark web site repurposed by law enforcement, showing internal disclosures"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LockBit DLS: Repurposed by Law Enforcement</strong>
+            Following seizure, the LockBit leak site was repurposed to publish internal LockBit operational data, identify the suspected administrator (LockBitSupp), and offer decryption support to victims. The operation's psychological dimension was deliberate: using LockBit's own infrastructure to humiliate the group and erode affiliate confidence.
+            <span class="img-source">Source: TechCrunch (screenshot), February 2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.akamai.com/site/en/images/blog/2024/learning-from-the-lockbit-takedown-one.jpg"
+               alt="LockBit command and control panel viewed by law enforcement authorities after Operation Cronos"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LockBit C2 Admin Panel</strong>
+            Screenshot of LockBit's command and control panel as viewed by law enforcement after seizing back-end infrastructure. The panel shows the affiliate management dashboard, a centralized view of ongoing campaigns, and victim data streams. All affiliate accounts were identified from this access.
+            <span class="img-source">Source: Akamai Technologies / FBI, 2024</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.akamai.com/site/en/images/blog/2024/learning-from-the-lockbit-takedown-three.jpg"
+               alt="LockBit Linux and ESXi encryptor sample, confirming cross-platform capability"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LockBit Linux / ESXi Encryptor</strong>
+            Snapshot of the LockBit Linux encryptor targeting VMware vSphere and ESXi environments, first released October 2021. ESXi targeting significantly expands ransomware impact by allowing attackers to encrypt entire virtual machine farms in a single operation. Subsequent versions (3.0, 4.0, 5.0) maintain and refine this capability.
+            <span class="img-source">Source: Akamai Technologies, 2024</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.akamai.com/site/en/images/blog/2024/learning-from-the-lockbit-takedown-five.jpg"
+               alt="Law enforcement authorities' takedown site replacing LockBit's dark web presence"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LE Takedown: Psychological Operations</strong>
+            The authorities' takedown landing page, designed to mirror LockBit's own aggressive branding style. The NCA and FBI published countdown timers and promised daily disclosures about LockBit's operations and leadership. The strategy was explicitly designed to undermine affiliate trust in the LockBit brand.
+            <span class="img-source">Source: Akamai Technologies / NCA / FBI, 2024</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE AND ORGANIZATIONAL HERITAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Version Timeline</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Version</th><th>Also Known As</th><th>Period</th><th>Key Developments</th></tr></thead>
+            <tbody>
+              <tr><td>LockBit 1.0 (ABCD)</td><td>ABCD Ransomware</td><td>Late 2019 &ndash; mid-2021</td><td>Initial Windows encryptor; ".abcd" extension in earliest form; rebranded to "LockBit" Jan 2020; Linux/ESXi variant added Oct 2021</td></tr>
+              <tr><td>LockBit 2.0</td><td>LockBit Red</td><td>June 2021 &ndash; early 2022</td><td>Mature RaaS model; integrated StealBit data-exfiltration tool; double extortion formalized; automated domain controller discovery; advertised as world's fastest encryptor</td></tr>
+              <tr><td>LockBit 3.0</td><td>LockBit Black</td><td>March 2022 &ndash; 2024</td><td>Major refactor; modular architecture; anti-analysis protections; code similarities with BlackMatter and ALPHV/BlackCat; triple extortion (DDoS/harassment); bug-bounty program; selective encryption</td></tr>
+              <tr><td>LockBit Green</td><td>&mdash;</td><td>Jan 2023+</td><td>Hybrid variant incorporating leaked Conti source code (BCryptGenRandom for faster encryption); observed by vx-underground; distinct code branch, not a successor to 3.0</td></tr>
+              <tr><td>LockBit 4.0</td><td>&mdash;</td><td>Announced Dec 2024; released Feb 2025</td><td>Post-Cronos rebuild; enhanced evasion; re-architected affiliate portal with new onion domains and access keys; announced from existing LockBit 3.0 site per Deep Instinct</td></tr>
+              <tr><td>LockBit 5.0</td><td>&mdash;</td><td>Announced and released Sep 2025</td><td>Sixth-anniversary release; Windows/Linux/ESXi variants confirmed by Trend Micro; randomized 16-character file extensions; faster encryption; removal of infection markers; better affiliate UI; enhanced obfuscation and anti-analysis</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Four-Pillar Evidence Assessment for Operator Continuity</div>
+        <p>The following pillars address the contested question of whether post-Cronos LockBit (4.0/5.0) represents the same operator cluster or a partial splinter. Code continuity is not contested; human continuity is the open question.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-title">Code Overlap and Algorithmic Continuity</div>
+            <div class="pillar-body">Trend Micro confirmed identical hashing algorithms and API resolution methods between versions 4.0 and 5.0. Akamai and others trace reuse of LockBit 2.0/3.0 cryptographic routines and configuration structures across all subsequent variants. The LockBit Green branch is separately confirmed to incorporate Conti source code via BCryptGenRandom. Multiple independent vendors corroborate these code-level linkages.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &mdash; Confirmed</div>
+            <div class="pillar-title">TTP Continuity</div>
+            <div class="pillar-body">Consistent RaaS model, double/triple extortion, CIS language exclusion, StealBit exfiltration tool deployment, automated domain controller discovery, and similar victim-handling workflows are documented across versions 2.0 through 5.0 in CISA advisories, Trend Micro reporting, and DOJ indictments. The operational pattern is distinct and persistent.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &mdash; Credible</div>
+            <div class="pillar-title">Infrastructure and Brand Continuity</div>
+            <div class="pillar-body">LockBit 4.0 was announced from the existing LockBit 3.0 leak site per Deep Instinct reporting. Successive DLS iterations retained similar design motifs and affiliate portal mechanics. Onion domain recycling and consistent persona (LockBitSupp as public face) across years further support continuity of at least the brand management layer.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 4 &mdash; Analyst Inference</div>
+            <div class="pillar-title">Post-Cronos Operator Continuity</div>
+            <div class="pillar-body">Whether the core developers behind 4.0/5.0 are the same individuals as pre-Cronos operators remains contested. Some vendors assess direct continuation; others argue partial takeover by former affiliates using the leaked/reused codebase. The LockBit 3.0 builder was publicly leaked in September 2022, enabling any motivated actor to build LockBit-family ransomware. This complicates human-continuity claims. The most defensible current line: code lineage is confirmed; operator identity post-Cronos is credible but not confirmed.</div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Vendor designation rule:</strong> BITWISE SPIDER (CrowdStrike) and GOLD MYSTIC (Secureworks) designate the LockBit RaaS operation itself, not a parent-organization cluster. Neither is analogous to Wizard Spider or Gold Ulrick (which designate the parent Conti organization). LockBit has no documented Conti parent lineage. LockBit Green's incorporation of Conti source code reflects code acquisition from the 2022 Conti leak, not organizational succession.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Code Similarities With Other Ransomware Families</div>
+        <p>LockBit 3.0 / Black shares documented technical similarities with <strong>BlackMatter</strong> and <strong>ALPHV/BlackCat</strong> in configuration structures and specific routines. Multiple vendors confirm these similarities but the interpretation remains contested: some assess code borrowing or licensing, others assess convergent design by developers familiar with the same code base. There is no confirmed evidence of a unified actor behind all three families. Confidence: CREDIBLE for the technical similarity; ANALYST INFERENCE for any shared authorship or collaboration.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; DOJ indictment, Chainalysis on-chain analysis, TRM Labs</div>
+        <p>LockBit operates a pure RaaS model. A core developer team maintains encryptors, infrastructure, and affiliate portals while independent affiliates supply initial access, deploy the malware, and manage victim negotiations. Revenue is split 80% to affiliates and 20% to the LockBit operator tier, per Chainalysis on-chain analysis confirmed by TRM Labs. DOJ reporting confirmed that 114 affiliates paid to join the LockBit program as of February 2024. The operator tier collects fees passively; affiliate wallets receive victim payments first, with the operator share extracted via the built-in split mechanism.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Management and Vetting</div>
+        <p>LockBit has recruited on Russian-language underground forums, emphasizing speed, automation, and affiliate-friendly terms. Vetting is described in open sources as moderate, with preference for affiliates who can demonstrate prior access capabilities and ability to deliver large enterprise victims. Some leak data suggests blacklisting of unreliable partners. Confidence: CREDIBLE (single-source / limited open corroboration on vetting specifics).</p>
+        <p>The bug-bounty program launched with LockBit 3.0 offered financial rewards for identification of vulnerabilities in the ransomware and its infrastructure, reflecting an unusual professionalization effort and likely an attempt to address leaks and security failures.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <ul class="content-list">
+          <li><strong>Initial demands:</strong> Hundreds of thousands to multiple millions USD; IBM reported an average payment of approximately $1.5 million for LockBit 3.0 in 2022</li>
+          <li><strong>Time-limited discounts:</strong> Affiliates commonly offer 20-50% reductions if paid within days of initial demand</li>
+          <li><strong>Escalation ladder:</strong> Countdown timers, data sampling, threat to contact customers or regulators, DDoS attacks (3.0+), and full publication</li>
+          <li><strong>Multi-extortion from 3.0:</strong> Triple extortion adds DDoS or targeted harassment of victims alongside encryption and data publication threats</li>
+          <li><strong>Communication channel:</strong> TOR-hosted chat portal linked from ransom note via unique victim ID; some affiliates also used email and secure messaging</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>May 2025 breach data:</strong> The leaked admin panel database covering December 2024 through April 2025 reveals that LockBit 4.0 affiliates collectively generated approximately $2.3 million USD in that five-month window. The operator 20% cut totaled approximately $456,000. This figure implies a sharp revenue contraction versus the pre-Cronos peak and supports the assessment that affiliate recruitment and victim volume have declined materially since Operation Cronos.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion Model by Version</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Version</th><th>Encryption</th><th>Data Leak Threat</th><th>DDoS/Harassment</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>LockBit 1.0</td><td>Yes</td><td>Limited</td><td>No</td><td>Early variant; single extortion primary</td></tr>
+              <tr><td>LockBit 2.0</td><td>Yes</td><td>Yes (StealBit)</td><td>No</td><td>Double extortion systematized; StealBit introduced</td></tr>
+              <tr><td>LockBit 3.0 / Black</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Triple extortion; bug bounty; DDoS add-on service</td></tr>
+              <tr><td>LockBit Green</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Conti-derived; cloud service targeting</td></tr>
+              <tr><td>LockBit 4.0</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Post-Cronos rebuild; quiet-mode operation added</td></tr>
+              <tr><td>LockBit 5.0</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Refreshed affiliate incentive model; enhanced evasion</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL CAPABILITIES -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Exploited CVEs: Confirmed and Credible</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CVE</th><th>Affected Product</th><th>Type</th><th>Confidence</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">CVE-2023-4966</td><td>Citrix NetScaler ADC / NetScaler Gateway</td><td>Session hijack / MFA bypass ("Citrix Bleed")</td><td><span class="conf conf-confirmed" style="margin:0;font-size:10px;">Confirmed</span></td><td>CISA AA23-325A; joint advisory FBI, MS-ISAC, ASD's ACSC</td></tr>
+              <tr><td class="mono">CVE-2021-44228</td><td>Apache Log4j2</td><td>Remote code execution (Log4Shell)</td><td><span class="conf conf-confirmed" style="margin:0;font-size:10px;">Confirmed</span></td><td>CISA advisory AA23-165A</td></tr>
+              <tr><td class="mono">CVE-2020-1472</td><td>Microsoft Netlogon</td><td>Privilege escalation (Zerologon)</td><td><span class="conf conf-confirmed" style="margin:0;font-size:10px;">Confirmed</span></td><td>CISA advisory AA23-165A</td></tr>
+              <tr><td class="mono">CVE-2018-13379</td><td>Fortinet FortiOS SSL VPN</td><td>Path traversal / credential access</td><td><span class="conf conf-confirmed" style="margin:0;font-size:10px;">Confirmed</span></td><td>CISA advisory AA23-165A</td></tr>
+              <tr><td class="mono">CVE-2021-34473 / 34523 / 31207</td><td>Microsoft Exchange Server</td><td>Remote code execution (ProxyShell chain)</td><td><span class="conf conf-credible" style="margin:0;font-size:10px;">Credible</span></td><td>CISA advisory; multiple TI vendor reports</td></tr>
+              <tr><td class="mono">CVE-2021-36942</td><td>Windows LSA</td><td>Forced authentication spoofing</td><td><span class="conf conf-credible" style="margin:0;font-size:10px;">Credible</span></td><td>Qualys Threat Research Unit; CISA advisory</td></tr>
+              <tr><td class="mono">CVE-2023-27350 / 27351</td><td>PaperCut MF/NG</td><td>Unauthenticated RCE / information disclosure</td><td><span class="conf conf-credible" style="margin:0;font-size:10px;">Credible</span></td><td>Multiple vendor reports; CISA KEV</td></tr>
+              <tr><td class="mono">CVE-2019-0708</td><td>Windows Remote Desktop Services</td><td>Remote code execution (BlueKeep)</td><td><span class="conf conf-credible" style="margin:0;font-size:10px;">Credible</span></td><td>Qualys Threat Research Unit</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px;color:var(--gray-600);">Note: LockBit is a RaaS, so CVE exploitation reflects affiliate tradecraft, not a single actor. Not all CVEs above are used in every LockBit campaign. Attribution of a specific CVE to "LockBit" means it has been documented in campaigns by LockBit affiliates.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <ul class="content-list">
+          <li><strong>Compromised credentials / RDP exploitation:</strong> Brute-forcing or purchasing credentials for RDP and VPN; the most consistent vector across all affiliate-tier operators</li>
+          <li><strong>Vulnerability exploitation:</strong> Edge device and appliance CVEs (see table above); Citrix Bleed (CVE-2023-4966) associated with multiple high-profile 2023 victims including Boeing and ICBC</li>
+          <li><strong>Phishing:</strong> Email-borne malware or credential-harvesting campaigns; used by certain affiliates as a preferred entry method</li>
+          <li><strong>MSP and supply-chain compromise:</strong> Documented cases of abusing trusted remote management tools operated by managed service providers</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence and Lateral Movement</div>
+        <ul class="content-list">
+          <li>Domain admin credential leverage to push payloads via PsExec, SMB shares, and Group Policy Objects</li>
+          <li>Disabling security tools and services via PowerShell, Group Policy, and registry edits prior to deployment</li>
+          <li>Living-off-the-land (LOTL) techniques using built-in Windows tools</li>
+          <li>Automated network share and domain controller discovery (introduced with v2.0); accelerates spread across Windows domains</li>
+          <li>StealBit exfiltration tool (v2.0+): custom-built tool for high-speed data theft prior to encryption; all StealBit servers seized in Operation Cronos</li>
+          <li>rclone used as supplementary exfiltration mechanism for cloud storage staging</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <p>All LockBit versions use a hybrid encryption scheme: symmetric encryption (typically AES) for file content combined with asymmetric encryption (RSA or ECC) for key protection. Per-file or per-session keys are managed via embedded public keys, with private keys held by the operator tier.</p>
+        <ul class="content-list">
+          <li><strong>v1.0 / v2.0:</strong> Multi-threaded encryption for speed; v2.0 marketed as the fastest available at release; Volume Shadow Copy deletion</li>
+          <li><strong>v3.0 / Black:</strong> Selective encryption (partial file encryption to prioritize critical data while maximizing speed); packed binaries; control-flow obfuscation; anti-debugging checks</li>
+          <li><strong>Green variant:</strong> BCryptGenRandom for faster key generation, derived from Conti source code</li>
+          <li><strong>v5.0:</strong> Randomized 16-character file extensions; further removal of infection markers; enhanced cross-platform obfuscation per Trend Micro analysis</li>
+        </ul>
+        <div class="callout callout-success">
+          <strong>Decryptor availability:</strong> Following Operation Cronos, law enforcement obtained more than 7,000 decryption keys from seized LockBit infrastructure. A free LockBit 3.0 Black decryptor was developed by the Japanese Police (supported by Europol) and is available via the No More Ransom Project. Keys for additional victims are available through the FBI IC3 portal at lockbitvictims.ic3.gov. No universal decryptor exists across all versions; key availability is incident-specific.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Coverage and CIS Behavior</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Platform</th><th>First Version</th><th>Current Status</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Windows</td><td>v1.0 (2019)</td><td>Full support, all versions</td><td>Core target; extensive domain automation</td></tr>
+              <tr><td>Linux / VMware ESXi</td><td>v1.0 (Oct 2021)</td><td>Full support, v3.0 through v5.0</td><td>Targets virtual disk files; shuts down VMs before encryption</td></tr>
+              <tr><td>macOS</td><td>Observed Apr 2023</td><td>Limited / experimental</td><td>Samples found on VirusTotal; operational use not confirmed at scale</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block confirmed">
+          <strong>CIS Exclusion (CONFIRMED):</strong> LockBit implements logic to avoid encryption of systems using Russian or other CIS language settings, typically by checking keyboard layout and locale. Trend Micro confirmed LockBit 5.0 performs "Russian language system avoidance through geolocation checks." Observed victim geography excludes Russia and most CIS countries, consistent with both the technical implementation and the implicit safe-harbor strategy common among Russian-nexus criminal groups.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 05: FINANCIAL INFRASTRUCTURE -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>LockBit predominantly uses Bitcoin for ransom payments, with Monero available in some affiliate arrangements for added privacy. Victim payments go to affiliate-controlled wallets specified in negotiation chats, with the 20% operator share extracted through the built-in affiliate panel mechanism. TRM Labs confirmed this 80/20 split via on-chain analysis of payment flow clusters. DOJ attributed more than $120 million in confirmed ransom receipts through February 2024; TRM Labs documented at least $44 million in 2022 alone.</p>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Confirmed Revenue (DOJ)</div>
+            <div class="metric-val">$120M+</div>
+            <div class="metric-note">Through February 2024; excludes unpaid demands</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">2022 Revenue (TRM Labs)</div>
+            <div class="metric-val">$44M</div>
+            <div class="metric-note">On-chain analysis; calendar year 2022</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Post-Cronos Revenue (5 months)</div>
+            <div class="metric-val">$2.3M</div>
+            <div class="metric-note">Dec 2024 to Apr 2025; per leaked database</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Operator Cut</div>
+            <div class="metric-val">20%</div>
+            <div class="metric-note">Chainalysis / TRM Labs confirmed split</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering Phases</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Receipt</div>
+              <div class="phase-desc">Victim pays to an affiliate-controlled Bitcoin address specified in the negotiation chat. Affiliates receive 80% directly; the affiliate panel mechanism holds the 20% operator share until the operator withdraws it.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Aggregation and Mixing</div>
+              <div class="phase-desc">Operator-tier funds pass through mixing services. Chainalysis confirmed the NCA used Chainalysis tools to trace LockBit payments; TRM Labs analysis shows use of Wasabi 2.0 (a privacy-focused Bitcoin mixing wallet) by LockBit operators, consistent with 2022-2024 operational period. More than 200 cryptocurrency wallets were frozen by Operation Cronos.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Cross-Chain Swap and Exchange</div>
+              <div class="phase-desc">Funds are moved through non-custodial exchanges and centralized VASPs in the United States and Asia for cash-out. On-chain evidence shows some LockBit affiliates depositing at an Iranian exchange. The response to sanctions on earlier mixing services appears to have involved progressive shift toward cross-chain bridges and P2P trades. Confidence: CREDIBLE for general pattern; ANALYST INFERENCE for specific post-sanctions adaptation.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Unusual Transfer: Ideological Donation</div>
+              <div class="phase-desc">Chainalysis analysis identified that a LockBit administrator donated cryptocurrency to "Colonel Cassad" (Igor Girkin's associate), a pro-Russia self-proclaimed military journalist based in Sevastopol. This transfer is analytically significant as an indicator of at minimum ideological sympathy with Russian state interests, and potentially informal proximity to state-aligned networks. Confidence: CREDIBLE for the transfer itself; ANALYST INFERENCE for its significance to state-nexus assessment.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Designations</div>
+        <p>OFAC designated Dmitry Yuryevich Khoroshev ("LockBitSupp") and associated wallets on May 7, 2024, in coordination with the UK National Crime Agency and Australian Federal Police. Additional wallet clusters linked to LockBit affiliates have been designated over time. Analysts should expect ongoing OFAC designations as new wallets are linked via blockchain forensics; however, many affiliate-level wallets will remain undesignated and overlap with unrelated criminal activity.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: VICTIM PROFILE AND TARGETING -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale and Market Dominance</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; DOJ, NCC Group, IBM reporting</div>
+        <p>LockBit's growth trajectory from market entrant to dominant player spans four years:</p>
+        <ul class="content-list">
+          <li><strong>LockBit 1.0 (2020):</strong> Approximately 5% of global ransomware attacks in its first operational year (IBM)</li>
+          <li><strong>LockBit 2.0 (2021):</strong> Rose to approximately 10% of global ransomware attacks</li>
+          <li><strong>LockBit 3.0 (2022):</strong> Exceeded 20% of global attacks; Akamai research recorded 39% of total ransomware victims in one measured period, triple the next-highest group</li>
+          <li><strong>2023:</strong> NCC Group recorded more than 1,000 LockBit victims, equaling 22% of all identified ransomware victims that year; separately assessed at up to 44% of all global ransomware incidents at peak</li>
+          <li><strong>Post-Cronos (2024-2026):</strong> Market share declined; LockBit remained the top actor by victim count in May 2024 (10% of attacks per Infosecurity Magazine) but at substantially reduced absolute and relative volume</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector and Geographic Coverage</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dimension</th><th>Detail</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Primary sectors</td><td>Manufacturing, healthcare, government/public sector, education, financial services, energy, professional services, transportation</td><td>CONFIRMED (CISA advisory AA23-165A; DOJ)</td></tr>
+              <tr><td>Target size</td><td>SMBs, mid-market, and large enterprises; focus on organizations with sufficient revenue to pay meaningful ransoms; high-profile cases skew to large enterprises and critical infrastructure</td><td>CONFIRMED</td></tr>
+              <tr><td>Geography</td><td>North America (US primary), Europe, Asia-Pacific, Latin America; CIS countries excluded (code-level and observed victim geography)</td><td>CONFIRMED</td></tr>
+              <tr><td>CIS exclusion</td><td>Russia, Belarus, and most CIS nations are excluded by both technical locale checks and observed victim lists</td><td>CONFIRMED</td></tr>
+              <tr><td>Stated targeting rules</td><td>LockBit publicly claims to avoid some hospitals and charities; empirical data shows numerous healthcare and public-sector victims, indicating rules are inconsistently enforced by affiliates</td><td>CONFIRMED (inconsistency)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Selected High-Profile Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Date</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Royal Mail (UK)</td><td>Postal / logistics</td><td>Jan 2023</td><td>Major national disruption; LockBit 3.0 affiliate; Royal Mail refused to pay; data published</td></tr>
+              <tr><td>TSMC (via supplier)</td><td>Semiconductor</td><td>Jun 2023</td><td>LockBit claimed breach via third-party supplier; TSMC confirmed supplier incident; $70M demand</td></tr>
+              <tr><td>Boeing</td><td>Aerospace / defense</td><td>Nov 2023</td><td>CVE-2023-4966 (Citrix Bleed) exploitation confirmed; Boeing Distribution Inc. unit; data published after non-payment</td></tr>
+              <tr><td>ICBC (Industrial and Commercial Bank of China)</td><td>Finance</td><td>Nov 2023</td><td>US clearing operations disrupted; LockBit 3.0 affiliate; CVE-2023-4966 vector</td></tr>
+              <tr><td>Allen &amp; Overy</td><td>Legal services</td><td>Nov 2023</td><td>Major international law firm; data publishing threatened</td></tr>
+              <tr><td>DP World</td><td>Logistics / ports</td><td>Nov 2023</td><td>Australian ports operator; significant operational disruption</td></tr>
+              <tr><td>Fulton County, Georgia (US)</td><td>Government</td><td>Jan 2024</td><td>US state court system disrupted for weeks during Trump criminal case proceedings</td></tr>
+              <tr><td>India National Aerospace Laboratories</td><td>Aerospace / defense</td><td>Nov 2023</td><td>State-owned research organization; LockBit 3.0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07: LAW ENFORCEMENT AND REGULATORY RESPONSE -->
+    <section class="section" id="le">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals: Charges, Arrests, and Sanctions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Individual</th><th>Alias(es)</th><th>Nationality</th><th>Action</th><th>Status (May 2026)</th></tr></thead>
+            <tbody>
+              <tr><td>Dmitry Yuryevich Khoroshev</td><td>LockBitSupp, LockBit, putinkrab</td><td>Russian (Voronezh)</td><td>26-count indictment (NJ grand jury), OFAC sanction, $10M State Dept. reward; identified May 7, 2024</td><td>At large; in Russia; warrant outstanding</td></tr>
+              <tr><td>Artur Sungatov</td><td>&mdash;</td><td>Russian</td><td>Indicted for deploying LockBit; unsealed February 20, 2024</td><td>At large</td></tr>
+              <tr><td>Ivan Gennadievich Kondratiev</td><td>Bassterlord</td><td>Russian</td><td>Indicted for deploying LockBit against US and global businesses; unsealed February 20, 2024</td><td>At large</td></tr>
+              <tr><td>Mikhail Vasiliev</td><td>&mdash;</td><td>Russian / Canadian</td><td>Charged prior to Cronos; arrested in Canada</td><td>Canadian custody; awaiting US extradition</td></tr>
+              <tr><td>Ruslan Magomedovich Astamirov</td><td>&mdash;</td><td>Russian</td><td>Charged; arrested</td><td>US custody; awaiting trial</td></tr>
+              <tr><td>Mikhail Pavlovich Matveev</td><td>Wazawaka</td><td>Russian</td><td>Indicted; $10M US bounty; believed in Kaliningrad</td><td>At large; not apprehended</td></tr>
+              <tr><td>Unnamed developer</td><td>&mdash;</td><td>Unconfirmed</td><td>Arrested by Europol August 2024 while traveling outside Russia</td><td>In custody</td></tr>
+              <tr><td>Two unnamed members</td><td>&mdash;</td><td>Unconfirmed</td><td>Arrested by NCA (one money laundering, one LockBit affiliation) 2024</td><td>In custody</td></tr>
+              <tr><td>Unnamed BPH administrator</td><td>&mdash;</td><td>Unconfirmed</td><td>Arrested at Madrid airport by Spanish Guardia Civil 2024</td><td>In custody</td></tr>
+              <tr><td>Two unnamed affiliates</td><td>&mdash;</td><td>Unconfirmed</td><td>Arrested in Poland and Ukraine on French judicial request, February 2024</td><td>In custody</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Chronological Action Log</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Action</th><th>Agency</th><th>Impact</th></tr></thead>
+            <tbody>
+              <tr><td>Feb 19-20, 2024</td><td>Operation Cronos Phase 1: Infrastructure seizure</td><td>NCA, FBI, Europol, 10-country task force</td><td>34+ servers seized; 11,000+ domains taken down; 200+ crypto wallets frozen; DLS replaced; 7,000+ decryption keys obtained; StealBit servers offline; all LockBit 3.0 affiliate accounts identified; 2 affiliates arrested (Poland, Ukraine)</td></tr>
+              <tr><td>Feb 20, 2024</td><td>DOJ unseals indictments</td><td>US DOJ</td><td>Artur Sungatov and Ivan Kondratiev (Bassterlord) charged; prior charges against Vasiliev, Astamirov, Matveev confirmed</td></tr>
+              <tr><td>May 7, 2024</td><td>Operation Cronos Phase 2: Leadership identification and sanction</td><td>DOJ, OFAC, NCA, Australian Federal Police</td><td>Dmitry Khoroshev unmasked as LockBitSupp; 26-count indictment; OFAC sanction; $10M State Dept. reward; additional wallets frozen</td></tr>
+              <tr><td>Aug-Oct 2024</td><td>Additional arrests (four individuals)</td><td>Europol, NCA, Spanish Guardia Civil</td><td>Developer arrested while traveling; two NCA arrests; BPH admin arrested in Madrid</td></tr>
+              <tr><td>Oct 2024</td><td>Evil Corp sanctions</td><td>UK, US, Australia</td><td>15 Evil Corp members sanctioned; some with documented LockBit affiliate overlap</td></tr>
+              <tr><td>May 7, 2025</td><td>Anonymous admin panel breach</td><td>Unknown actor</td><td>LockBit TOR site defaced: "Don't do crime CRIME IS BAD xoxo from Prague"; MySQL database dumped (paneldb_dump.zip); negotiation chats, wallet addresses, affiliate credentials, and build configs exposed for Dec 2024 to Apr 2025 period</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Decryptors and Victim Assistance</div>
+        <ul class="content-list">
+          <li>Free LockBit 3.0 Black decryptor developed by Japanese Police with Europol support; available at nomoreransom.org</li>
+          <li>7,000+ decryption keys available to victims through lockbitvictims.ic3.gov (FBI IC3 portal)</li>
+          <li>Keys are incident-specific; not all keys restore all victims; matching requires contact with FBI or NCA</li>
+          <li>No universal decryptor exists for LockBit 4.0 or 5.0 variants as of May 2026</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-warning">
+        <strong>Resilience indicator:</strong> Despite two major disruptions (Operation Cronos and the May 2025 breach), LockBit rebuilt and released new versions within months of each event. This pattern demonstrates the structural resilience of RaaS models: infrastructure can be rebuilt, new affiliates can be recruited, and code can be updated faster than law enforcement can sustain operational pressure. The core constraint on LockBit is not technical capacity but affiliate confidence and brand credibility.
+      </div>
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION AND STATE NEXUS -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdiction Assessment</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; Russian nexus based on multiple independent indicators</div>
+        <ul class="content-list">
+          <li><strong>Named operator:</strong> Dmitry Yuryevich Khoroshev is a Russian national from Voronezh, Russia; identified by DOJ, OFAC, and NCA via a converging investigation (CONFIRMED)</li>
+          <li><strong>CIS avoidance:</strong> Code-level locale and keyboard checks exclude Russian/CIS systems; observed victim geography consistently excludes Russia and most CIS countries (CONFIRMED)</li>
+          <li><strong>Forum presence:</strong> LockBit recruitment and operations advertised on Russian-language cybercrime forums (CONFIRMED)</li>
+          <li><strong>No domestic prosecution:</strong> No public evidence of Russian authorities charging any LockBit operator despite global impact, consistent with tolerated-cybercrime patterns (CONFIRMED)</li>
+          <li><strong>Named affiliates:</strong> Multiple charged individuals are Russian nationals; others assessed as Russian-speaking based on operational communications (CONFIRMED for named; CREDIBLE for broader affiliate pool)</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Service (RIS) Relationship</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; no confirmed command-and-control nexus; safe-harbor relationship assessed</div>
+        <p>Open sources and government advisories do not provide conclusive evidence that LockBit is directed by or operating under the control of FSB, SVR, or GRU. The most defensible assessment is that LockBit is a financially motivated, Russian-language cybercriminal ecosystem operating from jurisdictions that provide practical safe harbor, with de-facto tolerance from Russian authorities in exchange for avoiding domestic targeting.</p>
+        <p>Three indicators suggest proximity to, but not control by, Russian state interests:</p>
+        <ul class="content-list">
+          <li><strong>Colonel Cassad donation:</strong> Chainalysis analysis identified a LockBit administrator donating cryptocurrency to "Colonel Cassad," a pro-Russia military journalist in Sevastopol with documented ties to Russian nationalist networks. This is the single most operationally significant indicator of informal state-proximate behavior (CREDIBLE for the transfer; ANALYST INFERENCE for its significance)</li>
+          <li><strong>Evil Corp affiliate overlap:</strong> Mandiant tracked UNC2165, a cluster of Evil Corp-affiliated operators, as shifting to LockBit to evade US sanctions. Evil Corp itself has documented direct FSB connections per US government indictments. The overlap does not make LockBit an FSB asset, but it places FSB-connected actors within the LockBit affiliate ecosystem (CONFIRMED overlap; ANALYST INFERENCE for implications)</li>
+          <li><strong>Data intelligence value:</strong> The sectors and organizations targeted by LockBit affiliates include defense contractors, aerospace organizations, government systems, and critical infrastructure that would have intelligence value for the Russian state. Whether any stolen data is shared with Russian intelligence is not documented in open sources (ANALYST INFERENCE)</li>
+        </ul>
+        <div class="callout callout-alert">
+          <strong>Overall state nexus assessment:</strong> LockBit operates as a financially motivated criminal enterprise under Russian safe-harbor protection. There is no confirmed evidence of direct FSB/SVR/GRU tasking, command, or revenue sharing. The group's CIS avoidance, domestic non-prosecution, forum presence, and the Colonel Cassad donation collectively support an assessment of informal proximity to Russian state interests rather than integration or subordination. Confidence: CREDIBLE for safe harbor; ANALYST INFERENCE for any active state cooperation.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY ASSESSMENT -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding and Version Signals</div>
+        <p>LockBit has not undergone a formal rebranding; the core brand has been maintained across all versions. Post-Cronos, versions 4.0 and 5.0 represent version-number escalation as a credibility signal to potential affiliates rather than a substantive identity change. The continued use of the LockBit brand name is operationally significant: it carries recognition that attracts affiliates but also makes the group a persistent high-priority law-enforcement target. The decision to maintain the brand rather than rebrand (as many disrupted groups do) suggests either operator confidence in resilience or recognition that a new brand would not carry the same affiliate recruitment value.</p>
+        <div class="callout callout-warning">
+          <strong>May 2025 breach as trajectory inflection point:</strong> The anonymous compromise of the LockBit admin panel on May 7, 2025, is analytically distinct from Operation Cronos. Where Cronos was a law-enforcement action with a clear counter-messaging strategy, the May 2025 breach was conducted by an unknown actor whose defacement message ("Don't do crime CRIME IS BAD xoxo from Prague") mirrored a breach of the Everest ransomware group, suggesting a possible vigilante or rival-actor campaign targeting ransomware infrastructure. The exposure of affiliate credentials, negotiation logs, and wallet addresses in the leaked MySQL database represents a different type of damage: operational security rather than infrastructure. Affiliates whose identities were exposed face heightened law enforcement risk regardless of LockBit's continued operation.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Connected Group</th><th>Relationship Type</th><th>Confidence</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Conti (via LockBit Green)</td><td>Code acquisition: LockBit Green incorporates leaked Conti source code</td><td>CONFIRMED</td><td>Not a parent-child relationship; reflects code availability post-2022 Conti leak. Mandiant and others corroborate</td></tr>
+              <tr><td>Evil Corp / UNC2165</td><td>Affiliate overlap: Evil Corp-linked operators used LockBit to evade sanctions</td><td>CONFIRMED</td><td>Mandiant tracked UNC2165 as Evil Corp cluster shifting to LockBit 3.0; Evil Corp has documented FSB connections per US DOJ indictments</td></tr>
+              <tr><td>BlackMatter / ALPHV-BlackCat</td><td>Code similarities: shared configuration structures and routines with LockBit 3.0 / Black</td><td>CREDIBLE</td><td>Multiple vendors confirm technical overlap; interpretation (code borrowing vs. shared authorship) remains contested; no confirmed unified actor</td></tr>
+              <tr><td>Qilin / DragonForce</td><td>Possible affiliate overlap and infrastructure sharing post-Cronos</td><td>LOW CONFIDENCE</td><td>Limited open-source evidence; primarily forum-based and infrastructure overlap observations. Mandiant and Recorded Future have not published formal assessments as of May 2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators</div>
+        <ul class="content-list">
+          <li><strong>Continued development:</strong> LockBit 5.0 (September 2025) demonstrates ongoing technical investment and operator capability; cross-platform support and anti-analysis improvements indicate the developer tier remains active</li>
+          <li><strong>Revenue contraction:</strong> $2.3M total in five post-Cronos months (Dec 2024 to Apr 2025) versus $44M in 2022 alone represents an approximate 80-90% revenue decline from peak; this is the sharpest measurable indicator of ecosystem degradation</li>
+          <li><strong>Market share erosion:</strong> Competitor RaaS operations (Akira, Qilin, DragonForce, others) have gained affiliates following Cronos; LockBit no longer dominates the ransomware landscape as it did in 2022-2023</li>
+          <li><strong>Brand risk:</strong> Two major public compromises in fourteen months create structural affiliate confidence problems; the May 2025 breach exposed not just infrastructure but the security of the affiliate relationship itself</li>
+          <li><strong>Cumulative law enforcement pressure:</strong> No other ransomware group has faced simultaneous infrastructure seizure, leadership identification/sanction, decryptor release, and a secondary anonymous breach within a 15-month period; the combined effect on LockBit's ability to recruit credible affiliates is assessed as significant</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Trajectory Assessment</div>
+        <div class="conf-block credible">
+          <strong>Assessment (CREDIBLE):</strong> LockBit will continue to operate as a functioning RaaS through at least mid-2026 based on continued technical development and the absence of operator apprehension. However, its operational effectiveness is assessed as substantially below its 2022-2023 peak. The dual disruptions of Operation Cronos and the May 2025 breach have created compounding damage to the brand, the affiliate relationship, and the operator's OPSEC credibility. Without a significant technical, reputational, or operational reset, LockBit's trajectory is assessed as continued decline in market share and absolute victim volume, constrained primarily by the enduring technical quality of its encryptors and the continued availability of the RaaS infrastructure.
+        </div>
+        <div class="conf-block inference">
+          <strong>Intelligence gaps (ANALYST INFERENCE required):</strong> (1) Whether post-Cronos LockBit 4.0/5.0 is operated by the original Khoroshev-linked team or partially by successor actors; (2) the extent of any informal relationship between LockBit operators and Russian state intelligence beyond documented indicators; (3) the identity and motivation of the May 2025 breach actor and whether additional infrastructure compromises are planned; (4) whether the revenue contraction is reversible through LockBit 5.0 affiliate recruitment efforts.
+        </div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">&#8212;</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9654; Toggle source list
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>US DOJ press release: <a href="https://www.justice.gov/archives/opa/pr/us-and-uk-disrupt-lockbit-ransomware-variant" target="_blank">US and UK Disrupt LockBit Ransomware Variant</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>CISA Advisory AA23-165A: <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a" target="_blank">Understanding Ransomware Threat Actors: LockBit</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>CISA Advisory AA23-325A: <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-325a" target="_blank">StopRansomware: LockBit 3.0 Affiliates Exploit CVE-2023-4966</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>IC3/FBI Joint Advisory (2023): <a href="https://www.ic3.gov/CSA/2023/230614.pdf" target="_blank">LockBit 3.0 Ransomware (PDF)</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>OFAC: <a href="https://home.treasury.gov/news/press-releases/jy2326" target="_blank">United States Sanctions Senior Leader of the LockBit Ransomware Group</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>NCA: <a href="https://www.nationalcrimeagency.gov.uk/news/lockbit-leader-unmasked-and-sanctioned" target="_blank">LockBit Leader Unmasked and Sanctioned</a></span></div>
+
+        <div class="source-category">Vendor Threat Intelligence</div>
+        <div class="source-item"><span class="source-num">[7]</span><span>Trend Micro (Water Selkie): <a href="https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-lockbit" target="_blank">Ransomware Spotlight: LockBit</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Trend Micro: <a href="https://www.trendmicro.com/en_us/research/25/i/lockbit-5-targets-windows-linux-esxi.html" target="_blank">New LockBit 5.0 Targets Windows, Linux, ESXi</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Akamai: <a href="https://www.akamai.com/glossary/what-is-lockbit-ransomware" target="_blank">What Is LockBit Ransomware?</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Akamai: <a href="https://www.akamai.com/blog/security/learning-from-the-lockbit-takedown" target="_blank">Learning from the LockBit Takedown</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Deep Instinct: <a href="https://www.deepinstinct.com/blog/raas-evolved-lockbit-3-0-vs-lockbit-4-0" target="_blank">RaaS Evolved: LockBit 3.0 vs LockBit 4.0</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>CrowdStrike: <a href="https://www.crowdstrike.com/adversaries/bitwise-spider/" target="_blank">BITWISE SPIDER Adversary Profile</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Mandiant / Google Cloud: <a href="https://cloud.google.com/blog/topics/threat-intelligence/unc2165-shifts-to-evade-sanctions" target="_blank">UNC2165 Shifts to LOCKBIT to Evade Sanctions</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>Malpedia: <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.lockbit" target="_blank">LockBit Malware Family</a></span></div>
+
+        <div class="source-category">Blockchain and Financial Analysis</div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Chainalysis: <a href="https://www.chainalysis.com/blog/nca-ofac-sanctions-dmitry-khoroshev-lockbit-ransomware-2024/" target="_blank">International Agencies Sanction Dmitry Khoroshev, LockBit Leader</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>Chainalysis: <a href="https://www.chainalysis.com/blog/lockbit-takedown-sanctions-february-2024/" target="_blank">Authorities Disrupt LockBit Ransomware, Indict Two RaaS Affiliates</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>TRM Labs: <a href="https://www.trmlabs.com/resources/blog/lockbit-leak-provides-insight-into-raas-enterprise" target="_blank">LockBit Leak Provides Insight into RaaS Enterprise</a></span></div>
+
+        <div class="source-category">May 2025 Breach Analysis</div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Trellix: <a href="https://www.trellix.com/blogs/research/inside-the-lockbits-admin-panel-leak-affiliates-victims-and-millions-in-crypto/" target="_blank">Inside LockBit's Admin Panel Leak</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>Help Net Security: <a href="https://www.helpnetsecurity.com/2025/05/09/lockbit-hacked-data-leaked/" target="_blank">LockBit Hacked: What Does the Leaked Data Show?</a></span></div>
+
+        <div class="source-category">News and General Reporting</div>
+        <div class="source-item"><span class="source-num">[20]</span><span>TechCrunch: <a href="https://techcrunch.com/2024/02/20/us-uk-authorities-claim-seizure-of-lockbit-ransomware-gangs-dark-web-leak-site/" target="_blank">Authorities Disrupt Operations of Notorious LockBit Ransomware Gang</a></span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span>TechCrunch: <a href="https://techcrunch.com/2024/05/07/us-uk-police-identify-and-charge-russian-leader-of-lockbit-ransomware-gang/" target="_blank">US/UK Police Identify and Charge Russian Leader of LockBit</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span>Perplexity AI Deep Research: LockBit (all versions) primary research document [Internal]</span></div>
+      </div>
+    </section>
+
+  </div><!-- /.content -->
+
+  <footer class="page-footer">
+    Ransomware<strong>EDP</strong> Threat Actor Library &nbsp;&bull;&nbsp; LockBit Profile &nbsp;&bull;&nbsp; Last updated May 2026 &nbsp;&bull;&nbsp; Open-source intelligence only
+  </footer>
+
+</main>
+</div><!-- /.layout -->
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

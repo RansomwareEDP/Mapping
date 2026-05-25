@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qilin | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUTS */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* IMAGE GALLERY */
+.img-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel {
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.img-panel img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  border-bottom: 1px solid var(--gray-200);
+}
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #f5f0e8; padding: 8px; }
+.img-caption {
+  padding: 10px 12px;
+  font-size: 11.5px;
+  color: var(--gray-600);
+  line-height: 1.5;
+}
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Analytical profiles compiled from open-source intelligence</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-dim"></span>
+      Akira
+    </a>
+    <a class="group-item active" href="qilin.html">
+      <span class="group-dot dot-active"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      Luna Moth
+      <span class="coming-tag">Soon</span>
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      More groups
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Capabilities</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#le">LE &amp; Regulatory Response</a>
+    <a href="#attribution">Attribution &amp; Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">Qilin</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Cross-Platform (Go / Rust)</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-raas">RaaS</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Jul 2022</div>
+        <div class="kpi-sub">As "Agenda"; rebranded ~late 2022</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">2025 Claimed Victims</div>
+        <div class="kpi-value">~958</div>
+        <div class="kpi-sub">72 in April 2025 alone (Group-IB)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Peak Market Share</div>
+        <div class="kpi-value">24%</div>
+        <div class="kpi-sub">U.S. SLTT incidents, Q2 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Affiliate Split</div>
+        <div class="kpi-value">80 / 85%</div>
+        <div class="kpi-sub">Under / over $3M ransom</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">No takedowns, no sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Standalone</div>
+        <div class="kpi-sub">No confirmed predecessor group</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>Qilin (also tracked as Agenda) is a Russian-language ransomware-as-a-service (RaaS) operation first observed in July 2022. Originally named Agenda, the group rebranded around late 2022 under the Qilin name visible on its Tor-hosted data leak site. The operation has been continuously active through May 2026 and is now assessed as one of the highest-volume enterprise ransomware actors globally. In Q2 2025, Qilin surpassed RansomHub as the leading ransomware threat to U.S. state, local, tribal, and territorial (SLTT) organizations, accounting for 24% of reported incidents. The group claimed approximately 958 victims in 2025 and 72 in April 2025 alone.</p>
+
+      <p>The group operates a dual-language (Go/Rust) payload capable of targeting Windows and Linux/VMware ESXi environments. Qilin employs standard double extortion, threatens regulatory and media escalation, and has demonstrated novel credential-harvesting techniques including GPO-deployed Chrome data theft across entire victim domains. Its most consequential publicly documented incident is the June 2024 ransomware attack on UK pathology provider Synnovis, which disrupted seven London NHS hospitals, cancelled thousands of procedures, and contributed as a factor in at least one patient death.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Primary alias</td><td>Qilin</td></tr>
+            <tr><td>Secondary alias</td><td>Agenda (original name; same operation, confirmed)</td></tr>
+            <tr><td>Vendor designations</td><td>SentinelOne: "Agenda (aka Qilin)"; Group-IB: "Qilin Ransomware"; Check Point: "Qilin (Agenda)"; KELA: "Qilin ransomware group"; Blackpoint Cyber: "Qilin (AKA Agenda)"; Darktrace: "Qilin RaaS operator"; FortiGuard Labs: "Qilin Ransomware" (formal threat actor page)</td></tr>
+            <tr><td>CrowdStrike designation</td><td>Not confirmed in open-source reporting as of May 2026</td></tr>
+            <tr><td>Mandiant / Secureworks designations</td><td>Not confirmed in open-source reporting as of May 2026</td></tr>
+            <tr><td>Operational model</td><td>Ransomware-as-a-Service</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (encryption + data leak threat); elements of triple extortion (regulatory/media escalation) documented</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia / CIS (CREDIBLE)</td></tr>
+            <tr><td>LE disruption status</td><td>None confirmed as of May 2026</td></tr>
+            <tr><td>OFAC sanctions status</td><td>None as of May 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-alert">
+        <strong>Overall Assessment:</strong> Qilin is a maturing, high-volume RaaS operation with demonstrated capability against critical infrastructure and healthcare. Its cross-platform payload, active development cycle, novel credential-harvesting techniques, and willingness to attack NHS-level targets position it as a tier-1 threat through at least the near term. The absence of any law enforcement action or sanctions to date increases its operational risk to potential victims.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Visual Reference: Branding and Mythology</div>
+        <p>The group's name and branding draw on the qilin (Chinese: 麒麟), a mythological creature from East Asian traditions regarded as an omen of sage rulers and benevolent prosperity. The ransomware operators selected the name deliberately -- a creature associated with ancient power and good fortune, repurposed as threat branding.</p>
+
+        <div class="img-gallery">
+          <div class="img-panel tall">
+            <img src="https://images.contentstack.io/v3/assets/bltabe50a4554f8e97f/blta6d0b0213e44b80b/68e50c17c2504e4d7c1fdfb6/SANS_Blog_The_Evolution_of_Qilin_RaaS_fig1_725_x_495.jpg"
+                 alt="Qilin ransomware data leak site showing group branding and victim listings"
+                 onerror="this.parentElement.style.display='none'">
+            <div class="img-caption">
+              <strong>Qilin Data Leak Site (DLS)</strong>
+              The Tor-hosted DLS where Qilin lists victims, posts countdown timers, and publishes exfiltrated data. The site displays the group's qilin/dragon-style logo alongside victim entries with data volume claims and download links.
+              <span class="img-source">Source: SANS Institute, "The Evolution of Qilin RaaS" (Oct 2025)</span>
+            </div>
+          </div>
+          <div class="img-panel tall">
+            <img src="https://images.contentstack.io/v3/assets/bltabe50a4554f8e97f/blt4af53cf668cef8ae/68e50c514ac423fbb82c6669/SANS_Blog_The_Evolution_of_Qilin_RaaS_fig4_725_x_420.jpg"
+                 alt="Qilin Network logo displayed on Arkana Security's data leak site"
+                 onerror="this.parentElement.style.display='none'">
+            <div class="img-caption">
+              <strong>"Qilin Network" Affiliation Branding</strong>
+              In March 2025, the Arkana Security extortion group displayed a "Qilin Network" logo on its DLS "About and Contact" page, signaling an affiliation relationship. This shows Qilin's branding extending into a broader network structure.
+              <span class="img-source">Source: SANS Institute, "The Evolution of Qilin RaaS" (Oct 2025)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="img-gallery three-col" style="margin-top:16px">
+          <div class="img-panel">
+            <img src="https://images.contentstack.io/v3/assets/bltabe50a4554f8e97f/bltbecc1cb4c3b814f6/68e50c337173c4176beb81c3/SANS_Blog_The_Evolution_of_Qilin_RaaS_fig2_725_x_385.jpg"
+                 alt="Devman affiliate post on Qilin's DLS"
+                 onerror="this.parentElement.style.display='none'">
+            <div class="img-caption">
+              <strong>Affiliate Self-Identification</strong>
+              April 2025: affiliate "Devman" included "Pwn3d By Qilin &amp; Devman" in a victim post, demonstrating the RaaS affiliate layer's independence. Ransom demand disclosed: $60,000 USD.
+              <span class="img-source">SANS Institute (Oct 2025)</span>
+            </div>
+          </div>
+          <div class="img-panel">
+            <img src="https://images.contentstack.io/v3/assets/bltabe50a4554f8e97f/bltc50972c5eeca4400/68e50c5e758f5baabdd9dd27/SANS_Blog_The_Evolution_of_Qilin_RaaS_fig4_725_x_430.jpg"
+                 alt="Qilin administrator Haise announcing 'call lawyer' feature on RAMP forum"
+                 onerror="this.parentElement.style.display='none'">
+            <div class="img-caption">
+              <strong>Operator "Haise" on RAMP Forum</strong>
+              June 2025: Qilin administrator "Haise" announces a "call lawyer" legal intimidation feature for the affiliate panel on RAMP -- designed to amplify regulatory and compliance pressure on victims.
+              <span class="img-source">SANS Institute (Oct 2025)</span>
+            </div>
+          </div>
+          <div class="img-panel myth">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/76/Kirin_by_Kano_Tan%27yu_1666.jpg"
+                 alt="Qilin (Kirin) mythological creature, ink drawing by Kano Tan'yu, 1666"
+                 onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Kirin%2C_a_Japanese_mythical_beast.jpg/400px-Kirin%2C_a_Japanese_mythical_beast.jpg'">
+            <div class="img-caption">
+              <strong>The Mythological Qilin (Kirin, 1666)</strong>
+              Ink drawing by Kano Tan'yu (1602-1674), Edo period. The qilin is a chimerical creature from Chinese mythology -- dragon-like head, scaled body, deer hooves, often depicted with sacred flames. Regarded as a benevolent omen heralding just rulers.
+              <span class="img-source">Public domain. Wikimedia Commons / Kano Tan'yu, 1666</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence</div>
+        <p>Agenda ransomware was first publicly analyzed in July-August 2022, with early victims reported in Indonesia and Saudi Arabia. The group began operating its dedicated data leak site under the "Qilin" brand around late 2022. Most contemporary vendor reporting treats the Agenda and Qilin names as referring to the same underlying operation. [1] [2] [4]</p>
+        <p>A forum profile operating under the handle <strong>"Haise"</strong> joined the RAMP cybercrime forum on May 29, 2022 and advertised Qilin on February 13, 2023. This is the clearest open-source data point linking a specific operator alias to the group's founding period. [12] Note: A July 2025 Telegram channel claiming to be Europol offered a $50,000 bounty for information on Qilin administrators "Haise" and "XORacle" -- Europol confirmed this channel was a scam and no such bounty exists. The aliases themselves appear in prior legitimate forum tracking and are treated as credible at the handle level.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Predecessor and Rebrand Assessment</div>
+        <div class="conf conf-confirmed">Confirmed: Agenda = Qilin (same operation)</div>
+        <div class="conf conf-credible" style="margin-left:0">Credible: Russian-language criminal ecosystem origin</div>
+        <div class="conf conf-inference" style="margin-left:0">Analyst Inference: Personnel may have prior criminal histories; unconfirmed</div>
+
+        <p>Open-source and vendor analysis consistently presents Qilin/Agenda as a <strong>standalone operation</strong>, not a rebranded or direct successor to any prior named group such as Conti, Hive, or REvil. No multi-source evidence of code forking from a specific predecessor has been confirmed. Some features (multi-threaded encryption, service killing, safe-mode rebooting) mirror common patterns across the Russian-language RaaS ecosystem but do not establish lineage. [4] [11] [5]</p>
+        <p>Confidence that Qilin is a direct code fork of a specific prior group: <strong>LOW</strong>. Confidence that the group's operators have familiarity with Russian-language RaaS tradecraft: <strong>HIGH</strong>.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars: Origin Assessment</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-title">Russian-Language Operations</div>
+            <div class="pillar-body">Qilin recruits affiliates on Russian-language criminal forums. Operator communications are in Russian. Multiple vendors (KELA, Group-IB, Blackpoint Cyber) explicitly characterize it as a Russian-origin group. [12] [11] [5]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &mdash; Confirmed</div>
+            <div class="pillar-title">CIS Exclusion Behavior</div>
+            <div class="pillar-body">No documented CIS-region victims in any open-source database. Binaries are reported to include locale/language checks consistent with CIS avoidance. Absence of CIS targeting across three-plus years of activity is consistent with safe-harbor operation. [13] [5]</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &mdash; Credible</div>
+            <div class="pillar-title">Forum Advertisement Record</div>
+            <div class="pillar-body">Handle "Haise" joined RAMP forum May 29, 2022 and posted Qilin advertisement February 13, 2023. This is single-source but consistent with the group's documented emergence timeline. [12]</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 4 &mdash; Analyst Inference</div>
+            <div class="pillar-title">No Named Personnel Confirmation</div>
+            <div class="pillar-body">No public indictment, arrest, or doxxing has confirmed real identities of Qilin operators or affiliates. The RAMP handle "Haise" and reference to "XORacle" in a fraudulent Europol post are the only named aliases in open reporting. Personnel lineage to prior groups remains unconfirmed. [5] [8]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <p>Qilin has no confirmed parent-organization designation comparable to Wizard Spider (CrowdStrike) or Gold Ulrick (Secureworks) for Conti. Vendors that have published formal designations for Qilin itself include SentinelOne, Group-IB, Check Point, KELA, Blackpoint Cyber, Darktrace, and FortiGuard Labs. CrowdStrike, Mandiant, and Secureworks have not confirmed public group-specific designations for Qilin as of May 2026, though detailed profiles may exist behind paywalls. [4] [11] [10] [12] [5]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <p>Qilin operates as a Ransomware-as-a-Service platform. Core operators maintain the payload, affiliate panel, negotiation infrastructure, and data leak site. Affiliates conduct intrusions, exfiltration, and encryption, then share revenue with the platform. [9] [10] [11] [12] [5]</p>
+        <p>Affiliate recruitment occurs on Russian-language cybercrime forums. The platform is assessed as affiliate-friendly: Blackpoint Cyber reports affiliates retain <strong>80% of ransoms below $3 million</strong> and <strong>85% for ransoms above $3 million</strong>, with the core team retaining the remainder. This split is at the high end of documented RaaS norms. [5]</p>
+        <p>In Q2 2024, Microsoft (Threat Intelligence) attributed Octo Tempest / Scattered Spider as a Qilin affiliate, representing a significant escalation: Scattered Spider brings sophisticated social engineering and cloud environment capabilities to Qilin's payload. [Credible - Microsoft attribution; no corroborating independent confirmation in open sources as of research date]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion Mechanics</div>
+        <ul class="content-list">
+          <li><strong>Double extortion (standard):</strong> Data exfiltrated prior to encryption creates two independent leverage points. All Qilin incidents involve both components. [2] [10] [4] [11] [12] [5]</li>
+          <li><strong>Triple extortion (documented, not systematic):</strong> Qilin has threatened to contact customers, regulators, and media to amplify reputational damage. Not documented as a formalized "phase" but present in multiple incident accounts. [6] [14]</li>
+          <li><strong>Teaser-to-full-dump progression:</strong> DLS publications begin with sample data, escalating to full dataset publication if negotiations fail. Claimed exfiltration volumes include 550 GB (The Big Issue parent company) and 400 GB (Synnovis). [6] [B1]</li>
+          <li><strong>Countdown timers:</strong> DLS posts include deadlines that, when missed, trigger ransom increases or accelerated publication. [6]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <p>Negotiations are conducted through a Tor-hosted victim negotiation portal, accessed via a unique URL in the ransom note. Initial demands for large enterprise targets reach into the millions. Negotiators and incident responders report reductions of 30-50% or more during active negotiations, though hard statistics are sparse. Qilin communication is professional and coercive, emphasizing data control leverage. [13] [14] [5]</p>
+        <p>Some affiliate-dependent variation in victim communication has been documented, with TOX/email handles appearing in ransom notes alongside Tor portal references depending on the affiliate. [5] [13]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payload Evolution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Generation</th><th>Language</th><th>Platforms</th><th>Period</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Agenda v1</td><td>Go (Golang)</td><td>Windows</td><td>2022</td><td>Initial release; per-victim config, service killing</td></tr>
+              <tr><td>Agenda/Qilin v2</td><td>Go (Golang)</td><td>Windows, Linux/ESXi</td><td>2022-2023</td><td>Cross-platform expansion; ESXi targeting added</td></tr>
+              <tr><td>Qilin Rust</td><td>Rust</td><td>Windows, Linux/ESXi</td><td>2023-present</td><td>Full Rust rewrite; improved evasion, speed, cross-platform capability</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No public universal decryptor exists for any Qilin/Agenda variant as of May 2026. The No More Ransom portal does not list a Qilin decryptor. Case-by-case recovery via backup restoration or operational mistake exploitation is documented but not indicative of a cryptographic flaw. [7] [4] [13]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Confidence</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Phishing / malicious attachments</td><td>CONFIRMED (multi-source)</td><td>Broadly documented across Qilin affiliate campaigns [3] [5] [14]</td></tr>
+              <tr><td>Compromised VPN / RDP credentials (no MFA)</td><td>CONFIRMED (multi-source)</td><td>Dominant vector per Sophos incident response (July 2024) [14] [5]</td></tr>
+              <tr><td>CVE-2024-21762 (FortiOS SSL VPN RCE)</td><td>CONFIRMED</td><td>CVSS 9.6; actively exploited by Qilin affiliates per CIS-ISG reporting [CIS1]</td></tr>
+              <tr><td>CVE-2024-55591 (FortiOS auth bypass)</td><td>CONFIRMED</td><td>Exploited alongside CVE-2024-21762 [CIS1]</td></tr>
+              <tr><td>CVE-2025-31324 (SAP NetWeaver Visual Composer RCE)</td><td>CREDIBLE</td><td>CVSS 10.0; Qilin-linked actors exploited this vulnerability weeks before public disclosure per OP Innovate investigation [OP1]</td></tr>
+              <tr><td>Backup service and web application vulnerabilities</td><td>CREDIBLE (multi-source)</td><td>ESXi management interfaces frequently cited [5] [3] [14]</td></tr>
+              <tr><td>NETXLOADER (loader delivery)</td><td>CONFIRMED</td><td>Trend Micro (Nov 2024): .NET loader protected with .NET Reactor 6, JIT hooking, deployed with SmokeLoader to stage Qilin payload [TM1] [5]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Technique: Chrome Credential Harvesting via GPO (August 2024)</div>
+        <div class="callout callout-alert">
+          <strong>Distinctive TTP:</strong> In a July 2024 incident analyzed by Sophos, Qilin affiliates deployed a GPO-based PowerShell script on the victim's domain controller that harvested credentials stored in Google Chrome across all domain-connected machines at logon. Because the GPO applied domain-wide, every device a user logged into during the compromise period was subject to credential collection. This technique extends Qilin's data theft capability far beyond the target organization's own systems -- enabling downstream attacks against financial accounts, cloud services, and third-party platforms. [S1]
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Post-Exploitation Kill Chain</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Observed Tools / Techniques</th></tr></thead>
+            <tbody>
+              <tr><td>Persistence</td><td>Additional admin account creation, web shells, RDP/VPN config modification [13] [14] [5]</td></tr>
+              <tr><td>Lateral Movement</td><td>Stolen credentials, RDP, PsExec, WMIC, domain GPO for ransomware push [5] [13] [14]</td></tr>
+              <tr><td>Privilege Escalation</td><td>Domain controller access; Kerberoasting likely (ANALYST INFERENCE from toolset pattern)</td></tr>
+              <tr><td>Defense Evasion</td><td>Security tool disabling, backup and database service termination, Windows Safe Mode reboot before encryption [4] [13] [5]</td></tr>
+              <tr><td>C2 / Remote Access</td><td>Cobalt Strike, commercial RMM tools, built-in OS utilities (PowerShell, PsExec) [13] [14] [5]</td></tr>
+              <tr><td>Exfiltration</td><td>Volume-based (hundreds of GB claimed per incident); specific tools affiliate-dependent</td></tr>
+              <tr><td>Encryption</td><td>Hybrid symmetric/asymmetric (AES or ChaCha20 + RSA); multi-threaded; partial encryption for large files; per-victim configuration [4] [11] [13]</td></tr>
+              <tr><td>ESXi targeting</td><td>Linux variant terminates VMs before encrypting virtual disk files; esxcli use documented [4] [11] [5]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-credible">Credible -- medium confidence; inferred from absence and binary analysis</div>
+        <p>Qilin is assessed to exclude CIS-region targets. Binary analysis documents locale and language checks (Russian keyboard/language settings). No CIS-region organization has been publicly documented as a Qilin victim across three-plus years of operation. This pattern is consistent with Russian-language RaaS operating norms and the safe-harbor dynamic observed across the broader ecosystem. Direct sample-level CIS exclusion code is less consistently described in public write-ups than the behavioral pattern warrants. [13] [5]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 5: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>Qilin demands ransoms in <strong>Bitcoin</strong>, the dominant cryptocurrency in its observed ransom notes. Per-incident unique Bitcoin addresses are used, directing funds to victim-specific wallets before aggregation. Some affiliate flexibility in accepting alternative cryptocurrencies has been suggested in incident reporting but is not systematically documented. [13] [5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Forensics: Intelligence Gap</div>
+        <div class="callout callout-warning">
+          <strong>Intelligence Gap:</strong> As of May 2026, no dedicated public blockchain forensics report from TRM Labs, Chainalysis, or Elliptic specifically profiling Qilin's wallet infrastructure or laundering flows has been identified. Unlike older groups (Conti, Ryuk), Qilin has not yet been the subject of a major public on-chain attribution campaign. This gap likely reflects (1) that investigations are ongoing in private threat intelligence channels, and (2) that Qilin's relatively shorter operational history has not yet generated the on-chain density required for public-facing attribution at the wallet cluster level. No OFAC-designated wallets tied to Qilin have been published.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Laundering Methodology</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Collection via Per-Victim Wallets</div>
+              <div class="phase-desc">Unique Bitcoin addresses per incident. Ransom payment directed to affiliate-controlled or platform-assigned wallet before split. [ANALYST INFERENCE from standard RaaS mechanics and general Qilin reporting]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Layering via Intermediate Wallets and Peeling Chains</div>
+              <div class="phase-desc">Consistent with observed Russian-language RaaS laundering patterns. Funds moved through multiple intermediate addresses before reaching aggregation points. [CREDIBLE -- inferred from ecosystem norms; Qilin-specific chain not publicly documented]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Mixer / High-Risk Exchange Use</div>
+              <div class="phase-desc">Russian-language RaaS operations commonly use mixers, tumblers, and loosely regulated or sanctions-adjacent exchanges. Qilin-specific mixer use is not confirmed in open-source reporting; application of ecosystem pattern is ANALYST INFERENCE. Adaptation to mixer takedowns (Tornado Cash, Sinbad) has been noted in general reporting on the ecosystem. [5] [13]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">OTC Broker / Fiat Conversion</div>
+              <div class="phase-desc">Final-stage conversion to fiat via OTC brokers operating in CIS jurisdictions is consistent with the broader ecosystem. No Qilin-specific OTC broker has been named in open-source reporting. [ANALYST INFERENCE]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Revenue Estimates</div>
+        <p>No aggregate revenue figure for Qilin has been confirmed in open-source reporting. Given documented victim volume (~958 in 2025), enterprise targeting profile, and typical RaaS ransom magnitudes in the hundreds of thousands to millions of dollars, Qilin is assessed in the upper tier of contemporary RaaS operations by revenue generation. This is an <strong>ANALYST INFERENCE</strong> based on volume and targeting profile, not a confirmed figure.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card highlight">
+          <div class="metric-label">2025 Claimed Victims</div>
+          <div class="metric-val">~958</div>
+          <div class="metric-note">Approx. 30% more than Akira (717) in 2025</div>
+        </div>
+        <div class="metric-card highlight">
+          <div class="metric-label">April 2025 (Peak Month)</div>
+          <div class="metric-val">72</div>
+          <div class="metric-note">Group-IB; #1 globally that month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Q2 2025 SLTT Share</div>
+          <div class="metric-val">24%</div>
+          <div class="metric-note">Up from 9% in Q1 2025 (MS-ISAC)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">U.S. SLTT Incidents</div>
+          <div class="metric-val">29</div>
+          <div class="metric-note">Dec 2023 to Jun 30, 2025 (MS-ISAC)</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Sector Targeting</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Assessed Priority</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Healthcare / Medical</td><td>HIGH -- primary target</td><td>Multiple hospital and health system incidents in 2024-2026; Synnovis attack most consequential [3] [7] [5]</td></tr>
+              <tr><td>Education</td><td>HIGH</td><td>Universities and K-12 documented [2] [5] [1]</td></tr>
+              <tr><td>Manufacturing / Industrial</td><td>HIGH</td><td>Including industrial supply chains [11] [5] [1] [2]</td></tr>
+              <tr><td>Media / Publishing</td><td>MODERATE-HIGH</td><td>The Big Issue parent, Lee Enterprises [6] [8]</td></tr>
+              <tr><td>Local Government / Public Services</td><td>MODERATE-HIGH</td><td>SLTT incidents rising sharply in 2025 [7] [5] [3]</td></tr>
+              <tr><td>Real Estate / Construction</td><td>MODERATE</td><td>Documented in early reporting [1] [2]</td></tr>
+              <tr><td>Technology / Financial / Telecom</td><td>MODERATE</td><td>Expanded targeting in 2025 per Trend Micro [TM1]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>Qilin targets organizations across North America, Europe, and Latin America, with consistent reporting of U.S. dominance. SOCRadar specifically identifies the U.S., Brazil, and Argentina as primary target countries. UK-based organizations have been disproportionately represented in high-profile incidents (Synnovis, The Big Issue parent). No CIS-region victims documented. [2] [3] [6] [7] [8]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Named Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Date</th><th>Impact</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Synnovis (UK)</strong></td><td>Healthcare / Pathology</td><td>June 3, 2024</td><td>400 GB leaked; 7 London NHS hospitals affected; 10,000+ appointments/procedures cancelled; 300M+ patient interactions exposed; patient death cited as contributing factor; no ransom paid; 18-month investigation concluded Nov 2025 [B1] [B2] [B3]</td></tr>
+              <tr><td><strong>Lee Enterprises (US)</strong></td><td>Media / Publishing</td><td>February 3, 2025</td><td>350 GB claimed; 39,779 individuals notified; 72 newspapers disrupted; SEC material impact filing; Social Security numbers among compromised data [8] [LE1]</td></tr>
+              <tr><td><strong>The Big Issue parent (UK)</strong></td><td>Media / Publishing</td><td>2024</td><td>550 GB claimed; confidential files leaked on DLS [6]</td></tr>
+              <tr><td>Multiple unnamed hospitals / health systems</td><td>Healthcare</td><td>2024-2026</td><td>Rust-based attacks; multiple healthcare advisories issued [3] [7]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Synnovis significance:</strong> The June 2024 Synnovis attack is the most consequential publicly documented Qilin incident. It disrupted pathology services for King's College Hospital NHS Foundation Trust and Guy's and St Thomas' NHS Foundation Trust, among others. Blood transfusion and testing services were severely degraded. A coroner cited the attack as a contributing factor in a patient death at King's College Hospital. Synnovis did not pay the ransom. The 18-month forensic investigation reflects the complexity of the breach scope across NHS supply-chain data.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Selection Model</div>
+        <p>Qilin demonstrates <strong>positive selection</strong> for targets where operational disruption and data exposure create maximum leverage: critical infrastructure with low tolerance for downtime (healthcare), time-sensitive services (media/publishing), and organizations managing sensitive personal or financial data. The RaaS model creates heterogeneity in targeting -- more capable affiliates pursue enterprise targets while less sophisticated affiliates may target smaller organizations as collateral.</p>
+        <p><strong>Negative selection</strong> (CIS avoidance) is consistent with documented binary behavior and the absence of any CIS victim across the group's operational history.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 7: LAW ENFORCEMENT -->
+    <section class="section" id="le">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Arrests and Indictments</div>
+        <div class="conf conf-confirmed">Confirmed: Zero public arrests or indictments as of May 2026</div>
+        <p>No U.S., UK, EU, or other public indictment has named any individual as a member of Qilin. No arrest attributable to Qilin operations has been publicly announced. This is an assessed intelligence gap, not proof that investigations are absent. [5] [13] [8]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions</div>
+        <div class="conf conf-confirmed">Confirmed: No OFAC designations as of May 2026</div>
+        <p>Neither "Qilin" nor "Agenda" appears in OFAC's Specially Designated Nationals list. No Qilin-linked wallet has been OFAC-designated in open-source data. This gap could change rapidly given the group's healthcare targeting profile and NHS-level impact. [13] [5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure Seizures</div>
+        <p>Qilin's Tor-hosted data leak site and negotiation portal remain operational as of May 2026. No large-scale seizure of Qilin's core infrastructure has been publicly announced. Isolated sinkholing of affiliate-used C2 nodes is possible but not documented under the Qilin name. [5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Advisories and Government Actions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Body</th><th>Action</th><th>Date</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>MS-ISAC / CIS-ISG</td><td>Threat intelligence report: Qilin top SLTT threat</td><td>Q2 2025</td><td>Documented 29 U.S. SLTT incidents Dec 2023 to Jun 2025; 24% market share Q2 2025 [CIS1]</td></tr>
+              <tr><td>ECUCERT (Ecuador)</td><td>Technical advisory AL-2024-16</td><td>2024</td><td>Internal workings, configuration analysis, mitigation recommendations [13]</td></tr>
+              <tr><td>FBI / CISA</td><td>Joint advisory referencing NETXLOADER / Qilin affiliate activity</td><td>2025</td><td>Referenced in Blackpoint Cyber / Trend Micro reporting; dedicated #StopRansomware advisory for Qilin not confirmed in public CISA portal as of research date [5] [TM1]</td></tr>
+              <tr><td>UK NHS / NCSC</td><td>Sectoral alerts following Synnovis incident</td><td>2024</td><td>Patching, network segmentation, offline backup guidance issued to NHS supply chain [B1] [B2]</td></tr>
+              <tr><td>Healthcare ISACs (various)</td><td>Sectoral alerts</td><td>2024-2026</td><td>Qilin cited as top healthcare threat in multiple H-ISAC and MS-ISAC communications [7] [3]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Decryptor Availability</div>
+        <p>No public universal decryptor for any Qilin or Agenda variant is available through the No More Ransom portal or any publicly disclosed vendor release as of May 2026. Recovery in documented incidents has relied on unaffected backups or, in isolated cases, operational mistakes by affiliates. No systemic cryptographic flaw has been publicly identified. [7] [4] [13]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 8: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdiction Assessment</div>
+        <div class="conf conf-credible">Credible: Russia / CIS-based criminal operation</div>
+        <p>Qilin is consistently assessed as a Russian-language, likely Russia-based or CIS-based criminal group. Supporting indicators: Russian-language forum recruitment and operator communications; CIS exclusion behavior across three-plus years of operation; SOCRadar, KELA, and Group-IB all formally characterize origin as Russian; Ecuador's ECUCERT advisory characterizes it as Russian-origin. [13] [12] [5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <p>The only named aliases associated with Qilin leadership in open-source reporting are <strong>"Haise"</strong> (RAMP forum, documented joining May 2022, Qilin advertisement February 2023) and <strong>"XORacle"</strong> (referenced only in the July 2025 fake Europol Telegram post). Europol confirmed the Telegram channel was not genuine. Neither alias has been attributed to a real-world identity in any public law enforcement action.</p>
+        <p>Confidence that "Haise" is a legitimate Qilin operator alias: <strong>CREDIBLE</strong> (documented forum record predating the fake Europol post). Confidence that real identity is known to open sources: <strong>LOW / NOT CONFIRMED</strong>.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">State Nexus Assessment</div>
+        <div class="conf conf-confirmed">Confirmed: No evidence of Russian state direction, tasking, or formal nexus</div>
+        <div class="conf conf-inference" style="margin-left:0">Analyst Inference: De facto safe harbor consistent with Russian cybercrime ecosystem norms</div>
+        <p>No leaked communications, indictments, or credible technical reporting ties Qilin to FSB, SVR, GRU, or any other Russian state service. No evidence of overt intelligence collection on behalf of a state actor. No state-directed targeting has been documented.</p>
+        <p>The combination of CIS avoidance, Russian-language operation, and absence of domestic prosecution is consistent with a <strong>de facto safe harbor</strong> -- the expectation of non-prosecution in exchange for avoiding CIS targets -- that characterizes the broader Russian cybercrime ecosystem. This is an analytic inference about ecosystem dynamics, not a documented agreement. [5] [13] [12]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scattered Spider Affiliate Assessment</div>
+        <div class="conf conf-credible">Credible -- Microsoft attribution; not independently corroborated in open sources</div>
+        <p>Microsoft Threat Intelligence (mid-2024) reported that Octo Tempest, also known as Scattered Spider (CrowdStrike), had become a Qilin affiliate. Scattered Spider is a financially motivated, English-language threat group known for sophisticated social engineering, SIM-swapping, and cloud environment exploitation. Its adoption of Qilin as a payload represents a convergence of Western social engineering capability with Russian-language RaaS infrastructure. This affiliation does not indicate a state nexus but does materially expand the attacker population capable of deploying Qilin.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 9: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operational Stability Indicators</div>
+        <ul class="content-list">
+          <li>Continuous operation since July 2022 with no prolonged disappearance or disruption. [1] [3] [4] [11]</li>
+          <li>No leaked internal communications, affiliate disputes, or visible internal fragmentation analogous to Conti's May 2022 collapse. [4] [12] [5]</li>
+          <li>Active payload development cycle: Go to Rust transition, NETXLOADER integration, Chrome credential GPO technique all represent non-trivial development investment. [TM1] [S1] [4]</li>
+          <li>Affiliate pool expansion: Scattered Spider adoption as an affiliate in 2024 demonstrates the group's attractiveness to sophisticated Western actors. [Microsoft]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Volume and Capability Trajectory</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Signal</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>2022-2023</td><td>Emergence and initial victim accumulation; Go-based payloads; moderate volume</td><td>CONFIRMED</td></tr>
+              <tr><td>2024</td><td>Rust payload deployment; Linux/ESXi targeting matured; Chrome GPO credential theft novel technique; Synnovis (NHS) attack largest impact incident; Scattered Spider affiliate affiliation</td><td>CONFIRMED</td></tr>
+              <tr><td>2025 (H1)</td><td>Became #1 ransomware by SLTT incident count; 72 victims in April alone; replaced RansomHub at top position; NETXLOADER / SmokeLoader integration documented</td><td>CONFIRMED</td></tr>
+              <tr><td>2025 (H2)</td><td>Continued high-volume healthcare and public sector targeting</td><td>CREDIBLE</td></tr>
+              <tr><td>2026 (Q1-Q2)</td><td>Continued operation; active as of research date; no disruption signals</td><td>CONFIRMED (operational); specific victim data CREDIBLE</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Relationship</th><th>Nature</th><th>Anchor Confidence</th><th>Extension Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Agenda = Qilin</td><td>Same operation, naming convergence</td><td>CONFIRMED (multi-vendor consensus; code, DLS, TTP continuity)</td><td>N/A -- same entity</td></tr>
+              <tr><td>Scattered Spider as affiliate</td><td>Affiliate affiliation</td><td>CREDIBLE (Microsoft Threat Intel)</td><td>Not independently corroborated in open sources</td></tr>
+              <tr><td>NETXLOADER ecosystem</td><td>Loader/IAB relationship</td><td>CONFIRMED (Trend Micro)</td><td>Broader loader network relationships not individually confirmed</td></tr>
+              <tr><td>Shared affiliates with Akira / LockBit</td><td>Affiliate overlap claims</td><td>LOW-CREDIBLE (single-source, TTP overlap)</td><td>Not confirmed; affiliate identity is not directly established in open sources</td></tr>
+              <tr><td>Direct rebrand of prior named group</td><td>Not assessed</td><td>LOW -- no evidence</td><td>N/A</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No major vendor characterizes Qilin as a direct extension or rebrand of a prior named top-tier group. Mandiant and Recorded Future have not published a formal cluster assessment connecting Qilin to a specific parent organization as of May 2026 open-source research. [4] [11] [5] [1] [12]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding Risk Assessment</div>
+        <p>Current signals do not suggest imminent rebranding. Qilin is at peak operational visibility and volume -- conditions that historically precede rebranding are present (law enforcement attention, SLTT-level advisories) but have not yet materialized into the infrastructure seizure or key arrest that typically triggers rebrand decisions. If law enforcement action targets Qilin in 2026, a rebrand within 60-90 days would be consistent with precedent from other Russian-language RaaS operations. <strong>[ANALYST INFERENCE]</strong></p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>Real identities, locations, and organizational hierarchy of core operators and leading affiliates.</li>
+          <li>Dedicated on-chain wallet attribution from TRM Labs, Chainalysis, or Elliptic.</li>
+          <li>Any non-public law enforcement investigations or coordinated actions not yet disclosed.</li>
+          <li>Precise ransom demand distributions, negotiation reduction rates, and aggregate revenue figures.</li>
+          <li>Scope of any additional CVE exploitation chains beyond FortiOS and SAP NetWeaver vulnerabilities currently documented.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">--</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9660; Show / hide source list
+      </button>
+      <div class="source-list">
+
+        <div class="source-category">Vendor Intelligence Reports</div>
+        <div class="source-item"><span class="source-num">[1]</span><div>Quorum Cyber. <a href="https://www.quorumcyber.com/malware-reports/agenda-ransomware-report/" target="_blank">Agenda Ransomware Report</a>.</div></div>
+        <div class="source-item"><span class="source-num">[2]</span><div>CybelAngel. <a href="https://cybelangel.com/blog/qilin-ransomware-tactics-attack/" target="_blank">Qilin Ransomware: Attack Methods and 2026 Status</a>.</div></div>
+        <div class="source-item"><span class="source-num">[3]</span><div>Thrive NextGen. <a href="https://thrivenextgen.com/the-quiet-weapon-inside-a-qilin-ransomware-attack/" target="_blank">The Quiet Weapon: Inside a Qilin Ransomware Attack</a>.</div></div>
+        <div class="source-item"><span class="source-num">[4]</span><div>SentinelOne. <a href="https://www.sentinelone.com/anthology/agenda-qilin/" target="_blank">Agenda (aka Qilin) Ransomware</a>.</div></div>
+        <div class="source-item"><span class="source-num">[5]</span><div>Blackpoint Cyber. <a href="https://blackpointcyber.com/threat-profile/qilin-ransomware/" target="_blank">Qilin (AKA Agenda) Ransomware Threat Profile</a>. May 2026.</div></div>
+        <div class="source-item"><span class="source-num">[9]</span><div>Check Point. <a href="https://www.checkpoint.com/cyber-hub/threat-prevention/ransomware/qilin-ransomware/" target="_blank">Qilin (Agenda) Ransomware: A Deep Dive</a>.</div></div>
+        <div class="source-item"><span class="source-num">[10]</span><div>Check Point (ES). <a href="https://www.checkpoint.com/es/cyber-hub/threat-prevention/ransomware/qilin-ransomware/" target="_blank">Qilin Ransomware</a>.</div></div>
+        <div class="source-item"><span class="source-num">[11]</span><div>Group-IB. <a href="https://www.group-ib.com/blog/qilin-ransomware/" target="_blank">Qilin Ransomware</a>.</div></div>
+        <div class="source-item"><span class="source-num">[12]</span><div>KELA Cyber. <a href="https://www.kelacyber.com/blog/ransomware-threat-actor-profile-qilin/" target="_blank">Ransomware Threat Actor Profile: Qilin</a>.</div></div>
+
+        <div class="source-category">Government and Regulatory Advisories</div>
+        <div class="source-item"><span class="source-num">[13]</span><div>ECUCERT (Ecuador). <a href="https://www.ecucert.gob.ec/wp-content/uploads/2022/02/AL-2024-16-Ramsonware-Qilin.pdf" target="_blank">AL-2024-16: Ransomware Qilin Advisory</a>. 2024.</div></div>
+        <div class="source-item"><span class="source-num">[CIS1]</span><div>Center for Internet Security / MS-ISAC. <a href="https://www.cisecurity.org/insights/blog/qilin-top-ransomware-threat-to-sltts-in-q2-2025" target="_blank">Qilin: Top Ransomware Threat to SLTTs in Q2 2025</a>.</div></div>
+        <div class="source-item"><span class="source-num">[8]</span><div>Industrial Cyber. <a href="https://industrialcyber.co/cisa/cisa-reaffirms-to-safeguard-us-critical-infrastructure-against-escalating-threats-from-qilin-ransomware-group/" target="_blank">CISA Reaffirms Safeguard Against Qilin Ransomware</a>.</div></div>
+
+        <div class="source-category">Incident Reporting -- Synnovis / NHS</div>
+        <div class="source-item"><span class="source-num">[B1]</span><div>HIPAA Journal. <a href="https://www.hipaajournal.com/care-disrupted-at-london-hospitals-due-to-ransomware-attack-on-pathology-vendor/" target="_blank">NHS Pathology Provider Synnovis Notifies Organizations Affected by June 2024 Ransomware Attack</a>.</div></div>
+        <div class="source-item"><span class="source-num">[B2]</span><div>BleepingComputer. <a href="https://www.bleepingcomputer.com/news/security/synnovis-notifies-of-data-breach-after-2024-ransomware-attack/" target="_blank">Synnovis Notifies of Data Breach After 2024 Ransomware Attack</a>.</div></div>
+        <div class="source-item"><span class="source-num">[B3]</span><div>SC Magazine UK. <a href="https://insight.scmagazineuk.com/synnovis-2024-attack-contributing-factor-in-patient-death" target="_blank">Synnovis 2024 Attack 'Contributing Factor' in Patient Death</a>.</div></div>
+
+        <div class="source-category">Incident Reporting -- Lee Enterprises</div>
+        <div class="source-item"><span class="source-num">[LE1]</span><div>BleepingComputer. <a href="https://www.bleepingcomputer.com/news/security/media-giant-lee-enterprises-says-data-breach-affects-39-000-people/" target="_blank">Media Giant Lee Enterprises Says Data Breach Affects 39,000 People</a>.</div></div>
+
+        <div class="source-category">Incident Reporting -- The Big Issue</div>
+        <div class="source-item"><span class="source-num">[6]</span><div>Bitdefender. <a href="https://www.bitdefender.com/en-us/blog/hotforsecurity/ransomware-hits-the-big-issue-qilin-group-leaks-confidential-data" target="_blank">Ransomware Hits The Big Issue: Qilin Group Leaks Confidential Data</a>.</div></div>
+
+        <div class="source-category">Technical Analysis</div>
+        <div class="source-item"><span class="source-num">[TM1]</span><div>Trend Micro. <a href="https://www.trendmicro.com/en_us/research/25/e/agenda-ransomware-group-adds-smokeloader-and-netxloader-to-their.html" target="_blank">Agenda Ransomware Group Adds SmokeLoader and NETXLOADER to Their Arsenal</a>. 2025.</div></div>
+        <div class="source-item"><span class="source-num">[S1]</span><div>Sophos. <a href="https://news.sophos.com/en-us/2024/08/22/qilin-ransomware-caught-stealing-credentials-stored-in-google-chrome/" target="_blank">Qilin Ransomware Caught Stealing Credentials Stored in Google Chrome</a>. August 2024.</div></div>
+        <div class="source-item"><span class="source-num">[OP1]</span><div>OP Innovate. <a href="https://op-c.net/blog/sap-cve-2025-31324-qilin-breach/" target="_blank">SAP Zero-Frostbite: How Russian RaaS Actor Qilin Exploited CVE-2025-31324 Weeks Before Public Disclosure</a>.</div></div>
+        <div class="source-item"><span class="source-num">[7]</span><div>DataRecovery.com. <a href="https://datarecovery.com/rd/qilin-ransomware-threat-analysis-rust-based-attacks-on-healthcare/" target="_blank">Qilin Ransomware Threat Analysis: Rust-Based Attacks on Healthcare</a>.</div></div>
+        <div class="source-item"><span class="source-num">[14]</span><div>XACT Cybersecurity. <a href="https://www.xactcybersecurity.com/what-you-must-know-about-qilin-ransomware-attacks/" target="_blank">What You Must Know About Qilin Ransomware Attacks</a>.</div></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <div class="page-footer">
+    Ransomware EDP &bull; Threat Actor Library &bull; Qilin Profile &bull; Last updated May 2026 &bull; Open-source intelligence only
+  </div>
+
+</main>
+</div><!-- /layout -->
+
+<script>
+// Sidebar active section highlighting on scroll
+const sectionEls = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+
+function updateNav() {
+  let current = '';
+  sectionEls.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+</script>
+</body>
+</html>
