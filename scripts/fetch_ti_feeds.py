@@ -83,6 +83,31 @@ KEYWORDS = {
         "wizard spider",
         "unc1878",
     ],
+    "clop": [
+        "cl0p",
+        "clop ransomware",
+        "fin11",
+        "ta505",
+        "unc5936",
+        "moveit ransomware",
+        "cleo ransomware",
+        "goanywhere ransomware",
+        "oracle ebs ransomware",
+    ],
+    "royal": [
+        "royal ransomware",
+        "blacksuit ransomware",
+        "chaos ransomware",
+        "operation checkmate",
+        "blacksuit",
+    ],
+    "silentransom": [
+        "silent ransom group",
+        "luna moth",
+        "srg ransomware",
+        "leakeddata",
+        "callback phishing ransomware",
+    ],
 }
 
 MAX_PER_GROUP = 10      # max articles to keep per group
