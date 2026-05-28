@@ -35,7 +35,19 @@ jobs:
           import json, urllib.request, datetime, pathlib
 
           BASE   = 'https://api.ransomware.live/v2'
-          GROUPS = ['lynx', 'qilin', 'akira', 'lockbit', 'dragonforce', 'conti']
+          # Keys are ransomware.live group slugs; values are the output filename (without .json)
+          # chaos is the current active iteration of the Royal/BlackSuit/Chaos lineage
+          GROUPS = {
+              'lynx':        'lynx',
+              'qilin':       'qilin',
+              'akira':       'akira',
+              'lockbit':     'lockbit',
+              'dragonforce': 'dragonforce',
+              'conti':       'conti',
+              'clop':             'clop',
+              'chaos':            'royal',
+              'SilentRansomGroup': 'silentransom',
+          }
 
           # Fetch last 6 months of victim data
           all_victims = []
@@ -64,13 +76,13 @@ jobs:
           print(f"Total unique victims across all groups: {len(unique)}")
 
           # Write per-group JSON files
-          for group in GROUPS:
-              items = [v for v in unique if (v.get('group') or '').lower() == group]
+          for slug, filename in GROUPS.items():
+              items = [v for v in unique if (v.get('group') or '').lower() == slug]
               items.sort(key=lambda x: x.get('attackdate', ''), reverse=True)
-              pathlib.Path(f'groups/data/{group}.json').write_text(
+              pathlib.Path(f'groups/data/{filename}.json').write_text(
                   json.dumps(items, indent=2, ensure_ascii=False)
               )
-              print(f"  {group}: {len(items)} victims")
+              print(f"  {slug} -> {filename}.json: {len(items)} victims")
           PYEOF
 
       # -------------------------------------------------------
