@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal / BlackSuit / Chaos | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--text); background: var(--gray-100); line-height: 1.6; }
+
+/* TOP BAR */
+.topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--navy); display: flex; align-items: center; padding: 0 24px; border-bottom: 2px solid var(--accent); }
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--navy-mid); position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+.group-list { padding: 0 12px 8px; }
+.group-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.15s; color: var(--gray-400); margin-bottom: 2px; }
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag { margin-left: auto; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; color: var(--gray-400); border: 1px solid var(--navy-light); border-radius: 4px; padding: 1px 5px; text-transform: uppercase; }
+.section-nav { padding: 0 12px; }
+.section-nav a { display: block; padding: 7px 12px; border-radius: 6px; font-size: 12.5px; color: var(--gray-400); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px; }
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-disrupted { background: #6d4208; color: #fdebd0; }
+.badge-conti { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-rebranded { background: #4a235a; color: #e8daef; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUTS */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+.metric-card.danger { border-color: var(--accent); background: var(--accent-soft); }
+.metric-card.danger .metric-val { color: var(--accent); }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* DARK MODE TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+
+html { scroll-behavior: smooth; }
+@media print { .sidebar, .topbar { display: none; } .main { padding: 0; } .content { padding: 0 24px; } }
+
+/* LIVE DATA ELEMENTS */
+.topbar-live {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400); letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative; display: inline-block;
+  width: 7px; height: 7px; flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent; border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.live-badge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em; color: #27ae60; border: 1px solid #27ae60;
+  border-radius: 3px; padding: 1px 4px; vertical-align: middle;
+  margin-left: 5px; line-height: 1.4;
+}
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue); border-radius: 6px;
+  padding: 14px 16px; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+.victim-strip { margin: 20px 40px 0; background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.victim-strip-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-bottom: 1px solid var(--gray-200); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.victim-strip-sub { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-400); font-size: 10px; margin-left: 4px; }
+.victim-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item active" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#origin">Origin &amp; Lineage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#enforcement">Law Enforcement Response</a>
+    <a href="#attribution">Attribution &amp; Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated <span id="hero-last-updated">May 2026</span></div>
+    <div class="hero-title">Royal / BlackSuit / Chaos</div>
+    <div class="hero-subtitle">Private Ransomware Operation &rarr; RaaS &nbsp;&bull;&nbsp; Conti Team One Lineage &nbsp;&bull;&nbsp; Three-Generation Rebrand Chain</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical Threat</span>
+      <span class="badge badge-disrupted">Operation Checkmate (2025)</span>
+      <span class="badge badge-conti">Conti Lineage</span>
+      <span class="badge badge-rebranded">Active Rebrand: Chaos</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Royal First Observed</div>
+        <div class="kpi-value">Sep 2022</div>
+        <div class="kpi-sub">Secureworks CTU / Unit 42</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Combined Victims</div>
+        <div class="kpi-value">308+</div>
+        <div class="kpi-sub">Royal 123 + BlackSuit 185+</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ransom Demands</div>
+        <div class="kpi-value">$500M+</div>
+        <div class="kpi-sub">Combined Royal &amp; BlackSuit (FBI/CISA)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Funds Seized</div>
+        <div class="kpi-value">$1.09M</div>
+        <div class="kpi-sub">BTC, Operation Checkmate 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">1</div>
+        <div class="kpi-sub">Op. Checkmate, Jul 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Conti</div>
+        <div class="kpi-sub">Team One / Royal Spider</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Current Rebrand</div>
+        <div class="kpi-value">Chaos</div>
+        <div class="kpi-sub">Active from Feb 2025 (Talos)</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Chaos Victims (Live)</div>
+        <div class="kpi-value" id="kpi-victim-count">--</div>
+        <div class="kpi-sub">via ransomware.live</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims (Chaos)
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>Royal, BlackSuit, and the 2025 Chaos RaaS represent a single, continuous threat lineage originating from within the Conti organization. First emerging as Royal in September 2022 following Conti's dissolution, the group operated as a private, closed ransomware operation targeting US critical infrastructure, healthcare, municipalities, and manufacturing. It rebranded as BlackSuit in May 2023, retaining core operators, tooling, and the signature "security test" extortion narrative. Following Operation Checkmate (July 2025), in which international law enforcement seized the group's infrastructure and approximately $1.09 million in laundered Bitcoin, Cisco Talos assessed with moderate confidence that BlackSuit rebranded again as the Chaos RaaS, which emerged in February 2025 and remains active.</p>
+      <p>The group collectively demanded more than $500 million in ransom across the Royal and BlackSuit periods (FBI/CISA advisory). No arrests or indictments have been made public. The Chaos rebrand marks a structural shift from a private operation to a full Ransomware-as-a-Service model with open affiliate recruitment on the RAMP forum.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Tracking aliases (CrowdStrike)</td><td><strong>ROYAL SPIDER</strong> (covers Royal, BlackSuit, and Chaos/BlackChaos). Parent Conti entity: Wizard Spider (not a group-specific designation for this lineage).</td></tr>
+            <tr><td>Tracking aliases (Secureworks)</td><td><strong>GOLD SOUVENIR</strong> (covers Royal and BlackSuit). Parent Conti entity: Gold Ulrick (not group-specific).</td></tr>
+            <tr><td>Tracking aliases (Unit 42)</td><td><strong>Ignoble Scorpius</strong> (BlackSuit-specific; Royal tracked separately under "Royal ransomware" threat assessment).</td></tr>
+            <tr><td>Tracking aliases (CISA/FBI)</td><td>"BlackSuit (Royal)" as unified lineage designation in joint advisory (August 2024 update).</td></tr>
+            <tr><td>Tracking aliases (Cisco Talos)</td><td>"Chaos ransomware RaaS group" (Chaos-specific; distinct from earlier Chaos builder families).</td></tr>
+            <tr><td>Tracking aliases (HHS HC3)</td><td>Separate analyst notes: "Royal ransomware" and "BlackSuit ransomware" published individually.</td></tr>
+            <tr><td>Operational model</td><td>Royal/BlackSuit: Private closed operation, no open RaaS. Chaos: Full RaaS with affiliate recruitment on RAMP forum.</td></tr>
+            <tr><td>Extortion mechanic</td><td>Royal/BlackSuit: Double extortion (encryption + data publication threat). Chaos: Triple extortion (encryption + data theft + DDoS threat).</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia / CIS (CREDIBLE; no confirmed formal state nexus).</td></tr>
+            <tr><td>LE disruption status</td><td>Operation Checkmate (July 24, 2025): 4 servers, 9 domains seized; $1,091,453 BTC seized. No arrests or indictments.</td></tr>
+            <tr><td>Decryptor availability</td><td>None publicly available for Royal, BlackSuit, or the 2025 Chaos RaaS as of May 2026. Note: older Chaos builder-family decryptors do not apply (different codebase).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: DLS + BRANDING -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://businessinsights.bitdefender.com/hs-fs/hubfs/image-png-Jul-25-2025-07-33-52-5997-AM.png?width=963&height=425&name=image-png-Jul-25-2025-07-33-52-5997-AM.png"
+               alt="BlackSuit data leak site victim listing"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>BlackSuit DLS: Victim Listing</strong>
+            The BlackSuit data leak site published victim names alongside data volume and links to stolen files. More than 150 entries appeared before seizure. Posts also featured LinkedIn contacts for victim employees, designed to amplify reputational pressure. Victim name obscured in source publication.
+            <span class="img-source">Source: Bitdefender, July 2025</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://businessinsights.bitdefender.com/hs-fs/hubfs/image-png-Jul-25-2025-07-35-09-8903-AM.png?width=974&height=338&name=image-png-Jul-25-2025-07-35-09-8903-AM.png"
+               alt="BlackSuit DLS contact page for victim negotiation"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>BlackSuit DLS: Victim Contact Portal</strong>
+            Victims accessed the contact page using a unique victim ID or negotiation link embedded in the ransom note, along with their email address. The portal maintained operational discretion consistent with the group's deliberate low-profile approach. No Telegram or social media presence was maintained.
+            <span class="img-source">Source: Bitdefender, July 2025</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://businessinsights.bitdefender.com/hubfs/blacksuit-ransomware-seized.jpg"
+               alt="Operation Checkmate BlackSuit seizure banner"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Operation Checkmate: Seizure Banner</strong>
+            The BlackSuit .onion domains displayed this seizure banner after the July 24, 2025 takedown. Participating agencies included HSI, FBI, USSS, IRS-CI, Europol, UK NCA, and agencies from Germany, Ireland, France, Canada, Ukraine, and Lithuania. Bitdefender provided private-sector assistance.
+            <span class="img-source">Source: Bitdefender / HSI, July 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://businessinsights.bitdefender.com/hs-fs/hubfs/image-png-Jul-25-2025-07-28-53-4953-AM.png?width=974&height=511&name=image-png-Jul-25-2025-07-28-53-4953-AM.png"
+               alt="Conti Royal BlackSuit lineage chart"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Lineage: Conti to BlackSuit</strong>
+            Bitdefender's lineage diagram mapping the Conti Team One connection to Royal and subsequently BlackSuit. The chain is supported by code overlap, personnel continuity, and timing. BlackSuit's emergence in May 2023 preceded Royal's last victim posting by approximately two months, consistent with a planned transition.
+            <span class="img-source">Source: Bitdefender, July 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://businessinsights.bitdefender.com/hs-fs/hubfs/image-png-Jul-25-2025-07-32-09-4529-AM.png?width=954&height=472&name=image-png-Jul-25-2025-07-32-09-4529-AM.png"
+               alt="BlackSuit monthly attack activity timeline"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>BlackSuit: Monthly Activity Timeline</strong>
+            Attack volume sharply declined after November 2024, assessed either as pre-rebrand operational pause or deliberate OPSEC reduction prior to the Chaos transition. Pattern is consistent with prior Royal-to-BlackSuit handover behavior.
+            <span class="img-source">Source: Bitdefender, July 2025</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: ORIGIN -->
+    <section class="section" id="origin">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Lineage Chain: Conti &rarr; Royal &rarr; BlackSuit &rarr; Chaos (2025)</div>
+        <p>The Royal/BlackSuit/Chaos cluster is assessed as one of the primary successor operations to the Conti organization, specifically linked to what Bitdefender and TrustedInternet characterize as <strong>Conti Team One</strong> - a specialized sub-unit within the Conti hierarchy. The lineage spans four named iterations across approximately four years of operation.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Period</th><th>Victims</th><th>Model</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Royal</strong></td><td>Sep 2022 &ndash; Jul 2023</td><td>~123</td><td>Private closed operation</td><td>Superseded by BlackSuit</td></tr>
+              <tr><td><strong>BlackSuit</strong></td><td>May 2023 &ndash; Jul 2025</td><td>185+</td><td>Private closed operation</td><td>Disrupted; assessed rebranded as Chaos</td></tr>
+              <tr><td><strong>Chaos (2025 RaaS)</strong></td><td>Feb 2025 &ndash; present</td><td>Ongoing</td><td>Full RaaS, open affiliates (RAMP)</td><td>Active as of mid-2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillar Assessment: Conti to Royal</div>
+        <div class="conf conf-credible">Credible &mdash; multi-source convergence; no single definitive technical confirmation</div>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 1 &mdash; Credible</div>
+            <div class="pillar-title">Personnel Continuity</div>
+            <div class="pillar-body">Multiple vendors report that Royal was formed by or absorbed former Conti operators. Bitdefender references a "Conti Team One" specialized unit as the organizational nucleus. Timing of Royal's emergence (September 2022) aligns precisely with post-Conti personnel dispersal. Negotiation phrasing and victim communication style reuse Conti conventions.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-title">TTP Continuity</div>
+            <div class="pillar-body">Royal replicated Conti's signature tools: Cobalt Strike, RMM abuse, VPN credential exploitation, and big-game hunting targeting. Victimology overlaps with Conti's preferred sectors (US critical infrastructure, healthcare, municipalities). "Security audit" ransom note language mirrors earlier Conti negotiation framing.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &mdash; Credible</div>
+            <div class="pillar-title">Operational Timing</div>
+            <div class="pillar-body">Royal began operations concurrently with Conti's dissolution (May 2022), consistent with an orchestrated transition rather than an independent emergence. Unlike many post-Conti groups that had public forum presence, Royal maintained deliberate opacity, reflecting lessons learned from the February 2022 Conti chat leaks.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 4 &mdash; Analyst Inference</div>
+            <div class="pillar-title">Closed Operational Profile</div>
+            <div class="pillar-body">Royal's refusal to operate a public RaaS, its hand-selected operator pool, and its avoidance of dark web forum advertising are consistent with a group that deliberately adopted counter-OPSEC lessons from Conti's collapse. This behavioral continuity suggests core leadership continuity, not merely code inheritance.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillar Assessment: Royal to BlackSuit</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; high-confidence, multi-vendor consensus</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-title">Code and Parameter Overlap</div>
+            <div class="pillar-body">BlackSuit's encryptor retains Royal's partial encryption logic, command-line parameter structure (including the "-ep" encryption percentage flag), and encryption extension test artifacts. Some observed Royal binaries appended a ".blacksuit" extension before the full rebrand, confirming the same developer team produced both strains. Secureworks (GOLD SOUVENIR), Unit 42 (Ignoble Scorpius), and HHS HC3 all cite this as primary evidence.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &mdash; Confirmed</div>
+            <div class="pillar-title">Operational Timeline Handover</div>
+            <div class="pillar-body">Royal's last victim was posted in July 2023. BlackSuit's first victims appeared in May 2023, two months prior, consistent with a staged rebrand rather than Royal's collapse. Secureworks explicitly states BlackSuit emerged in May 2023 and "CTU researchers assess with high confidence that GOLD SOUVENIR began the process of rebranding to BlackSuit ransomware in May 2023."</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3 &mdash; Confirmed</div>
+            <div class="pillar-title">Ransom Note Continuity</div>
+            <div class="pillar-body">BlackSuit ransom notes mirror Royal's in structure, tone, and specific framing: "Good whatever time of day it is" greeting, "security test" narrative, Tor-based negotiation portal, promise of a post-payment security report, and double-extortion data publication threats. The wording continuity across rebrand is the clearest behavioral signature of operator identity.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 4 &mdash; Confirmed</div>
+            <div class="pillar-title">Government Attribution</div>
+            <div class="pillar-body">HSI formally confirmed in August 2025 that "BlackSuit was the successor to Royal ransomware." CISA/FBI's August 2024 updated advisory explicitly retitles the group "BlackSuit (Royal)" and describes both as a single threat lineage. Unit 42 states Ignoble Scorpius is "a direct evolution of Royal."</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Assessment: BlackSuit to Chaos (2025 RaaS)</div>
+        <div class="conf conf-credible">Credible &mdash; single primary vendor (Talos); moderate confidence; not yet corroborated by independent formal assessment</div>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 1 &mdash; Credible</div>
+            <div class="pillar-title">Encryption Configuration Parallels</div>
+            <div class="pillar-body">Cisco Talos documented matching functional parameters between Chaos and BlackSuit encryptors: Chaos "lkey" (32-byte encryption key) parallels BlackSuit "id"; "encrypt_step" parallels "ep" (partial encryption step size); "kill_vms" parallels "stopvm." These are configuration semantics, not simple code copying, suggesting the same developer team structured the new encryptor.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-title">Ransom Note Near-Identity</div>
+            <div class="pillar-body">Chaos ransom notes preserve Royal/BlackSuit's core structure: "security test" theme, double extortion messaging, confidentiality assurances, onion URL format, and a reward/punishment scheme. The thematic continuity across three named iterations without structural deviation is difficult to explain absent operator-level continuity.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &mdash; Credible</div>
+            <div class="pillar-title">Temporal Coincidence</div>
+            <div class="pillar-body">Chaos RaaS emerged in February 2025 during a period of sharp decline in BlackSuit activity. Operation Checkmate (July 2025) seized BlackSuit infrastructure. The pre-seizure decline in BlackSuit attacks beginning November 2024 matches the pre-Royal-to-BlackSuit lull, consistent with a deliberate pre-rebrand operational drawdown.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Analyst Inference</div>
+            <div class="pillar-title">Conflicting View</div>
+            <div class="pillar-body">Some vendors treat Chaos as a distinct "new" group while acknowledging overlap. Rapid7 (2026) documents at least one incident where a state-sponsored actor used Chaos branding as a false flag, adding attribution complexity. Fortinet and Talos explicitly distinguish the 2025 Chaos RaaS from earlier Chaos builder families, which are unrelated by codebase.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-alert">
+          <strong>Critical rule:</strong> Wizard Spider (CrowdStrike) and Gold Ulrick (Secureworks) designate the parent Conti organization only. These designations describe shared heritage and must not be applied to Royal, BlackSuit, or Chaos as group-specific identifiers. The group-specific designations are: ROYAL SPIDER (CrowdStrike), GOLD SOUVENIR (Secureworks), and Ignoble Scorpius (Unit 42 / BlackSuit-specific).
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Parent Conti Designation</th><th>Royal/BlackSuit/Chaos Designation</th><th>Coverage Notes</th></tr></thead>
+            <tbody>
+              <tr><td>CrowdStrike</td><td>Wizard Spider</td><td><strong>ROYAL SPIDER</strong></td><td>Covers Royal, BlackSuit, and BlackChaos/Chaos as a single adversary</td></tr>
+              <tr><td>Secureworks CTU</td><td>Gold Ulrick</td><td><strong>GOLD SOUVENIR</strong></td><td>Covers Royal and BlackSuit; high-confidence rebrand assessment published</td></tr>
+              <tr><td>Palo Alto Unit 42</td><td>(Not separately designated)</td><td><strong>Ignoble Scorpius</strong></td><td>BlackSuit-specific; Royal tracked under separate "Royal ransomware" threat assessment</td></tr>
+              <tr><td>CISA / FBI</td><td>(Not applicable)</td><td>"BlackSuit (Royal)"</td><td>Unified designation in August 2024 joint advisory</td></tr>
+              <tr><td>Cisco Talos</td><td>(Not applicable)</td><td>"Chaos ransomware RaaS group"</td><td>Chaos-specific; explicitly separates from earlier Chaos builder families</td></tr>
+              <tr><td>HHS HC3</td><td>(Not applicable)</td><td>Separate notes for "Royal ransomware" and "BlackSuit ransomware"</td><td>Healthcare sector focus; published individually</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Royal (Sep 2022 &ndash; Jul 2023): Private Operation</div>
+        <p>Royal operated as a <strong>closed, private group</strong> rather than a public RaaS. Affiliate access, if any, was by invitation only with no open forum recruitment. The group maintained deliberate operational opacity, explicitly avoiding public advertising after observing how Conti's public profile contributed to its downfall through the 2022 chat leaks.</p>
+        <ul class="content-list">
+          <li><strong>Extortion model:</strong> Double extortion (encryption + data publication threat). Leak site operated on Tor. Data published when negotiations failed.</li>
+          <li><strong>Ransom demands:</strong> Low to mid-millions USD for large organizations; significant flexibility documented in negotiations with 50-80% reductions observed.</li>
+          <li><strong>Negotiation framing:</strong> Presented intrusion as a "security test" and offered a "security report" as part of the payment package. Tor-based contact portals only.</li>
+          <li><strong>Communication:</strong> Ransom notes delivered personally; no public social media or forum presence. Victims instructed to use Tor-based chat or encrypted email.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">BlackSuit (May 2023 &ndash; Jul 2025): Private Operation, Evolved Scale</div>
+        <p>BlackSuit maintained Royal's private, non-public operational model while expanding victim volume significantly (123 to 185+ across the transition). Unit 42 and HHS HC3 both confirm BlackSuit operated without open affiliates. Bitdefender notes the group developed "experienced in-house teams" to assess victim revenue as part of structured target selection.</p>
+        <ul class="content-list">
+          <li><strong>Demands:</strong> Hundreds of thousands to multiple millions USD. Some individual payments exceeded $2 million (Bitdefender). Total demands across both eras exceeded $500 million (FBI/CISA advisory).</li>
+          <li><strong>Extortion escalation:</strong> Beyond data publication, BlackSuit threatened to contact regulators, media, customers, and victim employees to amplify pressure. LinkedIn pages for victim contacts were posted on the DLS.</li>
+          <li><strong>Post-payment breach:</strong> In at least one late 2024 case, BlackSuit leaked victim data after receiving nearly $3 million in payment, a significant violation of the implicit contract that drives ransomware negotiations.</li>
+          <li><strong>Ransom note (confirmed text excerpt):</strong> "Good whatever time of day it is! Your safety service did a really poor job of protecting your files against our professionals. Extortioner named BlackSuit has attacked your system..."</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Chaos (Feb 2025 &ndash; Present): Full RaaS with Open Affiliates</div>
+        <p>Chaos represents a structural shift from the group's prior private model to a public Ransomware-as-a-Service offering advertised on the RAMP forum. This transition mirrors the pattern observed across other post-disruption Conti-lineage operations.</p>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">Documented Demand</div>
+            <div class="metric-val">$300K</div>
+            <div class="metric-note">Single confirmed Chaos negotiation (Talos)</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Extortion Layers</div>
+            <div class="metric-val">3</div>
+            <div class="metric-note">Encryption + data theft + DDoS threat</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Example Data Volume</div>
+            <div class="metric-val">69 GB</div>
+            <div class="metric-note">Optima Tax Relief victim (Talos)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Affiliate Recruitment</div>
+            <div class="metric-val">RAMP</div>
+            <div class="metric-note">Russian-language eCrime forum</div>
+          </div>
+        </div>
+        <ul class="content-list">
+          <li><strong>Triple extortion:</strong> Encryption plus data theft plus active DDoS threat. Chaos explicitly introduced a "reward vs. punishment" framing in ransom notes: additional benefits for rapid payment, escalating consequences (DDoS, competitor/client notification) for non-payment.</li>
+          <li><strong>Affiliate exclusions (claimed, not verified):</strong> Chaos forum advertisements claim no operations in BRICS/CIS countries and exclusion of hospitals and government. Victim list including the Salvation Army (a charity) undercuts adherence to an ethics code. Treat as policy claims, not confirmed binary kill-switch behavior.</li>
+          <li><strong>Revenue split:</strong> Not publicly confirmed. Standard RaaS model assumed; specific percentages not disclosed in open sources (Talos).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Malware Variants and Platform Support</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Variant</th><th>Era</th><th>Extension</th><th>Platforms</th><th>Key Notes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Royal</strong></td><td>Sep 2022&ndash;Jul 2023</td><td class="mono">.royal</td><td>Windows (primary)</td><td>AES + RSA-protected keys; partial encryption via -ep flag; multi-threaded; ".blacksuit" extension observed in pre-rebrand test binaries</td></tr>
+              <tr><td><strong>BlackSuit (Windows)</strong></td><td>May 2023&ndash;Jul 2025</td><td class="mono">.blacksuit</td><td>Windows</td><td>Inherits Royal partial-encryption logic; vssadmin.exe for VSS deletion; readme.BlackSuit.txt ransom note; appends extension after encryption</td></tr>
+              <tr><td><strong>BlackSuit (ESXi/Linux)</strong></td><td>2023&ndash;2025</td><td class="mono">.blacksuit</td><td>VMware ESXi, Linux</td><td>Targets virtual infrastructure; ESXi-specific binary; explicit hypervisor attack capability</td></tr>
+              <tr><td><strong>Chaos-C++</strong></td><td>Feb 2025+</td><td class="mono">.chaos</td><td>Windows, ESXi, Linux, NAS</td><td>Partial multi-threaded encryption; clipboard hijacker; destructive behaviors; "lkey", "encrypt_step", "kill_vms" config parameters</td></tr>
+              <tr><td><strong>Mad Cat</strong></td><td>2025</td><td>Varies</td><td>Windows</td><td>Chaos variant; anti-sandbox behavior; Tinexta analysis published March 2025</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Methods</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Group(s)</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Phishing / malicious PDFs</td><td>Royal, BlackSuit</td><td>Malicious PDF attachments in phishing emails; also malvertising campaigns delivering initial payloads (CISA advisory)</td></tr>
+              <tr><td>Malicious installer (fake Zoom)</td><td>BlackSuit</td><td>Fake Zoom installers delivering RAT and subsequent BlackSuit payload (DFIR Report, March 2025)</td></tr>
+              <tr><td>RDP exploitation</td><td>Royal, BlackSuit</td><td>Stolen or brute-forced RDP credentials used for initial entry</td></tr>
+              <tr><td>Public-facing application weaknesses</td><td>Royal, BlackSuit</td><td>Exploitation of vulnerable edge services; specific CVEs vary by incident</td></tr>
+              <tr><td>VPN credential abuse</td><td>Royal, BlackSuit</td><td>Phishing-delivered credentials or purchased access; consistent with Conti-lineage preference</td></tr>
+              <tr><td>Vishing (voice phishing)</td><td>Chaos</td><td>Spam email prompts victim to call a number; actor impersonates IT staff; victim guided to enable Microsoft Quick Assist or AnyDesk; actor gains remote control and deploys tools</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Kill Chain Toolset</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Tools / Methods</th><th>Group(s)</th></tr></thead>
+            <tbody>
+              <tr><td>Discovery / Recon</td><td>SharpShares, SoftPerfect NetWorx, SoftPerfect NetScan, network enumeration via net.exe</td><td>Royal, BlackSuit</td></tr>
+              <tr><td>Credential Access</td><td>LSASS harvesting; Cobalt Strike credential modules; Gozi (infostealer)</td><td>BlackSuit</td></tr>
+              <tr><td>Persistence</td><td>SystemBC (registry modification, scheduled tasks); RMM tools installed as services</td><td>BlackSuit</td></tr>
+              <tr><td>Lateral Movement</td><td>SMB with valid admin accounts, PsExec, domain controller access; AnyDesk/ScreenConnect post-exploitation</td><td>Royal, BlackSuit, Chaos</td></tr>
+              <tr><td>Remote Access / C2</td><td>AnyDesk, ScreenConnect, TeamViewer, Cobalt Strike beacons; Chaos actors reset domain user passwords via net.exe, deleted PowerShell logs, and removed MFA/security apps</td><td>All</td></tr>
+              <tr><td>Exfiltration</td><td>RClone, Brute Ratel, Cobalt Strike; staging to remote servers</td><td>BlackSuit, Chaos</td></tr>
+              <tr><td>Defense Evasion</td><td>PowerShell log deletion; MFA application removal; .bat file privilege escalation scripts; VSS deletion via vssadmin.exe</td><td>BlackSuit, Chaos</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <p><strong>Royal:</strong> Hybrid encryption combining strong symmetric encryption (AES) for file content with asymmetric RSA protection for keys. Partial encryption is configurable via the "-ep" flag (encryption percentage per file), enabling fast processing of large files. Selective targeting by file type and directory, with option to skip specified paths. Multi-threaded execution.</p>
+        <p><strong>BlackSuit:</strong> Inherits Royal's partial-encryption architecture with renamed parameters. ".blacksuit" extension appended to encrypted files. Volume Shadow Copies deleted via vssadmin.exe. ESXi Linux variant targets virtual disk files on VMware hypervisors. No publicly available decryptor.</p>
+        <p><strong>Chaos:</strong> Uses a 32-byte "lkey" symmetric key; "encrypt_step" controls the size of encrypted segments within each file (partial encryption for speed); "kill_vms" parameter stops running virtual machines before encrypting their disk files, analogous to BlackSuit's "stopvm." The Chaos-C++ variant adds a clipboard hijacker and destructive payload options beyond standard ransomware behavior. Cross-platform encryptors for Windows, ESXi, Linux, and NAS are offered as a core RaaS selling point.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-credible">Credible (policy claim) / Analyst Inference (binary enforcement)</div>
+        <p>Royal and BlackSuit are reported to implement locale or keyboard-layout checks consistent with Conti-lineage CIS-avoidance conventions, exiting when Russian or related CIS keyboard layouts are detected. Binary-level confirmation is limited in open public technical write-ups; the behavior is inferred primarily from operational absence of CIS victims.</p>
+        <p>Chaos forum advertisements explicitly claim no operations in BRICS/CIS countries, but binary-level enforcement via locale checks has not been consistently confirmed in open publications. Treat as a stated policy claim rather than a proven technical kill-switch.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Mechanics and Cryptocurrency</div>
+        <p>Royal, BlackSuit, and Chaos all demand payment in <strong>Bitcoin (BTC)</strong> as the primary instrument. Victims access payment portals via Tor-based links embedded in ransom notes. Royal specifically required victims to access a darknet website for payment processing (per DOJ charging documents). Some flexibility toward privacy coins (Monero) has been reported in individual negotiations, though documented cases focus on BTC addresses.</p>
+        <p>Each victim is assigned a unique BTC deposit address, enabling the operators to track individual payments and attribute them to specific victims during the decryption-key release process. Per-victim address generation is standard Conti-lineage practice and complicates attribution-by-wallet without comprehensive blockchain forensic tooling.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering: Confirmed Case (Operation Checkmate)</div>
+        <div class="callout callout-alert">
+          <strong>Confirmed seizure trace:</strong> On April 4, 2023, a Royal victim paid 49.3120227 BTC (valued at $1,445,454.86 at time of payment). A portion of $1,091,453 was repeatedly deposited and withdrawn through a virtual currency exchange account in a layering pattern consistent with ransomware laundering. The exchange froze the funds on January 9, 2024. A US court formally seized the funds on June 21, 2024 (US Attorney, District of Columbia, with evidence collected by EDVA). This seizure was publicly announced August 11, 2025 as part of Operation Checkmate.
+        </div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Initial Receipt</div>
+              <div class="phase-desc">Victim pays ransom in BTC to a unique per-victim deposit address. Payment triggers decryption key release. The April 4, 2023 case: 49.31 BTC at $1.45M value.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Layering via Exchange Cycling</div>
+              <div class="phase-desc">Proceeds repeatedly deposited and withdrawn through a virtual currency exchange account. This deposit/withdrawal cycling is a classic layering technique designed to break chain-of-custody traceability and generate multiple transaction hops.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Exchange Freeze and Law Enforcement Action</div>
+              <div class="phase-desc">The exchange froze $1,091,453 in funds on January 9, 2024, likely triggered by internal compliance review or an IRS-CI or FBI production request. US legal seizure executed June 21, 2024. Remaining ransom value ($354,002) not publicly accounted for in available reporting, suggesting earlier successful laundering or a different wallet path.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Broader Laundering Pattern</div>
+              <div class="phase-desc">TRM Labs' 2026 Crypto Crime Report identifies cross-chain bridge activity growing 66% and mixer use declining 37% across the ransomware ecosystem in 2024-2025, with BlackSuit cited as one of the disrupted groups that displaced affiliates and laundering infrastructure. Group-specific wallet maps for Royal/BlackSuit have not been publicly released by Chainalysis, TRM Labs, or Elliptic beyond high-level threat reporting.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Regulatory Context</div>
+        <p>No specific OFAC designation has been issued for Royal, BlackSuit, or Chaos wallets or operators as of May 2026. However, US agencies treat payments to any Conti-lineage actor as existing within a sanctions-risk context given OFAC's prior designations of Conti-linked wallet infrastructure. Organizations that pay ransoms to Royal/BlackSuit/Chaos affiliates are advised to seek OFAC compliance guidance prior to payment.</p>
+        <p>Blockchain forensics firm assessments: TRM Labs and Chainalysis have published broadly on Conti-lineage financial flows, but group-specific detailed wallet cluster maps for Royal/BlackSuit/Chaos are not widely available in open-source publications. The Operation Checkmate seizure represents the first confirmed public on-chain trace and asset recovery for this lineage.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Royal Victims</div>
+          <div class="metric-val">~123</div>
+          <div class="metric-note">Sep 2022 &ndash; Jul 2023</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">BlackSuit Victims</div>
+          <div class="metric-val">185+</div>
+          <div class="metric-note">May 2023 &ndash; Jul 2025 (Bitdefender)</div>
+        </div>
+        <div class="metric-card danger">
+          <div class="metric-label">Combined Demands</div>
+          <div class="metric-val">$500M+</div>
+          <div class="metric-note">FBI/CISA advisory, Aug 2024</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Max Individual Payment</div>
+          <div class="metric-val">$3M+</div>
+          <div class="metric-note">BlackSuit; data leaked anyway (Bitdefender)</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top: 24px;">
+        <div class="subsection-title">Sector Distribution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Period</th><th>Confidence</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Manufacturing</td><td>BlackSuit (primary)</td><td>CONFIRMED</td><td>Largest single BlackSuit sector per Bitdefender. High revenue and operational sensitivity drive targeting.</td></tr>
+              <tr><td>Healthcare / Public Health</td><td>Royal, BlackSuit</td><td>CONFIRMED</td><td>HHS HC3 issued dedicated analyst notes for both Royal and BlackSuit targeting healthcare organizations. Critical sector per CISA advisory.</td></tr>
+              <tr><td>Education / Research</td><td>BlackSuit (primary)</td><td>CONFIRMED</td><td>Second-largest BlackSuit sector per Bitdefender.</td></tr>
+              <tr><td>Construction</td><td>BlackSuit</td><td>CONFIRMED</td><td>Significant victim count; Unit 42 notes construction as one of top two industries for Ignoble Scorpius (alongside manufacturing).</td></tr>
+              <tr><td>Government / Municipalities</td><td>Royal (primary)</td><td>CONFIRMED</td><td>City of Dallas (2023) is most prominent named victim. Critical government facilities sector explicitly cited in CISA advisory.</td></tr>
+              <tr><td>Retail / Consumer</td><td>BlackSuit</td><td>CREDIBLE</td><td>CDK Global (software vendor to automotive dealers) breach affected 950,000 individuals.</td></tr>
+              <tr><td>Charity / NGO</td><td>Chaos</td><td>CREDIBLE</td><td>Salvation Army targeted by Chaos RaaS, contradicting stated exclusion of humanitarian organizations.</td></tr>
+              <tr><td>Tax / Financial Services</td><td>Chaos</td><td>CREDIBLE</td><td>Optima Tax Relief (69 GB data stolen).</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>The group is heavily US-focused across all three iterations. Bitdefender documented that the majority of BlackSuit victims were US-based, with secondary clusters in Great Britain, Canada, Belgium, and Spain. Chaos victims have been identified in the US, UK, New Zealand, and India. No CIS-region victims have been documented in open sources for any named iteration.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Named Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Group</th><th>Sector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>City of Dallas, Texas</td><td>Royal</td><td>Government / Municipality</td><td>2023; major US municipal disruption; city systems and 911 dispatch affected; extensively covered in vendor reporting</td></tr>
+              <tr><td>CDK Global (software vendor)</td><td>BlackSuit</td><td>Technology / Automotive</td><td>Data of 950,000 individuals stolen; major downstream impact on US automotive dealerships</td></tr>
+              <tr><td>Optima Tax Relief</td><td>Chaos</td><td>Financial Services</td><td>69 GB data allegedly exfiltrated; listed on Chaos DLS (Talos reporting)</td></tr>
+              <tr><td>Salvation Army</td><td>Chaos</td><td>Charity / NGO</td><td>Targeted despite Chaos' stated exclusion of humanitarian organizations; undermines claimed ethics code</td></tr>
+              <tr><td>[Named victim, $3M ransom]</td><td>BlackSuit</td><td>Unknown</td><td>Bitdefender: victim paid nearly $3M ransom; data leaked anyway. Demonstrates group's willingness to breach negotiated agreements.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Size Profile and Selection Model</div>
+        <p>All three iterations prioritize <strong>big-game hunting</strong>: medium-to-large enterprises and public-sector organizations with high operational disruption sensitivity, significant cyber insurance coverage, and revenue profiles that justify multi-million dollar demands. BlackSuit maintained a structured process to assess victim revenue before setting demands, per Bitdefender analysis.</p>
+        <p>The Chaos RaaS model introduces affiliate heterogeneity that may produce a wider victim-size distribution over time, consistent with how other Conti-lineage groups (Akira, BlackBasta) expanded victim breadth after shifting to a RaaS structure.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 07: ENFORCEMENT -->
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operation Checkmate (July 24, 2025 / Announced August 11, 2025)</div>
+        <div class="callout callout-success">
+          <strong>CONFIRMED:</strong> International law enforcement operation seized BlackSuit's data leak site, negotiation portals, 4 servers, and 9 domains. Approximately $1,091,453 in Bitcoin was seized. No arrests or criminal indictments have been made public as of May 2026.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Operation name</td><td>Operation Checkmate</td></tr>
+              <tr><td>Execution date</td><td>July 24, 2025 (infrastructure seized); August 11, 2025 (DOJ formal announcement)</td></tr>
+              <tr><td>Assets seized</td><td>4 servers; 9 domains (data leak site and negotiation portals); $1,091,453 in BTC</td></tr>
+              <tr><td>Lead US agency</td><td>DHS Homeland Security Investigations (HSI), Washington D.C. field office</td></tr>
+              <tr><td>Additional US agencies</td><td>US Secret Service (Criminal Investigative Division); IRS Criminal Investigation (Washington D.C. Cyber Crimes Unit); FBI</td></tr>
+              <tr><td>International partners</td><td>UK National Crime Agency; UK Northwest Regional Organized Crime Unit; Germany Landeskriminalamt Niedersachsen; Ireland An Garda Siochana &ndash; Garda National Cyber Crime Bureau; France Office Anti-Cybercriminalite; Canada Royal Canadian Mounted Police + Delta Police Department; Ukraine National Police Cyber Police Department; Lithuania Criminal Police Bureau</td></tr>
+              <tr><td>Private sector assist</td><td>Bitdefender (Draco Team; provided expert technical assistance)</td></tr>
+              <tr><td>Legal team (US)</td><td>AUSA Laura D. Withers (EDVA); Trial Attorney Jacques Singer-Emery (NSD National Security Cyber Section); AUSA Rick Blaylock Jr. (DC)</td></tr>
+              <tr><td>Arrests / indictments</td><td>None publicly announced as of May 2026</td></tr>
+              <tr><td>Total demands cited</td><td>$500M+ across Royal and BlackSuit eras (per FBI/CISA advisory cited in DOJ press release)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="subsection-title" style="margin-top: 20px;">Bitcoin Seizure Trace</div>
+        <p>The DOJ unsealing documents provide a confirmed on-chain chain of custody for one seized ransom: On April 4, 2023, a victim paid 49.3120227 BTC ($1,445,454.86 at the time of transaction) to Royal. A $1,091,453 portion was repeatedly cycled through a virtual currency exchange in a layering pattern. The exchange froze the funds on January 9, 2024, and a US court order formally seized them on June 21, 2024 (evidence collected by EDVA, seizure warrant unsealed by DC). This is the first publicly confirmed on-chain asset recovery directly linked to this lineage.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Government Advisories and Regulatory Actions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Document / Action</th><th>Date</th><th>Issuer</th><th>Significance</th></tr></thead>
+            <tbody>
+              <tr><td>CISA/FBI Joint Advisory: #StopRansomware &mdash; Royal Ransomware</td><td>Mar 2023</td><td>CISA, FBI</td><td>Initial public advisory on Royal TTPs and IOCs; healthcare and critical infrastructure focus</td></tr>
+              <tr><td>HHS HC3 Analyst Note: Royal ransomware</td><td>2023</td><td>HHS Health Sector Cybersecurity Coordination Center</td><td>Healthcare-sector-specific warning on Royal targeting</td></tr>
+              <tr><td>HHS HC3 Analyst Note: BlackSuit ransomware</td><td>2023-2024</td><td>HHS HC3</td><td>Separate healthcare note flagging BlackSuit as possible Royal successor</td></tr>
+              <tr><td>CISA/FBI Updated Joint Advisory: BlackSuit (Royal)</td><td>Aug 7, 2024</td><td>CISA, FBI</td><td>Formal retitling to "BlackSuit (Royal)"; updated TTPs, IOCs, and $500M demand figure; unified lineage designation</td></tr>
+              <tr><td>DOJ/HSI Operation Checkmate announcement</td><td>Aug 11, 2025</td><td>DOJ, HSI, multiple agencies</td><td>Infrastructure seizure; $1.09M BTC seizure; formal confirmation of BlackSuit/Royal succession</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessment: Disruption Impact</div>
+        <div class="callout callout-warning">
+          <strong>Analyst inference:</strong> Operation Checkmate disrupted BlackSuit's operational infrastructure but did not result in arrests or prosecutorial action against identified operators. The near-simultaneous emergence of Chaos RaaS (February 2025, predating the July 2025 seizure) suggests the group was already in transition before law enforcement action. This pattern, where operators rebrand pre-emptively and law enforcement seizure targets the prior-generation infrastructure, is consistent with prior Conti-lineage disruptions. Operational continuity for the threat cluster remains high.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdiction Assessment</div>
+        <div class="conf conf-credible">Credible &mdash; Russia / CIS-based criminal actors; no confirmed state directorship</div>
+        <p>Royal, BlackSuit, and Chaos are assessed as Russia-based or CIS-based criminal actors on the basis of multiple converging indicators: operational avoidance of CIS-region victims across all iterations; no confirmed attacks on Russian or CIS targets; Russian-language forum advertising (RAMP, Chaos); operator communications in Russian where observed; and the group's Conti lineage, which was established by US government indictments as a Russia-based criminal enterprise.</p>
+        <p>The absence of prosecutions of named operators within Russia is consistent with de facto safe harbor for criminal groups that avoid domestic targeting. This pattern applies broadly to Conti-lineage successor operations. No confirmed evidence of formal state direction, intelligence-sharing arrangements, or explicit tasking by FSB, SVR, or GRU has been publicly documented for any named iteration of this lineage.</p>
+        <p>HSI and DOJ press releases describe the group as responsible for attacks on "US critical infrastructure" and public safety, using language that frames the group as a national security concern without formally attributing state nexus.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Conti Team One Connection</div>
+        <div class="conf conf-credible">Credible &mdash; single-source characterization (Bitdefender / TrustedInternet); not independently confirmed by Mandiant or Recorded Future in open publications</div>
+        <p>Bitdefender and TrustedInternet describe the personnel nucleus of Royal as deriving from "Conti Team One," characterized as a specialized sub-unit within the Conti organizational structure. This framing distinguishes the Royal/BlackSuit lineage from other post-Conti splinters (Akira, BlackBasta, Karakurt) and implies a more centralized leadership tier with direct Conti operational heritage.</p>
+        <p>No named individuals have been publicly attributed to Royal, BlackSuit, or Chaos operations as of May 2026. No sanctions designations have been issued against specific operators in this cluster.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">State Actor False-Flag Usage (Chaos)</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; single source (Rapid7, 2026); not corroborated in open publications</div>
+        <p>Rapid7 (2026) documented at least one incident in which a state-sponsored threat actor used Chaos RaaS branding as a false flag for a targeted state-sponsored operation. This does not imply that Chaos itself is a state-directed group. The stronger interpretation is that Chaos is an opportunistic criminal RaaS whose branding and tooling were co-opted by a separate state actor in a specific operation to obscure attribution.</p>
+        <p>This finding adds attribution complexity for defenders and intelligence analysts: not all Chaos-attributed incidents should be assessed as criminal ransomware activity. Some may represent state-directed operations using the Chaos cover to complicate attribution and frustrate law enforcement response.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <p>No named individuals have been publicly attributed to Royal, BlackSuit, or Chaos operations in any indictment, sanctions designation, or law enforcement press release as of May 2026. This absence of individual identification contrasts with disruptions of LockBit and ALPHV/BlackCat, where operator identities were published, and represents a significant gap in the accountability record for this lineage.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Historical Rebrand Pattern</div>
+        <p>This lineage has executed two confirmed, planned rebrands in three years: Royal to BlackSuit (2023) and BlackSuit to Chaos (2025). Each transition followed a similar template: gradual operational drawdown under the prior name, parallel emergence of the successor brand 2-4 months before the prior name went dark, retention of core TTPs and note structure, and avoidance of public attribution of the transition until independent researchers connected the dots. The pattern is deliberate and competent.</p>
+        <div class="callout callout-info">
+          <strong>Key signal:</strong> BlackSuit attack volume declined sharply after November 2024, seven months before Operation Checkmate. This pre-seizure drawdown, combined with Chaos RaaS launching in February 2025, suggests the operators anticipated or detected law enforcement attention and executed a pre-emptive rebrand. Law enforcement seized the infrastructure of the prior iteration; the active threat cluster had already migrated.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Structural Shift: Private to RaaS</div>
+        <p>The Chaos iteration represents a meaningful structural shift from the tight, closed operational model of Royal/BlackSuit to a public RaaS with open affiliate recruitment. This expansion increases attack surface and victim volume but also introduces affiliate management risk and potential OPSEC degradation. Prior Conti-lineage groups (Akira) have demonstrated that the RaaS model enables rapid victim volume growth; the Chaos iteration may follow the same trajectory.</p>
+        <p>The triple-extortion model (encryption + data theft + DDoS) adopted by Chaos represents a tactical escalation over Royal/BlackSuit's double-extortion approach, likely designed to close payment rates on victims with strong backup posture by adding the DDoS threat as a separate, backup-agnostic pressure vector.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group</th><th>Relationship</th><th>Confidence</th><th>Vendor Coverage</th></tr></thead>
+            <tbody>
+              <tr><td>Conti</td><td>Parent organization; Conti Team One as personnel nucleus for Royal emergence</td><td>CREDIBLE</td><td>Bitdefender, TrustedInternet (Team One framing); Unit 42, Secureworks, HHS HC3 (general Conti lineage)</td></tr>
+              <tr><td>BlackSuit</td><td>Direct rebrand of Royal (GOLD SOUVENIR, Ignoble Scorpius, ROYAL SPIDER)</td><td>CONFIRMED</td><td>Secureworks, Unit 42, HHS HC3, CISA/FBI, DOJ, HSI, Bitdefender</td></tr>
+              <tr><td>Chaos (2025 RaaS)</td><td>Probable rebrand of BlackSuit or formed by former BlackSuit members</td><td>CREDIBLE (moderate)</td><td>Cisco Talos (primary); SC World, Infosecurity Magazine (repeat Talos findings). Not yet independently assessed by Mandiant or Recorded Future in open publications.</td></tr>
+              <tr><td>Akira</td><td>Separate Conti-diaspora stream; distinct operational identity; shared Conti heritage only</td><td>CONFIRMED (separation)</td><td>CrowdStrike: PUNK SPIDER (separate from ROYAL SPIDER). No operational overlap documented.</td></tr>
+              <tr><td>BlackBasta</td><td>Separate Conti-diaspora stream; no operational linkage to Royal/BlackSuit documented</td><td>CONFIRMED (separation)</td><td>Distinct vendor designations across all major vendors.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf conf-inference" style="margin-top: 12px;">Note: Mandiant and Recorded Future have not published formal open-source assessments linking Chaos to BlackSuit/Royal as of May 2026. The Chaos-to-BlackSuit connection rests primarily on Cisco Talos' June 2025 analysis.</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Intelligence Gaps and Trajectory Indicators</div>
+        <ul class="content-list">
+          <li><strong>No named operators:</strong> Unlike LockBit (Khoroshev et al.) or Conti (multiple indictments), no individuals connected to Royal, BlackSuit, or Chaos have been publicly identified or charged. This represents the primary unresolved accountability gap.</li>
+          <li><strong>Chaos affiliate roster unknown:</strong> Open-source reporting does not identify Chaos affiliates, revenue splits, or the size of the affiliate pool. Growth trajectory depends heavily on affiliate satisfaction and law enforcement attention to the new infrastructure.</li>
+          <li><strong>On-chain mapping incomplete:</strong> The $1.09M seizure is the only confirmed public on-chain recovery. The broader wallet cluster infrastructure for Royal/BlackSuit proceeds has not been publicly documented by Chainalysis, TRM Labs, or Elliptic.</li>
+          <li><strong>State-false-flag complexity:</strong> The Rapid7 2026 finding that a state actor used Chaos branding in at least one operation means attribution of Chaos-attributed incidents requires additional corroboration before classifying as criminal vs. state-directed.</li>
+          <li><strong>Fourth-generation rebrand risk:</strong> Given the two-to-four year cadence of prior rebrands, a Chaos successor cannot be ruled out if law enforcement pressure on Chaos infrastructure increases materially in 2026.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <!-- ============================================================ -->
+    <!-- SECTION 10: RECENT REPORTING -->
+    <!-- ============================================================ -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent intelligence reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SOURCES -->
+    <!-- ============================================================ -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">REF</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9660; Show / Hide Sources
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government Advisories</div>
+        <div class="source-item"><span class="source-num">1</span><a href="https://www.justice.gov/opa/pr/justice-department-announces-coordinated-disruption-actions-against-blacksuit-royal" target="_blank" rel="noopener">DOJ: Operation Checkmate &mdash; Coordinated Disruption Actions Against BlackSuit (Royal) (August 11, 2025)</a></div>
+        <div class="source-item"><span class="source-num">2</span><a href="https://www.cisa.gov/news-events/alerts/2024/08/07/royal-ransomware-actors-rebrand-blacksuit-fbi-and-cisa-release-update-advisory" target="_blank" rel="noopener">CISA/FBI: #StopRansomware BlackSuit (Royal) Updated Advisory (August 7, 2024)</a></div>
+        <div class="source-item"><span class="source-num">3</span><a href="https://www.ice.gov/news/releases/ice-washington-dc-leads-international-takedown-blacksuit-ransomware-infrastructure" target="_blank" rel="noopener">ICE/HSI: Washington D.C. Leads International Takedown of BlackSuit Infrastructure (August 2025)</a></div>
+        <div class="source-item"><span class="source-num">4</span><a href="https://www.hhs.gov/sites/default/files/blacksuit-ransomware-analyst-note-tlpclear.pdf" target="_blank" rel="noopener">HHS HC3: BlackSuit Ransomware Analyst Note (TLP:CLEAR)</a></div>
+
+        <div class="source-category">Vendor Research</div>
+        <div class="source-item"><span class="source-num">5</span><a href="https://businessinsights.bitdefender.com/blacksuit-ransomware-seized-takedown" target="_blank" rel="noopener">Bitdefender: After $500 Million in Ransom Demands, Law Enforcement Seizes BlackSuit Site (July 2025)</a></div>
+        <div class="source-item"><span class="source-num">6</span><a href="https://unit42.paloaltonetworks.com/threat-assessment-blacksuit-ransomware-ignoble-scorpius/" target="_blank" rel="noopener">Unit 42 / Palo Alto: Threat Assessment &mdash; Ignoble Scorpius, Distributors of BlackSuit Ransomware</a></div>
+        <div class="source-item"><span class="source-num">7</span><a href="https://unit42.paloaltonetworks.com/royal-ransomware/" target="_blank" rel="noopener">Unit 42 / Palo Alto: Threat Assessment &mdash; Royal Ransomware</a></div>
+        <div class="source-item"><span class="source-num">8</span><a href="https://blog.talosintelligence.com/new-chaos-ransomware/" target="_blank" rel="noopener">Cisco Talos: New Chaos Ransomware (RaaS Group) Analysis (June 2025)</a></div>
+        <div class="source-item"><span class="source-num">9</span><a href="https://www.crowdstrike.com/en-us/adversaries/royal-spider/" target="_blank" rel="noopener">CrowdStrike: ROYAL SPIDER Adversary Profile</a></div>
+        <div class="source-item"><span class="source-num">10</span><a href="https://www.secureworks.com/research/threat-profiles/gold-souvenir" target="_blank" rel="noopener">Secureworks CTU: GOLD SOUVENIR Threat Profile</a></div>
+        <div class="source-item"><span class="source-num">11</span><a href="https://www.fortinet.com/blog/threat-research/evolution-of-chaos-ransomware-faster-smarter-and-more-dangerous" target="_blank" rel="noopener">Fortinet FortiGuard: Evolution of Chaos Ransomware (Chaos-C++)</a></div>
+        <div class="source-item"><span class="source-num">12</span><a href="https://www.cybereason.com/blog/royal-ransomware-analysis" target="_blank" rel="noopener">Cybereason: Royal Ransomware Analysis</a></div>
+        <div class="source-item"><span class="source-num">13</span><a href="https://securityscorecard.com/wp-content/uploads/2024/01/A-Technical-Analysis-of-Royal-Ransomware.pdf" target="_blank" rel="noopener">SecurityScorecard: Technical Analysis of Royal Ransomware (2024)</a></div>
+        <div class="source-item"><span class="source-num">14</span><a href="https://tinextadefence.it/wp-content/uploads/2025/03/Report-Chaos-Ransomware-Mad-Cat-variant.pdf" target="_blank" rel="noopener">Tinexta Defence: Chaos Ransomware Mad Cat Variant Analysis (March 2025)</a></div>
+        <div class="source-item"><span class="source-num">15</span><a href="https://www.rapid7.com/blog/post/tr-muddying-tracks-state-sponsored-shadow-behind-chaos-ransomware/" target="_blank" rel="noopener">Rapid7: State-Sponsored Shadow Behind Chaos Ransomware (2026)</a></div>
+        <div class="source-item"><span class="source-num">16</span><a href="https://blog.barracuda.com/2024/10/29/blacksuit-ransomware--8-years--6-names--1-cybercrime-syndicate" target="_blank" rel="noopener">Barracuda Networks: BlackSuit Ransomware &mdash; 8 Years, 6 Names, 1 Cybercrime Syndicate (October 2024)</a></div>
+        <div class="source-item"><span class="source-num">17</span><a href="https://thedfirreport.com/2025/03/31/fake-zoom-ends-in-blacksuit-ransomware/" target="_blank" rel="noopener">DFIR Report: Fake Zoom Ends in BlackSuit Ransomware (March 2025)</a></div>
+
+        <div class="source-category">Media / Aggregator</div>
+        <div class="source-item"><span class="source-num">18</span><a href="https://www.bleepingcomputer.com/news/security/law-enforcement-seizes-blacksuit-ransomware-leak-sites/" target="_blank" rel="noopener">BleepingComputer: Law Enforcement Seizes BlackSuit Ransomware Leak Sites (Operation Checkmate)</a></div>
+        <div class="source-item"><span class="source-num">19</span><a href="https://www.bleepingcomputer.com/news/security/blacksuit-ransomware-stole-data-of-950-000-from-software-vendor/" target="_blank" rel="noopener">BleepingComputer: BlackSuit Ransomware Stole Data of 950,000 from Software Vendor</a></div>
+        <div class="source-item"><span class="source-num">20</span><a href="https://www.infosecurity-magazine.com/news/chaos-ransomware-wave-attacks/" target="_blank" rel="noopener">Infosecurity Magazine: Chaos Ransomware Wave of Attacks (2025)</a></div>
+        <div class="source-item"><span class="source-num">21</span><a href="https://www.scworld.com/news/new-chaos-ransomware-group-linked-to-blacksuit-amid-site-seizures" target="_blank" rel="noopener">SC World: New Chaos Ransomware Group Linked to BlackSuit Amid Site Seizures</a></div>
+        <div class="source-item"><span class="source-num">22</span><a href="https://www.axios.com/2025/08/12/doj-blacksuit-ransomware-cryptocurrency-seizure" target="_blank" rel="noopener">Axios: Feds Take Down Servers, Seize $1M Tied to BlackSuit Ransomware Gang (August 2025)</a></div>
+        <div class="source-item"><span class="source-num">23</span><a href="https://www.sentinelone.com/cybersecurity-101/threat-intelligence/ryuk-ransomware/" target="_blank" rel="noopener">SentinelOne: Ryuk/Conti Ransomware Lineage Overview</a></div>
+      </div>
+    </section>
+
+  </div><!-- /.content -->
+
+  <footer class="page-footer">
+    Profile compiled <span id="footer-last-updated">May 2026</span> &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DARK MODE
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// SCROLL SPY
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+
+// LIVE DATA — Chaos victims + TI feed
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'royal.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-royal.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const sorted = [...victims]
+          .filter(v => v.attackdate || v.discovered || v.date)
+          .sort((a, b) => new Date(b.attackdate || b.discovered || b.date) - new Date(a.attackdate || a.discovered || a.date))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.attackdate || v.discovered || v.date;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.victim || v.post_title || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now' :
+                      diffH === 1 ? 'Intelligence data refreshed 1h ago' :
+                      diffH < 24 ? `Intelligence data refreshed ${diffH}h ago` :
+                      `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const refreshLabel = document.getElementById('topbar-refresh-label');
+        if (refreshLabel) refreshLabel.textContent = label;
+        const topbarLive = document.getElementById('topbar-live');
+        if (topbarLive) topbarLive.style.display = 'flex';
+        const dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        const hlu = document.getElementById('hero-last-updated');
+        if (hlu) hlu.textContent = dateLabel;
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Basta | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active   { background: #e74c3c; }
+.dot-dim      { background: var(--gray-400); }
+.dot-conti    { background: #c0392b; }
+.dot-inactive { background: #636e72; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical    { background: var(--accent); color: #fff; }
+.badge-inactive    { background: #636e72; color: #fff; }
+.badge-raas        { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-conti       { background: #7d1e1e; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub   { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+.reno-credit {
+  display: block; margin-top: 8px; font-size: 10px;
+  letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7;
+}
+
+/* THEME TOGGLE */
+.theme-toggle {
+  background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px;
+  color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit;
+  letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
+    <a class="group-item active" href="blackbasta.html">
+      <span class="group-dot dot-inactive"></span>
+      Black Basta
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      More groups
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#le-response">LE &amp; Regulatory Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">Black Basta</div>
+    <div class="hero-subtitle">Closed RaaS &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Conti Team 3 Successor &nbsp;&bull;&nbsp; Inactive Jan 2025</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">High-Impact</span>
+      <span class="badge badge-inactive">Inactive</span>
+      <span class="badge badge-raas">RaaS</span>
+      <span class="badge badge-conti">Conti Lineage</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Apr 2022</div>
+        <div class="kpi-sub">Malware dev from Feb 2022</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Last Active</div>
+        <div class="kpi-value">Jan 2025</div>
+        <div class="kpi-sub">Last victim Jan 11, 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Active Lifespan</div>
+        <div class="kpi-value">~33 mo.</div>
+        <div class="kpi-sub">Apr 2022 to Jan 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Revenue</div>
+        <div class="kpi-value">$107M+</div>
+        <div class="kpi-sub">Through late 2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Victims (Total)</div>
+        <div class="kpi-value">500+</div>
+        <div class="kpi-sub">As of May 2024; 600+ incidents (Europol)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Sectors Hit</div>
+        <div class="kpi-value">12/16</div>
+        <div class="kpi-sub">US critical infrastructure sectors</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Actions</div>
+        <div class="kpi-value">Partial</div>
+        <div class="kpi-sub">EU Most Wanted; 2 arrested Jan 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>Black Basta was a Russia-linked, closed ransomware-as-a-service operation that emerged in April 2022 as a direct successor to Conti's Team 3, run by Oleg Nefedov (alias: Tramp, GG). Over 33 months, it impacted 500+ organizations globally, extracted at least $107 million in confirmed payments, and ranked among the top three to five ransomware operations worldwide by volume. The group collapsed in early 2025 following a combination of internal fracture, a damaging chat-log leak, and sustained international law enforcement pressure. Its data leak site went dark in January 2025 and has not returned.</p>
+
+      <p>Black Basta is analytically significant not just for its operational scale but for what its collapse reveals: the chat-log leak produced the most detailed public window into a top-tier ransomware group's internal structure since the Conti leaks of 2022, exposing 200,000+ messages, named operators, CVE targeting lists, affiliate workflows, and the internal politics that drove the group's dissolution.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Operational status (May 2026)</td><td>Inactive. No victims since January 11, 2025. All three group websites offline.</td></tr>
+            <tr><td>Primary tracking designation</td><td>GOLD REBELLION (Secureworks); S1070 (MITRE ATT&amp;CK)</td></tr>
+            <tr><td>Additional cluster IDs</td><td>UNC4393 (Mandiant); TA2101; Storm-0506; Storm-0826; STAC5143; UNC3973 (activity clusters, not group-level designations)</td></tr>
+            <tr><td>Lineage</td><td>Conti Team 3 successor; shares heritage with Wizard Spider / Gold Ulrick (parent Conti org); those designations do NOT apply to Black Basta specifically</td></tr>
+            <tr><td>Operational model</td><td>Closed RaaS; private, vetted affiliate network; no public advertising observed</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (encryption + data publication threat via "Basta News" Tor leak site); some cases included DDoS and executive pressure calls (triple extortion)</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia (CONFIRMED based on named leader; operator Oleg Nefedov believed to be in Russia)</td></tr>
+            <tr><td>Named leader</td><td>Oleg Evgenievich Nefedov (35, Russian), alias Tramp / GG / Trump / AA / kurva / Washingt0n / S.Jimmi / Devman</td></tr>
+            <tr><td>Collapse mechanism</td><td>Internal conflict (Ascension attack backlash, revenue disputes, members scamming victims) + chat-log leak (Feb 2025) + LE pressure</td></tr>
+            <tr><td>Successor migration</td><td>Affiliates assessed as migrating to CACTUS and Akira (ReliaQuest, Trend Micro, Barracuda)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2022/12/3-1.png.webp"
+               alt="Black Basta DLS victim listing, SOCRadar December 2022"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Basta News: Victim Listing</strong>
+            SOCRadar Dark Web team monitoring of the Black Basta "Basta News" leak site, December 2022. Victims are listed with organization names and data sample counts. The minimalist table layout was typical of Conti-lineage sites. By this point the group had already compromised dozens of organizations in its first eight months.
+            <span class="img-source">Source: SOCRadar, December 2022</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2022/12/8.jpeg.webp"
+               alt="Black Basta ransom note readme.txt example"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Black Basta: Ransom Note</strong>
+            A representative readme.txt ransom note dropped across encrypted directories. The note provides a unique victim ID, directs to a .onion Tor-based chat portal for negotiation, and threatens data publication. The format closely parallels Conti-era ransom notes, reflecting direct procedural inheritance from the parent operation.
+            <span class="img-source">Source: SOCRadar / Tripwire, 2022</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2022/12/7-1-1024x286.png.webp"
+               alt="Black Basta attack lifecycle, Unit 42"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Attack Lifecycle</strong>
+            Unit 42 attack chain diagram: phishing / QakBot loader delivery, Cobalt Strike post-exploitation, lateral movement, data exfiltration, and ransomware deployment. Exfiltration precedes encryption as a deliberate sequencing choice to maintain two independent extortion vectors.
+            <span class="img-source">Source: SOCRadar / Palo Alto Unit 42, 2022</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--60cd144d-0f02-4fe0-8583-f2b516114467/exploitwhispers-telegram.jpg?preferwebp=true&quality=95"
+               alt="ExploitWhispers Telegram post leaking Black Basta internal chats"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Chat Leak: ExploitWhispers Telegram Post</strong>
+            The Telegram post by user @ExploitWhispers on February 11, 2025, initiating the public release of 200,000+ internal Black Basta Matrix chat messages spanning September 2023 to September 2024. The stated motivation was retaliation for attacks on Russian banking infrastructure.
+            <span class="img-source">Source: Barracuda Networks / BleepingComputer, February 2025</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--05b37596-2e46-4bb2-bc91-4f07072b075e/conti-timeline.jpg?preferwebp=true&quality=95"
+               alt="Conti group activity timeline showing Black Basta lineage"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Conti Ecosystem Timeline</strong>
+            Ransomware.live genealogy chart showing the Conti group activity timeline and successor cluster emergence. Black Basta (April 2022) appears alongside Karakurt, BlackByte, and other Conti offshoots. The chart illustrates the dispersal of Conti personnel into multiple simultaneous successor operations following the May 2022 brand shutdown.
+            <span class="img-source">Source: Barracuda Networks / ransomware.live, March 2025</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Founding and Conti Connection</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Black Basta was founded in early 2022 by Conti Team 3, the subdivision of the Conti operation led by Oleg Nefedov (alias Tramp). This assessment is no longer probabilistic: the February 2025 chat-log leak and subsequent law enforcement action have identified Nefedov by name and confirmed his role. Separately, the U.S. State Department's August 2022 $10 million reward announcement for information on Conti operators explicitly named "Tramp" as one of five individuals, establishing a documented US government link between the Black Basta leadership identity and Conti prior to any leak.</p>
+        <p>Black Basta emerged in April 2022, roughly six weeks before the Conti brand's public shutdown in May 2022. This sequencing is consistent with pre-planned continuity rather than reactive rebranding: Team 3 was already operational under the Black Basta brand while Conti was still nominally active.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-alert">
+          <strong>Critical disambiguation:</strong> Wizard Spider (CrowdStrike) and Gold Ulrick (Secureworks) designate the parent Conti criminal organization that operated TrickBot, Ryuk, and Conti as sequential campaigns. Neither designation has been extended to Black Basta. Applying these parent-org labels to Black Basta is an error. Black Basta's own designation is <strong>GOLD REBELLION</strong> (Secureworks). CrowdStrike has not published a separate named designation for Black Basta in open sources as of May 2026.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>Scope</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Secureworks</td><td>GOLD REBELLION</td><td>Black Basta specifically</td><td>Confirmed</td></tr>
+              <tr><td>MITRE ATT&amp;CK</td><td>S1070 (Black Basta)</td><td>Malware and group</td><td>Confirmed</td></tr>
+              <tr><td>Mandiant / Google</td><td>UNC4393</td><td>Activity cluster associated with Black Basta</td><td>Confirmed (cluster-level)</td></tr>
+              <tr><td>CrowdStrike</td><td>Not separately designated in open sources</td><td>No published group-level codename found</td><td>Gap</td></tr>
+              <tr><td>Secureworks (parent org)</td><td>Gold Ulrick</td><td>Parent Conti organization only, NOT Black Basta</td><td>Confirmed (scope limitation)</td></tr>
+              <tr><td>CrowdStrike (parent org)</td><td>Wizard Spider</td><td>Parent Conti organization only, NOT Black Basta</td><td>Confirmed (scope limitation)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-title">Named Leadership Identity</div>
+            <div class="pillar-body">Oleg Nefedov (alias Tramp/GG) confirmed as founder and head of Black Basta by BKA (Germany), Europol, INTERPOL, and Ukrainian Cyber Police. Nefedov was also among five Conti operators named in the US State Department $10M reward offer (August 2022), establishing direct documented Conti lineage at the individual level.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &mdash; Confirmed</div>
+            <div class="pillar-title">Blockchain Money Flows</div>
+            <div class="pillar-body">Blockchain tracing cited by Barracuda identifies several million dollars flowing from Conti-linked wallets into Black Basta-controlled wallets. Secureworks (GOLD REBELLION profile) documents GOLD REBELLION as a Qakbot customer of GOLD LAGOON, consistent with Conti-era supplier relationships.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3 &mdash; Confirmed</div>
+            <div class="pillar-title">TTP and Tool Continuity</div>
+            <div class="pillar-body">MITRE ATT&amp;CK notes similarities in double-extortion workflow, leak/payment site architecture, negotiation tactics, and Cobalt Strike-centric operations. CISA/FBI advisory documents operational patterns directly consistent with mature Conti affiliate tradecraft.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 4 &mdash; Credible</div>
+            <div class="pillar-title">Malware Code Lineage</div>
+            <div class="pillar-body">SentinelOne identifies Black Basta as an "evolution of the Hermes/Ryuk/Conti families" based on static and dynamic analysis. Caveat: because Conti source code was publicly leaked in February 2022, code overlap alone does not conclusively prove personnel continuity; however, combined with the named-operator evidence, the code analysis is strongly corroborating.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Conti Brand Shutdown Context</div>
+        <p>The Conti brand shut down publicly in May 2022 following a Ukrainian researcher's leak of Conti's own internal chats and source code in February 2022, triggered by Conti's public declaration of support for Russia's invasion of Ukraine. Conti personnel dispersed into at least five successor operations: Black Basta (Team 3), BlackByte, Karakurt (Team 2), and elements that joined BlackCat/ALPHV and Hive. Royal/BlackSuit is separately assessed as the successor to the Conti core leadership stream (Wizard Spider). This dispersal pattern is well-documented and positions Black Basta as one part of a broader post-Conti ecosystem, not a comprehensive Conti successor.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <p>Black Basta operated as a closed, high-end RaaS with a small set of vetted affiliates recruited privately. Unlike open-registration RaaS programs, no public advertising on criminal forums was observed through most of the group's lifespan (IBM X-Force, 2022; Secureworks GOLD REBELLION profile). The closed model is consistent with the Conti operational practice of maintaining tight affiliate control to minimize exposure risk.</p>
+        <p>The affiliate revenue split is not publicly confirmed in open reporting. Given Conti-era norms, a 70/30 or 80/20 affiliate/operator split is a reasonable baseline estimate, but this is an intelligence gap and should be treated as ANALYST INFERENCE. The chat logs leaked in 2025 documented internal disputes over revenue allocation as a contributing factor to the group's collapse.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Recruitment and Vetting</div>
+        <p>Recruitment occurred through private channels rather than open forum posts. The likely mechanism was inheritance of Conti's existing affiliate network at founding. Post-Qakbot takedown in August 2023, GOLD REBELLION expanded initial access vectors to include DarkGate and Pikabot loaders, suggesting active supplier management and flexibility in the affiliate ecosystem. The chat-log leak identified at least one affiliate as a 17-year-old, illustrating the heterogeneity of the pool.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Double Extortion Model</div>
+        <ul class="content-list">
+          <li><strong>Exfiltration before encryption:</strong> Data was extracted prior to deployment of the encryptor, creating two independent leverage points and ensuring extortion was viable even if the victim restored from backups.</li>
+          <li><strong>Encryption extortion:</strong> Victims directed to a Tor-based chat portal via unique ID embedded in the readme.txt ransom note.</li>
+          <li><strong>Data publication threat:</strong> The "Basta News" Tor leak site published victim names, data samples, and escalated to full dumps when negotiations failed. IBM observed staged data releases over time as a pressure tactic rather than immediate full disclosure.</li>
+          <li><strong>Triple extortion (selective):</strong> Some campaigns included DDoS attacks against victim infrastructure and direct phone pressure on executives. This behavior was more affiliate-driven than centrally orchestrated, and was not consistent across all attacks.</li>
+        </ul>
+        <p>Victim communications followed a structured workflow documented in the 2025 chat leaks: negotiation scripts, tiered discount patterns, defined deadlines, and internal tracking of victim financial capacity (including insurance coverage and revenue estimates).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Typical Demand Range</div>
+            <div class="metric-val">Multi-$M</div>
+            <div class="metric-note">Enterprise-focused; exact avg. not publicly confirmed</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Confirmed Revenue Base</div>
+            <div class="metric-val">$107M+</div>
+            <div class="metric-note">Through late 2023 (Barracuda / blockchain tracing)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Victim Communication</div>
+            <div class="metric-val">Tor Portal</div>
+            <div class="metric-note">Unique ID per victim; structured negotiation scripts</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Publication Deadline</div>
+            <div class="metric-val">10-12 days</div>
+            <div class="metric-note">Typical window before data publication (CISA advisory)</div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Notable behavior (Ascension, May 2024):</strong> Internal chat logs from the 2025 leak show that following the Ascension Health attack, senior members expressed alarm at the healthcare system impact and law enforcement implications. Analysis by researcher @BushidoToken assessed that Black Basta returned Ascension's data and deleted stolen copies without collecting a ransom. This event was a significant catalyst for internal fracture and the group's subsequent collapse.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL CAPABILITIES -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Method</th><th>Timeframe</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Qakbot (QBot)</td>
+                <td>Spear-phishing, macro-enabled Office documents, ISO/LNK droppers</td>
+                <td>Apr 2022 &ndash; Aug 2023</td>
+                <td>Primary IAV; Secureworks documents Black Basta (GOLD REBELLION) as key Qakbot (GOLD LAGOON) customer. Relationship ended with FBI Qakbot takedown, Aug 2023.</td>
+              </tr>
+              <tr>
+                <td>CVE-2022-30190 (Follina / MSDT)</td>
+                <td>Remote code execution via crafted documents targeting Microsoft Support Diagnostic Tool</td>
+                <td>Jun 2022 onwards</td>
+                <td>CVSS 7.8. Exploited via ISO/LNK chains. Widely used by multiple affiliates.</td>
+              </tr>
+              <tr>
+                <td>CVE-2024-1709 (ConnectWise ScreenConnect)</td>
+                <td>Authentication bypass via alternate path; direct system access with no credentials required</td>
+                <td>Feb 2024 onwards</td>
+                <td>CVSS 10.0. Maximum severity. Added to CISA KEV catalog February 22, 2024. Black Basta among first operators to exploit post-disclosure.</td>
+              </tr>
+              <tr>
+                <td>RDP / VPN credential abuse</td>
+                <td>Purchased credentials from underground markets; credential stuffing via previously breached databases</td>
+                <td>Throughout</td>
+                <td>Heavy reliance documented in 2025 chat leaks. Credentials often sourced from access brokers.</td>
+              </tr>
+              <tr>
+                <td>DarkGate / Pikabot</td>
+                <td>Alternative loaders post-Qakbot takedown</td>
+                <td>Aug 2023 onwards</td>
+                <td>GOLD REBELLION pivoted to these loaders to maintain initial access pipeline. Less well-documented than Qakbot integration.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Post-Exploitation and Lateral Movement</div>
+        <ul class="content-list">
+          <li><strong>Cobalt Strike:</strong> Primary post-exploitation framework throughout the group's lifespan. Beacons deployed with dynamically generated random C2 profiles (random_c2_profile) for evasion. <span class="conf conf-confirmed" style="margin-bottom:0;">Confirmed</span></li>
+          <li><strong>Remote administration tools:</strong> RDP, Splashtop, ScreenConnect (ConnectWise), and AnyDesk used for lateral movement and persistence across victim environments.</li>
+          <li><strong>Ansible playbooks:</strong> Documented use of Ansible for automating deployment and data exfiltration at scale across multiple systems in enterprise environments. <span class="conf conf-credible" style="margin-bottom:0;">Credible</span></li>
+          <li><strong>Domain controller targeting:</strong> Abuse of valid accounts with administrative privileges; targeting of Active Directory infrastructure for maximum encryption coverage.</li>
+          <li><strong>Exfiltration tooling:</strong> RClone documented in CISA advisory for exfiltration of victim data to cloud storage prior to encryption. Additional tools: BITSAdmin, PsExec.</li>
+          <li><strong>Network scanning:</strong> SoftPerfect network scanner used to map victim environments (CISA advisory).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">FIN7 / Carbanak Tool Nexus</div>
+        <div class="conf conf-credible">Credible &mdash; SentinelOne, multiple corroborating indicators</div>
+        <p>SentinelOne Labs published a high-confidence assessment that Black Basta's custom EDR evasion tooling was developed by a developer who is, or was, a member of the FIN7 (Carbanak) group. Key evidence: a custom tool named WindefCheck.exe, deployed exclusively by Black Basta from June 2022, displays a fake Windows Security GUI to give users the illusion that Windows Defender is active while disabling it in the background. The same developer was linked to FIN7 through IP address overlap and recovery of a Birddog (SocksBot) sample, a backdoor historically exclusive to FIN7 infrastructure.</p>
+        <div class="callout callout-warning">
+          <strong>Analytical note on FIN7 relationship:</strong> The most conservative supported assessment is shared developer / tooling supplier. This does not necessarily establish organizational merger or formal partnership. FIN7 has a documented history of selling custom tooling to other criminal operators (IBM reported in 2023 that FIN7 was actively selling EDR evasion tools commercially). Black Basta may have been a customer rather than a co-equal partner. Operational command relationship is not established in open sources.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <ul class="content-list">
+          <li><strong>Language:</strong> Written primarily in C++. Variants for Windows and VMware ESXi (Linux) confirmed.</li>
+          <li><strong>Algorithm:</strong> ChaCha20 stream cipher per file, with a randomly generated key; the ChaCha20 key is then encrypted with RSA using a hard-coded public key and appended to the encrypted file. File extension changed to <span class="mono">.basta</span>.</li>
+          <li><strong>Speed:</strong> IBM X-Force noted rapid multi-threaded encryption capable of rendering large enterprise environments unusable before defenders detect lateral movement.</li>
+          <li><strong>Cryptographic bug (Nov 2022 &ndash; Dec 2023):</strong> SRLabs identified a flaw in the XChaCha20 keystream implementation where the same 64 bytes were applied to multiple blocks rather than advancing the keystream. This enabled a known-plaintext attack. Files between 5KB and 1GB were fully recoverable; files above 1GB had partial recovery (first 5,000 bytes lost). SRLabs released the "Black Basta Buster" decryptor in January 2024. Black Basta patched the flaw in mid-December 2023. No universal public decryptor exists for post-December 2023 versions.</li>
+          <li><strong>CIS exclusion:</strong> Samples include locale/keyboard layout checks consistent with CIS country exclusion behavior. Analysts note the exclusion in some builds is less aggressive than in other Russia-linked groups, potentially to add attribution ambiguity (ANALYST INFERENCE).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CVE Targeting (from Chat Leak Analysis)</div>
+        <p>VulnCheck's analysis of the 2025 chat-log leak identified 62 unique CVEs discussed in Black Basta internal communications, including at least 10 older vulnerabilities still actively deployed against unpatched environments. Notably, three CVEs were discussed in the chats prior to their official public disclosure, indicating access to pre-patch vulnerability information. The chat logs also revealed integration of commercial tools including Shodan, Metasploit, GitHub, and ChatGPT in operational planning. Malware payloads were hosted on file-sharing platforms including transfer.sh and temp.sh.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: FINANCIAL INFRASTRUCTURE -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>Bitcoin was the primary ransom payment currency, consistent with enterprise-focused ransomware operations requiring auditability and liquidity. Some reporting references Monero in portions of the laundering chain, though explicit ransom-note language centers on Bitcoin addresses. No confirmed reporting from Chainalysis, TRM Labs, or Elliptic specifically attributing a Black Basta-specific blockchain forensics report was available in open sources as of May 2026; the $107M revenue figure originates from broader wallet-cluster analysis cited by Barracuda and Corvus Insurance.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Laundering Phases</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Collection</div>
+              <div class="phase-desc">Victim pays Bitcoin to affiliate-controlled wallets per negotiated amount. Affiliate retains their share. Operator share forwarded to Black Basta infrastructure wallets.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Layering through Conti-linked wallets</div>
+              <div class="phase-desc">Blockchain tracing documented funds flowing from Conti-attributed wallets into Black Basta-controlled addresses, reflecting continuation of prior infrastructure and shared financial plumbing. <span class="conf conf-credible" style="margin-bottom:0; font-size:10px;">Credible</span></div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Mixing and obfuscation</div>
+              <div class="phase-desc">Multi-stage layering through exchanges and mixers. As law enforcement scrutiny increased, funds moved through higher-risk exchanges, mixing services, and cross-chain bridges. Specific exchange or mixer names are not documented in open sources for Black Basta specifically.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Infrastructure support via bulletproof hosting</div>
+              <div class="phase-desc">Analyst1 (January 2026) documented Black Basta's extensive use of Media Land, a bulletproof hosting provider sanctioned by the US, UK, and Australia in November 2025. Operator: Aleksandr Volosovik (alias Yalishanda). Black Basta reportedly received VIP-tier infrastructure treatment, including dedicated infrastructure provisioning not available to standard customers.</div>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Intelligence gap:</strong> No specific OFAC designation targeting Black Basta wallets has been publicly announced as of May 2026. OFAC sanctions against Conti-related wallets and individuals (2022 onward) indirectly constrain successor operations sharing that infrastructure. The Media Land sanctions (November 2025) are the closest action with direct Black Basta operational impact.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06: VICTIM PROFILE -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Total Organizations</div>
+            <div class="metric-val">500+</div>
+            <div class="metric-note">As of May 2024 (CISA/FBI); 600+ incidents per Europol Jan 2026</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Confirmed Revenue</div>
+            <div class="metric-val">$107M+</div>
+            <div class="metric-note">Through late 2023 (Barracuda blockchain tracing)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">First 7 Months</div>
+            <div class="metric-val">100+</div>
+            <div class="metric-note">Victims by end of 2022; 29 observed in first weeks (IBM)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Peak Ranking</div>
+            <div class="metric-val">Top 3-5</div>
+            <div class="metric-note">By victim volume globally, alongside LockBit and ALPHV/BlackCat</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Targeting</div>
+        <p>Black Basta affiliates impacted 12 of the 16 US critical infrastructure sectors as defined by CISA. The Healthcare and Public Health (HPH) sector received particular attention in advisory and congressional documentation due to operational disruptions caused in hospital systems. Manufacturing was the most targeted sector by case count in early reporting (SOCRadar, December 2022), with financial services, government, education, and media also heavily represented.</p>
+        <div class="callout callout-warning">
+          <strong>Healthcare significance:</strong> The May 2024 CISA/FBI/HHS/MS-ISAC joint advisory was specifically triggered by escalating Black Basta attacks on healthcare. The Ascension Health attack (May 2024), disrupting 142 hospitals across 19 US states and Washington DC, was characterized as a watershed event for critical-infrastructure ransomware policy. HHS's dedicated threat profile for Black Basta reflects sector-specific concern not applied to all peer threat actors.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geography</div>
+        <p>The majority of victims are in the United States and Western Europe, consistent with Conti-lineage targeting patterns. CISA/FBI/HHS documented victims across North America, Europe, and Australia. Additional reporting extends to the UK, India, Canada, New Zealand, and the UAE. No victims in CIS countries were documented, consistent with locale-based exclusion behavior in the malware.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Incidents</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Organization</th><th>Date</th><th>Sector</th><th>Significance</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Ascension Health</strong></td>
+                <td>May 2024</td>
+                <td>Healthcare</td>
+                <td>142 hospitals disrupted across 19 US states and DC. Catalyzed CISA/FBI/HHS joint advisory. Internal Black Basta communications showed members returning data without ransom after pressure from within the group. Considered a turning point in both law enforcement focus and internal cohesion.</td>
+              </tr>
+              <tr>
+                <td><strong>Capita</strong></td>
+                <td>2023</td>
+                <td>Government services / IT outsourcing</td>
+                <td>Major UK government contractor. Significant data exfiltration; incident prompted UK government supplier security review.</td>
+              </tr>
+              <tr>
+                <td><strong>ABB</strong></td>
+                <td>May 2023</td>
+                <td>Industrial / Manufacturing</td>
+                <td>Swiss multinational automation group; disruption to business operations confirmed.</td>
+              </tr>
+              <tr>
+                <td><strong>Dish Network</strong></td>
+                <td>Feb 2023</td>
+                <td>Communications / Media</td>
+                <td>Major US satellite TV and wireless operator; network outage attributed to ransomware attack; customer data confirmed exfiltrated.</td>
+              </tr>
+              <tr>
+                <td><strong>American Dental Association</strong></td>
+                <td>Apr 2022</td>
+                <td>Healthcare / Professional</td>
+                <td>Among the earliest high-profile victims; data published on Basta News leak site.</td>
+              </tr>
+              <tr>
+                <td><strong>Knauf Group</strong></td>
+                <td>Jun 2022</td>
+                <td>Manufacturing (construction materials)</td>
+                <td>German multinational; operations disrupted; confirmed data published.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07: LAW ENFORCEMENT -->
+    <section class="section" id="le-response">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Timeline of Actions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Action</th><th>Actor(s)</th><th>Impact</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Aug 2022</td>
+                <td>US State Department $10M reward offer for Conti operators including "Tramp" (Nefedov)</td>
+                <td>US State Department</td>
+                <td>Publicly identifies Nefedov as a priority target; establishes US government Conti/Black Basta leadership link prior to any leak</td>
+              </tr>
+              <tr>
+                <td>May 10, 2024</td>
+                <td>Joint cybersecurity advisory (#StopRansomware: Black Basta)</td>
+                <td>CISA, FBI, HHS, MS-ISAC</td>
+                <td>Formal critical infrastructure warning; IOC and TTP package released; framed Black Basta as global priority threat alongside LockBit and ALPHV/BlackCat</td>
+              </tr>
+              <tr>
+                <td>Jun 2024</td>
+                <td>Nefedov arrested in Yerevan, Armenia</td>
+                <td>Armenian authorities (reported)</td>
+                <td>Secured release; Trellix analysis of chat logs later assessed this as facilitated by FSB/GRU connections. Not confirmed through official channels. <span class="conf conf-credible" style="margin-bottom:0; font-size:10px;">Credible</span></td>
+              </tr>
+              <tr>
+                <td>Nov 2025</td>
+                <td>Media Land sanctioned</td>
+                <td>US, UK, Australia</td>
+                <td>Black Basta's primary bulletproof hosting provider sanctioned; operator Aleksandr Volosovik (Yalishanda) designated. Disrupts Black Basta-era infrastructure shared with successor operations.</td>
+              </tr>
+              <tr>
+                <td>Jan 11, 2025</td>
+                <td>Black Basta ceases operations</td>
+                <td>Internal collapse</td>
+                <td>Last victim posted. All three group websites go offline. Chat leak and internal fracture assessed as primary drivers.</td>
+              </tr>
+              <tr>
+                <td>Feb 11, 2025</td>
+                <td>Chat-log leak (ExploitWhispers)</td>
+                <td>Unknown (alias ExploitWhispers)</td>
+                <td>200,000+ internal Matrix messages released to public via Telegram. Exposes names, CVE lists, affiliate details, and internal conflicts. Operational intelligence gift to defenders and law enforcement.</td>
+              </tr>
+              <tr>
+                <td>Jan 15, 2026</td>
+                <td>Raids in Ukraine (Lviv and Ivano-Frankivsk)</td>
+                <td>Ukrainian Cyber Police, German BKA</td>
+                <td>Two suspects arrested; roles as "hash crackers" providing credential extraction for network access. Digital storage devices and cryptocurrency assets seized.</td>
+              </tr>
+              <tr>
+                <td>Jan 17, 2026</td>
+                <td>Nefedov added to EU Most Wanted and INTERPOL Red Notice</td>
+                <td>Europol, INTERPOL, German BKA</td>
+                <td>International fugitive designation. Believed to be in Russia. Exact whereabouts unknown. Russia unlikely to extradite.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Group 78 and International Investigative Framework</div>
+        <p>Barracuda cites investigative journalism (Le Monde, October 2025) documenting the existence of a US task force designated "Group 78" that coordinated multi-agency work against Black Basta across jurisdictions. The reporting suggests Black Basta was a long-standing multi-year priority target, with infrastructure mapping and wallet tracing underway well before the group's collapse. The gradual nature of the collapse, rather than a single decisive takedown, is consistent with a pressure campaign designed to degrade trust among affiliates and increase the cost of operating under the Black Basta brand.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Indictment Status</div>
+        <p>As of May 2026, no OFAC designation specifically naming Black Basta or Black Basta wallets has been publicly announced. No unsealed US federal indictment naming Black Basta operators specifically has been confirmed in open sources; investigations are framed around Conti-related actors with overlapping identities. This is a key intelligence gap: sealed or partially anonymized cases involving Black Basta operators may exist but are not publicly visible.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Operators</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Individual</th><th>Role</th><th>Aliases</th><th>Status (May 2026)</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Oleg Evgenievich Nefedov</strong></td>
+                <td>Founder and head of group; directed targeting, recruitment, ransom negotiations, and revenue allocation</td>
+                <td>Tramp, Trump, GG, AA, kurva, Washingt0n, S.Jimmi, Devman</td>
+                <td>At large; believed to be in Russia; EU Most Wanted and INTERPOL Red Notice (Jan 2026); Russia unlikely to extradite</td>
+                <td>CONFIRMED (BKA, Europol, Ukrainian Cyber Police)</td>
+              </tr>
+              <tr>
+                <td><strong>Lapa</strong> (handle only)</td>
+                <td>Key administrator and support function; described as "underpaid and degraded" by Nefedov; involved in internal disputes</td>
+                <td>Lapa</td>
+                <td>Unknown; handle only, no public real-name identification</td>
+                <td>CREDIBLE (from chat leak analysis)</td>
+              </tr>
+              <tr>
+                <td><strong>YY</strong> (handle only)</td>
+                <td>Administrative and support tasks</td>
+                <td>YY</td>
+                <td>Unknown; handle only</td>
+                <td>CREDIBLE (from chat leak analysis)</td>
+              </tr>
+              <tr>
+                <td><strong>Two unnamed Ukrainians</strong></td>
+                <td>"Hash crackers": password extraction from compromised databases for credential-based access</td>
+                <td>Unknown</td>
+                <td>Arrested Lviv and Ivano-Frankivsk, Ukraine, January 15, 2026</td>
+                <td>CONFIRMED (Ukrainian Cyber Police, German BKA)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">State Nexus Assessment</div>
+        <div class="conf conf-confirmed">Confirmed: Russia-nexus criminal operation</div>
+        <div class="conf conf-credible">Credible: Tolerated / de facto safe harbor</div>
+        <div class="conf conf-inference">Analyst Inference: Structured FSB/GRU protection relationship</div>
+
+        <p>The preponderance of evidence establishes Black Basta as a Russian-speaking cybercriminal organization operating primarily from Russia or neighboring states. CIS country exclusion behavior, Russian-language operator communications, named Russian leadership, and consistent targeting of Western critical infrastructure while avoiding domestic targets are all CONFIRMED. This is the standard pattern for Russia-based ransomware operations.</p>
+
+        <p>The credibility of a formal state protection relationship is elevated by the June 2024 Yerevan arrest incident: if accurate, Nefedov secured his release from Armenian custody despite being a named subject of a US $10M reward offer, which would require extraordinary leverage. Documents cited in secondary reporting alleged ties to FSB and GRU specifically. However, direct evidence of intelligence sharing or formal non-prosecution agreements has not been independently corroborated in open sources, and this component should be treated as CREDIBLE rather than CONFIRMED.</p>
+
+        <div class="callout callout-info">
+          <strong>Overall assessment:</strong> High confidence that Black Basta is composed of Russian-speaking cybercriminals operating under Russia's de facto tolerance of ransomware activity against Western targets. Low-to-medium confidence for any structured, formal state nexus beyond passive safe harbor. The Yerevan arrest episode, if confirmed, would upgrade the state relationship assessment materially.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Collapse Mechanism</div>
+        <p>Black Basta's collapse in January 2025 was not the result of a single decisive law enforcement action but the convergence of three mutually reinforcing pressures:</p>
+        <ul class="content-list">
+          <li><strong>Internal conflict (primary driver):</strong> Revenue disputes, some affiliates collecting ransoms without providing working decryptors (damaging the group's extortion credibility), and fractures over the Ascension Health attack created an environment of distrust. The Ascension attack generated fear within the group over FBI/CISA mandatory involvement and possible "terrorist attack" classification.</li>
+          <li><strong>Chat-log leak (Feb 2025, secondary driver):</strong> The ExploitWhispers release of 200,000+ internal messages was directly analogous to the Conti leak of February 2022. In both cases, internal communications released by an insider destroyed operational security, exposed members, and made continued operations under that brand untenable.</li>
+          <li><strong>Law enforcement pressure (contributing factor):</strong> A multi-year international investigative campaign, infrastructure mapping, and sustained wallet tracing by Group 78 and partner agencies increased the risk calculus for operators. Rather than a single takedown, this pressure eroded the brand's perceived safety.</li>
+        </ul>
+        <div class="callout callout-alert">
+          <strong>Historical pattern:</strong> Black Basta's collapse mirrors the Conti collapse that preceded it almost exactly three years earlier. In both cases: (1) an internal leak destroyed operational security; (2) the triggering event involved a perceived violation of the group's own implicit rules (Conti's pro-Russia statement violated affiliates' political neutrality; Black Basta's Russian-bank attacks violated the group's CIS non-targeting norm); (3) the group dissolved and personnel dispersed to successor operations. The pattern suggests this will recur.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group</th><th>Relationship</th><th>Anchor Confidence</th><th>Extension Confidence</th><th>Independent Vendor Assessment</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Conti</strong></td>
+                <td>Parent organization / predecessor; Team 3 constituted Black Basta's founding core</td>
+                <td>CONFIRMED</td>
+                <td>N/A</td>
+                <td>SentinelOne, MITRE, Secureworks, BKA, Europol all corroborate</td>
+              </tr>
+              <tr>
+                <td><strong>FIN7 / Carbanak</strong></td>
+                <td>Tooling supplier / shared developer; custom EDR evasion tools (WindefCheck.exe) linked to FIN7 developer</td>
+                <td>CREDIBLE (high)</td>
+                <td>Operational command relationship: NOT established</td>
+                <td>SentinelOne high-confidence assessment; IBM corroborates FIN7 selling EDR tools commercially</td>
+              </tr>
+              <tr>
+                <td><strong>Qakbot / GOLD LAGOON</strong></td>
+                <td>Primary initial access vector supplier; well-documented customer relationship</td>
+                <td>CONFIRMED</td>
+                <td>Relationship ended Aug 2023 with FBI Qakbot takedown</td>
+                <td>Secureworks GOLD REBELLION profile; Trend Micro; CISA advisory all corroborate</td>
+              </tr>
+              <tr>
+                <td><strong>CACTUS</strong></td>
+                <td>Assessed successor migration target; spike in CACTUS victims coincided with Black Basta site going offline (Feb 2025)</td>
+                <td>CREDIBLE</td>
+                <td>Formal organizational merger: not established</td>
+                <td>ReliaQuest, Trend Micro; Barracuda reports affiliate migration; Mandiant has not published formal assessment</td>
+              </tr>
+              <tr>
+                <td><strong>Akira</strong></td>
+                <td>Assessed partial affiliate migration destination; some Black Basta affiliates reported as moving to Akira</td>
+                <td>CREDIBLE</td>
+                <td>Shared personnel: CREDIBLE, not confirmed</td>
+                <td>Trellix, Barracuda report migration; Akira independently assessed as Conti diaspora operation</td>
+              </tr>
+              <tr>
+                <td><strong>Royal / BlackSuit</strong></td>
+                <td>Parallel Conti lineage stream; different Team from Black Basta; not a direct Black Basta relationship</td>
+                <td>CREDIBLE (parallel lineage)</td>
+                <td>Operational coordination: NOT established</td>
+                <td>Separate CrowdStrike designation (ROYAL SPIDER); distinct from Black Basta operations</td>
+              </tr>
+              <tr>
+                <td><strong>Karakurt / BlackByte</strong></td>
+                <td>Parallel Conti offshoots; shared Conti heritage but separate operations</td>
+                <td>CONFIRMED (shared lineage)</td>
+                <td>Operational coordination with Black Basta: NOT established</td>
+                <td>Multiple vendors confirm parallel Conti dispersal; no Black Basta-specific operational links published</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebrand Probability and Successor Risk</div>
+        <p>The Black Basta brand is assessed as unlikely to return under that name. The chat-leak exposure is too comprehensive and the law enforcement identification of Nefedov too public. However, the personnel, tooling, and financial relationships that constituted Black Basta remain extant. The group's affiliates have already demonstrably migrated to CACTUS and Akira. The FIN7 developer relationship for EDR evasion tooling persists independent of the Black Basta brand. Nefedov remains at large in Russia and retains FSB/GRU-adjacent protection (CREDIBLE).</p>
+        <p>The most likely trajectory is continued affiliate dispersal into existing successor programs (CACTUS, Akira), with the possibility of a new brand emerging under Nefedov's leadership within a 6-18 month window following collapse. This is consistent with the historical pattern for Conti-lineage groups: typical rebrand/reemergence window is 2-6 months for pre-planned successors, longer when the collapse is driven by internal division rather than law enforcement action alone.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>Precise affiliate revenue split and total affiliate count</li>
+          <li>Current whereabouts and activity of Nefedov; whether Armenia arrest (Jun 2024) is confirmed</li>
+          <li>Full identity mapping of handles from the chat leak to real-world personas</li>
+          <li>Extent of any structured FSB/GRU relationship beyond passive safe harbor</li>
+          <li>Whether a new successor brand has been established post-collapse</li>
+          <li>Published blockchain forensics reports from Chainalysis, TRM Labs, or Elliptic specifically addressing Black Basta wallet infrastructure (vs. general reporting)</li>
+          <li>CrowdStrike group-level tracking designation for Black Basta, if any, in open sources</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">REF</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '&#9660; Hide Sources' : '&#9658; Show Sources'">&#9658; Show Sources</button>
+      <div class="source-list">
+        <div class="source-category">Primary Advisories and Government</div>
+        <div class="source-item"><span class="source-num">1</span><span><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-131a" target="_blank" rel="noopener">CISA/FBI/HHS/MS-ISAC: #StopRansomware: Black Basta (AA24-131A), May 2024</a></span></div>
+        <div class="source-item"><span class="source-num">2</span><span><a href="https://www.hhs.gov/sites/default/files/black-basta-threat-profile.pdf" target="_blank" rel="noopener">HHS HC3: Black Basta Threat Profile</a></span></div>
+        <div class="source-item"><span class="source-num">3</span><span><a href="https://attack.mitre.org/software/S1070/" target="_blank" rel="noopener">MITRE ATT&amp;CK: Black Basta (S1070)</a></span></div>
+        <div class="source-item"><span class="source-num">4</span><span><a href="https://www.bka.de/DE/IhreSicherheit/Fahndungen/Personen/BekanntePersonen/BlackBasta/Sachverhalt.html" target="_blank" rel="noopener">German BKA: Black Basta Nefedov Wanted Notice</a></span></div>
+
+        <div class="source-category">Vendor Tracking and Technical Analysis</div>
+        <div class="source-item"><span class="source-num">5</span><span><a href="https://www.secureworks.com/research/threat-profiles/gold-rebellion" target="_blank" rel="noopener">Secureworks CTU: GOLD REBELLION Threat Profile</a></span></div>
+        <div class="source-item"><span class="source-num">6</span><span><a href="https://www.sentinelone.com/anthology/black-basta/" target="_blank" rel="noopener">SentinelOne: Black Basta anthology (Conti lineage, FIN7 EDR tools)</a></span></div>
+        <div class="source-item"><span class="source-num">7</span><span><a href="https://www.sentinelone.com/labs/black-basta-ransomware-attacks-deploy-custom-edr-evasion-tools-tied-to-fin7-threat-actor/" target="_blank" rel="noopener">SentinelOne Labs: Black Basta &ndash; FIN7 EDR evasion tools (high-confidence assessment)</a></span></div>
+        <div class="source-item"><span class="source-num">8</span><span><a href="https://unit42.paloaltonetworks.com/threat-assessment-black-basta-ransomware/" target="_blank" rel="noopener">Palo Alto Unit 42: Threat Assessment &ndash; Black Basta Ransomware</a></span></div>
+        <div class="source-item"><span class="source-num">9</span><span><a href="https://www.ibm.com/think/x-force/black-basta-ransomware-group-besting-network" target="_blank" rel="noopener">IBM X-Force: Black Basta Ransomware Group Besting the Network (2022)</a></span></div>
+        <div class="source-item"><span class="source-num">10</span><span><a href="https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-blackbasta" target="_blank" rel="noopener">Trend Micro: Ransomware Spotlight &ndash; Black Basta</a></span></div>
+        <div class="source-item"><span class="source-num">11</span><span><a href="https://www.fortiguard.com/threat-actor/5539/blackbasta-ransomware" target="_blank" rel="noopener">Fortinet FortiGuard: BlackBasta Ransomware Threat Actor Profile</a></span></div>
+        <div class="source-item"><span class="source-num">12</span><span><a href="https://socradar.io/blog/dark-web-profile-black-basta-ransomware/" target="_blank" rel="noopener">SOCRadar: Dark Web Profile &ndash; Black Basta Ransomware</a></span></div>
+        <div class="source-item"><span class="source-num">13</span><span><a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.blackbasta" target="_blank" rel="noopener">Malpedia: win.blackbasta (cluster IDs, aliases)</a></span></div>
+
+        <div class="source-category">Collapse, Chat Leak, and Post-Mortem</div>
+        <div class="source-item"><span class="source-num">14</span><span><a href="https://blog.barracuda.com/2025/03/07/black-basta-s-rapid-collapse" target="_blank" rel="noopener">Barracuda Networks: Black Basta's Rapid Collapse (March 2025)</a></span></div>
+        <div class="source-item"><span class="source-num">15</span><span><a href="https://blog.barracuda.com/2026/02/02/lessons-from-black-basta-s-collapse" target="_blank" rel="noopener">Barracuda Networks: Lessons from Black Basta's Collapse (February 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">16</span><span><a href="https://www.trellix.com/blogs/research/analysis-of-black-basta-ransomware-chat-leaks/" target="_blank" rel="noopener">Trellix: Analysis of Black Basta Ransomware Chat Leaks</a></span></div>
+        <div class="source-item"><span class="source-num">17</span><span><a href="https://flare.io/learn/resources/blog/deciphering-black-bastas-infrastructure-from-the-chat-leak" target="_blank" rel="noopener">Flare: Deciphering Black Basta's Infrastructure from the Chat Leak</a></span></div>
+        <div class="source-item"><span class="source-num">18</span><span><a href="https://www.s-rminform.com/latest-thinking/the-blackbasta-leaks-cyber-briefing-note" target="_blank" rel="noopener">S-RM Intelligence: The Black Basta Leaks &ndash; Cyber Briefing Note</a></span></div>
+        <div class="source-item"><span class="source-num">19</span><span><a href="https://techcrunch.com/2025/02/21/a-huge-trove-of-leaked-black-basta-chat-logs-expose-the-ransomware-gangs-key-members-and-victims/" target="_blank" rel="noopener">TechCrunch: Black Basta Chat Logs Leak (February 2025)</a></span></div>
+
+        <div class="source-category">Law Enforcement Actions</div>
+        <div class="source-item"><span class="source-num">20</span><span><a href="https://thehackernews.com/2026/01/black-basta-ransomware-hacker-leader.html" target="_blank" rel="noopener">The Hacker News: Black Basta Leader Added to EU Most Wanted and INTERPOL Red Notice (January 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">21</span><span><a href="https://www.infosecurity-magazine.com/news/suspects-black-basta-ransomware/" target="_blank" rel="noopener">Infosecurity Magazine: Suspects Linked to Black Basta Raided in Ukraine</a></span></div>
+        <div class="source-item"><span class="source-num">22</span><span><a href="https://www.bleepingcomputer.com/news/security/black-basta-boss-makes-it-onto-interpols-red-notice-list/" target="_blank" rel="noopener">BleepingComputer: Black Basta Boss Added to INTERPOL Red Notice List</a></span></div>
+        <div class="source-item"><span class="source-num">23</span><span><a href="https://www.lemonde.fr/en/pixels/article/2025/10/16/revelations-on-group-78-the-secret-us-task-force-that-fights-cybercriminals_6746474_13.html" target="_blank" rel="noopener">Le Monde: Revelations on Group 78, the Secret US Task Force (October 2025)</a></span></div>
+
+        <div class="source-category">Decryptor and Vulnerability Research</div>
+        <div class="source-item"><span class="source-num">24</span><span><a href="https://srlabs.de/blog/black-basta-buster-decrypting-files-without-paying-the-ransom" target="_blank" rel="noopener">SRLabs: Black Basta Buster &ndash; Decrypting Files Without Paying the Ransom (January 2024)</a></span></div>
+        <div class="source-item"><span class="source-num">25</span><span><a href="https://nvd.nist.gov/vuln/detail/cve-2024-1709" target="_blank" rel="noopener">NVD: CVE-2024-1709 (ConnectWise ScreenConnect, CVSS 10.0)</a></span></div>
+        <div class="source-item"><span class="source-num">26</span><span><a href="https://www.bleepingcomputer.com/news/security/black-basta-bl00dy-ransomware-gangs-join-screenconnect-attacks/" target="_blank" rel="noopener">BleepingComputer: Black Basta Joins ConnectWise ScreenConnect Attacks</a></span></div>
+
+        <div class="source-category">Financial and Attribution</div>
+        <div class="source-item"><span class="source-num">27</span><span><a href="https://www.corvusinsurance.com/blog/black-basta-ransomware-has-extracted-over-100-million-from-its-victims" target="_blank" rel="noopener">Corvus Insurance: Black Basta Has Extracted Over $100 Million from Victims</a></span></div>
+        <div class="source-item"><span class="source-num">28</span><span><a href="https://blog.qualys.com/vulnerabilities-threat-research/2024/09/19/black-basta-ransomware-what-you-need-to-know" target="_blank" rel="noopener">Qualys: Black Basta Ransomware &ndash; What You Need to Know (FIN7 link)</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled May 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DARK MODE
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+
+  updateToggle();
+
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// SCROLL SPY
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

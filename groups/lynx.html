@@ -544,7 +544,7 @@ html { scroll-behavior: smooth; }
     <span class="live-pulse"></span>
     <span id="topbar-refresh-label">Intelligence data refreshed…</span>
   </div>
-  <div class="topbar-tag">Analytical profiles compiled from open-source intelligence</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
   <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
 </header>
 
@@ -562,6 +562,10 @@ html { scroll-behavior: smooth; }
       <span class="group-dot dot-dim"></span>
       Akira
     </a>
+    <a class="group-item" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
     <a class="group-item" href="qilin.html">
       <span class="group-dot dot-dim"></span>
       Qilin
@@ -578,10 +582,13 @@ html { scroll-behavior: smooth; }
       <span class="group-dot dot-dim"></span>
       LockBit
     </a>
-    <a class="group-item coming-soon">
-      <span class="group-dot dot-dim"></span>
-      Luna Moth
-      <span class="coming-tag">Soon</span>
+    <a class="group-item" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
     </a>
     <a class="group-item coming-soon">
       <span class="group-dot dot-dim"></span>
@@ -611,7 +618,7 @@ html { scroll-behavior: smooth; }
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated <span id="hero-last-updated">May 2026</span></div>
     <div class="hero-title">INC / Lynx</div>
     <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; INC Codebase Successor</div>
     <div class="hero-badges">
@@ -1255,7 +1262,7 @@ html { scroll-behavior: smooth; }
   </div><!-- /content -->
 
   <footer class="page-footer">
-    Ransomware EDP &mdash; Threat Actor Library &nbsp;&bull;&nbsp; INC / Lynx Profile &nbsp;&bull;&nbsp; Last updated May 2026<br>
+    Ransomware EDP &mdash; Threat Actor Library &nbsp;&bull;&nbsp; INC / Lynx Profile &nbsp;&bull;&nbsp; Last updated <span id="footer-last-updated">May 2026</span><br>
     Compiled from open-source intelligence. All confidence assessments reflect analyst judgment at time of publication.
     <span class="reno-credit">Developed by Reno</span>
   </footer>
@@ -1378,6 +1385,10 @@ html { scroll-behavior: smooth; }
         const subLabel = 'Via ransomware.live Pro — ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         document.getElementById('kpi-victim-sub').textContent = subLabel;
         document.getElementById('kpi-country-sub').textContent = subLabel;
+
+        const dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('hero-last-updated').textContent = dateLabel;
+        document.getElementById('footer-last-updated').textContent = dateLabel;
       }
     }
 

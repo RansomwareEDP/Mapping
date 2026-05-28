@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luna Moth / SRG | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-extortion { background: #6c3483; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr {
+  background: var(--navy);
+}
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* PHASE LIST */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FEED CARDS */
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px; padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+
+/* SCROLL */
+html { scroll-behavior: smooth; }
+
+/* DARK MODE TOGGLE */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .metric-label { color: #8b949e; }
+[data-theme="dark"] .metric-note { color: #6b7280; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* LIVE DATA ELEMENTS */
+.topbar-live {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400); letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative; display: inline-block;
+  width: 7px; height: 7px; flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent; border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+.victim-strip { margin: 20px 40px 0; background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.victim-strip-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-bottom: 1px solid var(--gray-200); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.victim-strip-sub { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-400); font-size: 10px; margin-left: 4px; }
+.victim-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-date { color: var(--gray-400); }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item active" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      More groups
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#targeting">Victim Profile</a>
+    <a href="#enforcement">LE Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">Luna Moth / SRG</div>
+    <div class="hero-subtitle">Data Extortion (No Encryption) &nbsp;&bull;&nbsp; Callback Phishing &nbsp;&bull;&nbsp; Conti Diaspora &nbsp;&bull;&nbsp; Law Firm Targeting</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Active Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-extortion">No Encryption</span>
+      <span class="badge badge-raas">Closed Crew</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Mar 2022</div>
+        <div class="kpi-sub">Active 4+ years</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">DLS Victims Claimed</div>
+        <div class="kpi-value">41+</div>
+        <div class="kpi-sub">LeakedData DLS, as of May 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Legal Services 2025</div>
+        <div class="kpi-value">24</div>
+        <div class="kpi-sub">Law firms claimed in 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Demand Range</div>
+        <div class="kpi-value">$1M&ndash;$8M</div>
+        <div class="kpi-sub">Per victim, USD</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">No arrests, no sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Decryptor Available</div>
+        <div class="kpi-value">N/A</div>
+        <div class="kpi-sub">No encryption deployed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Conti</div>
+        <div class="kpi-sub">BazarCall operator cluster</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Victims (Live)</div>
+        <div class="kpi-value" id="kpi-victim-count">--</div>
+        <div class="kpi-sub">via ransomware.live</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>Silent Ransom Group (SRG), also tracked as Luna Moth, is a post-Conti data extortion operation that first emerged in March 2022 following the fragmentation of the Conti ransomware syndicate. The group is a closed or semi-closed criminal crew, not a conventional ransomware-as-a-service (RaaS) platform with an open affiliate program. It deliberately avoids deploying encryption ransomware, relying entirely on social engineering, data theft, and extortion to generate revenue.</p>
+      <p>The group's defining characteristic is its socio-technical initial access model: callback phishing emails, direct vishing calls impersonating IT support, and, since April 2025, physical in-person impersonation of IT technicians. Once access is established using legitimate remote management tools, the group exfiltrates data and demands ransoms ranging from $1 million to $8 million, threatening to post stolen data on its clearnet leak site. No encryption or file-locking payload is involved.</p>
+      <p>Since spring 2023, SRG has concentrated almost exclusively on U.S. law firms, assessed as a deliberate targeting shift to exploit the high extortion leverage of privileged legal data. As of April 2026, confirmed victims include Jones Day and Orrick, Herrington and Sutcliffe, two of the largest U.S. law firms by revenue. The group rebranded its data leak site infrastructure in December 2024 under the "LeakedData" label. No law enforcement arrest, indictment, or infrastructure takedown has been publicly confirmed as of May 2026.</p>
+
+      <div class="callout callout-alert">
+        <strong>Analyst Assessment:</strong> SRG represents a structurally distinct threat from encryption-based ransomware. Its absence of malware deployment, reliance on living-off-the-land techniques, and use of legitimate remote access tools make it resistant to traditional signature-based detection. The escalation to physical office intrusions (April 2025) signals a group willing to increase operational risk in pursuit of higher-yield compromises.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Primary designation</td><td>Silent Ransom Group (SRG)</td></tr>
+            <tr><td>Alternate names</td><td>Luna Moth, LeakedData, Chatty Spider, UNC3753, Storm-0252, TG2729</td></tr>
+            <tr><td>CrowdStrike tracking</td><td>Chatty Spider (group-specific; not Wizard Spider, which describes the Conti parent entity)</td></tr>
+            <tr><td>Microsoft tracking</td><td>Storm-0252 (group-specific)</td></tr>
+            <tr><td>Mandiant/Google tracking</td><td>UNC3753 (unclassified cluster designation)</td></tr>
+            <tr><td>Sygnia tracking</td><td>Luna Moth / TG2729</td></tr>
+            <tr><td>Halcyon tracking</td><td>Silent (threat group profile)</td></tr>
+            <tr><td>FBI/IC3 designation</td><td>Silent Ransom Group (SRG), a.k.a. Luna Moth, Chatty Spider, UNC3753</td></tr>
+            <tr><td>Operational model</td><td>Data extortion only; no encryption ransomware; closed or semi-closed crew</td></tr>
+            <tr><td>Extortion mechanic</td><td>Data theft and threatened publication; no double extortion in the classic sense</td></tr>
+            <tr><td>DLS infrastructure</td><td>Clearnet site "business-data-leaks[.]com" (LeakedData branding, active since Dec 2024); prior TOR-accessible site also used</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia / CIS (CREDIBLE)</td></tr>
+            <tr><td>LE disruption status</td><td>None confirmed as of May 2026</td></tr>
+            <tr><td>Primary sector targeted</td><td>U.S. law firms (legal services, approx. 40% of documented victims)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2025/05/dls.png.webp"
+               alt="LeakedData DLS header and layout"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LeakedData DLS: Site Header</strong>
+            The current iteration of SRG's data leak site, rebranded as "LeakedData" in December 2024. The site operates on the clearnet (not TOR), a departure from most extortion groups. It is minimal by design: a single page with no rules, contact information, or sub-pages. The SRG's use of a clearnet DLS with partial victim name redaction and countdown timers is a deliberate pressure mechanism.
+            <span class="img-source">Source: SOCRadar, May 2025</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2025/05/silent-ransom-dls-1.png.webp"
+               alt="Silent Ransom Group full DLS view"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LeakedData DLS: Full Site View</strong>
+            The DLS features two primary sections: a "Leaked Data" archive of confirmed non-payers, and a countdown section for victims under active negotiation. Victim names are partially redacted until a deadline expires. SRG is inconsistent in following through on publication threats, per the FBI's May 2025 advisory, though at least 38 law firms have had data publicly released on the site.
+            <span class="img-source">Source: SOCRadar, May 2025</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2025/05/silent-ransom-dls-2.png.webp"
+               alt="SRG DLS leaked data section detail"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>LeakedData DLS: Victim Archive</strong>
+            The "Leaked Data" section of the DLS lists victims whose negotiation windows have expired. Direct links to stolen data are provided after the countdown timer reaches zero. The clearnet hosting model exposes victim data to broader audiences than TOR-based DLS sites, maximizing reputational pressure.
+            <span class="img-source">Source: SOCRadar, May 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2025/05/silent-ransom-callback-phishing-mail.png.webp"
+               alt="SRG callback phishing email example 2022"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Callback Phishing Email (2022)</strong>
+            An example SRG callback phishing email from the group's early 2022 operations, documented by Sygnia. The email impersonates a subscription service and instructs the recipient to call a phone number to cancel a charge. This social engineering template remains the foundational access technique, though delivery has evolved toward direct vishing calls by 2025.
+            <span class="img-source">Source: Sygnia / SOCRadar, 2022&ndash;2025</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Actias_luna_6.jpg/480px-Actias_luna_6.jpg"
+               alt="Actias luna - Luna moth, the group's naming reference"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Naming Reference: Actias luna</strong>
+            The luna moth (Actias luna) is a large North American silkmoth notable for its pale green coloration and distinctive tail streamers. The species name "luna" is Latin for moon. Sygnia's designation "Luna Moth" for this threat actor is assessed as referencing both the moth's association with stealth and nighttime activity and the group's "silent" operational posture (ANALYST INFERENCE).
+            <span class="img-source">Source: Wikimedia Commons (public domain)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence Context</div>
+        <p>SRG emerged in March 2022, the same period in which the Conti ransomware syndicate publicly fragmented following internal chat leaks and blowback from Conti leadership's public endorsement of Russia's invasion of Ukraine. SOCRadar's analysis confirms the oldest documented SRG compromise dates to June 7, 2022, approximately three months after Conti's implosion. This timing is consistent with the broader pattern of Conti diaspora groups spinning out into successor operations in the same period (Black Basta, Karakurt, Royal/BlackSuit, Akira, SRG).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Note</div>
+        <div class="callout callout-info">
+          <strong>Vendor Designation Disambiguation:</strong> Wizard Spider (CrowdStrike) and Gold Ulrick (Secureworks) are tracking designations for the <em>parent Conti organization</em>, not for SRG/Luna Moth. SRG is tracked separately: Chatty Spider (CrowdStrike), Storm-0252 (Microsoft), UNC3753 (Mandiant), TG2729 (Sygnia), and Silent (Halcyon). These are group-specific designations and must not be conflated with the parent entity designations.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Conti Lineage: Evidentiary Assessment</div>
+        <p>Multiple independent vendors assess SRG as having emerged from the Conti ecosystem's BazarCall operator cluster. The confidence level varies by evidence type and vendor. No single piece of evidence is universally confirmed; the strongest indicators are TTP continuity and timing.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 1 &mdash; Credible</div>
+            <div class="pillar-title">TTP Continuity: BazarCall Heritage</div>
+            <div class="pillar-body">SRG's callback phishing methodology is functionally identical to BazarCall campaigns previously run by Conti-affiliated operators. BazarCall was a Conti-era initial access technique in which victims were directed to call fake support lines, leading to malware installation. SRG adapted this pattern for data extortion without a malware payload. Multiple independent vendors (ADVIntel, Unit 42, Sygnia, Halcyon) note the overlap. <strong>Confidence: CREDIBLE</strong> (behavioral, not technical code-level evidence).</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-title">Emergence Timing</div>
+            <div class="pillar-body">SRG/Luna Moth's operational debut in March 2022 coincides precisely with Conti's public collapse. ADVIntel, which had insider visibility into Conti, explicitly attributed early SRG campaigns to a "Silent Ransom" cluster with ties to Conti operators. Halcyon describes SRG as "former Conti ransomware syndicate operators" who pivoted to data extortion. <strong>Confidence: CREDIBLE</strong> (circumstantial-temporal plus source-based attribution).</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 3 &mdash; Analyst Inference</div>
+            <div class="pillar-title">Personnel Continuity</div>
+            <div class="pillar-body">No public reporting has named specific former Conti operators as SRG principals. Attribution to former Conti personnel is inferred from behavioral continuity, timing, and ADVIntel's source-based claims. Unit 42 explicitly notes it is "monitoring attribution closely" without fully endorsing the Conti lineage. <strong>Confidence: ANALYST INFERENCE</strong> (extrapolated from confirmed facts; not directly evidenced with named individuals or handles).</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 4 &mdash; Analyst Inference</div>
+            <div class="pillar-title">Blockchain/Code Overlap</div>
+            <div class="pillar-body">Unlike Akira (which has documented on-chain Bitcoin transfers linking back to Conti wallets), SRG/Luna Moth has not produced publicly available blockchain forensics evidence of wallet-level continuity with Conti. Because SRG does not deploy a ransomware binary, there is also no code overlap. <strong>Confidence: ANALYST INFERENCE</strong> (plausible given ecosystem context; not directly evidenced in open-source blockchain analysis).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster Assessment</div>
+        <p>SRG is most directly connected to the Conti parent entity through the BazarCall operator cluster. The anchor relationship (SRG &lt;&mdash;&gt; Conti/BazarCall) is assessed as <span class="conf conf-credible">Credible</span> based on multi-vendor TTP corroboration, timing, and ADVIntel source-based attribution.</p>
+        <p>Extension claims (SRG sharing infrastructure or personnel with other active ransomware groups beyond the Conti heritage) are <span class="conf conf-inference">Analyst Inference</span> only. No public reporting documents operational infrastructure overlap between SRG and other currently active ransomware groups. Functional categorizations grouping SRG with other "extortion-only" outfits are descriptive, not evidentiary.</p>
+        <p>Note: Mandiant has not published a formal named-group assessment for SRG as of May 2026 (UNC3753 remains an unclassified cluster). Recorded Future has not published a formal APT designation. CrowdStrike's Chatty Spider designation is the most formally published group-specific tracking name available in open sources.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Crew Structure</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>SRG operates as a closed or semi-closed criminal crew rather than an open RaaS platform. Public reporting has not documented a formal affiliate recruitment program, revenue-sharing tiers, or public affiliate forum postings of the kind associated with LockBit, ALPHV, or Akira. The group appears to run end-to-end operations with a small, trusted operator circle. This structure reduces internal instability risk compared to large RaaS platforms but also limits scalability. No formal revenue split (e.g., 70/30) has been documented.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access: Three-Stage Evolution</div>
+        <p>SRG's initial access methodology has evolved significantly from 2022 to 2025, with each iteration increasing operational sophistication and physical risk to the operators.</p>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Callback Phishing Emails (2022&ndash;2024)</div>
+              <div class="phase-desc">The foundational technique: mass or targeted emails impersonating subscription services (Zoho MasterClass, Duolingo, McAfee, Norton) claiming a recurring charge. Victims are instructed to call a phone number to cancel. On the call, SRG operators socially engineer the victim into installing legitimate remote monitoring and management (RMM) software via a malicious link, granting remote access. This technique mirrors the BazarCall playbook attributed to Conti-era operators. [1, 3, 5]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">IT Helpdesk Vishing with Fake Domains (2023&ndash;2025)</div>
+              <div class="phase-desc">SRG shifted to proactively calling targets while impersonating internal IT support or external IT vendors. Operators registered spoofed helpdesk domains (pattern: [targetcompany]-helpdesk.com or [targetcompany]-help.com) through GoDaddy, using domaincontrol[.]com nameservers. EclecticIQ documented this infrastructure evolution starting in March 2025, identifying at least 37 such domains. Silent Push identified over 50 unique domains targeting major law firms. Named examples confirmed in reporting include duanemorris-helpdesk.com, perkinscoie-helpdesk.com, and millermartin-helpdesk.com. [5, 14]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">In-Person Physical Intrusion (April 2025, CONFIRMED)</div>
+              <div class="phase-desc">The FBI's May 2025 PIN and May 2026 FLASH document a confirmed tactic evolution: SRG operators first call a law firm's staff posing as IT support, then send an individual physically to the office claiming to be an IT technician. Per FBI FLASH-20260526-01, the in-person actor specifically tells the victim they need to "image the device or create a backup file to address potential impacts from the phishing email" — a social engineering pretext designed to justify inserting a physical storage device into a network-connected computer for direct data exfiltration. The FBI confirmed this tactic "has been highly effective and resulted in multiple compromises." This is the highest-risk and most novel element of SRG's tradecraft as of May 2026. [1, 16]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion Model and Negotiation Behavior</div>
+        <p>SRG's extortion is data-only: they do not encrypt files and therefore cannot offer a decryption key. Their leverage rests entirely on the sensitivity of stolen data and the threat of publication. This creates a distinctive negotiation dynamic.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Assessment</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Initial demand range</td><td>$1 million to $8 million USD per victim</td><td>CREDIBLE (multiple vendor sources)</td></tr>
+              <tr><td>Payment currency</td><td>Cryptocurrency (Bitcoin reported; per-victim wallet assignment likely)</td><td>CREDIBLE (FBI solicits wallet info from victims)</td></tr>
+              <tr><td>DLS publication behavior</td><td>Inconsistent; SRG does not always follow through on publication threats (FBI PIN assessment); at least 38 confirmed non-payer publications on clearnet DLS as of April 2026</td><td>CONFIRMED (FBI, DataBreaches)</td></tr>
+              <tr><td>Victim communication channels</td><td>Ransom emails with data samples; follow-up phone calls to staff; occasional in-session messaging via RMM tools</td><td>CONFIRMED (multiple IR cases)</td></tr>
+              <tr><td>Negotiation reduction behavior</td><td>Demands can be reduced but typically remain in the hundreds of thousands of dollars; specific reduction percentages are not consistently published</td><td>CREDIBLE (anecdotal; limited public negotiation transcripts)</td></tr>
+              <tr><td>Published negotiation transcript</td><td>SRG shared chat logs with DataBreaches following failed Orrick, Herrington and Sutcliffe negotiations (January&ndash;February 2026)</td><td>CONFIRMED (DataBreaches reporting, April 2026)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The Orrick negotiations are the most detailed publicly documented SRG negotiation. Access was gained approximately January 20, 2026; the firm appeared in negotiation chat on February 6, 2026. Negotiations failed and data was subsequently published on the LeakedData DLS. [12]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL CAPABILITIES -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Key Distinction:</strong> SRG does not deploy a ransomware binary, does not encrypt files, and has no known CVE exploitation history. Its technical capability is built on social engineering proficiency, not novel exploit development. The group's primary defensive advantage is deliberate use of legitimate tools to blend into normal IT operations.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Initial access is via social engineering only: callback phishing emails, direct vishing calls, and in-person physical intrusion. There is no documented exploitation of specific CVEs for initial access. SRG does not rely on unpatched internet-facing services as an entry point. This makes traditional patch-management defenses largely irrelevant against this group.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Tooling and TTPs</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool/Technique</th><th>Role</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>AnyDesk</td><td>Remote access / persistence</td><td>Legitimate commercial RMM; installed by victim under social engineering</td></tr>
+              <tr><td>Zoho Assist</td><td>Remote access / persistence</td><td>Legitimate commercial RMM; used in callback phishing campaigns</td></tr>
+              <tr><td>Quick Assist</td><td>Remote access / persistence</td><td>Microsoft built-in remote support tool; added to FBI FLASH-20260526-01 indicator list [16]</td></tr>
+              <tr><td>RustDesk</td><td>Remote access / persistence</td><td>Open-source RMM; added to FBI FLASH-20260526-01 indicator list [16]</td></tr>
+              <tr><td>Splashtop</td><td>Remote access / persistence</td><td>Listed in FBI indicators (PIN May 2025, FLASH May 2026)</td></tr>
+              <tr><td>Syncro</td><td>Remote access / persistence</td><td>Listed in FBI indicators (PIN May 2025, FLASH May 2026)</td></tr>
+              <tr><td>Atera</td><td>Remote access / persistence</td><td>Listed in FBI indicators (PIN May 2025, FLASH May 2026)</td></tr>
+              <tr><td>WinSCP</td><td>Data exfiltration</td><td>SFTP-based file transfer; outbound port 22; WinSCP portable used on systems without admin privileges</td></tr>
+              <tr><td>Rclone</td><td>Data exfiltration</td><td>Used in hidden or renamed form to evade detection [1, 16]</td></tr>
+              <tr><td>Microsoft OneDrive</td><td>Data exfiltration</td><td>FLASH-20260526-01 confirms SRG exfiltrates to internal filesharing platforms including OneDrive [16]</td></tr>
+              <tr><td>Google Drive</td><td>Data exfiltration</td><td>FLASH-20260526-01 confirms SRG exfiltrates to internal filesharing platforms including Google Drive [16]</td></tr>
+              <tr><td>Valid credentials</td><td>Lateral movement</td><td>Obtained during RMM sessions (admin credential capture); network share browsing via SMB/RDP</td></tr>
+              <tr><td>Helpdesk domain spoofing</td><td>Phishing infrastructure</td><td>Pattern: [target]-helpdesk.com / [target]-help.com; registered via GoDaddy with domaincontrol[.]com nameservers</td></tr>
+              <tr><td>Physical storage device</td><td>Direct data exfiltration</td><td>USB or external hard drive inserted by in-person actor; FLASH confirms actor uses "imaging the device / creating a backup file" pretext [16]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&amp;CK Mapping (FBI FLASH-20260526-01)</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The following MITRE ATT&amp;CK technique mapping is drawn directly from FBI FLASH-20260526-01 (May 26, 2026). [16]</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ATT&amp;CK Tactic</th><th>Technique</th><th>SRG Relevance</th></tr></thead>
+            <tbody>
+              <tr><td>Initial Access</td><td>T1566 &ndash; Phishing</td><td>Callback phishing emails using invoice, billing, subscription, or IT-themed lures</td></tr>
+              <tr><td>Resource Development / Social Engineering</td><td>T1598.004 &ndash; Voice Phishing</td><td>Threat actors direct victims to initiate phone contact or impersonate internal IT support</td></tr>
+              <tr><td>Execution</td><td>T1219 &ndash; Remote Access Software</td><td>Legitimate remote administration tools used to establish interactive access</td></tr>
+              <tr><td>Credential Access</td><td>T1078 &ndash; Valid Accounts</td><td>Threat actors leverage victim credentials to access email or cloud services</td></tr>
+              <tr><td>Collection</td><td>T1560 &ndash; Archive Collected Data</td><td>Data may be staged or compressed prior to exfiltration</td></tr>
+              <tr><td>Collection</td><td>T1530 &ndash; Data from Cloud Storage</td><td>Theft of data from Microsoft 365, OneDrive, Google Drive, or similar platforms</td></tr>
+              <tr><td>Exfiltration</td><td>T1567 &ndash; Exfiltration Over Web Service</td><td>Upload of stolen data to cloud storage or web-accessible platforms</td></tr>
+              <tr><td>Exfiltration</td><td>T1052.001 &ndash; Exfiltration to Removable Media</td><td>In-person intrusion scenarios involving USB or external hard drive data theft</td></tr>
+              <tr><td>Impact</td><td>T1657 &ndash; Financial Theft / Extortion</td><td>Threatened publication or sale of stolen victim data</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption and Malware Footprint</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>SRG deploys no encryption ransomware binary. Reports from Sygnia, Unit 42, the FBI, and others are explicit that the group "does away with the malware portion" of a typical ransomware attack. There are no known custom malware families, no file encryption routines, no C2 infrastructure dependent on custom implants, and no Linux or VMware/ESXi variants. Because no encryption is involved, there is no CIS-region kill switch behavior to analyze, no decryption tool available or needed, and no relevant No More Ransom project entry for SRG. [1, 2, 3, 5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Detection Indicators (FBI PIN May 2025 / FLASH May 2026)</div>
+        <ul class="content-list">
+          <li>Unauthorized downloads of: Zoho Assist, Quick Assist, AnyDesk, RustDesk, Syncro, Splashtop, or Atera on systems not previously running these tools [1, 16]</li>
+          <li>Unidentified or unauthorized individuals attempting physical access to computers while claiming IT support role [1, 16]</li>
+          <li>WinSCP or Rclone outbound connections to external IP addresses (port 22 for SFTP) [1, 16]</li>
+          <li>Exfiltration of data to Microsoft OneDrive, Google Drive, or external servers [16]</li>
+          <li>Alerts that data was exfiltrated from the company environment [16]</li>
+          <li>Emails, phone calls, or voicemails from an unnamed group claiming data was stolen [1, 16]</li>
+          <li>Emails or phone calls to the victim's <strong>clients</strong> claiming their data was stolen (third-party pressure tactic) [16]</li>
+          <li>Employees receiving unsolicited phone calls from individuals falsely claiming to be internal IT staff [1, 16]</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 05: FINANCIAL INFRASTRUCTURE -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>SRG demands ransoms denominated in cryptocurrency. Bitcoin is referenced in multiple reports as the primary payment vehicle. The FBI's May 2025 PIN explicitly solicits "cryptocurrency wallet information" from SRG victims, confirming cryptocurrency-based payment. Individual per-victim wallet assignment is standard for extortion groups to complicate blockchain attribution; this is assessed as the likely SRG practice though not explicitly confirmed in open sources.</p>
+        <p>Demand range is $1 million to $8 million USD per victim, targeting organizations assessed capable of paying at scale. Confirmed victim costs are described as "hundreds of thousands of dollars" in some cases, indicating negotiated settlements below initial demands.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Analysis: Open Source Gaps</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>As of May 2026, TRM Labs, Chainalysis, and Elliptic have not published formal, open-source blockchain analyses specifically attributing wallet clusters to SRG/Luna Moth. This contrasts with more established ransomware groups (Akira, LockBit, ALPHV) where dedicated blockchain forensics reports are available. The absence of published analysis does not indicate the absence of on-chain attribution work by these firms; it may reflect ongoing law enforcement investigations, non-disclosure by victim organizations, or the relatively fragmented nature of SRG's payment model.</p>
+        <p>OFAC has not issued sanctions designations against SRG, its operators, or its financial infrastructure as of May 2026. No SDN list entries are documented.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Laundering Pattern</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>Given SRG's assessed Conti lineage and Russia-based operator environment, laundering patterns similar to other Russia-linked extortion groups are plausible: layered nested wallets, mixer/tumbler use, and cash-out via high-risk exchanges with limited KYC enforcement. However, this assessment is extrapolated from ecosystem-level knowledge and not supported by direct wallet-level evidence in public reporting. It should be treated as a working hypothesis, not a confirmed fact.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: VICTIM PROFILE -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Breakdown</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Legal Services</div>
+            <div class="metric-val">~40%</div>
+            <div class="metric-note">Primary target since Spring 2023</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Financial Services</div>
+            <div class="metric-val">~24%</div>
+            <div class="metric-note">Insurance, accounting, banking</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Accounting</div>
+            <div class="metric-val">~14%</div>
+            <div class="metric-note">CPA firms, tax practices</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Other Sectors</div>
+            <div class="metric-val">~22%</div>
+            <div class="metric-note">Healthcare, retail, corporate services</div>
+          </div>
+        </div>
+        <p>The legal sector concentration reflects a deliberate targeting logic: law firms hold privileged client communications, M&amp;A data, litigation strategy, and regulatory filings. The combination of reputational risk, client confidentiality obligations, and the legal sector's historically underdeveloped cybersecurity posture creates high extortion leverage. The FBI's May 2025 advisory explicitly confirms this as the group's primary current focus.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Focus</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Approximately 80%+ of documented victims are U.S.-based, with a specific concentration in U.S. law firms. A small number of victims have been identified in Germany, Canada, and Poland (per SOCRadar DLS analysis). SRG has not publicized explicit geographic exclusions (i.e., no CIS country carve-out has been stated), though their de facto targeting bias is toward U.S. and Western organizations.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Target Size</div>
+        <p>SRG targets mid-market to large enterprises, with a preference for larger law firms and financial institutions managing high volumes of sensitive client data. Demand ranges of $1 million to $8 million indicate targeting of organizations assessed to have the financial capacity to pay. The inclusion of Jones Day (ranked top-5 U.S. law firms by revenue) and Orrick, Herrington and Sutcliffe (AmLaw 100) confirms pursuit of marquee-name targets. [11, 12]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Confirmed Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Country</th><th>Approx. Date</th><th>Outcome</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Jones Day</strong></td><td>Legal (AmLaw top 5 by revenue)</td><td>USA</td><td>March&ndash;April 2026</td><td>Breach confirmed by firm; limited number of client files accessed; data published on DLS [11]</td></tr>
+              <tr><td><strong>Orrick, Herrington &amp; Sutcliffe</strong></td><td>Legal (AmLaw 100)</td><td>USA</td><td>January&ndash;February 2026</td><td>Access Jan 20, 2026; negotiations failed; chat logs shared with DataBreaches; data published [12]</td></tr>
+              <tr><td><strong>38 unnamed law firms</strong></td><td>Legal</td><td>USA (majority)</td><td>2022&ndash;2025</td><td>Non-payers; data published on clearnet LeakedData DLS [13]</td></tr>
+              <tr><td><strong>24 legal services orgs</strong></td><td>Legal</td><td>USA (majority)</td><td>2025</td><td>Claimed on DLS during 2025 [search results]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>High-profile victim names are frequently withheld due to confidentiality obligations and ongoing legal proceedings. The confirmed naming of Jones Day and Orrick in 2026 is consistent with SRG's increased willingness to publicly disclose major victims when negotiations fail.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Targeting Behavior</div>
+        <p>Because SRG does not deploy a malware binary, there is no executable-level CIS kill switch to analyze. Their victimology is overwhelmingly U.S.-centric but this alone is insufficient to confirm deliberate CIS avoidance. No public statement by SRG explicitly exempts CIS countries from targeting. The absence of documented CIS victims is consistent with either deliberate avoidance (standard for Russia-based cybercriminal groups) or a narrowly focused targeting strategy. <span class="conf conf-inference">Analyst Inference</span></p>
+      </div>
+    </section>
+
+    <!-- SECTION 07: LAW ENFORCEMENT -->
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">FBI FLASH-20260526-01 (May 2026)</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The FBI issued FLASH-20260526-01 (TLP:CLEAR) on May 26, 2026, titled "Silent Ransom Group Impersonating IT Personnel through Social Engineering." This is the most current law enforcement publication on SRG. Key additions over the May 2025 PIN:</p>
+        <ul class="content-list">
+          <li>Confirms the specific in-person pretext: actors tell victims they need to "image the device or create a backup file to address potential impacts from the phishing email"</li>
+          <li>Adds Quick Assist and RustDesk to the confirmed RMM tool list</li>
+          <li>Confirms Microsoft OneDrive and Google Drive as exfiltration destinations alongside WinSCP and Rclone</li>
+          <li>Documents third-party pressure tactic: SRG contacts the victim's own clients to claim their data was stolen, increasing leverage</li>
+          <li>Provides MITRE ATT&amp;CK mapping across 9 techniques (T1566, T1598.004, T1219, T1078, T1560, T1530, T1567, T1052.001, T1657)</li>
+          <li>Solicits reports of suspicious RMM installations, unauthorized physical access attempts, and cloud exfiltration events</li>
+        </ul>
+        <p>The FLASH was issued less than one week after the confirmed Jones Day and Orrick disclosures reached public reporting, suggesting continued active FBI investigation of the group. [16]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">FBI Private Industry Notification (May 2025)</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The FBI's Internet Crime Complaint Center (IC3) issued PIN 20250523-001 on May 23, 2025 (TLP:CLEAR), titled "Silent Ransom Group Targeting Law Firms." This was the primary law enforcement public document on SRG prior to the May 2026 FLASH. Key content:</p>
+        <ul class="content-list">
+          <li>Formally identifies SRG, also known as Luna Moth, Chatty Spider, and UNC3753</li>
+          <li>Confirms the April 2025 escalation to in-person physical office intrusion as a new confirmed tactic</li>
+          <li>Lists specific RMM tools used for initial access: Zoho Assist, Syncro, AnyDesk, Splashtop, Atera</li>
+          <li>Confirms WinSCP and Rclone as primary exfiltration tools; notes use of hidden/renamed Rclone</li>
+          <li>Notes SRG is "inconsistent" in following through on DLS publication threats</li>
+          <li>Solicits cryptocurrency wallet information, ransom notes, and phone numbers from victim organizations</li>
+          <li>Was coordinated with DHS/CISA prior to release</li>
+        </ul>
+        <p>FBI field office social media posts (including FBI Albuquerque) echoed the PIN's warnings in the weeks following release, indicating a deliberate outreach campaign to the legal sector. [1, 8]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Prior Law Enforcement Communications</div>
+        <p>An earlier FBI/IC3 advisory from November 2023 also addressed SRG callback phishing campaigns, indicating law enforcement awareness predates the 2025 PIN by approximately 18 months. Industry advisories from managed security providers closely mirrored these warnings throughout 2024&ndash;2025. [5, 6]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Enforcement Actions: Current Status</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action Type</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Arrests of SRG principals or operators</td><td>None publicly confirmed as of May 2026</td></tr>
+              <tr><td>Criminal indictments</td><td>None publicly confirmed as of May 2026</td></tr>
+              <tr><td>OFAC sanctions (operators or wallets)</td><td>None confirmed as of May 2026</td></tr>
+              <tr><td>Infrastructure seizures / DLS takedown</td><td>None confirmed as of May 2026</td></tr>
+              <tr><td>Named individuals attributed publicly by LE</td><td>None confirmed as of May 2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The law enforcement posture toward SRG as of May 2026 is characterized by awareness, public warning campaigns, and victim solicitation for intelligence collection. No disruption operations have been publicly announced. Halcyon's analysis notes SRG's "continuing activity and no reported takedowns." The absence of disruption is consistent with either ongoing covert investigations or insufficient attribution confidence to support prosecution. [5]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdictional Assessment</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Multiple vendors assess SRG as operating from Russia or the broader CIS cybercriminal ecosystem. Halcyon explicitly notes "former Conti ransomware syndicate operators likely operating from Russia-based locations." General intelligence reports describing SRG as presumed Russia-based or Russia-aligned are consistent with the broader pattern of Conti-derived groups operating with a Russian safe harbor.</p>
+        <p>Indicators supporting Russia/CIS jurisdiction assessment include inferred language environment (Russian-speaking ecosystem), operational time zone patterns consistent with Russian business hours (anecdotal, not formally published for SRG specifically), historical Conti origins in Russia, and absence of CIS victim targeting.</p>
+        <p>Indicators limiting confidence: Sygnia's technical analysis focuses on tradecraft and does not make an explicit Russia attribution. Unit 42 maintains cautious attribution language. The FBI advisory treats SRG as a financially motivated criminal group without geographic attribution.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Services (RIS) Nexus</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>No public government advisory attributes SRG to Russian intelligence services (FSB, SVR, GRU) or describes a state-direction role. The FBI's PIN does not allege state sponsorship. Halcyon's and other vendors' assessments treat SRG as a financially motivated criminal group. The Russia safe-harbor thesis (tolerance without direction) is analytically plausible given established patterns in Russia's relationship with cybercriminal groups, but is not confirmed by open-source evidence for SRG specifically.</p>
+        <p>Assessed analytic line: SRG is a financially motivated Russia-based or Russia-tolerated criminal group operating under a permissive jurisdictional environment. No confirmed, direct nexus to Russian intelligence services. This assessment should be revisited if indictments or classified assessments provide additional evidence.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <p>As of May 2026, no public law enforcement indictment, government advisory, or credible vendor report has publicly named a specific individual as an SRG operator, principal, or affiliate. This contrasts with groups such as LockBit (Dmitry Khoroshev indicted, May 2024) and Conti/Ryuk (multiple named defendants). The absence of named individuals may reflect early-stage investigation, limited human intelligence access, or operational security by SRG operators.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Stability and Operational Continuity</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>SRG has maintained uninterrupted operations since March 2022, with no documented major internal schisms, affiliate disputes, or operational hiatuses. The group's closed crew structure reduces the internal instability risks associated with large affiliate programs. The absence of a data leak comparable to Conti's February 2022 chat dump, and the absence of operator arrests through 2026, indicates a degree of operational security discipline exceeding many contemporaneous ransomware groups.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Tactical Evolution Indicators</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Development</th><th>Significance</th></tr></thead>
+            <tbody>
+              <tr><td>March 2022</td><td>Group emerges with BazarCall-style callback phishing</td><td>Foundation of operational model; Conti heritage confirmed via TTP overlap</td></tr>
+              <tr><td>Spring 2023</td><td>Sector targeting narrows to U.S. law firms</td><td>Deliberate refinement: legal data carries higher extortion value per incident</td></tr>
+              <tr><td>2023&ndash;2024</td><td>Transition to IT helpdesk vishing with fake domains</td><td>Increased tailoring; higher resource investment per target; harder to block with email filtering alone</td></tr>
+              <tr><td>December 2024</td><td>LeakedData rebranding of DLS infrastructure</td><td>Possible evasion of prior DLS-level tracking; clearnet hosting maximizes victim pressure</td></tr>
+              <tr><td>March 2025</td><td>EclecticIQ documents 37+ fake helpdesk domain campaign</td><td>Infrastructure-level documentation of systematic targeting of named law firms</td></tr>
+              <tr><td>April 2025</td><td>In-person physical office intrusion confirmed by FBI</td><td>Escalation to physical operations is a significant threshold crossing; substantially raises stakes for victims and operators</td></tr>
+              <tr><td>April 2026</td><td>Jones Day and Orrick breaches confirmed and published</td><td>Successful targeting of top-tier AmLaw firms signals continued capability escalation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding and Connected Group Signals</div>
+        <p>The December 2024 LeakedData rebranding is assessed as infrastructure evolution rather than a genuine group rebrand. The underlying operational model, targeting focus, and social engineering TTPs are continuous with prior SRG activity. SOCRadar's analysis confirmed the LeakedData DLS is the operational front of SRG based on victim overlap, breach disclosure records, and the oldest confirmed incident dating to June 2022. <span class="conf conf-confirmed">Confirmed</span></p>
+        <p>No evidence of SRG merging with or absorbing another ransomware group is available. No spin-off operations from SRG have been documented in open-source reporting as of May 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Analytic Gaps</div>
+        <div class="callout callout-warning">
+          <strong>Intelligence Gaps:</strong>
+          (1) <strong>Financial infrastructure:</strong> Wallet-level attribution and laundering path documentation are absent from open-source reporting, limiting assessment of financial leverage points. (2) <strong>Personnel attribution:</strong> No named operators have been publicly confirmed; Conti lineage rests on behavioral inference rather than human intelligence confirmation. (3) <strong>State nexus:</strong> Evidence supports "Russia-based/tolerated" but cannot distinguish between pure criminality and informal FSB/SVR tolerance with potential intelligence-sharing. (4) <strong>Scale of unreported victimization:</strong> Many law firm victims do not publicly disclose incidents; true victim count likely substantially exceeds the DLS-documented number.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators</div>
+        <ul class="content-list">
+          <li><strong>Expanding:</strong> Victim profile is escalating in prestige (AmLaw top firms targeted in 2026)</li>
+          <li><strong>Innovating:</strong> Physical intrusion capability demonstrated April 2025; no other ransomware-adjacent group has deployed this tactic at confirmed scale</li>
+          <li><strong>Undisrupted:</strong> No law enforcement action has degraded operations as of May 2026; FBI warning campaign suggests active investigation but no imminent operational impact</li>
+          <li><strong>Focused:</strong> Sector concentration (legal) is strategic, not opportunistic; unlikely to revert to broad cross-sector targeting given the demonstrated revenue model</li>
+          <li><strong>Risk:</strong> Physical operations increase operator exposure significantly; if LE identifies an in-person actor, attribution to the broader network becomes more likely</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent intelligence reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9654; Toggle Source List
+      </button>
+      <div class="source-list">
+        <div class="source-category">Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[16]</span><span>FBI FLASH-20260526-01 &mdash; "Silent Ransom Group Impersonating IT Personnel through Social Engineering" (TLP:CLEAR), May 26, 2026</span></div>
+        <div class="source-item"><span class="source-num">[1]</span><span><a href="https://www.ic3.gov/CSA/2025/250523.pdf" target="_blank">FBI IC3 PIN 20250523-001 &mdash; Silent Ransom Group Targeting Law Firms (TLP:CLEAR), May 23, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span><a href="https://www.facebook.com/FBIAlbuquerque/posts/122244321176018671/" target="_blank">FBI Albuquerque &mdash; SRG Social Media Advisory, 2025</a></span></div>
+
+        <div class="source-category">Vendor Threat Intelligence</div>
+        <div class="source-item"><span class="source-num">[2]</span><span><a href="https://unit42.paloaltonetworks.com/luna-moth-callback-phishing/" target="_blank">Palo Alto Unit 42 &mdash; Threat Assessment: Luna Moth Callback Phishing Campaign, 2022</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span><a href="https://www.sygnia.co/blog/luna-moth-false-subscription-scams/" target="_blank">Sygnia &mdash; Luna Moth: False Subscription Scams, 2022</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span><a href="https://www.halcyon.ai/threat-group/silent" target="_blank">Halcyon &mdash; Silent (Threat Group Profile), 2024&ndash;2025</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span><a href="https://socradar.io/blog/dark-web-profile-silent-ransom-group-leakeddata/" target="_blank">SOCRadar &mdash; Dark Web Profile: Silent Ransom Group (LeakedData), May 2025 (updated April 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span><a href="https://www.bleepingcomputer.com/news/security/luna-moth-extortion-hackers-pose-as-it-help-desks-to-breach-us-firms/" target="_blank">BleepingComputer / EclecticIQ &mdash; Luna Moth Extortion Hackers Pose as IT Help Desks, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span><a href="https://www.crowdstrike.com/en-us/adversaries/chatty-spider/" target="_blank">CrowdStrike &mdash; Chatty Spider Adversary Profile</a></span></div>
+
+        <div class="source-category">Industry and Incident Response</div>
+        <div class="source-item"><span class="source-num">[6]</span><span><a href="https://www.pivotpointsecurity.com/silent-ransom-group-phishing-attacks/" target="_blank">PivotPoint Security &mdash; Silent Ransom Group Hammers Law Firms with Targeted Phishing Attacks, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span><a href="https://technijian.com/desktop-support/luna-moth-hackers-masquerade-as-it-helpdesks-to-breach-u-s-firms/" target="_blank">Technijian &mdash; Luna Moth Hackers Masquerade as IT Helpdesks, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span><a href="https://cypfer.com/when-luna-moth-targets-attorneys-cypfer-delivers-cyber-certainty/" target="_blank">CYPFER &mdash; When Luna Moth Targets Attorneys, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span><a href="https://www.darkreading.com/endpoint-security/fbi-silent-ransom-group-vishing-law-firms" target="_blank">Dark Reading &mdash; FBI: Silent Ransom Group Using Vishing Against Law Firms, 2025</a></span></div>
+
+        <div class="source-category">Victim / Breach Reporting</div>
+        <div class="source-item"><span class="source-num">[11]</span><span><a href="https://www.abajournal.com/news/article/jones-day-latest-big-law-firm-to-fall-victim-to-cyber-phishing-incident" target="_blank">ABA Journal &mdash; Jones Day Latest BigLaw Firm to Fall Victim to Cyber Phishing Incident, April 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span><a href="https://databreaches.net/2026/04/10/silent-ransom-group-leaked-another-big-law-firm-orrick-herrington-sutcliffe/" target="_blank">DataBreaches.net &mdash; SRG Leaked Orrick, Herrington &amp; Sutcliffe, April 10, 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span><a href="https://databreaches.net/2026/04/13/a-silent-threat-loud-consequences-ransom-group-hits-law-firms-hard/" target="_blank">DataBreaches.net &mdash; A Silent Threat, Loud Consequences, April 13, 2026</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- .content -->
+
+  <footer class="page-footer">
+    Ransomware EDP Threat Actor Library &bull; Luna Moth / Silent Ransom Group Profile &bull; Last updated May 2026
+    <span class="reno-credit">Developed by Reno &bull; Compiled from open-source intelligence</span>
+  </footer>
+
+</main>
+</div><!-- .layout -->
+
+<script>
+// Dark mode toggle
+const toggle = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+toggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀ Light' : '☾ Dark';
+});
+if (saved === 'dark') toggle.textContent = '☀ Light';
+
+// Active section nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -65% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// LIVE DATA — victims + TI feed
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'silentransom.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-silentransom.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const sorted = [...victims]
+          .filter(v => v.attackdate || v.discovered || v.date)
+          .sort((a, b) => new Date(b.attackdate || b.discovered || b.date) - new Date(a.attackdate || a.discovered || a.date))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.attackdate || v.discovered || v.date;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.victim || v.post_title || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now' :
+                      diffH === 1 ? 'Intelligence data refreshed 1h ago' :
+                      diffH < 24 ? `Intelligence data refreshed ${diffH}h ago` :
+                      `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const refreshLabel = document.getElementById('topbar-refresh-label');
+        if (refreshLabel) refreshLabel.textContent = label;
+        const topbarLive = document.getElementById('topbar-live');
+        if (topbarLive) topbarLive.style.display = 'flex';
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+</script>
+</body>
+</html>

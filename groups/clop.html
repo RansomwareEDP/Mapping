@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cl0p | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+
+.theme-toggle {
+  background: none; border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px; color: var(--gray-400); cursor: pointer;
+  font-size: 11px; font-family: inherit; letter-spacing: 0.03em;
+  padding: 3px 10px; margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+.topbar-live {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400); letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative; display: inline-block;
+  width: 7px; height: 7px; flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent; border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.live-badge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em; color: #27ae60; border: 1px solid #27ae60;
+  border-radius: 3px; padding: 1px 4px; vertical-align: middle;
+  margin-left: 5px; line-height: 1.4;
+}
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue); border-radius: 6px;
+  padding: 14px 16px; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+
+.victim-strip { margin: 20px 40px 0; background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.victim-strip-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-bottom: 1px solid var(--gray-200); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.victim-strip-sub { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-400); font-size: 10px; margin-left: 4px; }
+.victim-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .victim-meta { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-label { color: #9ca3af; }
+[data-theme="dark"] .metric-val { color: #f3f4f6; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item active" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
+    </a>
+    <a class="group-item coming-soon">
+      <span class="group-dot dot-dim"></span>
+      More groups
+      <span class="coming-tag">Soon</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Origin &amp; Lineage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#targeting">Victim Profile</a>
+    <a href="#disruption">LE &amp; Regulatory Response</a>
+    <a href="#attribution">Attribution &amp; Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated <span id="hero-last-updated">May 2026</span></div>
+    <div class="hero-title">Cl0p</div>
+    <div class="hero-subtitle">Data Extortion &nbsp;&bull;&nbsp; Mass MFT Exploitation &nbsp;&bull;&nbsp; TA505 / FIN11 Ecosystem</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-raas">RaaS</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Feb 2019</div>
+        <div class="kpi-sub">87+ months active</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Major MFT Campaigns</div>
+        <div class="kpi-value">5</div>
+        <div class="kpi-sub">Accellion, GoAnywhere, MOVEit, Cleo, Oracle EBS</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Estimated Revenue</div>
+        <div class="kpi-value">$500M+</div>
+        <div class="kpi-sub">All campaigns; partial visibility</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">MOVEit Campaign (est.)</div>
+        <div class="kpi-value">$75-100M</div>
+        <div class="kpi-sub">2023 peak; single campaign</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">2023 DLS Victims</div>
+        <div class="kpi-value">384</div>
+        <div class="kpi-sub">Confirmed breach count</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Partial</div>
+        <div class="kpi-sub">2021 Ukraine arrests; activity resumed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">TA505</div>
+        <div class="kpi-sub">CryptoMix descendant</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live Pro</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ============================================================ -->
+    <!-- SECTION 01: OVERVIEW -->
+    <!-- ============================================================ -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary &amp; Group Overview</h2>
+      </div>
+
+      <p>Cl0p is a Russian-speaking, financially motivated ransomware and data extortion operation that has operated since February 2019 within the TA505/FIN11 crimeware ecosystem. The group is most distinguished by its repeated, large-scale exploitation of zero-day vulnerabilities in managed file transfer (MFT) products, enabling simultaneous compromise of hundreds of organizations per campaign. By 2023, Cl0p had largely abandoned traditional ransomware encryption in favor of pure data theft and extortion, making it a principal driver of the industry-wide shift toward encryption-less supply chain attacks.</p>
+
+      <p>Five confirmed mass MFT campaigns (Accellion FTA 2020-2021, GoAnywhere MFT 2023, MOVEit Transfer 2023, Cleo 2024-2025, Oracle E-Business Suite 2025) have collectively resulted in an estimated $500M+ in extortion revenue and the compromise of tens of thousands of organizations. The group maintains a Tor-hosted leak site branded "CL0P^_-LEAKS" and has demonstrated consistent operational resilience following law enforcement actions. As of May 2026, Cl0p remains fully operational and continues to pursue new MFT and enterprise software zero-days.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Primary aliases</td><td>TA505 (Proofpoint/CISA); Lace Tempest (Microsoft); Graceful Spider (CrowdStrike); FIN11 (Mandiant/GTIG); GOLD TAHOE (Secureworks CTU)</td></tr>
+            <tr><td>Naming origin</td><td>"Cl0p" from Russian word <em>klop</em> (&#1082;&#1083;&#1086;&#1087;): bed bug, a blood-feeding parasite that operates at night (CONFIRMED via Cyberint/Cybereason reporting)</td></tr>
+            <tr><td>Lineage</td><td>CryptoMix ransomware evolution; operates within TA505/FIN11 crimeware ecosystem since at least 2019</td></tr>
+            <tr><td>Operational model</td><td>RaaS with data extortion; encryption-less exfiltration-only model since ~2023</td></tr>
+            <tr><td>Extortion mechanic</td><td>Data theft followed by DLS publication threat; multi-extortion in earlier campaigns</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia / CIS region (CREDIBLE; multiple vendor assessments, CIS exclusion behavior)</td></tr>
+            <tr><td>LE disruption status</td><td>Partial (Nov 2021 Ukraine arrests); core leadership and operations intact as of May 2026</td></tr>
+            <tr><td>Decryptor availability</td><td>Linux/ELF variant: free decryptor available (SentinelOne, Feb 2023). Windows variants: no public universal decryptor.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <!-- ROW 1: 2-column, tall -->
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://cyberint.com/wp-content/uploads/2021/09/CL0P-Ransomware_CL0P-Leak-Site-Tor_1.png.webp"
+               alt="CL0P^_-LEAKS Tor-hosted leak site home page"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>CL0P^_-LEAKS: Tor Site Home Page</strong>
+            The group's primary extortion infrastructure. Victims who do not respond to ransom demands are named on this site with data samples published as proof of compromise. The site uses a plain text format with a distinctive underscore-dash branding. Active since at least 2020, it has been a persistent fixture of Cl0p's extortion model across all five MFT campaigns.
+            <span class="img-source">Source: Cyberint (Check Point), 2021/2025</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://cyberint.com/wp-content/uploads/2021/09/CL0P-Ransomware_Example-data-leak_2.png.webp"
+               alt="CL0P DLS example data leak posting with document excerpts"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>CL0P^_-LEAKS: Victim Listing with Data Sample</strong>
+            A typical victim posting on the Cl0p DLS, showing document excerpts and file screenshots as proof of exfiltration. Staged leaks are used to increase pressure. The group publishes in waves, releasing more data each time a victim fails to pay, until either the ransom is paid or all data is leaked.
+            <span class="img-source">Source: Cyberint (Check Point), 2021/2025</span>
+          </div>
+        </div>
+      </div>
+      <!-- ROW 2: 3-column -->
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://images.contentstack.io/v3/assets/blt53c99b43892c2378/blt308c7389d83941b8/69e1cfb47e24e95c2a1dd3cc/cl0p_announcement_cleo_1.jpg"
+               alt="Cl0p DLS announcement listing Cleo campaign victims"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Cleo Campaign Announcement (Dec 2024)</strong>
+            Cl0p posting on the DLS announcing the December 2024 Cleo campaign, listing 66 victim organizations with a 48-hour ultimatum. The group initially published obfuscated names before revealing full identities. This post is analytically significant as it shows Cl0p's continued preference for staged, high-pressure disclosure tactics.
+            <span class="img-source">Source: SentinelOne, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://images.contentstack.io/v3/assets/blt53c99b43892c2378/blt436aaeef8fe4c160/69e1cfb51ddd6e6756bd3d58/cl0p_announcement_cleo_2.jpg"
+               alt="Cl0p DLS second Cleo campaign announcement"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Cleo Victim List (Jan 2025)</strong>
+            A second Cl0p DLS posting from the Cleo campaign showing victim names being progressively revealed after the 48-hour deadline passed. Demonstrates the group's standardized escalation cadence: announce, deadline, reveal, publish. The Cleo campaign resulted in 80+ victim postings in February 2025 alone.
+            <span class="img-source">Source: SentinelOne, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Cimex.lectularius.jpg/640px-Cimex.lectularius.jpg"
+               alt="Cimex lectularius - bed bug - the origin of the Cl0p name"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Naming Reference: Klop (Bed Bug)</strong>
+            The name "Cl0p" derives from the Russian word <em>klop</em> (&#1082;&#1083;&#1086;&#1087;), meaning bed bug (Cimex lectularius): a nocturnal blood-feeding parasite that operates invisibly while its host sleeps. The naming reflects the group's operational identity: quiet initial access followed by mass exfiltration before detection (CONFIRMED, multiple vendor reporting).
+            <span class="img-source">Source: Wikimedia Commons, Fritz Geller-Grimm (CC BY-SA 2.5)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 02: LINEAGE -->
+    <!-- ============================================================ -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage &amp; Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Origins: CryptoMix Evolution</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Cl0p first appeared in February 2019 as an evolution of the <strong>CryptoMix</strong> ransomware family. Early binary analysis confirmed code reuse and cryptographic implementation similarities between the two strains, indicating direct lineage rather than independent development. CryptoMix itself was a well-established ransomware-as-a-service operation prior to Cl0p's emergence. The CryptoMix-to-Cl0p transition represents iterative malware development within the same criminal infrastructure rather than a distinct group spin-up.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">TA505 / FIN11 Heritage</div>
+        <div class="conf conf-credible">Credible: Multiple independent vendor and government sources converge</div>
+        <p>The predominant analytical consensus treats Cl0p as a ransomware brand and tool operated primarily by the <strong>TA505/FIN11</strong> crimeware ecosystem. TA505, tracked by Proofpoint since at least 2014-2015, is a large-scale phishing and malware distribution operation historically associated with Dridex, FlawedAmmyy RAT, and the Get2/SDBbot loader chain. FIN11, the Mandiant designation for the overlapping financial crime cluster, has been formally linked to all major Cl0p campaigns from Accellion through Oracle EBS.</p>
+        <p>Government advisories (CISA/FBI #StopRansomware AA23-158A, Canadian Centre for Cyber Security TA505/Cl0p profile) explicitly designate TA505 as the operator of Cl0p ransomware. The convergence of phishing infrastructure, malware loader chain, and data extortion branding under a single attribution is well-supported. Confidence is medium-to-high based on infrastructure, TTP, and financial flow overlap; definitional distinctions between TA505 and FIN11 at the organizational level remain a modeling choice rather than a factual disagreement between vendors.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-title">Code Lineage and Shared Tooling</div>
+            <div class="pillar-body">Binary analysis confirms Cl0p evolved from CryptoMix with shared cryptographic structures. TA505 tooling (Get2 loader, SDBbot/SDBOT, FlawedAmmyy RAT, Cobalt Strike) appears across all Cl0p intrusion campaigns. Shared loader infrastructure is the strongest single evidentiary pillar for ecosystem attribution. [1][11][13]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &mdash; Confirmed</div>
+            <div class="pillar-title">Formal Government Attribution</div>
+            <div class="pillar-body">CISA/FBI (AA23-158A), the US DoJ, and the Canadian Centre for Cyber Security have each published formal attributions linking Cl0p ransomware campaigns to TA505. Government advisories represent multi-agency intelligence synthesis and carry the highest corroboration weight available in open-source material. [4][5][2]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3 &mdash; Confirmed (Mandiant attribution)</div>
+            <div class="pillar-title">FIN11 / UNC Cluster Linkage</div>
+            <div class="pillar-body">Mandiant/Google GTIG formally attributed Accellion FTA exploitation to UNC2546 (now associated with FIN11). The 2024 Cleo campaign was attributed to FIN11 cluster UNC5936. The 2025 Oracle EBS campaign used GOLDVEIN.JAVA, a Java-based loader consistent with UNC5936/FIN11 tooling. Mandiant has not formally merged these UNC clusters into a single named group as of mid-2026. [SentinelOne][GTIG]</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 4 &mdash; Credible</div>
+            <div class="pillar-title">Operational Pattern and CIS Safe-Harbor</div>
+            <div class="pillar-body">Cl0p samples include locale-based exclusions for Russian and CIS language environments. Operator communications occur in Russian on closed forums. Campaigns have never targeted organizations in Russia or allied CIS states. This pattern aligns with the well-documented Russian cybercrime safe-harbor model: tolerated domestically so long as foreign targets only are pursued. [7][1][3]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <p>Multiple vendor tracking names appear in reporting on Cl0p, with important distinctions between parent-cluster designations and Cl0p-specific aliases:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor / Body</th><th>Designation</th><th>Scope</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Proofpoint</td><td>TA505</td><td>Parent cluster (Dridex, Cl0p, FlawedAmmyy ecosystem)</td><td>Proofpoint's original designation; broadly adopted by government bodies</td></tr>
+              <tr><td>Mandiant / Google GTIG</td><td>FIN11</td><td>Financially motivated cluster overlapping TA505; Cl0p campaigns formally attributed</td><td>Also tracks sub-clusters UNC2546 (Accellion), UNC5936 (Cleo/Oracle EBS)</td></tr>
+              <tr><td>Microsoft</td><td>Lace Tempest</td><td>Cl0p-specific; "Tempest" = financially motivated in Microsoft taxonomy</td><td>Previously DEV-0950; Lace Tempest is the current stable alias for Cl0p operators</td></tr>
+              <tr><td>CrowdStrike</td><td>Graceful Spider</td><td>Cl0p-specific adversary profile</td><td>Attributed MOVEit and Oracle EBS campaigns with moderate confidence [SecurityAffairs, 2025]</td></tr>
+              <tr><td>Secureworks CTU</td><td>GOLD TAHOE</td><td>Primary Cl0p operator cluster</td><td>Also references GOLD NIAGARA as a secondary cluster also deploying the Cl0p payload</td></tr>
+              <tr><td>Sophos</td><td>Cites GOLD TAHOE / GOLD NIAGARA</td><td>Uses Secureworks CTU designations in published reporting</td><td>Sophos reporting confirmed GOLD NIAGARA as a distinct cluster deploying Cl0p (single-vendor at time of writing)</td></tr>
+              <tr><td>CISA / FBI</td><td>"CL0P Ransomware Gang" / TA505</td><td>Operational brand + parent cluster</td><td>MOVEit advisory AA23-158A is the definitive US government attribution document</td></tr>
+              <tr><td>Canadian CCCS</td><td>TA505 / Cl0p profile</td><td>Parent cluster designation consistent with CISA framing</td><td>Published dedicated TA505/Cl0p profile with TTP detail</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Disambiguation rule:</strong> TA505 and FIN11 describe the broader criminal ecosystem from which Cl0p originates. The operationally specific aliases for the Cl0p actor are Lace Tempest (Microsoft), Graceful Spider (CrowdStrike), GOLD TAHOE (Secureworks), and FIN11/UNC5936 (Mandiant). Do not substitute parent-cluster names for group-specific designations in attribution statements.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">GOLD NIAGARA: Secondary Cluster Assessment</div>
+        <div class="conf conf-credible">Credible (single-vendor; requires cross-vendor corroboration)</div>
+        <p>Sophos incident response data identified a second threat cluster, designated <strong>GOLD NIAGARA</strong> by Secureworks CTU, that deployed the Cl0p ransomware payload with TTPs and infrastructure patterns distinct from the primary GOLD TAHOE operator. This is consistent with a shared-tool or affiliate model in which the Cl0p binary is licensed or shared across multiple clusters. GOLD NIAGARA has not been independently confirmed by Mandiant, CrowdStrike, or Microsoft as of the time of this profile. Treat as credible but unverified at the cross-vendor level.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <!-- ============================================================ -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure and Affiliate Management</div>
+        <p>Cl0p operates as a Ransomware-as-a-Service enterprise with a core operator team responsible for malware development, zero-day research, and leak site infrastructure, and a separate affiliate layer that conducts network intrusions and manages victim negotiations. The core team draws on TA505's established phishing and loader distribution apparatus, enabling rapid scale-up across parallel victim sets in supply chain campaigns.</p>
+        <p>The affiliate revenue split is not reliably documented in open sources for Cl0p specifically. General RaaS benchmarks suggest 60/40 to 80/20 splits (affiliate/operator); any specific percentage seen in single-vendor blogs should be treated as low-confidence. Secureworks and Sophos confirm that at least two distinct clusters (GOLD TAHOE, GOLD NIAGARA) have independently deployed the Cl0p payload, consistent with a shared-tooling or sub-licensing model alongside an affiliate tier.</p>
+        <div class="conf-block credible">
+          <strong>CREDIBLE:</strong> Affiliate model is structurally confirmed by multi-cluster deployment evidence and TA505's well-documented external recruitment via Russian-language cybercrime forums, emphasizing experience with network intrusions and access to large corporate environments.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion Model Evolution</div>
+        <p>Cl0p's extortion approach has evolved materially across its operational lifetime:</p>
+        <ul class="content-list">
+          <li><strong>2019-2021 (Traditional double extortion):</strong> Network intrusion via phishing or compromised access, lateral movement, data exfiltration, ransomware deployment. Victims threatened with both non-recovery of encrypted files and DLS publication.</li>
+          <li><strong>2021-2022 (MFT pivot begins):</strong> Accellion FTA zero-days exploited for bulk data theft. Encryption step increasingly deprioritized in favor of speed and scale.</li>
+          <li><strong>2023-present (Encryption-less model):</strong> GoAnywhere, MOVEit, Cleo, and Oracle EBS campaigns conducted as pure exfiltration-and-extortion operations. No ransomware payload deployed. Cl0p publicly acknowledged this shift, framing it as a strategic choice to minimize operational footprint and reduce time-to-exfiltration.</li>
+        </ul>
+        <div class="callout callout-alert">
+          <strong>Structural implication:</strong> Cl0p's encryption-less model breaks the assumption that ransomware groups require decryption leverage. Victims cannot recover through backups alone; the threat is purely reputational and regulatory from exposure of exfiltrated data. This model is faster, harder to attribute in real-time, and generates equivalent extortion leverage.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation and Communication Behavior</div>
+        <p>Victims receive ransom notes directing them to Tor-based contact portals or specific email addresses hosted on privacy-focused providers (ProtonMail, Tutanota). Unlike some RaaS operators, Cl0p historically has not published exact ransom amounts in notes, instead requiring victims to initiate contact before a demand is stated. This approach enables demand calibration based on victim size and industry.</p>
+        <p>Documented negotiation patterns include: staged data publication as leverage escalation; willingness to negotiate significantly downward from initial demands in exchange for prompt engagement; direct contact with known customers, partners, or shareholders of victimized organizations in select high-profile cases to amplify pressure; and adoption of torrents for data distribution beginning August 2023 to complicate takedown efforts against clearweb infrastructure.</p>
+        <p>Initial demands in high-impact supply chain incidents have been reported as very high (tens of millions USD) with material room for negotiation. Exact discount ranges are case-specific and rarely disclosed publicly; open-source visibility into specific negotiated outcomes is limited.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Data Publication Infrastructure</div>
+        <p>The "CL0P^_-LEAKS" site has been the group's primary extortion platform since approximately early 2020. Publication strategy is tiered: victim names appear first (often with partial redaction in the initial post), followed by data sample screenshots, followed by full data releases at escalating intervals. In August 2023, Cl0p added BitTorrent distribution of MOVEit-stolen data, making the data effectively uncensorable. This was a direct response to law enforcement and hosting provider pressure on their clearweb mirror sites established during the MOVEit campaign.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 04: TECHNICAL CAPABILITIES -->
+    <!-- ============================================================ -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors: MFT Zero-Day Campaign History</div>
+        <p>Cl0p's defining technical capability is the identification and weaponization of zero-day vulnerabilities in enterprise Managed File Transfer (MFT) products. Five confirmed campaigns spanning 2020-2025 follow an identical operational template: exploit MFT zero-day for unauthenticated remote access, deploy lightweight data theft tooling, exfiltrate high-value data, delete operational traces, and initiate extortion cycle. No encryption payload is deployed in post-2022 campaigns.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campaign</th><th>Product</th><th>CVE(s)</th><th>CVSS</th><th>Approx. Victims</th><th>Period</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Accellion FTA</td>
+                <td>Accellion File Transfer Appliance (legacy)</td>
+                <td class="mono">CVE-2021-27101, CVE-2021-27102, CVE-2021-27103, CVE-2021-27104</td>
+                <td>9.8 / 9.8 / 9.8 / 9.8</td>
+                <td>~100-300 orgs</td>
+                <td>Dec 2020 &ndash; Feb 2021</td>
+              </tr>
+              <tr>
+                <td>GoAnywhere MFT</td>
+                <td>Fortra (formerly HelpSystems) GoAnywhere MFT</td>
+                <td class="mono">CVE-2023-0669</td>
+                <td>7.2 (NVD)</td>
+                <td>~129 orgs</td>
+                <td>Jan &ndash; Mar 2023</td>
+              </tr>
+              <tr>
+                <td>MOVEit Transfer</td>
+                <td>Progress MOVEit Transfer</td>
+                <td class="mono">CVE-2023-34362</td>
+                <td>9.8 (Critical)</td>
+                <td>2,000+ downstream; 384 confirmed DLS</td>
+                <td>May &ndash; Jul 2023</td>
+              </tr>
+              <tr>
+                <td>Cleo MFT</td>
+                <td>Cleo Harmony / VLTrader / LexiCom</td>
+                <td class="mono">CVE-2024-50623, CVE-2024-55956</td>
+                <td>Critical</td>
+                <td>66+ named; total unknown (4,000+ Cleo customers at risk)</td>
+                <td>Nov 2024 &ndash; Feb 2025</td>
+              </tr>
+              <tr>
+                <td>Oracle EBS</td>
+                <td>Oracle E-Business Suite (Concurrent Processing)</td>
+                <td class="mono">CVE-2025-61882</td>
+                <td>9.8 (Critical)</td>
+                <td>Dozens confirmed; campaign ongoing at time of profile</td>
+                <td>Jul &ndash; Oct 2025</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>CVE-2023-0669 (GoAnywhere) note:</strong> NVD CVSS score is 7.2. Some vendor reporting uses higher scores based on the effective exploitability in production environments. The lower NVD score reflects the requirement for administrative interface access in the base condition; however, the vulnerability was pre-authentication exploitable in many observed deployments.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">LEMURLOOT Web Shell (MOVEit Campaign)</div>
+        <div class="conf conf-confirmed">Confirmed: CISA AA23-158A, multiple vendors</div>
+        <p>In the MOVEit campaign, Cl0p/TA505 deployed the <strong>LEMURLOOT</strong> web shell after exploiting CVE-2023-34362. LEMURLOOT is a custom ASP.NET web shell specifically engineered for the MOVEit Transfer application. Its capabilities include: extracting Azure system settings and associated keys/tokens from the MOVEit configuration database; exporting database contents including stored files and user metadata; creating unauthorized administrative accounts; and maintaining persistent access post-initial exploitation. LEMURLOOT was designed for MOVEit specifically and represents purpose-built tooling rather than commodity malware, indicating substantial pre-campaign development investment. [5][4]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">GOLDVEIN Malware (Cleo and Oracle EBS Campaigns)</div>
+        <div class="conf conf-credible">Credible: Mandiant/Google GTIG attribution, 2025</div>
+        <p>The 2024-2025 Cleo campaign and the 2025 Oracle EBS campaign both involved a Java-based in-memory loader designated <strong>GOLDVEIN.JAVA</strong> (Mandiant naming). This tool fetches and executes a second-stage payload without writing to disk, complicating forensic recovery. In the Oracle EBS campaign, GOLDVEIN.JAVA was launched from within the Oracle Concurrent Processing Java process, suggesting the tool is adapted per target application. The use of the same loader family across both Cleo and Oracle EBS campaigns is the primary technical link supporting Mandiant's attribution of both to FIN11 cluster UNC5936. [Google Cloud Blog, Mandiant, 2025]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence, Lateral Movement, and Post-Exploitation Tooling</div>
+        <p>In traditional intrusion-based campaigns (pre-2022), Cl0p-aligned operators employed the following post-exploitation toolkit:</p>
+        <ul class="content-list">
+          <li><strong>Get2 loader:</strong> Initial-stage loader delivered via phishing; fetches SDBOT/SDBbot and additional tools</li>
+          <li><strong>SDBbot (SDBOT):</strong> Remote access trojan used for persistent access, credential harvesting, and lateral movement preparation</li>
+          <li><strong>FlawedAmmyy RAT:</strong> Remote access tool based on leaked Ammyy Admin source code; used for interactive control of compromised systems</li>
+          <li><strong>Cobalt Strike Beacon:</strong> Commercial post-exploitation framework widely abused by ransomware actors; used for C2 and lateral movement</li>
+          <li><strong>Native Windows utilities:</strong> PsExec (remote execution), net.exe (service manipulation), taskkill.exe (process termination), vssadmin.exe (shadow copy deletion), wmic.exe (WMI-based execution)</li>
+        </ul>
+        <p>In MFT zero-day campaigns, the toolset is dramatically simplified. Cl0p deploys a purpose-built web shell or in-memory loader directly against the target application, exfiltrates targeted data, and withdraws with minimal lateral movement. This lean profile makes traditional lateral movement indicators less reliable as detection tripwires in MFT campaigns.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <p>When deploying traditional ransomware (pre-2023 campaigns), Cl0p uses a combination of AES-256 for file content encryption with RSA key wrapping. Victim-specific binaries embed a unique 1024-bit RSA public key. The encryption process: reads target files into memory, encrypts using Windows CryptoAPI with AES, writes encrypted data to new file, deletes the original. Encrypted files receive a <span class="mono">.Clop</span>, <span class="mono">.Cl0p</span>, or <span class="mono">.Cllp</span> extension. Shadow copies are deleted or resized via vssadmin.exe to prevent recovery.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Variants and CIS Exclusion Behavior</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Variant</th><th>Target</th><th>Encryption</th><th>CIS Exclusion</th><th>Decryptor Available</th></tr></thead>
+            <tbody>
+              <tr><td>Windows PE</td><td>Windows endpoints and servers</td><td>AES-256 + RSA-1024 key wrap</td><td>Yes: locale/keyboard check; halts on Russian/CIS systems</td><td>No universal decryptor. Victim-specific keys required.</td></tr>
+              <tr><td>Linux ELF</td><td>Linux servers (first observed Dec 2022)</td><td>Flawed RC4 implementation: RC4 key encrypted with hardcoded RC4 master key instead of RSA</td><td>Behavior varies by build</td><td>Yes: SentinelOne released free decryptor Feb 2023 based on RC4 logic flaw [SentinelOne Labs]</td></tr>
+              <tr><td>ESXi</td><td>VMware ESXi hypervisors</td><td>Reported flaws in some variants</td><td>Partial</td><td>Partial: SOCRadar reported decryptors for specific variants; no universal tool</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block confirmed">
+          <strong>CONFIRMED:</strong> SentinelOne Labs released a free decryptor for the Cl0p Linux ELF variant on February 7, 2023. The flaw: the RC4 encryption key was encrypted with a hardcoded RC4 master key rather than the RSA scheme used in the Windows variant. This allowed researchers to derive encryption keys without the private RSA key. The Windows variant has no equivalent flaw and no public universal decryptor exists.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 05: FINANCIAL INFRASTRUCTURE -->
+    <!-- ============================================================ -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>Cl0p demands payment primarily in <strong>Bitcoin</strong>. Some reporting indicates occasional use of Monero or other privacy coins in specific negotiations, but Bitcoin remains the dominant and most documented payment mechanism across all five confirmed campaigns. Victim-specific payment wallets are used rather than a shared address, complicating aggregate tracking.</p>
+        <p>Ransom demand calibration is victim-specific: rather than publishing a fixed price, the group requires victims to make contact, after which demand amounts are established based on apparent victim size, sector, and data sensitivity. Documented high-profile demands have been in the tens of millions USD range; many smaller victims receive lower initial demands. Negotiations proceed on Tor-based portals or via encrypted email.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering Architecture</div>
+        <div class="conf conf-credible">Credible: Chainalysis ransomware reports 2024-2025; TRM Labs; partial on-chain visibility</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Collection (Victim Payment Wallets)</div>
+              <div class="phase-desc">Victims pay to victim-specific Bitcoin addresses. Wallets are rotated per victim to complicate aggregate attribution. Payment addresses are typically generated fresh for each negotiation cycle.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Consolidation (Peeling Chains)</div>
+              <div class="phase-desc">Received funds are rapidly moved through intermediary addresses in "peeling chain" patterns: sequential hops through multiple wallet addresses to break direct on-chain linkage between victim payment and destination. Blockchain analytics firms (Chainalysis, TRM Labs) have identified these patterns across multiple Cl0p campaigns.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Obfuscation (Mixers and OTC Brokers)</div>
+              <div class="phase-desc">Intermediate funds are processed through cryptocurrency mixers and over-the-counter (OTC) brokers operating in permissive jurisdictions. This step severs the traceable chain between victim payment and fiat conversion. Chainalysis reporting notes increased law enforcement pressure on mixing services has constrained some cash-out options, though Cl0p has adapted by diversifying obfuscation methods.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Exit (Exchange-to-Fiat)</div>
+              <div class="phase-desc">Final conversion to fiat currency occurs through high-liquidity exchanges in jurisdictions with limited AML enforcement, or through peer-to-peer OTC channels. Chainalysis's 2025 and 2026 ransomware reports identify Cl0p as one of the major ransomware beneficiaries by total on-chain extortion volume but do not publish complete wallet maps for operational security reasons.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Blockchain Forensics: Published Findings</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Firm</th><th>Finding</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Chainalysis</td><td>Cl0p credited as one of the major ransomware beneficiaries in 2023-2025 reports. MOVEit campaign projected to yield $75-100M in extortion revenue. Total estimated revenue exceeds $500M across all campaigns. Increased LE and compliance pressure noted as constraining some cash-out efficiency. [Chainalysis 2025 Crypto Crime Report; 2026 Ransomware Report]</td><td>CREDIBLE: published in Chainalysis annual reports; methodology notes partial visibility caveat</td></tr>
+              <tr><td>TRM Labs</td><td>On-chain analysis consistent with professional laundering network access. 2025 Crypto Crime Report documents Cl0p within broader ransomware ecosystem data. No standalone Cl0p-specific wallet cluster published as of May 2026.</td><td>CREDIBLE: Published reporting; no specific Cl0p cluster disclosed</td></tr>
+              <tr><td>Elliptic</td><td>No standalone Cl0p-specific blockchain analysis confirmed in public reporting as of profile date.</td><td>No published Elliptic-specific Cl0p attribution in open sources</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">OFAC Sanctions Status</div>
+        <div class="conf conf-inference">Analyst Inference: no explicit OFAC "Cl0p" designation confirmed in open sources</div>
+        <p>OFAC has sanctioned numerous wallets and entities associated with major ransomware groups (e.g., Evil Corp, Conti-linked individuals). Open sources do not consistently list a fully public, named set of Cl0p-exclusive OFAC designations as of May 2026. The November 2021 Ukraine arrests (see Section 07) did not generate OFAC action against specific Cl0p leadership at the time. Any claim of specific OFAC-listed wallet addresses as "definitively Cl0p" should be treated as low-to-medium confidence unless supported by explicit OFAC documentation.</p>
+        <p>The US DoJ offered a <strong>$10 million reward</strong> for information leading to the identification or location of key Cl0p leadership following the MOVEit campaign in 2023. This reward, rather than a formal indictment or sanction, reflects the continued inability to attribute the operation to named individuals with prosecutorial-grade confidence.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 06: VICTIM PROFILE AND TARGETING -->
+    <!-- ============================================================ -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile &amp; Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale Metrics</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Estimated Total Orgs Compromised</div>
+            <div class="metric-val">11,000+</div>
+            <div class="metric-note">Vendor estimates; partial visibility</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Estimated Total Extortion Revenue</div>
+            <div class="metric-val">$500M+</div>
+            <div class="metric-note">All campaigns; based on Chainalysis partial visibility</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">MOVEit Peak Revenue (est.)</div>
+            <div class="metric-val">$75-100M</div>
+            <div class="metric-note">Single campaign; 2023</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">2023 DLS Confirmed Breaches</div>
+            <div class="metric-val">384</div>
+            <div class="metric-note">DLS postings; not all victims listed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Targeting</div>
+        <p>Cl0p does not maintain a narrow vertical focus. Targeting is driven by two primary selection criteria: (1) use of vulnerable MFT or enterprise software products, and (2) capacity to pay a substantial ransom based on organizational size and data sensitivity. Sectors impacted across all confirmed campaigns include:</p>
+        <ul class="content-list">
+          <li>Finance and banking (including insurance, credit unions)</li>
+          <li>Healthcare and pharmaceutical (hospitals, health systems, pharma R&amp;D)</li>
+          <li>Education (universities, school districts, research institutions)</li>
+          <li>Government agencies and municipalities (state, local, federal)</li>
+          <li>Manufacturing, retail, and consumer goods</li>
+          <li>Energy and utilities</li>
+          <li>Technology and professional services (law firms, consultancies, IT managed services)</li>
+          <li>Transportation and logistics</li>
+        </ul>
+        <p>Healthcare and education institutions have been disproportionately represented in the MOVEit and Accellion campaigns because those sectors have high MFT product adoption and often less mature patch management processes relative to their large data holdings.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>Victims span North America (US dominant), Europe (UK, Germany, France, Netherlands prominent), Asia-Pacific, and Latin America. Notable concentrations in US, UK, Canada, and Western Europe reflect both the geographic distribution of MFT product customers and the higher payment capacity of organizations in those jurisdictions.</p>
+        <p>No confirmed victims in Russia or CIS member states. Cl0p maintains documented locale exclusions in its Windows malware preventing execution on Russian and select CIS-configured systems. This is consistent across all confirmed campaign periods.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Victims by Campaign</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campaign</th><th>Selected Victims</th><th>Data Type Exposed</th></tr></thead>
+            <tbody>
+              <tr><td>Accellion FTA (2020-21)</td><td>Reserve Bank of New Zealand, Kroger, Qualys, Shell, University of Colorado, University of California, Stanford Medicine, multiple law firms</td><td>Customer records, financial data, legal documents, PII</td></tr>
+              <tr><td>GoAnywhere MFT (2023)</td><td>Community Health Systems, Hatch Bank, Procter &amp; Gamble, City of Toronto, Rubrik, Hitachi</td><td>PHI, financial records, HR data, corporate documents</td></tr>
+              <tr><td>MOVEit Transfer (2023)</td><td>BBC, British Airways, Shell, Ernst &amp; Young, NYC Department of Education, Norton LifeLock, UCLA, Siemens Energy, Delta Dental, Michigan State University, Massachusetts teachers' pension fund (3.5M individuals)</td><td>PII, payroll, student records, employee benefits data, financial records</td></tr>
+              <tr><td>Cleo MFT (2024-25)</td><td>Blue Yonder (major supply chain software provider; affected 14+ Tier-1 retailers); 66+ additional companies named on DLS</td><td>Supply chain operational data, logistics records, vendor/customer PII</td></tr>
+              <tr><td>Oracle EBS (2025)</td><td>Dozens of enterprise organizations using Oracle Concurrent Processing; specific names withheld pending ongoing campaign assessment</td><td>ERP/financial data, HR records, operations data</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Stated Targeting Policy vs. Operational Reality</div>
+        <div class="conf conf-credible">Credible (stated exclusions); Confirmed (violations in practice)</div>
+        <p>Cl0p has publicly claimed (via DLS announcements and negotiation communications) to exclude from targeting: military organizations, children's hospitals, and certain government bodies. The group has also claimed willingness to delete data belonging to these categories if inadvertently obtained. In operational reality, these claims are <strong>inconsistent and unreliable</strong>: healthcare institutions (including entities serving pediatric populations) and government agencies have appeared regularly on the DLS across all five campaigns. The exclusion claims function as reputational management rather than systematic policy.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 07: LAW ENFORCEMENT AND REGULATORY RESPONSE -->
+    <!-- ============================================================ -->
+    <section class="section" id="disruption">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement &amp; Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">November 2021: Ukraine Arrests</div>
+        <div class="conf conf-credible">Credible: Multiple international reporting agencies; suspect identities not fully disclosed</div>
+        <p>In November 2021, Ukrainian National Police, working in coordination with Interpol, US law enforcement, and South Korean authorities, arrested <strong>six individuals</strong> alleged to have participated in Cl0p ransomware attacks against South Korean companies and US academic institutions. Physical assets seized included cash, vehicles, and computer equipment. The operation was publicly framed as a significant blow to the Cl0p infrastructure.</p>
+        <p>Operational impact was minimal and short-lived. Cl0p's DLS activity rebounded within weeks of the arrests. Sophos incident response data confirmed continued campaign activity post-November 2021, indicating the arrests targeted lower-tier operators (affiliates, money mules, infrastructure managers) rather than core development and leadership. No public record of convictions or prosecutorial outcomes for the six arrested individuals has appeared in English-language open sources as of May 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">US $10 Million Reward Offer (2023)</div>
+        <p>Following the MOVEit campaign, the US Department of State's Rewards for Justice program offered a <strong>$10 million reward</strong> for information leading to the identification or location of individuals operating as key Cl0p leadership. This offer is legally and analytically distinct from an indictment or sanction: it reflects the inability to attach prosecutorial-grade attribution to specific named individuals despite substantial intelligence-community knowledge of the operation. The reward remains active as of May 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CISA and Multi-Agency Advisories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory</th><th>Date</th><th>Scope</th></tr></thead>
+            <tbody>
+              <tr><td>AA23-158A: #StopRansomware: CL0P Ransomware Gang Exploits CVE-2023-34362 MOVEit Vulnerability</td><td>June 2023</td><td>Definitive US government attribution of MOVEit campaign to Cl0p/TA505; TTPs, IOCs, mitigations</td></tr>
+              <tr><td>Canadian CCCS Profile: TA505/Cl0p</td><td>2022 (updated)</td><td>Full TTP and attribution profile; formal government-level attribution of Cl0p operations to TA505</td></tr>
+              <tr><td>CISA Accellion FTA Advisory</td><td>March 2021</td><td>Joint US/Australian/UK/New Zealand advisory on Accellion FTA exploitation; TTPs attributed to TA505-linked actors</td></tr>
+              <tr><td>FBI Flash: Cl0p Ransomware Indicators</td><td>Multiple 2021-2023</td><td>IOC releases and victim notification campaigns following each major campaign cycle</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Regulatory Downstream Impact</div>
+        <p>The Cl0p MOVEit campaign in particular has generated substantial regulatory and supervisory downstream activity, particularly in the healthcare and financial sectors. HHS/OCR opened multiple investigations against healthcare organizations that used MOVEit and experienced breaches. SEC disclosure requirements were invoked for publicly traded companies that reported material MOVEit-related incidents. The campaign has become a case study in third-party and supply chain risk management in virtually every sector's cybersecurity regulatory guidance updated since 2023. No "Cl0p-specific" regulations have been enacted; impact has been absorbed into broader supply chain risk and vendor oversight frameworks.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">No Additional Disruptions Post-2021</div>
+        <div class="conf conf-confirmed">Confirmed: No indictments, domain seizures, infrastructure takedowns, or OFAC designations specifically targeting Cl0p have been publicly announced since the November 2021 Ukraine arrests as of May 2026.</div>
+        <p>This operational continuity through three major campaign cycles (GoAnywhere, MOVEit, Cleo, Oracle EBS) following the 2021 arrests confirms that the arrested individuals were not core to Cl0p's operational capability. The group's leadership, technical infrastructure, and zero-day research capacity remain intact.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 08: ATTRIBUTION AND STATE NEXUS -->
+    <!-- ============================================================ -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution &amp; State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdiction Assessment</div>
+        <div class="conf conf-credible">Credible: Multiple independent vendor assessments; government advisories consistent</div>
+        <p>Cl0p is assessed with high confidence as operating from within Russia or a Russian-aligned CIS jurisdiction, based on: consistent Russian-language operator communications; absence of any confirmed victims in Russia or CIS member states across 87+ months of operation; explicit locale-based CIS exclusions coded into malware; laundering infrastructure consistent with access to Russian-aligned OTC networks; and operator recruitment via Russian-language cybercrime forums.</p>
+        <p>The Canadian CCCS assessment describes TA505 (the parent cluster) as "almost certainly a financially motivated, Russian-speaking, RaaS cybercrime group very likely based in a CIS country." This language represents the outer boundary of government-level attribution confidence for an unindicted group. No US government document has attributed Cl0p to specific Russian Federation territory with the same specificity available for, e.g., state-sponsored APT groups operating under FSB or GRU mandate.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Service (RIS) Relationship Assessment</div>
+        <div class="conf conf-inference">Analyst Inference: No confirmed direct RIS nexus in open sources</div>
+        <p>Cl0p is assessed as a <strong>financially motivated criminal organization operating within a Russian safe-harbor environment</strong>. Evidence for direct FSB, SVR, or GRU tasking or coordination is not present in public reporting. Key indicators that would support a state nexus assessment are absent:</p>
+        <ul class="content-list">
+          <li>No documented targeting of geopolitically strategic entities consistent with Russian state intelligence priorities (NATO infrastructure, Ukrainian government, Western defense contractors in a non-financial context)</li>
+          <li>No evidence of data sharing between Cl0p operators and Russian state intelligence services</li>
+          <li>No publicly disclosed government assessment from Five Eyes partners indicating state direction of Cl0p operations</li>
+        </ul>
+        <p>The CIS exclusion behavior is consistent with Russian government's informal "do not target the near-abroad" norm applied to tolerated cybercriminals, rather than with active state direction. This tolerance model confers a functional safe harbor without constituting a command relationship.</p>
+        <div class="callout callout-warning">
+          <strong>Analytical caution:</strong> Claims that Cl0p is "state-sponsored" should be treated as low-confidence unless citing specific, documented joint operations or direction. No mainstream threat intelligence publication or government advisory as of May 2026 has made this claim.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <p>No Cl0p core operator or leadership figure has been publicly identified by name with prosecutorial-grade confidence in open sources. The six individuals arrested in Ukraine in November 2021 were described in public reporting as participants in the Cl0p "racket," but their specific roles, identities, and case outcomes have not been consistently documented in English-language open sources. No sealed or public US federal indictments naming Cl0p leadership have been identified as of May 2026. This absence of named individuals distinguishes Cl0p from comparably impactful groups such as LockBit, Evil Corp, and Conti, where at minimum some leadership-level attribution has been achieved.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 09: TRAJECTORY ASSESSMENT -->
+    <!-- ============================================================ -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operational Resilience Signals</div>
+        <p>Cl0p has demonstrated exceptional resilience across all observed disruption events. The November 2021 Ukraine arrests produced no measurable operational degradation beyond a brief pause in DLS activity. The group subsequently executed three additional major supply chain campaigns of equal or greater scale (GoAnywhere, MOVEit, Cleo), each representing expanded technical capability and victim volume relative to the prior cycle. This pattern confirms that the 2021 arrests removed peripheral personnel while leaving the zero-day research and development function, financial management, and core operational leadership intact.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operational Evolution: Key Trajectory Indicators</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Period</th><th>Dominant TTP</th><th>Distinguishing Feature</th></tr></thead>
+            <tbody>
+              <tr><td>Phase 1: Traditional RaaS</td><td>2019-2020</td><td>Phishing-to-loader-to-ransomware</td><td>Standard double extortion; CryptoMix-derived payload</td></tr>
+              <tr><td>Phase 2: MFT Pivot (Encryption)</td><td>2020-2022</td><td>MFT zero-day + bulk exfiltration + encryption</td><td>Accellion FTA; 4 CVEs; encryption still deployed on some targets</td></tr>
+              <tr><td>Phase 3: Encryption-Less Extortion</td><td>2023</td><td>MFT zero-day + bulk exfiltration only</td><td>GoAnywhere and MOVEit campaigns; highest victim volume and revenue to date</td></tr>
+              <tr><td>Phase 4: Distributed Infrastructure</td><td>2023 (Aug onward)</td><td>Exfiltration + torrent-based data distribution</td><td>BitTorrent used for MOVEit data to evade takedowns; clearweb mirrors supplemented by P2P</td></tr>
+              <tr><td>Phase 5: Diversified Target Portfolio</td><td>2024-2025</td><td>MFT (Cleo) + ERP zero-day (Oracle EBS)</td><td>Expansion beyond pure MFT products; GOLDVEIN malware indicates new tooling investment</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding and Rebrand Signals</div>
+        <p>Unlike Conti (which dissolved publicly in May 2022), REvil (multiple shutdowns with eventual rebrand attempts), or LockBit (partially disrupted in 2024), Cl0p has shown <strong>no documented indication of brand shutdown or rebrand intent</strong> as of May 2026. Internal leaks comparable to the Conti chat dumps have not appeared for Cl0p. The group has operated continuously under the same brand, DLS, and operational identity for 87 months, making it one of the longest-running continuous ransomware brands in the threat landscape.</p>
+        <p>The existence of GOLD NIAGARA as a separate cluster using the Cl0p payload (Sophos/Secureworks CTU) does not indicate internal fragmentation; it is consistent with the affiliate model. The Cl0p brand itself shows no sign of the internal tensions or leadership conflict that preceded Conti's dissolution.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group / Cluster</th><th>Relationship</th><th>Anchor Confidence</th><th>Extension Confidence</th><th>Vendor Coverage</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>TA505</td>
+                <td>Parent crimeware ecosystem; Cl0p is a product within the TA505 operational portfolio</td>
+                <td>CONFIRMED</td>
+                <td>N/A (anchor claim)</td>
+                <td>Proofpoint, CISA/FBI, Canadian CCCS, Malpedia; broad multi-vendor consensus</td>
+              </tr>
+              <tr>
+                <td>FIN11 / UNC5936</td>
+                <td>Mandiant overlapping cluster; formally attributed all major Cl0p campaigns via UNC designations</td>
+                <td>CONFIRMED (campaign attribution)</td>
+                <td>CREDIBLE (organizational equivalence with TA505)</td>
+                <td>Mandiant/Google GTIG: published campaign attributions; TA505/FIN11 equivalence is an industry-level analytical consensus</td>
+              </tr>
+              <tr>
+                <td>GOLD NIAGARA</td>
+                <td>Secondary cluster also deploying Cl0p payload; distinct TTPs from GOLD TAHOE</td>
+                <td>CREDIBLE</td>
+                <td>LOW-MEDIUM (single-vendor; Sophos citing Secureworks CTU)</td>
+                <td>Sophos (citing Secureworks CTU); not independently confirmed by Mandiant, CrowdStrike, or Microsoft as of May 2026</td>
+              </tr>
+              <tr>
+                <td>UNCA2546 / UNCA2582</td>
+                <td>Affiliate clusters referenced in Halcyon reporting as Cl0p-linked</td>
+                <td>LOW-MEDIUM</td>
+                <td>LOW</td>
+                <td>Halcyon: single vendor; limited technical detail in open sources; treat as unverified pending cross-vendor confirmation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Neither Mandiant nor Recorded Future has published a formal assessment specifically evaluating GOLD NIAGARA as a standalone Cl0p-linked cluster distinct from GOLD TAHOE as of this profile's publication date.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Outlook and Intelligence Gaps</div>
+        <p>Cl0p is assessed as likely to remain a top-tier global extortion actor through at least 2026-2027. The group's demonstrated pattern of expanding its zero-day research capability to cover new product categories (ERP with Oracle EBS) beyond its historical MFT focus indicates growing technical resources and investment. The continued absence of successful law enforcement action against core leadership removes the primary disruption risk that has degraded comparable actors (LockBit, Conti).</p>
+
+        <p>Key intelligence gaps that constrain higher-confidence assessments:</p>
+        <ul class="content-list">
+          <li>Identity, location, and current status of core leadership: entirely unconfirmed in public sources</li>
+          <li>Precise revenue attribution: all figures based on partial blockchain visibility; actual revenue may be materially higher or lower</li>
+          <li>Affiliate split structure and total affiliate count: inferred from general RaaS norms, not directly documented for Cl0p</li>
+          <li>GOLD NIAGARA organizational relationship: single-vendor claim pending cross-vendor validation</li>
+          <li>Current zero-day research pipeline: no public intelligence on which MFT or enterprise products are under active Cl0p assessment</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- RECENT REPORTING -->
+    <!-- ============================================================ -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent intelligence reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SOURCES -->
+    <!-- ============================================================ -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">REF</span>
+        <h2 class="section-title">Sources &amp; References</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9660; Toggle source list
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>CISA / FBI, <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a" target="_blank">#StopRansomware: CL0P Ransomware Gang Exploits CVE-2023-34362 MOVEit Vulnerability (AA23-158A)</a>, June 2023</span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>Canadian Centre for Cyber Security, <a href="https://www.cyber.gc.ca/en/guidance/profile-ta505-cl0p-ransomware" target="_blank">Profile: TA505 / CL0P Ransomware</a></span></div>
+
+        <div class="source-category">Vendor Research</div>
+        <div class="source-item"><span class="source-num">[3]</span><span>Sophos, <a href="https://www.sophos.com/en-us/blog/clop-ransomware-leak-site-shows-increased-activity" target="_blank">Clop Ransomware Leak Site Shows Increased Activity</a>, 2023</span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>Mandiant / Google GTIG, <a href="https://cloud.google.com/blog/topics/threat-intelligence/oracle-ebusiness-suite-zero-day-exploitation" target="_blank">Oracle E-Business Suite Zero-Day Exploitation</a>, 2025</span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>SentinelOne, <a href="https://www.sentinelone.com/anthology/clop/" target="_blank">Cl0P Ransomware: In-Depth Analysis, Detection, and Mitigation</a>, updated 2025</span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>SentinelOne Labs, <a href="https://www.sentinelone.com/labs/cl0p-ransomware-targets-linux-systems-with-flawed-encryption-decryptor-available/" target="_blank">Cl0p Ransomware Targets Linux Systems with Flawed Encryption (Decryptor Available)</a>, February 2023</span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>Cyberint (Check Point), <a href="https://cyberint.com/blog/dark-web/cl0p-ransomware/" target="_blank">CL0P Ransomware: The Latest Updates</a>, updated February 2025</span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Halcyon, <a href="https://www.halcyon.ai/threat-group/cl0p" target="_blank">Cl0p Threat Group Profile</a>, 2024/2025</span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>SOCRadar, <a href="https://socradar.io/blog/dark-web-threat-profile-clop-ransomware/" target="_blank">Dark Web Threat Profile: CLOP Ransomware</a>, updated 2026</span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>SOCRadar, <a href="https://socradar.io/blog/cleo-file-transfer-vulnerabilities-cl0ps-attack-vector/" target="_blank">Cleo File Transfer Vulnerabilities (CVE-2024-50623, CVE-2024-55956) &ndash; Cl0p's Latest Attack Vector</a>, 2024</span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Huntress, <a href="https://www.huntress.com/threat-library/threat-actors/ransomware-group-clop" target="_blank">Ransomware Group: Clop</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>Kaspersky, <a href="https://www.kaspersky.com/resource-center/definitions/cl0p-ransomware" target="_blank">What is Cl0p Ransomware?</a>, 2023</span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Malpedia, <a href="https://malpedia.caad.fkie.fraunhofer.de/actor/ta505" target="_blank">TA505 Threat Actor Entry</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>CrowdStrike, <a href="https://www.crowdstrike.com/en-us/adversaries/graceful-spider/" target="_blank">Graceful Spider Adversary Profile</a></span></div>
+
+        <div class="source-category">CVE and Vulnerability References</div>
+        <div class="source-item"><span class="source-num">[15]</span><span>NVD/NIST, <a href="https://nvd.nist.gov/vuln/detail/cve-2023-34362" target="_blank">CVE-2023-34362 Detail</a> (MOVEit Transfer SQL Injection, CVSS 9.8)</span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>NVD/NIST, <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-0669" target="_blank">CVE-2023-0669 Detail</a> (GoAnywhere MFT Pre-Auth Command Injection, CVSS 7.2)</span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>Tenable, <a href="https://www.tenable.com/blog/cve-2025-61882-faq-oracle-e-business-suite-zero-day-cl0p-and-july-2025-cpu" target="_blank">CVE-2025-61882 FAQ: Oracle E-Business Suite Zero-Day</a>, 2025</span></div>
+
+        <div class="source-category">Blockchain and Financial</div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Chainalysis, <a href="https://www.chainalysis.com/blog/crypto-crime-ransomware-victim-extortion-2025/" target="_blank">2025 Crypto Crime Ransomware Victim Extortion Report</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>Chainalysis, <a href="https://www.chainalysis.com/blog/crypto-ransomware-2026/" target="_blank">Crypto Ransomware: 2026 Crypto Crime Report</a></span></div>
+
+        <div class="source-category">News and Analysis</div>
+        <div class="source-item"><span class="source-num">[20]</span><span>The Hacker News, <a href="https://thehackernews.com/2025/10/cl0p-linked-hackers-breach-dozens-of.html" target="_blank">CL0P-Linked Hackers Breach Dozens of Organizations Through Oracle Software Flaw</a>, October 2025</span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span>SecurityWeek, <a href="https://www.securityweek.com/cl0p-ransomware-group-to-name-over-60-victims-of-cleo-attack/" target="_blank">Cl0p Ransomware Group to Name Over 60 Victims of Cleo Attack</a>, 2024</span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span>Rapid7, <a href="https://www.rapid7.com/blog/post/2024/12/10/etr-widespread-exploitation-of-cleo-file-transfer-software-cve-2024-50623/" target="_blank">Widespread Exploitation of Cleo File Transfer Software (CVE-2024-50623)</a>, December 2024</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="page-footer">
+    Ransomware<strong>EDP</strong> Threat Actor Library &nbsp;&bull;&nbsp;
+    Cl0p Profile &nbsp;&bull;&nbsp;
+    Last updated: <span id="footer-last-updated">May 2026</span>
+    <span class="reno-credit">Developed by Reno &nbsp;&bull;&nbsp; All content derived from open-source intelligence</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'clop.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-clop.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const sorted = [...victims]
+          .filter(v => v.published || v.date || v.discovered || v.attackdate)
+          .sort((a, b) => new Date(b.published || b.date || b.discovered) - new Date(a.published || a.date || a.discovered))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.published || v.date || v.discovered || v.attackdate;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.post_title || v.victim || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now' :
+                      diffH === 1 ? 'Intelligence data refreshed 1h ago' :
+                      diffH < 24 ? `Intelligence data refreshed ${diffH}h ago` :
+                      `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        document.getElementById('topbar-refresh-label').textContent = label;
+        document.getElementById('topbar-live').style.display = 'flex';
+        const dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        const hlu = document.getElementById('hero-last-updated');
+        const flu = document.getElementById('footer-last-updated');
+        if (hlu) hlu.textContent = dateLabel;
+        if (flu) flu.textContent = dateLabel;
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
