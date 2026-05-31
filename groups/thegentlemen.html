@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Gentlemen | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--text); background: var(--gray-100); line-height: 1.6; }
+.topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--navy); display: flex; align-items: center; padding: 0 24px; border-bottom: 2px solid var(--accent); }
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+.sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--navy-mid); position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+.group-list { padding: 0 12px 8px; }
+.group-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.15s; color: var(--gray-400); margin-bottom: 2px; }
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.section-nav { padding: 0 12px; }
+.section-nav a { display: block; padding: 7px 12px; border-radius: 6px; font-size: 12.5px; color: var(--gray-400); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px; }
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-emerging { background: #d35400; color: #fff; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+html { scroll-behavior: smooth; }
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+@media print { .sidebar, .topbar { display: none; } .main { padding: 0; } .content { padding: 0 24px; } }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html"><span class="group-dot dot-conti"></span>Conti</a>
+    <a class="group-item" href="akira.html"><span class="group-dot dot-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-active"></span>Cl0p</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-dim"></span>Qilin</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-dim"></span>INC / Lynx</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-dim"></span>DragonForce</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-dim"></span>LockBit</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-active"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-dim"></span>Black Basta</a>
+    <a class="group-item active" href="thegentlemen.html"><span class="group-dot dot-active"></span>The Gentlemen</a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#le">Law Enforcement</a>
+    <a href="#attribution">Attribution &amp; Nexus</a>
+    <a href="#trajectory">Trajectory</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">The Gentlemen</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Qilin Splinter</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-raas">RaaS</span>
+      <span class="badge badge-emerging">Rapidly Scaling</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Mid-2025</div>
+        <div class="kpi-sub">RaaS from Sep 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Claimed Victims</div>
+        <div class="kpi-value">420+</div>
+        <div class="kpi-sub">As of May 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Countries Targeted</div>
+        <div class="kpi-value">50+</div>
+        <div class="kpi-sub">FortiGuard, 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Affiliate Split</div>
+        <div class="kpi-value">90/10</div>
+        <div class="kpi-sub">Affiliate / Operator</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Microsoft Tracking</div>
+        <div class="kpi-value">Storm-2697</div>
+        <div class="kpi-sub">Operator cluster</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">No takedowns, no sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Qilin</div>
+        <div class="kpi-sub">Payment dispute splinter</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>The Gentlemen is a rapidly scaling Ransomware-as-a-Service (RaaS) operation that emerged in mid-2025 and transitioned to a full affiliate model in September 2025. Within its first year of operation it became one of the highest-volume RaaS programs globally by claimed victim count, responsible for an estimated 10% of all publicly tracked ransomware incidents in early 2026. The group is characterized by a generous 90/10 revenue split favoring affiliates, a Go-based encryptor with aggressive self-propagation capability, and a deliberate policy of excluding Commonwealth of Independent States (CIS) targets, consistent with Russian-speaking origin. Microsoft Threat Intelligence tracks the operator cluster as Storm-2697; the malware family is detected as Ransom:Win64/Gentlemen.A.</p>
+      <p>The group's operational data was partially compromised in May 2026 when internal Rocket.Chat communications and panel data were leaked and circulated on underground forums. Despite this OPSEC setback, the group continued active operations with no observable disruption to victim accumulation.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Common names</td><td>The Gentlemen, TheGentlemen, Gentlemen RaaS</td></tr>
+            <tr><td>Microsoft tracking</td><td>Storm-2697 (operator cluster); Ransom:Win64/Gentlemen.A (malware family)</td></tr>
+            <tr><td>Fortinet FortiGuard</td><td>"The Gentlemen Ransomware" (no internal codename published as of May 2026)</td></tr>
+            <tr><td>IBM X-Force</td><td>"The Gentlemen" threat group (internal GUID: 688ac4f45c5a4791b8019a4d313594f7; no codename published)</td></tr>
+            <tr><td>Check Point Research</td><td>"The Gentlemen Ransomware-as-a-Service" (no additional family tag)</td></tr>
+            <tr><td>Halcyon</td><td>"The Gentlemen Ransomware Group" (no codename)</td></tr>
+            <tr><td>Trend Micro</td><td>"The Gentlemen ransomware" (no codename)</td></tr>
+            <tr><td>Cybereason</td><td>"The Gentlemen" (no codename)</td></tr>
+            <tr><td>Group-IB</td><td>"The Gentlemen" (no codename)</td></tr>
+            <tr><td>Operational model</td><td>Ransomware-as-a-Service with affiliate panel, custom build generator</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (encryption + data publication threat); opportunistic triple extortion elements</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia / CIS region (CREDIBLE)</td></tr>
+            <tr><td>LE disruption status</td><td>None confirmed as of May 2026</td></tr>
+            <tr><td>Lineage assessment</td><td>Splinter from Qilin ecosystem following payment dispute (CREDIBLE)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-alert">
+        <strong>Analytical note on vendor designations:</strong> As of May 2026, no major vendor (CrowdStrike, Secureworks, Palo Alto Unit 42) has published a formal internal codename for The Gentlemen. Microsoft is the only vendor with a published tracking designation: Storm-2697 for the operator cluster. Absence of codenames from other vendors reflects the group's recency, not analytical ambiguity. Analysts should not conflate any Qilin-era designations with The Gentlemen; they are organizationally distinct.
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://research.checkpoint.com/wp-content/uploads/2026/04/gentlemen.png"
+               alt="The Gentlemen ransomware group branding and DLS"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>The Gentlemen: Group Branding (Check Point Research)</strong>
+            Check Point Research's featured image for their April 2026 DFIR report on The Gentlemen. The branding is professional and deliberate, consistent with the group's self-positioning as a high-end RaaS operator. The group operates a Tor-based data leak site where non-paying victims are listed and data staged for release.
+            <span class="img-source">Source: Check Point Research, April 2026</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.microsoft.com/en-us/security/blog/wp-content/uploads/2026/05/image-135.webp"
+               alt="The Gentlemen ransomware ransom note README-GENTLEMEN.txt"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Ransom Note: README-GENTLEMEN.txt</strong>
+            The ransom note is dropped as README-GENTLEMEN.txt in each encrypted directory. It warns that network files have been encrypted and exfiltrated, provides victim-specific identifiers, Tox/Session contact details, and a Tor portal link. Tone is businesslike rather than threatening. The note is excluded from the encryption target list to remain accessible post-attack.
+            <span class="img-source">Source: Microsoft Threat Intelligence, May 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.microsoft.com/en-us/security/blog/wp-content/uploads/2026/05/image-1.jpeg"
+               alt="The Gentlemen ransomware post-encryption wallpaper"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Post-Encryption Wallpaper</strong>
+            After encryption completes, the malware drops gentlemen.bmp to %TEMP% and sets it as the desktop wallpaper. This serves as an immediate visual indicator of compromise. The wallpaper is suppressed when the encryptor is run with the --silent flag, indicating affiliates can choose a low-visibility deployment mode.
+            <span class="img-source">Source: Microsoft Threat Intelligence, May 2026</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.microsoft.com/en-us/security/blog/wp-content/uploads/2026/05/image-5.jpg"
+               alt="The Gentlemen ransomware PowerShell usage banner showing group branding"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Encryptor Branding: CLI Usage Banner</strong>
+            When executed without arguments, the encryptor prints a branded PowerShell console header displaying "The Gentlemen" in white text on dark gray, and "Windows version" in white on blue. This branding is embedded directly in the binary and reflects the group's deliberate identity construction around its name.
+            <span class="img-source">Source: Microsoft Threat Intelligence, May 2026</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://www.microsoft.com/en-us/security/blog/wp-content/uploads/2026/05/Featured-image-Gentlemen-ransomware.webp"
+               alt="Microsoft Security Blog featured image for The Gentlemen analysis"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Naming Reference: "The Gentlemen"</strong>
+            The name "The Gentlemen" is assessed as a reference to the 2019 Guy Ritchie crime film and/or its 2024 Netflix sequel series of the same name, both featuring an organized criminal operation that positions itself as a sophisticated enterprise. The framing aligns with the group's self-presentation as a professional RaaS business (ANALYST INFERENCE).
+            <span class="img-source">Source: Microsoft Security Blog, May 2026</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Assessment</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Multi-vendor consensus holds that The Gentlemen emerged from the Qilin ransomware affiliate ecosystem following a payment dispute, with experienced operators breaking away to found a new, independently branded RaaS. This is best characterized as a splinter or successor operation, not a rebrand: The Gentlemen operates under a distinct brand, distinct codebase (Go, not Qilin's Go variant), and distinct business model with a notably more generous affiliate split. Halcyon, IBM X-Force, and Ransom-ISAC all support this framing. No vendor has formally assessed it as a direct rebrand. [1][4][5][7]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 1 &mdash; Credible</div>
+            <div class="pillar-title">Personnel and Timing Continuity</div>
+            <div class="pillar-body">The Gentlemen emerged in mid-2025 at a period of known internal friction within the Qilin affiliate program. Internal chat leaks (Rocket.Chat, analyzed by KELA and Ransom-ISAC) show core operator "zeta88" referencing prior RaaS work under a different platform where affiliates were underpaid, inferred by multiple analysts to be Qilin. Timeline alignment is consistent with a deliberate departure rather than coincidental launch. [3][7]</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-title">Business Model Reaction</div>
+            <div class="pillar-body">The Gentlemen's 90/10 affiliate split (one of the most generous in the ecosystem) and affiliate-owned wallet structure are analytically consistent with a founding team that felt undercompensated under a prior operator. Halcyon frames this as an explicit corrective move: the group positioned itself as more attractive to affiliates than its predecessor. [4][7]</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 3 &mdash; Analyst Inference</div>
+            <div class="pillar-title">TTP and Infrastructure Overlap</div>
+            <div class="pillar-body">Group-IB and Check Point document use of SystemBC, VPN device exploitation (FortiGate, Cisco), and infostealer-driven initial access, all consistent with Qilin's documented playbook. However, these TTPs are widely shared across Russian-language RaaS and are not Qilin-specific. Infrastructure overlap is suggestive but not probative. [2][10][17]</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 4 &mdash; Analyst Inference</div>
+            <div class="pillar-title">Code Lineage</div>
+            <div class="pillar-body">The Gentlemen uses a Go-based encryptor with Garble obfuscation. Qilin also uses Go. Microsoft's deep-dive found no public claim of direct code reuse or forking from Qilin's codebase; the encryptor appears to be original work. Go is a popular language among modern RaaS builders and shared language choice alone does not imply code lineage. [1]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor-Specific Lineage Positions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Position</th><th>Confidence Applied</th></tr></thead>
+            <tbody>
+              <tr><td>Halcyon</td><td>Formed after a payment dispute within the Qilin ecosystem; approximately 20-person core team; deliberately more attractive business model than predecessor</td><td>Credible</td></tr>
+              <tr><td>IBM X-Force</td><td>Emerged from Qilin ecosystem; distinct group with experienced operators; not a Qilin rebrand</td><td>Credible</td></tr>
+              <tr><td>Ransom-ISAC</td><td>Internal chats reference prior RaaS grievances consistent with Qilin; operator "zeta88" discussed payment disputes predating The Gentlemen's launch</td><td>Credible</td></tr>
+              <tr><td>Check Point Research</td><td>Distinct RaaS operation; Qilin lineage not formally assessed in published reporting</td><td>Not formally assessed</td></tr>
+              <tr><td>Microsoft (Storm-2697)</td><td>Financially motivated RaaS operator; Qilin lineage not referenced in published reporting</td><td>Not formally assessed</td></tr>
+              <tr><td>Group-IB</td><td>Positions within Russian-language RaaS cluster sharing infrastructure and tooling with Qilin and others; treats as distinct group</td><td>Credible (shared ecosystem)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Key disambiguation:</strong> No vendor designation associated with Qilin (e.g., Scattered Spider adjacency assessments, any vendor's Qilin tracking codename) should be applied to The Gentlemen. They are analytically and operationally distinct entities. Shared Qilin affiliation by individual operators is the proposed link, not organizational identity.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <p>The Gentlemen began as a closed group in mid-2025 and transitioned to a full RaaS model with external affiliates in September 2025. [13][1] The group subsequently established an official partnership with BreachForums, a major cybercriminal marketplace, to recruit affiliates including penetration testers and initial access brokers. [1] The operator provides: a custom build generator panel producing multi-platform lockers; affiliate-specific Tox/Session IDs injected into ransom notes; and a data leak site for victim publication.</p>
+        <p>The core operator is identified in internal communications under the handle "zeta88," who manages the panel, conducts affiliate onboarding via Tox and Session, and sets revenue settlement arrangements. [3][7] Internal chats describe approximately 20 core personnel at the operational level. [4]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Revenue Split</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Affiliate Share</div>
+            <div class="metric-val">90%</div>
+            <div class="metric-note">Wallet owned by affiliate; among highest in ecosystem</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Operator Share</div>
+            <div class="metric-val">10%</div>
+            <div class="metric-note">Settled via internal arrangement post-receipt</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Wallet Ownership</div>
+            <div class="metric-val">Affiliate</div>
+            <div class="metric-note">Fragmented cash-out; no central operator wallet</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Negotiation Control</div>
+            <div class="metric-val">Affiliate</div>
+            <div class="metric-note">Operator intervenes only in disputes or edge cases</div>
+          </div>
+        </div>
+        <p>The 90/10 split and affiliate-owned wallet model are structurally significant for on-chain attribution: there is no single operator wallet to trace. Payment flows are highly fragmented across numerous affiliate wallets, consistent with what Halcyon describes as a "RaaS-as-SaaS" cash-out architecture. [4][16]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Recruitment and Vetting</div>
+        <p>Recruitment is conducted via underground forum postings and the BreachForums partnership. The group targets affiliates with demonstrated intrusion skills, specifically penetration testers and initial access brokers capable of delivering high-value targets. Mass-spam operators are deprioritized in favor of skilled, targeted operators. [3][8] Basic technical vetting occurs before panel access is provisioned. [3]</p>
+        <p>Internal chats indicate preference for affiliates who can bring their own initial access or who have established relationships with IABs. This produces an affiliate pool oriented toward mid-market and enterprise targets rather than opportunistic volume attacks. [12]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <ul class="content-list">
+          <li><strong>Initial demands:</strong> Low- to mid-eight-figure USD equivalent for large enterprises; scaled to perceived victim revenue and liquidity. [9]</li>
+          <li><strong>Discount range:</strong> 40-70% off initial ask documented in analyzed incidents. [9]</li>
+          <li><strong>Deadlines:</strong> Typically 5-10 days before publication threats escalate; some cases show staged partial data leaks as interim pressure. [6]</li>
+          <li><strong>Communication channels:</strong> Tox and Session IDs (affiliate-specific, injected at build time); sometimes email or Tor portal. [2][3]</li>
+          <li><strong>Operator involvement:</strong> Minimal during negotiations; affiliates run their own deals. Operator engages only in disputes or complex settlements. [3]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Multi-Extortion Mechanics</div>
+        <p><strong>Standard (double extortion):</strong> Data exfiltration precedes encryption. Non-paying victims are named on the Tor-based leak site, with staged data publication (sample data first, full archive later). [2][6]</p>
+        <p><strong>Opportunistic (triple extortion):</strong> Some affiliates have threatened DDoS or regulatory reporting (e.g., notifying the victim's regulator of a data breach) as additional pressure. These appear affiliate-driven and opportunistic rather than formalized RaaS policy. [5]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Support</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Platform</th><th>Language</th><th>Encrypted Extension</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Windows</td><td>Go (Garble obfuscated)</td><td class="mono">.umc16h</td><td>Primary; self-propagating; per-file ephemeral key encryption</td></tr>
+              <tr><td>Linux</td><td>Go</td><td>TBD</td><td>Confirmed per IBM X-Force / Check Point</td></tr>
+              <tr><td>NAS / BSD</td><td>Go</td><td>TBD</td><td>Confirmed per IBM X-Force</td></tr>
+              <tr><td>ESXi</td><td>C</td><td>TBD</td><td>Separate C-based locker; targets virtual environments</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Scheme</div>
+        <p>The Windows encryptor implements a hybrid cryptographic design documented by Microsoft: [1]</p>
+        <ul class="content-list">
+          <li><strong>Per-file ephemeral Curve25519 key pair:</strong> A unique ephemeral keypair is generated for each file. The ECDH shared secret between the ephemeral private key and the operator's embedded public key is used as the XChaCha20 key.</li>
+          <li><strong>XChaCha20 stream cipher:</strong> File content is encrypted using XChaCha20. The nonce is derived from the first 24 bytes of the ephemeral public key, making separate nonce storage unnecessary.</li>
+          <li><strong>File footer:</strong> The Base64-encoded ephemeral public key is appended to the encrypted file after the marker <span class="mono">--eph--</span>, along with a <span class="mono">GENTLEMEN</span> identification marker. Large files also include a speed flag marker indicating the chunk percentage used.</li>
+          <li><strong>Size-based strategy:</strong> Files under 1MB are fully encrypted. Files over 1MB are partially encrypted in three distributed chunks (default: 9% per chunk, ~27% total). Speed flags allow affiliates to set ultrafast (0.9%), superfast (3%), or fast (9%) modes.</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>Decryptor status:</strong> As of May 2026, no publicly available universal decryptor exists. The per-file ephemeral key design, where the operator's private key is required to reconstruct the XChaCha20 key for each file, is cryptographically robust. Operational weaknesses revealed in internal leaks have not yet translated into a general decryptor. No More Ransom does not list a Gentlemen decryptor. [11]
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Assessment</th><th>Sources</th></tr></thead>
+            <tbody>
+              <tr><td><strong>FortiGate SSL-VPN exploitation / brute force</strong></td><td>Primary vector per Raven File and Ransom-ISAC analysis; credential theft or exploitation of SSL-VPN configuration weaknesses</td><td>[8][7]</td></tr>
+              <tr><td>Infostealer-driven credentials</td><td>Hudson Rock describes this as the group's defining access model: large-scale infostealer log purchases providing VPN, RDP, and SaaS credentials at scale</td><td>[11]</td></tr>
+              <tr><td>Cisco VPN / edge device exploitation</td><td>Confirmed per Spanish-language reporting and Group-IB TTP analysis; credential reuse or appliance exploitation</td><td>[10]</td></tr>
+              <tr><td>RDP (compromised credentials)</td><td>Documented by FortiGuard as a key vector alongside VPN access</td><td>[6]</td></tr>
+              <tr><td>Phishing (credential harvesting)</td><td>Listed by FortiGuard; less prominent than VPN/infostealer vectors in DFIR case reporting</td><td>[6]</td></tr>
+              <tr><td>Initial access broker (IAB) purchases</td><td>Consistent with affiliate recruitment targeting IABs; internal chats show discussion of purchased access</td><td>[3]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>CVE status:</strong> As of May 2026, no specific CVE number has been formally confirmed in multi-vendor reporting as the signature exploit for The Gentlemen. References to Fortinet and Cisco device exploitation are consistent with a range of known SSL-VPN vulnerabilities (FortiOS SSL-VPN, Cisco ASA/FTD families) but public reporting has not settled on a single CVE anchor. Analysts should treat FortiGate SSL-VPN exposure as the primary attack surface indicator rather than a specific CVE.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Defense Evasion and Pre-Encryption Actions</div>
+        <ul class="content-list">
+          <li><strong>Disables Microsoft Defender:</strong> PowerShell commands disable real-time monitoring, add exclusion paths, and exclude the full C:\ volume from scanning. [1]</li>
+          <li><strong>Deletes shadow copies:</strong> Both vssadmin and wmic are used to delete all Volume Shadow Copies. [1]</li>
+          <li><strong>Clears event logs:</strong> System, Application, and Security logs cleared via wevtutil. [1]</li>
+          <li><strong>Removes forensic artifacts:</strong> Prefetch files, Defender diagnostic logs, RDP logs, and PowerShell command history (PSReadline) deleted across all user profiles. [1]</li>
+          <li><strong>Process and service termination:</strong> Extensive target list including databases (MSSQL, MySQL, PostgreSQL, Oracle), backup software (Veeam, Acronis, Backup Exec), EDR agents, SAP, virtualization (VMware, Docker), Office apps, and Exchange. [1]</li>
+          <li><strong>Garble obfuscation:</strong> The Go binary is obfuscated with Garble to hinder static analysis and EDR detection. [1]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence Mechanisms</div>
+        <p>The encryptor establishes layered persistence via two independent methods: [1]</p>
+        <ul class="content-list">
+          <li><strong>Scheduled Tasks:</strong> Tasks named UpdateSystem (SYSTEM context) and UpdateUser (current user context) are created to relaunch the payload at startup. A separate task named gentlemen_system is used for privilege escalation during the encryption phase.</li>
+          <li><strong>Registry Run Keys:</strong> Values GupdateS (HKLM, device-wide) and GupdateU (HKCU, user-scoped) provide redundant autorun paths across privilege levels.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Self-Propagation Module</div>
+        <p>The most operationally distinctive feature of The Gentlemen encryptor is its self-propagation module, activated via the <span class="mono">--spread</span> argument. When enabled, the malware transforms from a single-host encryptor into a network worm that attempts deployment to every reachable host on the network simultaneously. [1]</p>
+        <p>Per Microsoft's analysis, the module executes <strong>21 distinct remote execution operations per discovered target host</strong> across eight independent methods, each attempted regardless of prior success: [1]</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Propagation Method</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>Remote file copy via C$ share</td><td>Stages payload on target's local C:\Temp via administrative share</td></tr>
+              <tr><td>PsExec (embedded or downloaded)</td><td>Three-stage PsExec execution: defense evasion blob, payload from SMB share, payload from local C:\Temp</td></tr>
+              <tr><td>WMIC process creation</td><td>Three commands via wmic.exe: defense evasion, then two payload executions</td></tr>
+              <tr><td>Scheduled tasks (user context)</td><td>Three tasks: DefU (evasion), UpdateGU and UpdateGU2 (payload from both paths)</td></tr>
+              <tr><td>Scheduled tasks (SYSTEM context)</td><td>Same three tasks replicated under SYSTEM account for higher privilege</td></tr>
+              <tr><td>Windows service creation</td><td>DefSvc, UpdateSvc, UpdateSvc2 services created and started on target</td></tr>
+              <tr><td>PowerShell remoting (WinRM / Invoke-Command)</td><td>Direct remote execution via Windows Remote Management</td></tr>
+              <tr><td>PowerShell WMI class (Win32_Process)</td><td>Alternative WMI path bypassing wmic.exe if binary is restricted</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The malware first creates a hidden SMB share (share$) on the infected host pointing to C:\Temp, enabling anonymous retrieval of the payload by target hosts. It also modifies firewall rules and enables network discovery services (fdrespub, fdPHost, SSDPSRV, upnphost) to maximize visibility into the network. On each target, it runs a defense evasion blob that disables Defender, turns off the Windows Firewall across all profiles, enables SMB1, and loosens LSA anonymous-access restrictions before executing the payload. [1]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Lateral Movement Toolset</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Tools / Techniques</th></tr></thead>
+            <tbody>
+              <tr><td>Initial staging / C2</td><td>SystemBC (SOCKS5 proxy and C2 tunneling); AnyDesk, WinSCP, PuTTY, AnyDesk, RustDesk</td></tr>
+              <tr><td>Discovery</td><td>Advanced IP Scanner, Nmap, net commands</td></tr>
+              <tr><td>Credential access</td><td>Domain credential dumping; ICACLS for permission manipulation; stolen VPN/infostealer credentials</td></tr>
+              <tr><td>Lateral movement</td><td>PsExec, WMI, PowerShell remoting, Windows services; RDP; WinRM</td></tr>
+              <tr><td>Exfiltration</td><td>SystemBC-tunneled exfiltration; WinSCP</td></tr>
+              <tr><td>Persistence (hands-on-keyboard)</td><td>Scheduled tasks, Registry Run keys, Windows services</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The Gentlemen enforces an explicit policy prohibiting attacks on organizations in Russia and other CIS countries. FortiGuard reports this as an operator-level policy; Group-IB notes it as consistent with Russian-language RaaS norms. Some technical analyses reference locale or language checks in the encryptor, though binary-level detail on the CIS exclusion mechanism has not been published as of May 2026. [6][10]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Ransom Note Format</div>
+        <p>Note filename: <span class="mono">README-GENTLEMEN.txt</span> (excluded from encryption target list). Contents: victim-specific identifier, affiliate Tox and Session contact IDs, Tor portal link, payment instructions in cryptocurrency, threat of data publication if unpaid, and a warning against third-party decryption attempts. Tone is pragmatic and business-oriented. The note is dropped in each scanned directory during traversal. [1][2]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>Ransoms are demanded primarily in Bitcoin; some affiliates may accept additional cryptocurrencies at their discretion. The affiliate-owned wallet model means payment goes directly to the affiliate's wallet, with the operator's 10% settled via internal arrangement afterward. This architecture produces no single canonical operator wallet and significantly complicates on-chain attribution. [16][7]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Infrastructure</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>As of May 2026, no TRM Labs, Chainalysis, or Elliptic study specifically mapping The Gentlemen's on-chain fund flows has been published. This is an active intelligence gap. The following is derived from general RaaS-ecosystem reporting and internal leak analysis:</p>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Initial Receipt</div>
+              <div class="phase-desc">Victim pays Bitcoin to affiliate-controlled wallet. The affiliate-owned model means numerous distinct wallets are used across the affiliate pool, with no operator-controlled central receiving wallet. [7][16]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Operator Settlement</div>
+              <div class="phase-desc">The 10% operator share is settled via direct wallet transfer to operator-controlled addresses after receipt confirmation. This inter-affiliate transfer is the most attributable on-chain link to the operator cluster. [3][7]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Laundering (assessed)</div>
+              <div class="phase-desc">Early operations (late 2025) appear to use standard BTC mixing approaches. 2026 reports mention affiliates experimenting with privacy coins and chained mixing services, though public detail is limited. Halcyon characterizes The Gentlemen among "next-generation" RaaS with increasing on-chain OPSEC sophistication. [4]</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Cash-Out</div>
+              <div class="phase-desc">No vendor-named specific exchanges or mixing services have been publicly identified in association with The Gentlemen. Attribution of cash-out paths awaits dedicated blockchain forensics firm analysis. [4]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Revenue Estimates</div>
+        <p>Total revenue extracted by The Gentlemen is not yet clearly quantified in public sources. Single-source estimates characterize tens of millions of USD equivalent in 2025-2026 based on partial payment observations and average demand sizes, but these carry low confidence. The combination of high victim volume (420+ claimed), mid-to-high-value targeting, and a generous affiliate split suggests a rapidly growing total revenue figure. [16]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions Status</div>
+        <div class="conf conf-confirmed">Confirmed: No Sanctions</div>
+        <p>As of May 2026, no OFAC designation, EU sanctions listing, or equivalent action specifically naming The Gentlemen, its wallets, or any identified individual in the operator cluster has been publicly reported. The group's recency and the typical lag between LE intelligence gathering and sanctions action mean this gap is expected rather than indicative of reduced threat. [17]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Volume Metrics</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">DLS Claimed Victims (May 2026)</div>
+            <div class="metric-val">420+</div>
+            <div class="metric-note">Raven File / Ransom-ISAC estimate, May 2026</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">FortiGuard DLS Count</div>
+            <div class="metric-val">200+</div>
+            <div class="metric-note">50+ countries, early 2026</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">C2-Linked Victims</div>
+            <div class="metric-val">1,570+</div>
+            <div class="metric-note">SystemBC C2 compromise incl. partial intrusions</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Global Share (Early 2026)</div>
+            <div class="metric-val">~10%</div>
+            <div class="metric-note">Of all public ransomware claims, per KELA analysis</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Countries Targeted</div>
+            <div class="metric-val">50+</div>
+            <div class="metric-note">All major regions; CIS excluded</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">2026 Ranking</div>
+            <div class="metric-val">Top 3</div>
+            <div class="metric-note">By claimed attacks, early 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Targeting</div>
+        <p>Targeting is assessed as primarily opportunistic, driven by affiliate access availability rather than deliberate pre-selected sector strategy. Sectors documented across DFIR cases and vendor reporting: [1][6][12]</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Evidence Level</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Education</td><td>Confirmed (Microsoft)</td><td>Observed in Microsoft's documented impact set</td></tr>
+              <tr><td>Healthcare</td><td>Confirmed (Microsoft / FortiGuard)</td><td>No documented exclusion; healthcare not protected</td></tr>
+              <tr><td>Transportation / Logistics</td><td>Confirmed (Microsoft)</td><td>Documented in Microsoft case analysis</td></tr>
+              <tr><td>Financial Services</td><td>Confirmed (Microsoft)</td><td>Documented in Microsoft case analysis</td></tr>
+              <tr><td>Manufacturing / Industrial</td><td>Credible (S-RM, SOC Prime)</td><td>Notable in Asia-Pacific and Europe</td></tr>
+              <tr><td>Energy / Government / IT</td><td>Credible (FortiGuard)</td><td>Listed among targeted sectors; individual cases not named</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>Victims span all major global regions with particular concentration in Asia (Japan, South Korea, Southeast Asia), North America, and Europe. CIS-region organizations are systematically excluded per group policy. [1][6][9]</p>
+        <div class="callout callout-info">
+          <strong>Geographic intelligence gap:</strong> As of May 2026, no vendor has published a country-level breakdown of The Gentlemen victims comparable to ransomware.live's open data for older groups. Microsoft documents North America, South America, Europe, Africa, and Asia as all affected. A definitive country-by-count table is not available in public reporting.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Size and Selection Model</div>
+        <p>Internal chats show affiliates focusing on organizations with high perceived ability to pay, using revenue or employee count as heuristics. Mid-market and large enterprises are prioritized; some affiliates explicitly avoid very small targets as uneconomical. [7]</p>
+        <p>The 1,570+ victim count from the SystemBC C2 compromise includes a large number of small and mid-sized organizations appearing as partial or failed intrusions, suggesting wide scanning and triage with selective escalation to full deployment against higher-value targets. [16][17]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named / Notable Victims</div>
+        <p>Individual victim names disclosed by The Gentlemen on its leak site are not reproduced here. Vendor briefings reference large manufacturing, energy, and healthcare firms by sector but avoid naming due to legal exposure. Open-source lists of named enterprises remain partial, scattered across sources, and predominantly single-sourced. Analysts requiring named victim lists should consult ransomware.live directly.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 07: LAW ENFORCEMENT -->
+    <section class="section" id="le">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="conf conf-confirmed">Confirmed: No LE Action to Date</div>
+
+      <div class="subsection">
+        <div class="subsection-title">Arrests and Indictments</div>
+        <p>As of May 2026, no publicly known arrests, indictments, or named individual charges linked to The Gentlemen have been issued by any Western or CIS law enforcement authority. The group's recency (sub-12 months) and the typical intelligence-gathering phase preceding overt enforcement action mean this gap is consistent with normal LE timelines rather than indicative of investigative disinterest. [17]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure Seizures</div>
+        <p>No coordinated public LE takedown (FBI/Europol seizure banners, domain seizures, key escrow releases) has been announced against The Gentlemen infrastructure. The SystemBC C2 compromise and Rocket.Chat internal data leak analyzed by KELA and Ransom-ISAC are products of private-sector research and/or adversarial insider activity, not formal LE operations. [3][17]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions</div>
+        <p>No OFAC, EU, UK, or equivalent financial sanctions specifically naming The Gentlemen, its wallets, or identified individuals in the group have been announced as of May 2026. [17]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">International Cooperation and Advisories</div>
+        <p>No dedicated multi-agency joint advisory (comparable to the LockBit or Hive advisories from FBI/CISA/NCSC) has been issued against The Gentlemen as of May 2026. The group is referenced in general ransomware-threat advisories and sectoral alerts but has not yet triggered a named advisory product from Five Eyes partners. [5]</p>
+        <p>CISA, FBI, and partner agency advisories on ransomware in general remain applicable given the group's TTPs (edge device exploitation, VPN credential abuse, double extortion). Specific IoC packages for The Gentlemen are available via Microsoft Defender XDR threat analytics (Storm-2697 / Gentlemen tool profile). [1]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Jurisdiction</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Multiple converging indicators support attribution to Russian-speaking operators in the CIS region: [1][6][10]</p>
+        <ul class="content-list">
+          <li><strong>CIS exclusion policy:</strong> Explicit prohibition on targeting Russian and CIS organizations, enforced at the operator policy level. This is the single strongest jurisdictional indicator and is consistent across all vendor assessments.</li>
+          <li><strong>Language:</strong> Internal Rocket.Chat communications analyzed by KELA are Russian-language. [3]</li>
+          <li><strong>Ecosystem positioning:</strong> IBM X-Force and Group-IB position The Gentlemen within a cluster of Russian-language RaaS operations sharing language, tooling preferences, and no-CIS policies. [5][10]</li>
+          <li><strong>No-CIS behavioral norm:</strong> The CIS exclusion pattern is a known proxy indicator for Russian-nexus actors operating under de-facto safe harbor: criminal activity tolerated by Russian authorities as long as it remains directed outward. [4]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">State Nexus Assessment</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>No vendor or government publication as of May 2026 provides direct evidence of FSB, SVR, or GRU control, tasking, or operational coordination with The Gentlemen. The group is assessed as <strong>financially motivated criminal</strong> rather than state-directed. [1][4]</p>
+        <p>As with other top-tier Russian-language RaaS operations, The Gentlemen likely operates under de-facto non-prosecution safe harbor in CIS territory, consistent with Russia's documented pattern of tolerating outward-facing cybercriminal activity. This is an analyst inference based on structural patterns, not a confirmed intelligence finding. [4]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <p>The core operator is identified in internal communications by the handle <strong>"zeta88."</strong> Real-world identity, location, and nationality remain unconfirmed in any open-source reporting as of May 2026. No additional named individuals have been publicly identified by vendors or law enforcement. [3][5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Analytic Line</div>
+        <div class="callout callout-info">
+          <strong>Best current assessment:</strong> Financially motivated, Russian-speaking cybercriminal RaaS with no confirmed state nexus, operating under likely de-facto safe harbor in CIS territory. Assessed jurisdiction: Russia or broader post-Soviet region (CREDIBLE). Direct state tie: not evidenced (ANALYST INFERENCE that safe harbor exists). Microsoft Storm-2697 tracking designation applies to the operator cluster; Ransom:Win64/Gentlemen.A is the malware family designation.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Internal Disruption: The May 2026 Leak</div>
+        <p>In May 2026, partial internal chat logs (Rocket.Chat backend), panel data, and images tied to The Gentlemen were leaked and advertised on underground forums. KELA, Ransom-ISAC, and Check Point analyzed the dataset. The leak revealed internal arguments about target selection, payment disputes, quality of initial access, and OPSEC practices. The likely cause was insider betrayal or compromise of admin infrastructure. [2][3][7][8]</p>
+        <p>Despite this OPSEC setback, new victim claims continued appearing on The Gentlemen's leak site through May 2026, and no operational pause has been documented. The group appears resilient to the leak, consistent with a distributed affiliate model where individual compromise of operator communications does not halt affiliate operations. [9]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding Signals</div>
+        <div class="conf conf-inference">No Current Evidence</div>
+        <p>As of late May 2026, there are no credible signals of an active rebrand. The Gentlemen continues operating under its existing brand in forum postings and on its leak site. Internal chats show discussions of OPSEC enhancements and contingency infrastructure planning, but not a structured exit strategy or rebrand timeline. [2][3]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale and Volume Trajectory</div>
+        <p>The group's victim accumulation rate in early 2026 is among the fastest documented for any RaaS program. Multiple sources rank The Gentlemen in the top 2-3 groups by claimed attacks globally for Q1 2026. The BreachForums partnership, announced to further expand the affiliate pool, may accelerate this trajectory. [1][6][9]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability Trajectory</div>
+        <ul class="content-list">
+          <li><strong>Encryptor under active development:</strong> Microsoft notes new defense-evasion features and self-propagation mechanics being added over time; the malware is not static. [1]</li>
+          <li><strong>High baseline:</strong> Multi-platform support (Windows, Linux, NAS, BSD, ESXi) from launch indicates developers began at an advanced technical level rather than iterating up from a basic ransomware. [5]</li>
+          <li><strong>EDR evasion maturation:</strong> Huntress and Trend Micro document adoption of custom EDR-evasion tools, tamper-protection bypasses, and increased scheduled-task abuse. [12][14]</li>
+          <li><strong>Self-propagation worm capability:</strong> The 21-execution-path propagation module is a significant capability differentiator; rapid network-wide encryption reduces the window for defenders to isolate and respond. [1]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group</th><th>Relationship</th><th>Confidence</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Qilin</td><td>Assessed parent ecosystem; payment dispute sparked The Gentlemen's founding</td><td>Credible (Halcyon, IBM, Ransom-ISAC)</td><td>Distinct groups; not a rebrand. No formal CrowdStrike/Secureworks/Unit 42 published assessment as of May 2026</td></tr>
+              <tr><td>SystemBC ecosystem</td><td>Shared tooling; affiliates deploy SystemBC as proxy/C2</td><td>Confirmed (shared tool), Low (structural tie)</td><td>SystemBC used across dozens of RaaS groups; not an organizational link</td></tr>
+              <tr><td>BreachForums marketplace</td><td>Official affiliate recruitment partnership</td><td>Confirmed (Microsoft, May 2026)</td><td>Supply-chain link; BreachForums provides affiliate pipeline</td></tr>
+              <tr><td>IAB ecosystem / infostealer vendors</td><td>Operational dependency; group purchases infostealer logs for credential access</td><td>Confirmed (Hudson Rock, internal chats)</td><td>Shared criminal supply chain, not organizational merger</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps</div>
+        <ul class="content-list">
+          <li><strong>Leadership identity:</strong> "zeta88" and other handles known; no confirmed real-world identities or locations.</li>
+          <li><strong>On-chain forensics:</strong> No TRM Labs, Chainalysis, or Elliptic study specifically mapping The Gentlemen's fund flows has been published.</li>
+          <li><strong>Specific CVE anchor:</strong> No confirmed signature exploit CVE; FortiGate SSL-VPN is the strongest access vector indicator but no specific CVE is confirmed.</li>
+          <li><strong>Code lineage to Qilin:</strong> Full reverse-engineering comparison between The Gentlemen encryptor and Qilin's codebase has not been publicly published.</li>
+          <li><strong>CrowdStrike / Secureworks / Unit 42 designations:</strong> None of the three major codename-issuing vendors has published a formal tracking designation for The Gentlemen as of May 2026.</li>
+          <li><strong>Linux / ESXi encryptor details:</strong> Technical deep-dives comparable to Microsoft's Windows analysis have not been published for the Linux, NAS, BSD, or ESXi variants.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">&#9660; Toggle source list</button>
+      <div class="source-list">
+        <div class="source-category">Primary Technical Analysis</div>
+        <div class="source-item"><span class="source-num">[1]</span><div>Microsoft Threat Intelligence, <a href="https://www.microsoft.com/en-us/security/blog/2026/05/28/the-gentlemen-ransomware-dissecting-a-self-propagating-go-encryptor/" target="_blank">"The Gentlemen ransomware: Dissecting a self-propagating Go encryptor"</a>, May 28, 2026. Storm-2697 designation, full encryptor analysis, self-propagation module, IOCs.</div></div>
+        <div class="source-item"><span class="source-num">[2]</span><div>Check Point Research, <a href="https://research.checkpoint.com/2026/dfir-report-the-gentlemen/" target="_blank">"DFIR Report: The Gentlemen &amp; SystemBC: A Sneak Peek Behind the Proxy"</a>, April 20, 2026. DFIR case study, multi-OS locker details, ransom note format, affiliate communication.</div></div>
+        <div class="source-item"><span class="source-num">[3]</span><div>KELA Cyber, "The Gentlemen Ransomware Internal Chat Leak Analysis," 2026. Internal Rocket.Chat corpus analysis; operator handle zeta88; affiliate onboarding; revenue model.</div></div>
+        <div class="source-item"><span class="source-num">[4]</span><div>Halcyon, <a href="https://www.halcyon.ai/ransomware-research-reports/threat-assessment-the-gentlemen-ransomware-group" target="_blank">"Threat Assessment: The Gentlemen Ransomware Group"</a>. Qilin payment dispute origin; ~20-person core; RaaS-vs-SaaS framework; next-gen on-chain OPSEC.</div></div>
+        <div class="source-item"><span class="source-num">[5]</span><div>IBM X-Force, <a href="https://exchange.xforce.ibmcloud.com/threat-group/guid:688ac4f45c5a4791b8019a4d313594f7" target="_blank">"The Gentlemen" threat group profile</a>. Qilin ecosystem emergence; Windows/Linux/NAS/BSD/ESXi locker confirmation; triple extortion elements.</div></div>
+        <div class="source-item"><span class="source-num">[6]</span><div>Fortinet FortiGuard, <a href="https://www.fortiguard.com/threat-actor/6387/the-gentlemen-ransomware" target="_blank">"The Gentlemen Ransomware" threat actor profile</a>. 200+ victims / 50+ countries; CIS exclusion; initial access vectors; sector list.</div></div>
+        <div class="source-category">Internal Data / Leak Analysis</div>
+        <div class="source-item"><span class="source-num">[7]</span><div>Ransom-ISAC, <a href="https://ransom-isac.com/blog/the-gentlemen-leak-analysis/" target="_blank">"The Gentlemen Leak Analysis"</a>. Rocket.Chat corpus; zeta88 references to prior RaaS payment disputes; affiliate relationships; 90/10 split; wallet model.</div></div>
+        <div class="source-item"><span class="source-num">[8]</span><div>The Raven File, <a href="https://theravenfile.com/2026/05/23/gentlemen-ransomware-leaks/" target="_blank">"Gentlemen Ransomware Leaks"</a>, May 23, 2026. 420+ total claimed victims; FortiGate SSL-VPN as primary access vector; leak cause analysis.</div></div>
+        <div class="source-category">Vendor Research</div>
+        <div class="source-item"><span class="source-num">[9]</span><div>S-RM Intelligence, <a href="https://www.s-rminform.com/latest-thinking/ransomware-in-focus-meet-the-gentlemen" target="_blank">"Ransomware in Focus: Meet The Gentlemen"</a>. Negotiation behavior; 40-70% demand discounts; deadline patterns; enterprise targeting.</div></div>
+        <div class="source-item"><span class="source-num">[10]</span><div>Group-IB, <a href="https://www.group-ib.com/blog/hastalamuerte-gentlemen-raas-ttps/" target="_blank">"Hasta La Muerte: The Gentlemen RaaS TTPs"</a>. Russian-language cluster positioning; CIS exclusion; TTP overlap with broader ecosystem.</div></div>
+        <div class="source-item"><span class="source-num">[11]</span><div>Hudson Rock, <a href="https://www.hudsonrock.com/blog/how-the-gentlemen-ransomware-group-operates-a-blueprint-built-on-infostealer-credentials" target="_blank">"How The Gentlemen Ransomware Group Operates: A Blueprint Built on Infostealer Credentials"</a>. Infostealer-driven access model; credential log purchasing; VPN/RDP/SaaS access paths.</div></div>
+        <div class="source-item"><span class="source-num">[12]</span><div>Huntress, <a href="https://www.huntress.com/blog/the-gentlemen-ransomware-defense-evasion-ttps" target="_blank">"The Gentlemen Ransomware: Defense Evasion TTPs"</a>. EDR evasion tooling; log clearing; scheduled-task abuse; persistence mechanisms.</div></div>
+        <div class="source-item"><span class="source-num">[13]</span><div>Cybereason, <a href="https://www.cybereason.com/blog/the-gentlemen-ransomware" target="_blank">"License to Encrypt: The 'Gentlemen' Make Their Move"</a>. September 2025 RaaS launch timeline; initial affiliate recruitment.</div></div>
+        <div class="source-item"><span class="source-num">[14]</span><div>Trend Micro, <a href="https://www.trendmicro.com/en_us/research/25/i/unmasking-the-gentlemen-ransomware.html" target="_blank">"Unmasking The Gentlemen Ransomware: Tactics, Techniques, and Procedures Revealed"</a>. Custom EDR evasion; tamper-protection bypasses; capability evolution.</div></div>
+        <div class="source-item"><span class="source-num">[15]</span><div>SOC Prime, <a href="https://socprime.com/blog/the-gentlemen-ransomware-detection/" target="_blank">"The Gentlemen Ransomware Detection"</a>. Detection guidance; sector targeting list; deadline and negotiation patterns.</div></div>
+        <div class="source-category">Infrastructure / Supporting Analysis</div>
+        <div class="source-item"><span class="source-num">[16]</span><div>Ransomware.live, <a href="http://www.ransomware.live/group/thegentlemen" target="_blank">The Gentlemen group page</a>. Victim counts; 90/10 split confirmation; affiliate-owned wallet model; activity timeline.</div></div>
+        <div class="source-item"><span class="source-num">[17]</span><div>The Hacker News, <a href="https://thehackernews.com/2026/04/systembc-c2-server-reveals-1570-victims.html" target="_blank">"SystemBC C2 Server Reveals 1570 Victims"</a>, April 2026. SystemBC C2 compromise; 1570+ linked victims; C2 infrastructure in The Gentlemen operations.</div></div>
+        <div class="source-item"><span class="source-num">[18]</span><div>Check Point Research, <a href="https://research.checkpoint.com/2026/thus-spoke-the-gentlemen/" target="_blank">"Thus Spoke The Gentlemen"</a>. Internal leak; stability assessment; OPSEC setback analysis.</div></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Ransomware EDP Threat Actor Library &bull; The Gentlemen Profile &bull; Last updated May 2026
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div><!-- /layout -->
+
+<script>
+// Theme toggle
+const toggle = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme');
+if (saved === 'dark') { document.documentElement.setAttribute('data-theme','dark'); toggle.textContent = '☀ Light'; }
+toggle.addEventListener('click', () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  toggle.textContent = isDark ? '☾ Dark' : '☀ Light';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+});
+
+// Active section nav highlight
+const navLinks = document.querySelectorAll('.section-nav a');
+const sections = document.querySelectorAll('.section[id]');
+function updateNav() {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+</script>
+</body>
+</html>
