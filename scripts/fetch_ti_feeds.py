@@ -108,6 +108,14 @@ KEYWORDS = {
         "leakeddata",
         "callback phishing ransomware",
     ],
+    "thegentlemen": [
+        "the gentlemen ransomware",
+        "thegentlemen ransomware",
+        "storm-2697",
+        "gentlemen raas",
+        "readme-gentlemen",
+        "ransom:win64/gentlemen",
+    ],
 }
 
 MAX_PER_GROUP = 10      # max articles to keep per group
@@ -179,8 +187,7 @@ def main():
         results.extend(matches)
         print(f"  {group}: {len(matches)} articles matched")
 
-    # Write all groups to a single file; the HTML filters by group client-side
-    # But for simplicity, we also write per-group files
+    # Write combined file; the HTML filters by group client-side
     output_path.write_text(json.dumps(results, indent=2, ensure_ascii=False))
     print(f"Wrote {len(results)} total entries to {output_path}")
 
