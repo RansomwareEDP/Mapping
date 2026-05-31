@@ -319,7 +319,7 @@ html { scroll-behavior: smooth; }
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-section-label">Threat Actor Groups</div>
-  <nav class="group-list">
+    <nav class="group-list">
     <a class="group-item" href="conti.html">
       <span class="group-dot dot-conti"></span>
       Conti
@@ -355,6 +355,18 @@ html { scroll-behavior: smooth; }
     <a class="group-item active" href="royal.html">
       <span class="group-dot dot-active"></span>
       Royal / BlackSuit / Chaos
+    </a>
+    <a class="group-item" href="blackbasta.html">
+      <span class="group-dot dot-dim"></span>
+      Black Basta
+    </a>
+    <a class="group-item" href="thegentlemen.html">
+      <span class="group-dot dot-active"></span>
+      The Gentlemen
+    </a>
+    <a class="group-item" href="nightspire.html">
+      <span class="group-dot dot-active"></span>
+      NightSpire
     </a>
   </nav>
 
@@ -1238,28 +1250,4 @@ sections.forEach(section => observer.observe(section));
       const items = feedRaw.value.slice(0, 10);
       if (loadingEl) loadingEl.remove();
       items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'feed-card';
-        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-        card.innerHTML =
-          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
-          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
-          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
-          `</div>`;
-        grid.appendChild(card);
-      });
-    } else {
-      if (loadingEl) {
-        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
-        loadingEl.style.fontStyle = 'italic';
-      }
-    }
-  } catch (e) {
-    const loadingEl = document.getElementById('feed-loading');
-    if (loadingEl) loadingEl.remove();
-  }
-})();
-</script>
-
-</body>
-</html>
+        const card = document.createElement('div')
