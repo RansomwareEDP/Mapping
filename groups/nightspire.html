@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NightSpire | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-emerging { background: var(--amber); color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+.feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+.feed-card {
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+.gap-badge {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; background: var(--amber-soft); color: var(--amber);
+  border: 1px solid var(--amber); border-radius: 4px; padding: 2px 7px;
+  vertical-align: middle; margin-left: 4px;
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+html { scroll-behavior: smooth; }
+
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html"><span class="group-dot dot-conti"></span>Conti</a>
+    <a class="group-item" href="akira.html"><span class="group-dot dot-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-active"></span>Cl0p</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-dim"></span>Qilin</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-dim"></span>INC / Lynx</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-dim"></span>DragonForce</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-dim"></span>LockBit</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-active"></span>Royal / BlackSuit</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-dim"></span>Black Basta</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-dim"></span>The Gentlemen</a>
+    <a class="group-item active" href="nightspire.html"><span class="group-dot dot-active"></span>NightSpire</a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 &nbsp; Overview</a>
+    <a href="#lineage">02 &nbsp; Lineage &amp; Heritage</a>
+    <a href="#operations">03 &nbsp; Operational Model</a>
+    <a href="#technical">04 &nbsp; Technical Capabilities</a>
+    <a href="#financial">05 &nbsp; Financial Infrastructure</a>
+    <a href="#victims">06 &nbsp; Victim Profile</a>
+    <a href="#le">07 &nbsp; LE &amp; Regulatory Response</a>
+    <a href="#attribution">08 &nbsp; Attribution &amp; State Nexus</a>
+    <a href="#trajectory">09 &nbsp; Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated May 2026</div>
+    <div class="hero-title">NightSpire</div>
+    <div class="hero-subtitle">Double Extortion &nbsp;&bull;&nbsp; Transitioning to RaaS &nbsp;&bull;&nbsp; Rbfs Predecessor</div>
+    <div class="hero-badges">
+      <span class="badge badge-emerging">Emerging Threat</span>
+      <span class="badge badge-operational">Active</span>
+      <span class="badge badge-raas">RaaS (Transitioning)</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Feb 2025</div>
+        <div class="kpi-sub">DLS live: Mar 12, 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Victims</div>
+        <div class="kpi-value">259+</div>
+        <div class="kpi-sub">As of May 1, 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Countries</div>
+        <div class="kpi-value">30+</div>
+        <div class="kpi-sub">Global opportunistic targeting</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">No arrests, no sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Primary IAV</div>
+        <div class="kpi-value">CVE-2024-55591</div>
+        <div class="kpi-sub">FortiOS / FortiProxy</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Encryptor</div>
+        <div class="kpi-value">Go / .nspire</div>
+        <div class="kpi-sub">AES-256-CBC + RSA-2048</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Rbfs</div>
+        <div class="kpi-sub">Shared operators confirmed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>NightSpire is a financially motivated double-extortion ransomware operation that emerged in February 2025. It is assessed with high confidence as a rebrand and capability escalation of the earlier "Rbfs" extortion group, driven by the same core operators. Within approximately 15 months of emergence, the group had claimed 259 victims across 30 or more countries and announced a formal Ransomware-as-a-Service (RaaS) affiliate program in April 2026. Despite rapid growth in victim volume, the group retains markers of operational immaturity: poor OPSEC, erratic extortion behavior, and infrastructure that leaves identifiable forensic fingerprints.</p>
+
+      <p>Geographic indicators from infrastructure analysis suggest an India-linked operator nexus with probable Chinese-speaking involvement, based on a WinSCP exfiltration server IP assigned to Kerala Agricultural University's academic network block and Chinese internet culture markers (tilde greeting, operator handle "cuteliyuan" containing the common Chinese given name "liyuan"). Spanish open-source reporting characterized the group as likely Russian or Eastern European, but this assessment predates the Barracuda infrastructure analysis and is in tension with it. No formal government attribution has been published as of May 2026.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Status</td><td>Active and growing; formal RaaS transition announced April 2026</td></tr>
+            <tr><td>Predecessor</td><td>Rbfs (data-only extortion, early 2025); shared operators xdragon128 and cuteliyuan</td></tr>
+            <tr><td>Tracking designations</td><td>No formal tracking designation from CrowdStrike, Secureworks, Unit 42, Mandiant, Recorded Future, or Microsoft as of May 2026 (INTELLIGENCE GAP). SonicWall signature: GAV: NightSpire.RSM (Trojan). AhnLab V3: Ransomware/Win.Nightspire. AttackIQ and Cyble track as NightSpire.</td></tr>
+            <tr><td>Operational model</td><td>Closed crew (Feb to mid-2025), transitioning to RaaS affiliate model (2025 to present)</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion: exfiltration followed by encryption; countdown DLS; secondary data sale to third parties if payment refused</td></tr>
+            <tr><td>Primary IAV</td><td>CVE-2024-55591 (FortiOS/FortiProxy authentication bypass); also RDP brute-force, phishing, credential stuffing</td></tr>
+            <tr><td>Encryptor</td><td>Go-compiled PE, AES-256-CBC per-file, RSA-2048 key wrap; .nspire extension; readme.txt ransom note</td></tr>
+            <tr><td>Victim count</td><td>259+ as of May 1, 2026 (11 in Mar 2025, 45+ by May 2025, 200+ by late 2025, 259 by May 2026)</td></tr>
+            <tr><td>Assessed geography</td><td>India-linked IP infrastructure, probable Chinese-speaking operator (cuteliyuan), East Asian cultural markers; no formal state attribution (CREDIBLE inference, medium confidence)</td></tr>
+            <tr><td>Decryptor available</td><td>No public decryptor. Not listed on No More Ransom as of May 2026.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--0e32ada6-7abd-4b9d-991e-3f790e1ecc98/nightspire-leaksite.png"
+               alt="NightSpire DLS About page with logo"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>NightSpire DLS: About Page with Logo</strong>
+            The About page opens with "Greetings to world~" (the trailing tilde is a documented East Asian, particularly Chinese, internet culture marker). The angular gold-and-black spire logo and "kneel before our demands" text reflect a theatrical and grandiose operator identity. The name "NAN SIRE" beneath the logo is unexplained; "SIRE" denotes a sovereign or lord. Group name "NightSpire" echoes a high-level achievement in World of Warcraft (ANALYST INFERENCE, not group-confirmed).
+            <span class="img-source">Source: Barracuda Networks / Red Hot Cyber, May 2026</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--9e02efe7-70a7-4ae1-b377-2c63904477c1/nightspire-s-rm-sharedvictimlist-cropped.png"
+               alt="NightSpire DLS victim listing showing shared victims with Rbfs"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>NightSpire DLS: Victim Listing (March 21, 2025)</strong>
+            This listing shows a victim organization that also appeared on the Rbfs forum post, providing direct evidence of victim overlap between the Rbfs predecessor and NightSpire. Names were redacted by S-RM researchers. The format, countdown timers, and victim metadata are consistent with mainstream double-extortion DLS design.
+            <span class="img-source">Source: Barracuda Networks / S-RM Intelligence, May 2026 / March 2025</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--d05b8347-0e01-4fc4-94ce-b72744058843/nightspire-ransomnote-ransomwarelive.png"
+               alt="NightSpire ransom note (readme.txt)"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>NightSpire Ransom Note</strong>
+            The readme.txt note dropped in encrypted directories. Threatening tone, short deadline framing, references to OneDrive compromise, victim-specific ID, and Tor or email contact. Note filename and content evolved between December 2025 and March 2026 incidents, consistent with encryptor updates or affiliate variation.
+            <span class="img-source">Source: Barracuda Networks / Ransomware.live, May 2026</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--f3b9f9ca-c10e-4dad-8b6c-4358a8da8923/nightspire-starts-raas-sosransomware.png"
+               alt="NightSpire RaaS affiliate recruitment announcement on DLS, April 2026"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>NightSpire DLS: RaaS Affiliate Announcement (April 2026)</strong>
+            Screenshots published in April 2026 show NightSpire inviting affiliates to contact them via the DLS. This marks the group's first documented public move toward an affiliate-based scaling model, transitioning from the closed-crew structure observed in early 2025.
+            <span class="img-source">Source: Barracuda Networks / SOSRansomware, May 2026</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://image.ahnlab.com/atip/content/image/20250827/ObxkIz4DbujJmr8DDWd4KC3iZ7Fd0SWytZqDnPL0.png"
+               alt="NightSpire team logo (AhnLab ASEC observation)"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>NightSpire Team Logo</strong>
+            The group's stylized logo featuring the name "NightSpire" with a green capital S (assessed as either "fel green" from World of Warcraft or a dollar sign reference) alongside the angular spire graphic. Documented by AhnLab ASEC during analysis of South Korean victim cases.
+            <span class="img-source">Source: AhnLab ASEC, August 2025</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Assessment</div>
+        <div class="conf conf-credible">Credible &mdash; multi-source convergence, not yet universally corroborated</div>
+        <p>S-RM Intelligence assessed in March 2025 that it is "highly likely" NightSpire operators are associated with the Rbfs ransomware group. Barracuda Networks (May 2026) and multiple open-source outlets corroborate this assessment through independent observation of the same three evidentiary pillars. ASEC (August 2025) characterized the rebrand question as "unclear," but did not dispute the Rbfs evidence directly. No major TI vendor (CrowdStrike, Secureworks, Unit 42, Mandiant, Recorded Future) has published a formal connected-cluster assessment as of May 2026, leaving the Rbfs connection at credible but not universally accepted.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rbfs to NightSpire: Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &mdash; Confirmed (multiple independent sources)</div>
+            <div class="pillar-title">Shared Operator Handles</div>
+            <div class="pillar-body">Handles "xdragon128" and "cuteliyuan" promoted both Rbfs victim data and NightSpire operations on crime forums and Telegram. The hostname "XDRAGON-SERVER1" appeared in early NightSpire incident infrastructure, directly linking the xdragon128 persona to operational infrastructure. Consistent across S-RM, Barracuda, and multiple secondary sources.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &mdash; Confirmed (documented by S-RM with screenshots)</div>
+            <div class="pillar-title">Victim Overlap</div>
+            <div class="pillar-body">At least two organizations previously claimed by Rbfs (via xdragon128 forum posts) later appeared on NightSpire's DLS victim listing, with matching victim names shown in side-by-side screenshots published by S-RM. This is the strongest single evidentiary element supporting the lineage assessment.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &mdash; Credible</div>
+            <div class="pillar-title">Temporal Substitution</div>
+            <div class="pillar-body">Public references to Rbfs ceased at precisely the same time NightSpire emerged in early March 2025. Rbfs's short operational lifespan and the abrupt timing are consistent with rebranding behavior documented in other ransomware group transitions. No competing explanation for the simultaneous disappearance is documented in available sources.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 4 &mdash; Credible</div>
+            <div class="pillar-title">Infrastructure Continuity</div>
+            <div class="pillar-body">The WinSCP exfiltration server IP (14.139.185.60, assigned to Kerala Agricultural University's NKN block) was identified in early NightSpire incidents. While IP reuse is not definitive on its own, combined with operator handle and hostname continuity it supports a consistent operational infrastructure thread across the Rbfs-to-NightSpire transition.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extended Lineage: xdragon128 Prior Activity (2024)</div>
+        <p>Barracuda's reporting traces xdragon128 further back into 2024, prior to Rbfs activity. In late 2024, xdragon128 was observed collaborating with "Paranodeus" in the DarkAssault and DeepWing Telegram channels to build and distribute the Python-based Parano toolset. During this same period, xdragon128 appeared in hacktivist-adjacent channels linked to CyberVolk, a pro-Russian hacktivist group. Multiple secondary sources note the possible equation of "Paranodeus" and "xdragon128" as the same individual, though Barracuda explicitly states it does not have evidence to confirm this.</p>
+        <p>The Parano toolset connection is notable because the NightSpire Go-based encryptor represents a deliberate departure from Python-based tooling, suggesting new developer involvement rather than simple reuse. The extended lineage runs through shared human operators, not shared code.</p>
+        <div class="callout callout-warning">
+          <strong>Collection gap:</strong> The Telegram channels in which xdragon128 operated (DarkAssault, DeepWing) were banned and no available archives or screenshots are publicly accessible. The CyberVolk/xdragon128 connection relies on forum images published by Cyfirma and S-RM rather than primary archived evidence. CrowdStrike, Secureworks, Unit 42, Mandiant, and Recorded Future have not published formal cluster assessments covering NightSpire or its Rbfs predecessor.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability Shift: Rbfs vs. NightSpire</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dimension</th><th>Rbfs</th><th>NightSpire</th></tr></thead>
+            <tbody>
+              <tr><td>Extortion model</td><td>Data theft and extortion only (no encryption)</td><td>Double extortion: exfiltration plus full encryption</td></tr>
+              <tr><td>Encryptor language</td><td>None documented; Parano toolset was Python-based</td><td>Go (Golang) compiled PE binary</td></tr>
+              <tr><td>Dedicated leak site</td><td>No dedicated DLS; forum and Telegram posts only</td><td>Full Tor-based DLS with countdown timers, victim pages, free data samples</td></tr>
+              <tr><td>Affiliate model</td><td>No affiliate program</td><td>Negotiator recruitment (20% share) 2025; public RaaS affiliate program announced April 2026</td></tr>
+              <tr><td>OPSEC</td><td>Low (Telegram, identifiable operators)</td><td>Low-to-moderate (Gmail comms, identifiable hostname, exposed directory listings in early phase)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The transition from Rbfs to NightSpire represents a capability escalation rather than a simple rebrand: new encryptor (likely sourced from a developer not previously associated with xdragon128), full DLS infrastructure, and a structured double-extortion playbook. The core operators provide organizational continuity; the toolset and tradecraft represent an upward capability step.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <p>No major intelligence vendor had published a formal, branded tracking designation specifically for NightSpire as of May 2026. The confirmed tracking designations and signatures are limited to:</p>
+        <ul class="content-list">
+          <li><strong>SonicWall Capture Labs:</strong> GAV: NightSpire.RSM (Trojan)</li>
+          <li><strong>AhnLab ASEC (V3):</strong> Ransomware/Win.Nightspire.C5769860 (2025.06.12.02) and Ransomware/Win.Nightspire.C5775165 (2025.07.01.03)</li>
+          <li><strong>AttackIQ:</strong> Attack graph content modeled under "NightSpire ransomware" (April 2026)</li>
+          <li><strong>Cyble:</strong> Publishes threat actor profile as NightSpire Ransomware Group</li>
+          <li><strong>Broadcom Security Center:</strong> Protection bulletin issued for NightSpire Ransomware</li>
+        </ul>
+        <p>The absence of a CrowdStrike adversary name (typically in the [ANIMAL] SPIDER format), a Secureworks GOLD designation, a Unit 42 tracking label, a Mandiant UNC number, or a Microsoft Storm designation is itself an intelligence gap, reflecting either the group's relative recency or its current tier positioning below the threshold for formal major-vendor classification.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure and Evolution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Model</th><th>Evidence</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Feb to mid-2025</td><td>Closed crew, end-to-end operator control</td><td>Halcyon (July 2025): "no public RaaS, no affiliate program, it's a closed shop"</td><td>CONFIRMED for this period</td></tr>
+              <tr><td>Mid to late 2025</td><td>Hybrid: limited external recruitment</td><td>BreachForums post by xdragon128 recruiting a negotiation specialist at 20% profit share; HivePro (Sept 2025): "RaaS model"</td><td>CREDIBLE</td></tr>
+              <tr><td>April 2026 onward</td><td>Formal affiliate RaaS offering</td><td>DLS screenshots showing public affiliate invitation; AttackIQ (April 2026) states "launched a RaaS program"</td><td>CONFIRMED</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The progression is consistent with the growth pattern of other mid-tier operations: initial closed-crew testing, then limited function outsourcing (negotiators), then a formal affiliate layer. If the RaaS model matures, TTP variance across incidents will likely increase significantly, complicating attribution and remediation scoping.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Revenue Structure</div>
+        <ul class="content-list">
+          <li><strong>Negotiators:</strong> 20% of proceeds, documented from a BreachForums recruitment post (S-RM, March 2025).</li>
+          <li><strong>Intrusion affiliates (if any):</strong> No confirmed split model published in open sources. No "must not be from CIS countries" exclusion rule documented, unlike several established Russian-language crews. This is an intelligence gap.</li>
+          <li><strong>Vetting criteria:</strong> No detail on technical requirements or vetting process for affiliates is available in open-source reporting as of May 2026.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <p>NightSpire's negotiation posture is characterized by aggressive pressure, short deadlines, and willingness to escalate rapidly. Key documented behaviors:</p>
+        <ul class="content-list">
+          <li><strong>Deadline compression:</strong> Payment deadlines as short as 48 hours from ransom note delivery, substantially shorter than the week-plus standard used by more professionalized operations (S-RM).</li>
+          <li><strong>Multi-channel pressure:</strong> Operators use negotiation portals, email (early period: Gmail; later: ProtonMail and OnionMail), Telegram, and in some cases direct employee contact to sustain pressure from multiple angles simultaneously.</li>
+          <li><strong>Escalation triggers:</strong> When negotiations stall, NightSpire has published portions of stolen data, shared excerpts of prior communications, and threatened secondary data sale to other threat actors.</li>
+          <li><strong>Secondary market threat:</strong> NightSpire explicitly threatens to sell stolen data to third parties if the primary victim refuses payment, documented on DLS listings (S-RM).</li>
+          <li><strong>Unprofessional tone:</strong> S-RM and ASEC both note highly threatening and psychologically aggressive language as a consistent stylistic marker. Negotiation chat logs archived by ransomware.live show willingness to escalate immediately and leak selected data when victims resist.</li>
+        </ul>
+        <div class="callout callout-alert">
+          <strong>No systematic negotiation discount data is available in open sources.</strong> Unlike more established operations where payment settlement statistics have been published (e.g., by insurance brokers or external threat intelligence firms), no systematic analysis of NightSpire starting demand vs. final settlement has been documented. This is a significant gap for ransom response guidance.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Double Extortion Mechanics</div>
+        <p>NightSpire's extortion model follows a staged structure designed to maintain maximum leverage throughout the negotiation cycle:</p>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Exfiltration</div>
+              <div class="phase-desc">Data is collected and staged before encryption deployment. Tools: 7-Zip for archiving, MEGASync/MEGACmd or WinSCP/Rclone for transfer to attacker-controlled infrastructure. Ransom notes in 2026 have claimed exfiltration volumes of 2.5 TB or more (unverified by Huntress in the March 2026 incident).</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Encryption</div>
+              <div class="phase-desc">Go-based encryptor deployed. Files receive .nspire extension. OneDrive-synced files encrypted without icon or extension change, delaying detection. Countdown timers start on DLS.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Naming</div>
+              <div class="phase-desc">Victim name and metadata posted to DLS (sometimes with redacted name and countdown before full publication). View counts and data volume visible to external observers, increasing reputational risk perception.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Sample Release / Secondary Sale</div>
+              <div class="phase-desc">If payment is refused after deadline, NightSpire releases data samples or full dumps to other threat actors. The group has explicitly advertised stolen data as available for purchase by third parties, adding a secondary monetization dimension.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Communication Channel Evolution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Channels</th><th>OPSEC Assessment</th></tr></thead>
+            <tbody>
+              <tr><td>Early 2025</td><td>Gmail (documented), early Tor portals</td><td>Very poor; Gmail use risks account suspension mid-negotiation and attribution via account metadata</td></tr>
+              <tr><td>Mid to late 2025</td><td>ProtonMail, OnionMail, Telegram handles, dedicated Tor portals</td><td>Moderate; standard operational security for ransomware groups</td></tr>
+              <tr><td>2026</td><td>Tor negotiation portals (victim-specific IDs), ProtonMail</td><td>Moderate; consistent with mature double-extortion operations</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>CVE / Method</th><th>Notes</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>FortiOS / FortiProxy exploitation</td><td>CVE-2024-55591</td><td>Authentication bypass allowing unauthenticated attacker to gain super-admin privileges via crafted Node.js WebSocket requests. Affects FortiOS 7.0.0-7.0.16 and FortiProxy 7.0.0-7.0.19 / 7.2.0-7.2.12. Fortinet disclosed January 14, 2025; exploitation observed from November 2024. Verified against NVD entry.</td><td>CONFIRMED</td></tr>
+              <tr><td>RDP brute-force / credential stuffing</td><td>N/A</td><td>Credential-based attacks against exposed RDP services. Huntress incident (March 2026): threat actor accessed endpoint via RDP prior to additional tooling deployment.</td><td>CONFIRMED</td></tr>
+              <tr><td>Phishing</td><td>N/A</td><td>Documented by Barracuda and AttackIQ; also includes MFA fatigue attacks and RMM platform abuse.</td><td>CREDIBLE</td></tr>
+              <tr><td>VPN perimeter exploitation (general)</td><td>Multiple</td><td>Not limited to Fortinet; vulnerable VPN and perimeter services more broadly observed as access vectors.</td><td>CREDIBLE</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Post-Exploitation Toolchain</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Category</th><th>Tools</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>LOLBins / native</td><td>PowerShell, WMI, PsExec, Conhost</td><td>Command execution, lateral movement, defense evasion</td></tr>
+              <tr><td>Discovery</td><td>Advanced IP Scanner, Everything.exe</td><td>Network mapping, file search and targeting of financial records, customer data, internal communications</td></tr>
+              <tr><td>Credential harvesting</td><td>Mimikatz</td><td>LSASS memory extraction: passwords, NTLM hashes, Kerberos tickets; domain admin escalation</td></tr>
+              <tr><td>Remote access / persistence</td><td>AnyDesk, Chrome Remote Desktop</td><td>Persistent hands-on-keyboard access; Chrome Remote Desktop account email prince1990905@gmail.com documented in March 2026 Huntress incident</td></tr>
+              <tr><td>Data staging</td><td>7-Zip</td><td>Encrypted archive creation for exfiltration staging</td></tr>
+              <tr><td>Exfiltration</td><td>MEGASync / MEGACmd, WinSCP, Rclone</td><td>Transfer to attacker-controlled cloud or server infrastructure</td></tr>
+              <tr><td>Other imported tools</td><td>VMware Workstation, WPS Office</td><td>Operational convenience; WPS Office (Kingsoft, Chinese company) noted as potentially culturally significant given Chinese-speaking operator indicators</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>TTP variance observed:</strong> Huntress analyzed two incidents (December 2025 and March 2026) and found notable differences: the March 2026 case involved no LOLBins at all, with the threat actor trucking in all tooling from scratch (Chrome Remote Desktop, AnyDesk, 7-Zip, Everything, MEGASync, VMware Workstation, WPS Office). This divergence is consistent with either encryptor/playbook evolution or different affiliates operating under the NightSpire umbrella.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Detail</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Encryptor language</td><td>Go (Golang), compiled PE binary</td><td>SonicWall, AhnLab ASEC</td></tr>
+              <tr><td>Symmetric cipher</td><td>AES-256-CBC (per-file key)</td><td>AttackIQ, ASEC (encrypted file structure confirmed: AES key appended at end of file, RSA-encrypted)</td></tr>
+              <tr><td>Key protection</td><td>RSA-2048 public key wraps per-file AES key</td><td>AttackIQ, ASEC (Figure 3: encrypted file structure)</td></tr>
+              <tr><td>Extension</td><td>.nspire</td><td>CONFIRMED (multiple sources)</td></tr>
+              <tr><td>Ransom note filename</td><td>readme.txt (2025); _nightspire_readme.txt (Dec 2025); [nspire_msg].txt (Mar 2026)</td><td>Huntress: filenames evolved between incidents</td></tr>
+              <tr><td>Block encryption targets</td><td>iso, vhdx, vmdk, zip, vib, bak, mdf, flt, ldf: 1 MB block encryption for speed</td><td>ASEC (confirmed from reverse engineering); partial overlap with AttackIQ list</td></tr>
+              <tr><td>Full encryption</td><td>All other file extensions</td><td>ASEC</td></tr>
+              <tr><td>VSS deletion</td><td>None documented</td><td>ASEC: Volume Shadow Copy deletion not observed</td></tr>
+              <tr><td>OneDrive behavior</td><td>OneDrive-synced files encrypted without changing icons or file extensions; corruption not visually apparent until file open attempt</td><td>SonicWall (documented as an advanced operational capability for detection delay)</td></tr>
+              <tr><td>Desktop background</td><td>No change documented</td><td>ASEC</td></tr>
+              <tr><td>Decryptor availability</td><td>None. Not listed on No More Ransom. No cryptographic weakness publicly disclosed.</td><td>Multiple sources; verified via nomoreransom.org</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS / Regional Exclusion Checks</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; absence of documented evidence</div>
+        <p>Open sources do not document any hard-coded checks for Russian, Ukrainian, or other CIS keyboard layouts or system locales in the NightSpire binary. No analyst has confirmed that the encryptor aborts on CIS-region systems, unlike some established Russian-aligned crews. The absence of a CIS exclusion, combined with the India/China attribution indicators, is weakly consistent with a non-Russian operator profile. However, this should be treated as an outstanding collection requirement rather than a confident conclusion.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Confirmed Sample Hashes (via Huntress, 2025 to 2026)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hash (SHA-256)</th><th>Filename</th><th>Incident Date</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">bde50a42efc079edde1a314243ad339db2d42e343fbbcd39117803b0f5960355</td><td>enc.exe</td><td>December 2, 2025</td></tr>
+              <tr><td class="mono">ad67031e2ca68764fe1a7d6632c02b02a299d59efb920710011a9a2ccf4399b7</td><td>enc.exe</td><td>March 25, 2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The two hashes differ, confirming that the encryptor binary was modified between December 2025 and March 2026. This is consistent with either active development or affiliate-specific builds.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Coverage</div>
+        <p>Public coverage centers entirely on Windows environments. SonicWall's analysis documents impact across local paths and OneDrive-synchronized content. No confirmed Linux or ESXi/hypervisor-specific variant has been documented in open sources as of May 2026. The absence of a dedicated Linux/ESXi build would represent a capability ceiling relative to top-tier groups (LockBit, BlackCat, Akira) that routinely target VMware ESXi hosts. This should be treated as a collection requirement.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Mechanism</div>
+        <p>Ransomware notes and DLS commentary strongly imply standard cryptocurrency payments. The specific cryptocurrency type (Bitcoin, Monero, or other) is not explicitly quoted in the open-source reporting reviewed. No wallet addresses have been publicly linked to NightSpire incidents in available reporting. This absence of explicit crypto payment detail is itself analytically notable for a group with 259 claimed victims.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Forensics</div>
+        <span class="gap-badge">Intelligence Gap</span>
+        <p>No published blockchain analysis from Chainalysis, TRM Labs, Elliptic, or any other on-chain forensics firm has been cited in connection with NightSpire as of May 2026. This is a major intelligence gap. Consequently, there is no current mapping of wallet clusters, layering patterns, mixer or tumbler use, cross-chain bridge activity, or cash-out exchange identification in publicly available sources.</p>
+        <div class="callout callout-warning">
+          <strong>Analytical implication:</strong> Without on-chain forensic coverage, it is not possible to assess NightSpire's laundering sophistication, estimate total revenue, determine whether payment volumes reflect operator success rates, or identify financial infrastructure that could serve as a disruption vector. This should be flagged as a priority collection requirement for any formal product involving financial pressure options.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Regulatory and Sanctions Status</div>
+        <p>No OFAC-listed wallet addresses or specific sanctions designations (U.S., EU, or UK) have been publicly associated with NightSpire as of May 2026. No formal government financial attribution has been published. The group does not appear on any publicly available OFAC SDN list entry.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Volume and Growth Trajectory</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">March 2025</div>
+            <div class="metric-val">11</div>
+            <div class="metric-note">Initial emergence (S-RM)</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">May 2025</div>
+            <div class="metric-val">45+</div>
+            <div class="metric-note">Per SonicWall reporting</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">Late 2025</div>
+            <div class="metric-val">200+</div>
+            <div class="metric-note">Per Spanish media reporting</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-label">May 1, 2026</div>
+            <div class="metric-val">259</div>
+            <div class="metric-note">Ransomware.live (via Barracuda)</div>
+          </div>
+        </div>
+        <p>The growth rate from 11 to 259 victims in approximately 14 months represents one of the faster documented expansion trajectories for an emerging ransomware group. The formal RaaS announcement in April 2026 is expected to accelerate this rate further, introducing greater TTP variance in the process.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Distribution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Manufacturing</td><td>Disproportionately represented, approximately 36% of early 2025 cases (S-RM); chemical and industrial manufacturing documented in Japan and Poland</td></tr>
+              <tr><td>Technology and IT</td><td>Software providers and IT services targeted across multiple geographies</td></tr>
+              <tr><td>Healthcare</td><td>Documented; no explicit healthcare ban observed unlike some other groups</td></tr>
+              <tr><td>Financial services</td><td>Documented across Taiwan, UK, and other markets</td></tr>
+              <tr><td>Retail and wholesale</td><td>Spanish hardware distributor Bresme (a named publicly reported victim); US retail also documented</td></tr>
+              <tr><td>Logistics and maritime</td><td>Maritime industry in Thailand documented (ASEC)</td></tr>
+              <tr><td>Professional services</td><td>Accounting services (UK), business services (Hong Kong)</td></tr>
+              <tr><td>Construction</td><td>Construction industry in Hong Kong documented</td></tr>
+              <tr><td>Government / public sector</td><td>Some public-sector entities documented (AttackIQ); Municipality of Ardon (France) claimed</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The group is broadly opportunistic. Sector representation reflects access opportunity (primarily exposed perimeter devices running vulnerable Fortinet software) rather than deliberate sector targeting. No documented sector exclusions.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>Victims span more than 30 countries. Confirmed geographies with documented cases include: United States, Spain, Japan, Thailand, United Kingdom, China, Poland, Hong Kong, Taiwan, South Korea (ASEC reporting), and France (Municipality of Ardon). The breadth reflects opportunistic global targeting rather than regional focus. No CIS-country exclusion has been documented.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Organization Size Profile</div>
+        <p>S-RM's early 2025 sample found that 73% of victims had fewer than 1,000 employees, confirming a primary focus on small and mid-sized organizations with less mature security controls and reduced incident response capacity. AttackIQ corroborates this as a defining characteristic. NightSpire has not yet achieved a marquee enterprise victim list comparable to LockBit or BlackCat; named victims (Bresme, Ardon) are mid-market rather than Fortune-level targets.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Targeting Criteria and Exclusions</div>
+        <p>No explicit sector bans, country exclusions, or size thresholds are documented in NightSpire's public communications or observed behavior. The group does not appear to maintain the kind of published targeting policy used by some more "professionalized" Russian-aligned operations (e.g., "no hospitals, no critical national infrastructure"). Healthcare entities have been targeted. The absence of a CIS exclusion is noted but its meaning is ambiguous given the uncertain geography of the operators themselves.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 07: LAW ENFORCEMENT -->
+    <section class="section" id="le">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Status Summary</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; absence verified across multiple sources</div>
+        <p>As of May 1, 2026, there are no public indictments, criminal charges, arrests, or named suspects tied specifically to NightSpire in U.S. or European court records, law enforcement advisories, or Europol/FBI press releases. No CISA/FBI joint advisory focused specifically on NightSpire has been published. No successful infrastructure seizure or DLS takedown has been reported. This distinguishes NightSpire clearly from more established groups such as LockBit, BlackCat/ALPHV, and Hive, which have all been subjects of major multinational LE operations.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor and Government Advisories</div>
+        <ul class="content-list">
+          <li><strong>AhnLab ASEC (August 2025):</strong> Published an advisory warning South Korean organizations about NightSpire ransomware following domestic damage cases. Vendor-driven, not a government bulletin.</li>
+          <li><strong>Broadcom Security Center:</strong> Protection bulletin published for NightSpire, covering detection signatures.</li>
+          <li><strong>SonicWall Capture Labs:</strong> Published technical analysis with signature coverage (GAV: NightSpire.RSM).</li>
+          <li><strong>AttackIQ (April 2026):</strong> Published attack graph emulation for NightSpire to support security control validation.</li>
+          <li><strong>Barracuda Networks (May 2026):</strong> Comprehensive threat profile including infrastructure analysis and operator attribution indicators.</li>
+        </ul>
+        <p>No CISA alert, FBI Flash, or Europol advisory specifically addressing NightSpire has been published as of May 2026. This absence reflects the group's current mid-tier status relative to the threshold for government-level advisory publication.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions</div>
+        <p>No OFAC designations, EU sanctions, or UK sanctions specifically naming NightSpire, its infrastructure, or its identified operators (xdragon128, cuteliyuan) have been reported. The operator handles and the single documented infrastructure IP (14.139.185.60) have not appeared in any publicly known sanctions action.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure Vulnerability to Disruption</div>
+        <p>S-RM (March 2025) noted that NightSpire's leak-site tech stack leaves recognizable fingerprints that could support targeted law enforcement takedown action. The group's early OPSEC failures (Gmail use, exposed directory listings, identifiable server hostname) provide more forensic footholds than a mature operation would leave. However, no evidence of any LE disruption attempt has been publicly disclosed as of May 2026.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Assessment</div>
+        <div class="conf conf-credible">Credible &mdash; medium confidence, competing geographic indicators</div>
+        <p>NightSpire is assessed as a financially motivated cybercriminal enterprise. All reviewed sources treat the group as criminal rather than state-directed. The geographic attribution picture is contested, with evidence pointing toward South or East Asia rather than the Russia/Eastern Europe origin suggested in earlier Spanish-language reporting. No formal government attribution has been published by any national intelligence or law enforcement agency as of May 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Indicators: Competing Assessments</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Indicator</th><th>Points Toward</th><th>Source</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>WinSCP exfiltration server IP 14.139.185.60</td><td>India (Kerala Agricultural University, National Knowledge Network block)</td><td>Barracuda (May 2026), S-RM (March 2025)</td><td>CONFIRMED as IP assignment; likely compromised host, not necessarily operator location</td></tr>
+              <tr><td>Operator handle "cuteliyuan" containing "liyuan"</td><td>Chinese-speaking individual ("liyuan" is a common Chinese given name)</td><td>Barracuda (May 2026)</td><td>CREDIBLE</td></tr>
+              <tr><td>Trailing tilde (~) in DLS greeting "Greetings to world~"</td><td>East Asian internet culture, particularly Chinese</td><td>Barracuda, citing academic research on East Asian CMC markers</td><td>CREDIBLE (documented cultural marker, not definitive)</td></tr>
+              <tr><td>WPS Office installation by threat actor</td><td>Chinese-affiliated (Kingsoft, Chinese company)</td><td>Huntress (April 2026)</td><td>ANALYST INFERENCE</td></tr>
+              <tr><td>xdragon128 CyberVolk association</td><td>Pro-Russian hacktivist-adjacent community</td><td>Barracuda, Cyfirma</td><td>CREDIBLE for prior association, weak inference for current alignment</td></tr>
+              <tr><td>Spanish intelligence/media characterization</td><td>Russia or Eastern Europe</td><td>Escudodigital (May 2026)</td><td>CREDIBLE as secondary inference, predates Barracuda infrastructure analysis</td></tr>
+              <tr><td>No CIS exclusion in encryptor</td><td>Non-Russian operator (weakly)</td><td>Analyst observation from available reverse engineering reports</td><td>ANALYST INFERENCE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Attribution conflict:</strong> The Barracuda infrastructure analysis (May 2026) pointing to India and China is more recent and more specific than the Spanish-language characterization of Russia/Eastern Europe. The India IP likely represents a compromised host on a high-bandwidth academic network rather than an operator's physical location. The Chinese-speaking indicators (handle, tilde, WPS Office) are the strongest elements for cultural/geographic placement of at least one operator. The best current assessment is: India-linked infrastructure (likely compromised host), probable Chinese-speaking lead operator (cuteliyuan), unclear co-operator geography (xdragon128). Not enough to confirm or exclude a Russia nexus entirely, but the Russian-origin framing should be treated as weakly supported pending further evidence.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Operators</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Handle</th><th>Role</th><th>Prior Activity</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>xdragon128 (alias xdragon333)</td><td>Primary public-facing operator; Rbfs and NightSpire promotion, DLS management</td><td>2024: Parano toolset development with Paranodeus in DarkAssault/DeepWing Telegram; CyberVolk-adjacent channels</td><td>Naming convention (dragon + number) consistent with gamer culture. Hostname XDRAGON-SERVER1 provides direct infrastructure link.</td></tr>
+              <tr><td>cuteliyuan</td><td>Secondary operator; promoted Rbfs victim data on Telegram before NightSpire emergence</td><td>Rbfs Telegram activity (early 2025)</td><td>Handle contains "liyuan," a common Chinese given name. Assessed as probable Chinese-speaking individual.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No real-name identities for either operator have been publicly confirmed. No passport, national ID, or physical address data is available in open sources.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">State Nexus Assessment</div>
+        <ul class="content-list">
+          <li><strong>No direct state linkage documented.</strong> No reliable reporting describes direct ties to any state intelligence or security service (Indian, Chinese, Russian, or other).</li>
+          <li><strong>No state cut-out behavior observed.</strong> NightSpire has not been used in targeted operations against specific government entities or strategic adversaries in a pattern consistent with state-directed use.</li>
+          <li><strong>CyberVolk association is weak evidence at best.</strong> xdragon128's prior presence in CyberVolk-adjacent channels does not establish a current operational relationship with any state actor. CyberVolk itself is assessed as a financially motivated hacktivist group with pro-Russian sympathies, not a formal state instrument.</li>
+          <li><strong>Safe harbor inference:</strong> If the operators are China-based, the informal "safe harbor" dynamic that characterizes Russian-based ransomware (operational tolerance in exchange for avoiding domestic targets) would not apply in the same form. Chinese authorities have shown greater willingness than Russian authorities to prosecute domestic cybercriminals in some contexts, though toleration of criminal operations targeting foreign entities has also been documented.</li>
+        </ul>
+        <p><strong>Bottom line:</strong> NightSpire is best assessed as a financially motivated criminal operation with no confirmed state nexus (medium confidence). The geographic attribution is ambiguous. The group's small scale, poor OPSEC, and criminal ecosystem connections do not fit a state-controlled operational profile.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 09: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group / Actor</th><th>Connection Type</th><th>Confidence (Anchor)</th><th>Confidence (Extension)</th><th>Vendor Coverage</th></tr></thead>
+            <tbody>
+              <tr><td>Rbfs</td><td>Direct predecessor; shared operators, victims, and infrastructure</td><td>CREDIBLE (multi-source: S-RM, Barracuda, screenshot evidence)</td><td>N/A (direct connection, not extended inference)</td><td>S-RM, Barracuda, Escudodigital; NOT formally assessed by CrowdStrike, Secureworks, Unit 42, Mandiant, or Recorded Future as of May 2026</td></tr>
+              <tr><td>Paranodeus</td><td>xdragon128 collaboration on Parano toolset (2024)</td><td>CREDIBLE (Cyfirma/S-RM)</td><td>ANALYST INFERENCE (no shared code or infrastructure with NightSpire; Parano toolset not used in NightSpire operations)</td><td>Cyfirma; not formally assessed by major TI vendors</td></tr>
+              <tr><td>CyberVolk</td><td>xdragon128 present in associated Telegram channels (2024)</td><td>CREDIBLE (channel co-presence)</td><td>ANALYST INFERENCE (no operational overlap with NightSpire activity documented)</td><td>SentinelOne (CyberVolk profiling); not linked to NightSpire by any major vendor</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No strong open-source evidence places specific affiliates known from other major RaaS ecosystems (LockBit, BlackCat, Cl0p) within NightSpire's operational network. Shared tool usage (Fortinet exploitation, LOLBins, MEGASync) overlaps superficially with many groups but does not indicate developer or personnel sharing beyond xdragon128/cuteliyuan continuity.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Maturation Indicators</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dimension</th><th>Early 2025</th><th>Mid-2026</th><th>Direction</th></tr></thead>
+            <tbody>
+              <tr><td>Encryptor capability</td><td>No encryption (Rbfs); early Go build</td><td>Mature AES-256/RSA-2048 Go build with OneDrive-aware evasion</td><td>Positive (improving)</td></tr>
+              <tr><td>Victim volume</td><td>11 (March 2025)</td><td>259 (May 2026)</td><td>Positive (rapid growth)</td></tr>
+              <tr><td>Affiliate structure</td><td>Closed crew</td><td>Formal RaaS program announced</td><td>Positive (scaling)</td></tr>
+              <tr><td>Communication OPSEC</td><td>Gmail, exposed directories, identifiable hostname</td><td>ProtonMail, Tor portals</td><td>Positive (improving)</td></tr>
+              <tr><td>Extortion sophistication</td><td>Single-channel, basic deadlines</td><td>Multi-channel, staged leaks, secondary data sale</td><td>Positive (improving)</td></tr>
+              <tr><td>LE attention</td><td>None</td><td>None</td><td>Flat (no disruption pressure)</td></tr>
+              <tr><td>OPSEC overall</td><td>Very poor (GMAIL, XDRAGON-SERVER1)</td><td>Low-to-moderate (infrastructure fingerprints remain)</td><td>Marginal improvement</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Disruption and Exit Signals</div>
+        <ul class="content-list">
+          <li><strong>No shutdown signals:</strong> The April 2026 RaaS announcement points explicitly toward expansion, not exit.</li>
+          <li><strong>No internal leak/dispute signals:</strong> No equivalent of the Conti internal chats leak or Black Basta dispute logs has appeared for NightSpire.</li>
+          <li><strong>No post-seizure rebranding pattern:</strong> The Rbfs-to-NightSpire transition appears to have been a voluntary capability upgrade rather than a post-seizure pivot. No law enforcement disruption preceded it.</li>
+          <li><strong>Infrastructure exposure risk:</strong> S-RM's observation that DLS tech-stack fingerprints remain identifiable means there is a latent takedown vector, but no evidence it is being actively pursued.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Outlook</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>NightSpire is on a clear upward trajectory in terms of victim volume, capability, and organizational structure. The most likely near-term development is affiliate-driven diversification of TTPs, making incident clustering more difficult and attribution less reliable. The group's OPSEC remains below the level that would make a law enforcement disruption technically difficult. If the RaaS affiliate pool expands rapidly, both the victim count and the TTP variance will accelerate. The most analytically significant open question is whether the group's geographic and personnel indicators will prompt action from non-Western law enforcement (India, China), which historically have taken action against cybercriminals when international pressure or reputational cost is sufficient.</p>
+
+        <div class="callout callout-info">
+          <strong>Key collection requirements:</strong> (1) On-chain financial forensics to characterize payment volumes, laundering methods, and financial leverage points. (2) Formal major-vendor cluster assessment linking NightSpire to any established adversary taxonomy. (3) Confirmation of CIS exclusion behavior or its absence in binary analysis. (4) Identification of any affiliate activity post-April 2026 RaaS announcement to assess affiliate pool characteristics. (5) Linux/ESXi variant development confirmation or denial.
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">--</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid">
+        <div class="feed-card">
+          <a href="https://blog.barracuda.com/2026/05/01/nightspire-wannabe-warlords-in-ransomwares-shadow-realm" target="_blank">
+            <div class="feed-title">NightSpire: Wannabe warlords in ransomware's shadow realm</div>
+            <div class="feed-meta"><span class="feed-source">Barracuda Networks</span><span class="feed-date">May 1, 2026</span></div>
+          </a>
+        </div>
+        <div class="feed-card">
+          <a href="https://www.huntress.com/blog/nightspire-ransomware" target="_blank">
+            <div class="feed-title">Leveling Up with NightSpire Ransomware (IOC analysis, two incidents)</div>
+            <div class="feed-meta"><span class="feed-source">Huntress</span><span class="feed-date">April 7, 2026</span></div>
+          </a>
+        </div>
+        <div class="feed-card">
+          <a href="https://www.attackiq.com/2026/04/14/nightspire-ransomware/" target="_blank">
+            <div class="feed-title">Emulating the Persuasive NightSpire Ransomware</div>
+            <div class="feed-meta"><span class="feed-source">AttackIQ</span><span class="feed-date">April 14, 2026</span></div>
+          </a>
+        </div>
+        <div class="feed-card">
+          <a href="https://asec.ahnlab.com/en/89913/" target="_blank">
+            <div class="feed-title">Warning About NightSpire Ransomware Following Cases of Damage in South Korea</div>
+            <div class="feed-meta"><span class="feed-source">AhnLab ASEC</span><span class="feed-date">August 27, 2025</span></div>
+          </a>
+        </div>
+        <div class="feed-card">
+          <a href="https://www.sonicwall.com/blog/nightspire-ransomware-encrypts-onedrive-files" target="_blank">
+            <div class="feed-title">NightSpire Ransomware Encrypts OneDrive Files</div>
+            <div class="feed-meta"><span class="feed-source">SonicWall Capture Labs</span><span class="feed-date">May 2025</span></div>
+          </a>
+        </div>
+        <div class="feed-card">
+          <a href="https://www.s-rminform.com/latest-thinking/ransomware-in-focus-meet-nightspire" target="_blank">
+            <div class="feed-title">Ransomware in Focus: Meet NightSpire</div>
+            <div class="feed-meta"><span class="feed-source">S-RM Intelligence</span><span class="feed-date">March 2025</span></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">--</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9660; &nbsp; Show / Hide Sources
+      </button>
+      <div class="source-list">
+        <div class="source-category">Primary Vendor Research</div>
+        <div class="source-item"><span class="source-num">[1]</span><a href="https://blog.barracuda.com/2026/05/01/nightspire-wannabe-warlords-in-ransomwares-shadow-realm" target="_blank">Barracuda Networks: NightSpire: Wannabe warlords in ransomware's shadow realm (May 1, 2026)</a></div>
+        <div class="source-item"><span class="source-num">[2]</span><a href="https://www.huntress.com/blog/nightspire-ransomware" target="_blank">Huntress: Leveling Up with NightSpire Ransomware (April 7, 2026)</a></div>
+        <div class="source-item"><span class="source-num">[3]</span><a href="https://www.attackiq.com/2026/04/14/nightspire-ransomware/" target="_blank">AttackIQ: Emulating the Persuasive NightSpire Ransomware (April 14, 2026)</a></div>
+        <div class="source-item"><span class="source-num">[4]</span><a href="https://asec.ahnlab.com/en/89913/" target="_blank">AhnLab ASEC: Warning About NightSpire Ransomware Following Cases of Damage in South Korea (August 27, 2025)</a></div>
+        <div class="source-item"><span class="source-num">[5]</span><a href="https://www.sonicwall.com/blog/nightspire-ransomware-encrypts-onedrive-files" target="_blank">SonicWall Capture Labs: NightSpire Ransomware Encrypts OneDrive Files (May 2025)</a></div>
+        <div class="source-item"><span class="source-num">[6]</span><a href="https://www.s-rminform.com/latest-thinking/ransomware-in-focus-meet-nightspire" target="_blank">S-RM Intelligence: Ransomware in Focus: Meet NightSpire (March 2025)</a></div>
+        <div class="source-category">Supporting and Secondary Sources</div>
+        <div class="source-item"><span class="source-num">[7]</span><a href="https://socradar.io/blog/dark-web-profile-nightspire-ransomware/" target="_blank">SOCRadar: Dark Web Profile: NightSpire Ransomware</a></div>
+        <div class="source-item"><span class="source-num">[8]</span><a href="https://www.escudodigital.com/ciberseguridad/nightspire-el-ransomware-que-ha-taladrado-a-una-ferreteria-espanola.html" target="_blank">Escudo Digital: NightSpire, el ransomware que ha taladrado a una ferreteria espanola (May 2026)</a></div>
+        <div class="source-item"><span class="source-num">[9]</span><a href="https://cyble.com/threat-actor-profiles/nightspire-ransomware-group/" target="_blank">Cyble: NightSpire Ransomware Group: Tactics, Targets and Threats</a></div>
+        <div class="source-item"><span class="source-num">[10]</span><a href="https://www.broadcom.com/support/security-center/protection-bulletin/nightspire-ransomware" target="_blank">Broadcom Security Center: NightSpire Ransomware Protection Bulletin</a></div>
+        <div class="source-item"><span class="source-num">[11]</span><a href="https://nvd.nist.gov/vuln/detail/cve-2024-55591" target="_blank">NVD: CVE-2024-55591 (FortiOS/FortiProxy Authentication Bypass)</a></div>
+        <div class="source-item"><span class="source-num">[12]</span><a href="https://www.ransomware.live/group/nightspire" target="_blank">Ransomware.live: NightSpire victim tracking</a></div>
+        <div class="source-item"><span class="source-num">[13]</span><a href="https://cybersecuritynews.com/nightspire-ransomware-uses-rdp-access-and-remote-admin-tools/" target="_blank">Cybersecurity News: NightSpire Ransomware Uses RDP Access and Remote Admin Tools for Stealthy Persistence</a></div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="page-footer">
+    NightSpire Analytical Profile &nbsp;&bull;&nbsp; ransomwareedp.github.io &nbsp;&bull;&nbsp; Compiled from open-source intelligence &nbsp;&bull;&nbsp; May 2026
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+</main>
+</div>
+
+<script>
+// Dark mode toggle
+const toggle = document.getElementById('theme-toggle');
+if (toggle) {
+  toggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+    toggle.textContent = isDark ? '☽ Dark' : '☀ Light';
+  });
+}
+
+// Active section nav
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
