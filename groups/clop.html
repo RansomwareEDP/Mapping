@@ -463,7 +463,7 @@ html { scroll-behavior: smooth; }
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-section-label">Threat Actor Groups</div>
-  <nav class="group-list">
+    <nav class="group-list">
     <a class="group-item" href="conti.html">
       <span class="group-dot dot-conti"></span>
       Conti
@@ -500,10 +500,17 @@ html { scroll-behavior: smooth; }
       <span class="group-dot dot-active"></span>
       Royal / BlackSuit / Chaos
     </a>
-    <a class="group-item coming-soon">
+    <a class="group-item" href="blackbasta.html">
       <span class="group-dot dot-dim"></span>
-      More groups
-      <span class="coming-tag">Soon</span>
+      Black Basta
+    </a>
+    <a class="group-item" href="thegentlemen.html">
+      <span class="group-dot dot-active"></span>
+      The Gentlemen
+    </a>
+    <a class="group-item" href="nightspire.html">
+      <span class="group-dot dot-active"></span>
+      NightSpire
     </a>
   </nav>
 
@@ -1415,22 +1422,4 @@ html { scroll-behavior: smooth; }
   } catch (e) {
     const loadingEl = document.getElementById('feed-loading');
     if (loadingEl) loadingEl.remove();
-  }
-})();
-
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.section-nav a');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      navLinks.forEach(link => link.classList.remove('active'));
-      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
-      if (activeLink) activeLink.classList.add('active');
-    }
-  });
-}, { rootMargin: '-20% 0px -70% 0px' });
-sections.forEach(section => observer.observe(section));
-</script>
-
-</body>
-</html>
+ 
