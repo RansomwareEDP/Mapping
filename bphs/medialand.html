@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Land LLC / Yalishanda: BPH Analytical Profile | EDP</title>
+  <style>
+    :root {
+      --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+      --border: #30363d; --border-light: #21262d;
+      --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+      --accent: #58a6ff; --accent-dim: #1f6feb;
+      --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+      --credible-bg: #341a00; --credible-text: #e3b341;
+      --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+      --ss-bg: #2d1a17; --ss-text: #f85149;
+      --disrupted: #e3b341; --active: #3fb950; --defunct: #8b949e;
+      --sidebar-width: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+    .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: var(--inference-bg); color: var(--inference-text); border: 1px solid var(--accent-dim); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .group-switcher { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .group-switcher-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 6px; }
+    .group-select { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 4px; font-size: 12px; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all .15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+    .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+    /* MAIN */
+    .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; }
+    .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+    .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .profile-title-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+    .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+    .status-badge.active { background: rgba(63,185,80,.12); color: var(--active); border: 1px solid rgba(63,185,80,.3); }
+    .status-badge.disrupted { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-badge.degraded { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* SECTIONS */
+    section { padding: 32px 40px; border-bottom: 1px solid var(--border-light); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 15px; font-weight: 600; color: var(--text-heading); margin: 20px 0 10px; }
+    h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .05em; }
+    p { margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 12px 20px; line-height: 2; }
+
+    /* OPERATOR HERO */
+    .operator-hero { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .operator-hero-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ss-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .operator-hero-label::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--ss-text); border-radius: 50%; }
+    .operator-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .operator-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .operator-name { font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .operator-role { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .operator-meta { font-size: 11px; color: var(--text); line-height: 1.7; }
+    .operator-meta strong { color: var(--text-heading); }
+    .sanction-flag { display: inline-block; padding: 2px 8px; background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .04em; margin-top: 6px; }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .kpi-value { font-size: 20px; font-weight: 700; color: var(--text-heading); line-height: 1.2; }
+    .kpi-value.active { color: var(--active); }
+    .kpi-value.disrupted { color: var(--disrupted); }
+    .kpi-value.accent { color: var(--accent); }
+    .kpi-value.danger { color: var(--ss-text); }
+    .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+
+    /* TABLES */
+    .attr-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .attr-table th, .attr-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; vertical-align: top; }
+    .attr-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; width: 200px; background: var(--bg-secondary); }
+    .attr-table tr:last-child th, .attr-table tr:last-child td { border-bottom: none; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    .data-table th { background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13px; color: var(--text); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    .badge.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); border: 1px solid rgba(35,134,54,.3); }
+    .badge.credible { background: var(--credible-bg); color: var(--credible-text); border: 1px solid rgba(158,106,3,.3); }
+    .badge.inference { background: var(--inference-bg); color: var(--inference-text); border: 1px solid rgba(31,111,235,.3); }
+    .badge.single-source { background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); }
+
+    /* TWO-TIER */
+    .two-tier { display: flex; flex-direction: column; gap: 5px; }
+    .tier-row { display: flex; align-items: center; gap: 8px; }
+    .tier-label { font-size: 10px; color: var(--text-muted); min-width: 160px; }
+
+    /* VERBATIM */
+    .verbatim { background: var(--bg-secondary); border-left: 3px solid var(--accent-dim); padding: 12px 16px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+    .verbatim-source { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .verbatim-text { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.6; }
+
+    /* CALLOUT */
+    .callout { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 14px 0; }
+    .callout.warning { border-left: 3px solid var(--disrupted); }
+    .callout.info { border-left: 3px solid var(--accent); }
+    .callout-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout.warning .callout-label { color: var(--disrupted); }
+    .callout.info .callout-label { color: var(--accent); }
+
+    /* GALLERY */
+    .gallery-heading { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 24px 0 12px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .gallery-item img { width: 100%; height: 180px; object-fit: cover; display: block; background: var(--bg-secondary); }
+    .gallery-caption { padding: 10px 12px; }
+    .gallery-caption-text { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .gallery-source { font-size: 10px; color: var(--text-muted); }
+
+    /* CONNECTED ENTITY */
+    .connected-entity { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .entity-name { font-size: 15px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .entity-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .entity-confidence { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+    .entity-confidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .entity-text { font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+    .vendor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .vendor-tag { padding: 2px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text-muted); }
+    .vendor-tag.cor { border-color: rgba(35,134,54,.3); color: var(--confirmed-text); }
+    .vendor-tag.ss { border-color: rgba(248,81,73,.3); color: var(--ss-text); }
+
+    /* JURISDICTIONS */
+    .jurisdiction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+    .jurisdiction-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .jurisdiction-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .jurisdiction-value { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+    .jurisdiction-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; margin: 16px 0; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -16px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--bg); }
+    .timeline-date { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+    .timeline-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* GAPS */
+    .gap-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .gap-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+    .gap-item strong { color: var(--text-heading); font-size: 13px; }
+    .gap-item p { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
+
+    /* BLOCKLIST */
+    .bl-listed { color: var(--ss-text); font-weight: 700; font-size: 11px; }
+    .bl-probable { color: var(--disrupted); font-weight: 700; font-size: 11px; }
+    .bl-unknown { color: var(--text-muted); font-weight: 700; font-size: 11px; }
+
+    /* SOURCES */
+    .sources-list { display: flex; flex-direction: column; gap: 7px; }
+    .source-item { display: flex; gap: 12px; font-size: 12px; line-height: 1.5; }
+    .source-num { color: var(--accent); font-weight: 700; min-width: 28px; }
+    .source-text a { color: var(--accent); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
+    code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; background: var(--bg-secondary); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+    .ref { font-size: 11px; color: var(--text-muted); vertical-align: super; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; }
+      .jurisdiction-grid { grid-template-columns: 1fr; }
+      section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">EDP // Ransomware Ecosystem</div>
+    <div class="sidebar-title">Media Land LLC / Yalishanda</div>
+    <span class="node-type-badge">Bulletproof Hosting Provider</span>
+  </div>
+  <div class="group-switcher">
+    <div class="group-switcher-label">Node Library</div>
+    <select class="group-select">
+      <option>BPH Providers</option>
+      <option selected>Media Land / Yalishanda</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Profile Sections</div>
+    <a href="#overview" class="nav-link"><span class="nav-num">01</span> Executive Summary</a>
+    <a href="#lineage" class="nav-link"><span class="nav-num">02</span> Lineage &amp; Heritage</a>
+    <a href="#operations" class="nav-link"><span class="nav-num">03</span> Business Model</a>
+    <a href="#technical" class="nav-link"><span class="nav-num">04</span> Technical Footprint</a>
+    <a href="#financial" class="nav-link"><span class="nav-num">05</span> Financial Infrastructure</a>
+    <a href="#clientele" class="nav-link"><span class="nav-num">06</span> Client Profile</a>
+    <a href="#nexus" class="nav-link"><span class="nav-num">07</span> State Nexus</a>
+    <a href="#disruption" class="nav-link"><span class="nav-num">08</span> LE Response</a>
+    <a href="#connected" class="nav-link"><span class="nav-num">09</span> Connected Groups</a>
+    <a href="#status" class="nav-link"><span class="nav-num">10</span> Trajectory</a>
+    <div class="nav-section-label" style="margin-top:8px">Additional</div>
+    <a href="#recent-reporting" class="nav-link"><span class="nav-num"></span> Recent Reporting</a>
+    <a href="#sources" class="nav-link"><span class="nav-num"></span> Sources</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">EDP // BPH Library<br>Profile v1 // June 2026<br>Author: Reno</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-breadcrumb">
+      <a href="https://ransomwareedp.github.io/">EDP</a> /
+      <a href="https://ransomwareedp.github.io/bph/">BPH Providers</a> /
+      Media Land LLC / Yalishanda
+    </div>
+    <div class="profile-title-row">
+      <div>
+        <div class="profile-name">Media Land LLC / Yalishanda</div>
+        <div class="profile-subtitle">Russia-based bulletproof hosting provider // St. Petersburg, Russia | Active since 2009 | AS206728 (MEDIALAND-AS) | Sanctioned Nov 19, 2025</div>
+      </div>
+      <span class="status-badge degraded"><span class="status-dot"></span>Degraded</span>
+    </div>
+  </div>
+
+  <!-- SECTION 01 -->
+  <section id="overview">
+    <div class="section-label">Section 01</div>
+    <h2>Executive Summary and Provider Overview</h2>
+
+    <!-- Operator Hero Module -->
+    <div class="operator-hero">
+      <div class="operator-hero-label">Sanctioned Operators: Escalated Module</div>
+      <div class="operator-cards">
+        <div class="operator-card">
+          <div class="operator-name">Aleksandr Alexandrovich Volosovik</div>
+          <div class="operator-role">General Director / Principal Operator (OFAC, UK FCDO, AU DFAT)</div>
+          <div class="operator-meta">
+            <strong>DOB:</strong> 30 January 1983, Brovary, Kyiv Oblast, Ukraine<br>
+            <strong>Citizenship:</strong> Russian Federation<br>
+            <strong>Location:</strong> St. Petersburg, Russia (assessed; not arrested)<br>
+            <strong>Handles:</strong> Yalishanda, Downlow, Stas_vl<br>
+            <strong>Email:</strong> stas_vl@mail.ru<br>
+            <strong>BTC (OFAC):</strong> <code>18dLDAWi8LmrHbEq3QzDJb9SLxCf4uimXB</code>
+          </div>
+          <span class="sanction-flag">OFAC CYBER3 · UK FCDO · AU DFAT, Nov 19, 2025</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Kirill Andreevich Zatolokin</div>
+          <div class="operator-role">Operations / Customer Support Lead (OFAC, UK FCDO, AU DFAT)</div>
+          <div class="operator-meta">
+            <strong>DOB:</strong> 30 April 1992, Vladivostok, Russia<br>
+            <strong>Location:</strong> Russia (assessed; not arrested)<br>
+            <strong>Handles:</strong> Slim Shady<br>
+            <strong>Telegram:</strong> @ohyehhellno<br>
+            <strong>Email:</strong> der_fan@mail.ru; sseeaawind@gmail.com
+          </div>
+          <span class="sanction-flag">OFAC CYBER3 · UK FCDO · AU DFAT, Nov 19, 2025</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Yulia Vladimirovna Pankova</div>
+          <div class="operator-role">Legal and Financial Associate (OFAC, UK FCDO)</div>
+          <div class="operator-meta">
+            <strong>DOB:</strong> Unknown<br>
+            <strong>Location:</strong> Russia (assessed; not arrested)<br>
+            <strong>Role:</strong> Assisted Volosovik with legal issues; handled his personal finances
+          </div>
+          <span class="sanction-flag">OFAC CYBER3 · UK FCDO, Nov 19, 2025</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Andrei Valerevich Kozlov</div>
+          <div class="operator-role">Associated Individual (OFAC, UK FCDO)</div>
+          <div class="operator-meta">
+            <strong>DOB:</strong> Unknown<br>
+            <strong>Location:</strong> Russia (assessed; not arrested)<br>
+            <strong>Role:</strong> Employed by or associated with Media Land LLC; exact function not publicly specified
+          </div>
+          <span class="sanction-flag">OFAC CYBER3 · UK FCDO, Nov 19, 2025</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value disrupted">Degraded</div><div class="kpi-label">Operational Status</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">AS206728</div><div class="kpi-label">Primary ASN</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">~2009</div><div class="kpi-label">Active Since (Yalishanda)</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">~2,048</div><div class="kpi-label">IPs in AS (v4)</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">4 / 4</div><div class="kpi-label">Individuals / Entities Sanctioned</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">3</div><div class="kpi-label">Sanctioning Authorities</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">$2M+</div><div class="kpi-label">On-Chain Volume (TRM)</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">Listed</div><div class="kpi-label">Spamhaus / Blocklist</div></div>
+    </div>
+
+    <!-- Attribute Table -->
+    <h3>Quick-Reference Attributes</h3>
+    <table class="attr-table">
+      <tr><th>Common Names</th><td>Media Land LLC; Yalishanda; Abushost; ML.Cloud LLC; Media Land Technology; Data Center Kirishi; real-hosting[.]biz (historic)</td></tr>
+      <tr><th>Node Type</th><td>Bulletproof Hosting Provider</td></tr>
+      <tr><th>Status</th><td><span class="status-badge degraded" style="margin-top:0"><span class="status-dot"></span>Degraded</span> AS206728 active as of June 2026; sanctions imposed November 19, 2025; no physical seizure confirmed</td></tr>
+      <tr><th>PRODAFT Designation</th><td>LARVA-34</td></tr>
+      <tr><th>Entity Registration Jurisdiction</th><td>Russia: Media Land LLC registered St. Petersburg, October 2015; Data Center Kirishi registered Leningrad Oblast, July 2022; ML Cloud and Media Land Technology also Russia-registered</td></tr>
+      <tr><th>Infrastructure Hosting Jurisdiction</th><td>Russia: St. Petersburg (primary); Data Center Kirishi, Kirishi, Leningrad Oblast (own physical DC per Zatolokin/Analyst1)</td></tr>
+      <tr><th>Assessed Operator Location</th><td>Russia: St. Petersburg (Volosovik, assessed; relocated from Vladivostok approximately 2018 per Intel 471/Krebs)</td></tr>
+      <tr><th>Active Period (Yalishanda brand)</th><td>~2009 to present (approximately 15+ years confirmed active)</td></tr>
+      <tr><th>Active Period (Media Land LLC)</th><td>October 2015 to present (registered entity)</td></tr>
+      <tr><th>Primary ASN</th><td><code>AS206728</code>: MEDIALAND-AS (RIPE, registered 2016-11-17; active as of June 6, 2026)</td></tr>
+      <tr><th>Secondary ASN</th><td><code>AS211805</code>: Media Land LLC (RIPE; additional AS per IPinfo data)</td></tr>
+      <tr><th>IPv4 Prefixes (AS206728)</th><td><code>45.141.84.0/24</code> (ML Cloud); <code>45.141.85.0/24</code> (Media Land); <code>45.141.86.0/24</code> (ML Cloud); <code>45.141.87.0/24</code>; <code>91.220.163.0/24</code> (Media Land); <code>193.242.153.0/24</code>; <code>194.26.29.0/24</code> (Media Land); <code>194.26.69.0/24</code> (Media Land)</td></tr>
+      <tr><th>IPv6 Prefixes</th><td><code>2a0b:7ec0:1320::/48</code>; <code>2a0b:7ec0:7701::/48</code></td></tr>
+      <tr><th>Upstream / BGP Peers</th><td>AS49531 (NetCom-R LLC, Russia); AS20632 (MegaFon, Russia); AS202799 (SYSECT D.O.O., Montenegro); AS51538 (Lavrentyev Aleksandr Arkadievich, Russia); historical RIPE IRR: AS3216 (Vimpelcom/Beeline), AS9049 (ERTH Corporation JSC)</td></tr>
+      <tr><th>RIPE Maintainers</th><td>mnt-ru-media-land-1; media-land-llc; NETWORK-SUPPORT-MNT; RIPE-NCC-END-MNT</td></tr>
+      <tr><th>Abuse Contact</th><td>Not publicly disclosed in RIPE WHOIS (personal data removed per RIPE GDPR policy)</td></tr>
+      <tr><th>Confirmed Ransomware Clients</th><td>LockBit, BlackBasta, BlackSuit, Play, Evil Corp (CONFIRMED per OFAC/UK FCDO); MedusaLocker (CREDIBLE per TRM Labs)</td></tr>
+      <tr><th>Bitcoin Address (OFAC)</th><td><code>18dLDAWi8LmrHbEq3QzDJb9SLxCf4uimXB</code> (designated, Volosovik)</td></tr>
+      <tr><th>Blocklist Status</th><td>Spamhaus SBL/CBL: Confirmed listed (2019 community references, ongoing); DROP/EDROP: Probable; abuse.ch: Probable; specific current entry IDs not confirmed via open sources</td></tr>
+      <tr><th>Sanctions</th><td>OFAC CYBER3 (E.O. 13694 as amended); UK FCDO Cyber Sanctions; AU DFAT: all November 19, 2025</td></tr>
+      <tr><th>State Nexus Tier</th><td>Tolerated Safe Harbor (Tier 2 of 4)</td></tr>
+    </table>
+
+    <h3>Overall Assessment</h3>
+    <p>Media Land LLC, operating under the long-standing underground brand "Yalishanda," is one of the most documented and longest-running Russian bulletproof hosting (BPH) providers in the threat landscape, with confirmed activity spanning approximately 2009 to present. Its principal, Aleksandr Alexandrovich Volosovik (DOB January 30, 1983), was publicly identified by name in a KrebsOnSecurity investigation in July 2019 and formally sanctioned alongside three associates and four corporate entities by the United States, United Kingdom, and Australia on November 19, 2025.</p>
+    <p>The provider's infrastructure is consolidated under AS206728 (MEDIALAND-AS) and a secondary AS211805, hosting approximately 2,048 IPv4 addresses in eight /24 prefixes. Its wholly-owned subsidiary Data Center Kirishi, registered in Kirishi (Leningrad Oblast) in July 2022, is assessed to represent an owned physical data center rather than leased rack space, making Media Land one of few Russian BPH operators with confirmed on-premises hardware. Zatolokin confirmed as much in direct communications with BlackBasta client contact "gg": "This is all our own: our own data center, our own hardware."</p>
+    <p>Forensic corroboration comes from two converging leak events: the February 2025 BlackBasta internal chat leak (ExploitWhispers) and the March 28, 2025 leak of Media Land's own internal database. Analyst1's "Infrastructure in the Shadows" report (January 2026) links these datasets to map BlackBasta's 200-server deployment on Media Land infrastructure, consuming 17-20 Gbps bandwidth, and traces $94,000 USDT in salary payments from BlackBasta operator "gg" to Media Land infrastructure staffer "lapa." TRM Labs independently traced over $2 million in on-chain volume across Yalishanda/Abushost-linked addresses, with flow intersections across BlackSuit, BlackBasta, LockBit, and MedusaLocker.</p>
+    <p>Post-sanctions, AS206728 remains active per BGP data as of June 6, 2026. No arrests have been made, no servers have been seized, and no confirmed rebranding or infrastructure migration has been publicly documented. The operational status is assessed as Degraded: sanctions reduce the provider's access to Western payment rails and may impair client confidence, but the underlying infrastructure and operator network remain intact.</p>
+
+    <!-- Image Gallery -->
+    <div class="gallery-heading">Provider Presence and Infrastructure Evidence</div>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="https://home.treasury.gov/system/files/136/sb0319-1.jpg"
+             alt="OFAC sanctions photo of Kirill Zatolokin in Media Land office"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Photo of Kirill Zatolokin released alongside OFAC sanctions, showing him in what appears to be a Media Land corporate office wearing a company branded shirt.</div>
+          <div class="gallery-source">U.S. Department of the Treasury / OFAC, November 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://home.treasury.gov/system/files/136/sb0319-2.png"
+             alt="OFAC sanctions image showing Volosovik and Pankova"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Image released by OFAC alongside sanctions designation showing Aleksandr Volosovik and Yulia Pankova, confirming the personal relationship between the two designated individuals.</div>
+          <div class="gallery-source">U.S. Department of the Treasury / OFAC, November 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://analyst1.com/wp-content/uploads/2026/01/Yalishanda-Web-Hero.png"
+             alt="Analyst1 Infrastructure in the Shadows report hero image"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Analyst1 "Infrastructure in the Shadows" report cover (January 2026), which correlated the BlackBasta and Media Land leak datasets to expose the operational relationship between Yalishanda and BlackBasta.</div>
+          <div class="gallery-source">Analyst1, January 2026</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://krebsonsecurity.com/wp-content/uploads/2019/07/volosovik-passport.png"
+             alt="Passport scan of Alexander Volosovik published by KrebsOnSecurity 2019"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Passport scan of Aleksandr Volosovik published by KrebsOnSecurity in July 2019, showing the document was issued by the Russian Embassy in Beijing (П-ВО РОССИИ, КНР), confirming his identity and China connection years before sanctions.</div>
+          <div class="gallery-source">KrebsOnSecurity / Intel 471, July 2019</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://analyst1.com/wp-content/uploads/2026/01/Yalishanda-Figure-9.png"
+             alt="BlackBasta chat showing Slim Shady VIP client offer"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Leaked BlackBasta chat showing Zatolokin (Slim Shady) offering BlackBasta access to Media Land's private owned data center, confirming VIP client status and own-hardware capability.</div>
+          <div class="gallery-source">Analyst1 / Leaked BlackBasta chats, January 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02 -->
+  <section id="lineage">
+    <div class="section-label">Section 02</div>
+    <h2>Lineage and Organizational Heritage</h2>
+
+    <h3>Entity and Brand Timeline</h3>
+    <table class="data-table">
+      <thead><tr><th>Brand / Entity</th><th>Type</th><th>Role</th><th>Period</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Yalishanda</strong></td><td>Underground brand / persona</td><td>Primary criminal trading name; used on Exploit, XSS, and predecessor forums to advertise BPH services</td><td>~2009 to present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>real-hosting[.]biz</strong></td><td>Early BPH domain</td><td>Service advertised circa 2011 under Yalishanda persona; accepted botnets, malware, adware, exploits, IRC</td><td>~2011</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>abushost[.]ru / Abushost</strong></td><td>Long-lived BPH brand/domain</td><td>One of Yalishanda's most durable service brand names; advertised on Exploit[.]in and XSS[.]pro alongside associate "podzemniy1" per TRM Labs</td><td>~2015 onward</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>Media Land LLC (ООО Медиа Лэнд)</strong></td><td>Russian LLC (OOO)</td><td>Legitimate-appearing legal entity registered to provide surface-level credibility; used to sign contracts, lease IP ranges, and employ staff; 100% owned by Volosovik</td><td>Registered October 2015 to present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>ML Cloud LLC (ML.Cloud)</strong></td><td>Russian LLC</td><td>Sister company; technical infrastructure used in conjunction with Media Land in ransomware and DDoS operations; co-operated by Volosovik and Zatolokin per AU Government</td><td>Active (dates not confirmed)</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>Media Land Technology (MLT)</strong></td><td>Russian LLC (100% subsidiary)</td><td>Wholly owned subsidiary of Media Land LLC; described by OFAC as subsidiary; likely used as infrastructure or services wrapper</td><td>Active (dates not confirmed)</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>Data Center Kirishi (DC Kirishi)</strong></td><td>Russian LLC (100% subsidiary)</td><td>Wholly owned subsidiary of Media Land LLC registered July 2022; confirmed own physical data center in Kirishi, Leningrad Oblast; provides own hardware to VIP clients</td><td>Registered July 2022 to present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>AS206728 (MEDIALAND-AS)</strong></td><td>Autonomous System, RIPE</td><td>Primary network backbone for Media Land; registered November 2016; currently 8 IPv4 prefixes / 2,048 IPs</td><td>Registered Nov 17, 2016; active</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Predecessor Lineage and Early History</h3>
+    <p>Yalishanda's criminal activity is confirmed from approximately 2009 and assessed to extend back to the late 2000s. KrebsOnSecurity first encountered the persona in 2010 in connection with "Fizot," a botnet anonymization service using TDSS-infected Windows machines. A 2010 domain registration for mo0be-world[.]com linked to email address stas_vl@mail.ru and the name Aleksandr Volosovyk provided the first documented link between the criminal persona and a real identity. <span class="ref">[1]</span></p>
+    <p>By 2011 Yalishanda was actively advertising under real-hosting[.]biz, offering hosting for botnets (Zeus), malware, adware, exploits, pharma, and IRC. He subsequently rebranded services through multiple iterations, with abushost[.]ru becoming a particularly durable brand. Intel 471 and Cisco researchers identified Yalishanda as a "top tier" BPH provider in a Black Hat 2017 talk, noting that in a single 90-day period in 2017 his infrastructure hosted Dridex, Zeus, and multiple ransomware families. By this point Yalishanda had relocated from Vladivostok to St. Petersburg (approximately 2018 per Intel 471), registered Media Land LLC in October 2015, and was professionalizing operations by employing staff under the legitimate company structure. <span class="ref">[1][7]</span></p>
+
+    <h3>Evidentiary Pillars</h3>
+    <div class="callout info">
+      <div class="callout-label">Identity Confirmation: Multiple Corroborating Sources</div>
+      <p><span class="badge confirmed">Confirmed</span> Volosovik's identity as Yalishanda is established through: (1) 2010 domain registration linking stas_vl@mail.ru to Aleksandr Volosovyk; (2) 2010 passport scan submitted to ChronoPay payment processor confirming full name, DOB, birthplace; (3) Rusprofile.ru business registry listing Volosovik as director of Media Land LLC (St. Petersburg); (4) OFAC/UK FCDO/AU DFAT formal designation November 2025; (5) REvil forum member "Unknown" referring to Volosovik by first name "Sasha" in a 2019 arbitration thread on XSS forum. <span class="ref">[1][3][7]</span></p>
+    </div>
+    <div class="callout info">
+      <div class="callout-label">Leak Validation: Media Land Internal Data March 2025</div>
+      <p><span class="badge confirmed">Confirmed</span> On March 28, 2025, an unknown actor leaked Media Land's internal database containing server configurations, client purchase history, user account data, and cryptocurrency addresses. Volosovik acknowledged the breach on a hacking forum, validating the authenticity of the leaked material. PRODAFT (designating the provider LARVA-34) assessed the leak as providing rare high-value insight into criminal infrastructure. <span class="ref">[4][5]</span></p>
+    </div>
+
+    <h3>Operator Profiles</h3>
+    <h4>2.1 Aleksandr Alexandrovich Volosovik: Principal Operator</h4>
+    <table class="attr-table">
+      <tr><th>Full Name</th><td>Aleksandr Alexandrovich Volosovik (Александр Александрович Волосовик)</td></tr>
+      <tr><th>Date of Birth</th><td>30 January 1983</td></tr>
+      <tr><th>Place of Birth</th><td>Brovary, Kyiv Oblast, Ukraine (confirmed via passport; assessed to have relocated to Russia as a child, before 1990)</td></tr>
+      <tr><th>Citizenship</th><td>Russian Federation</td></tr>
+      <tr><th>Handle History</th><td>Yalishanda (primary; Mandarin for "Alexander"); Downlow; Stas_vl; associated domain stas_vl@mail.ru</td></tr>
+      <tr><th>Education</th><td>School No. 80, Vladivostok (1990-2000); Far Eastern State Technical University (ДВГТУ), Institute of Mechanics, Automation and Advanced Technologies, specializing in Automated Production Systems in Mechanical Engineering: graduated 2005</td></tr>
+      <tr><th>Geography</th><td>Brovary, Ukraine (birth); Vladivostok, Russia (school/university); Beijing, China (documented period, passport issued by Russian Embassy Beijing); St. Petersburg, Russia (current, relocated approximately 2018)</td></tr>
+      <tr><th>Criminal Onset</th><td>Approximately 2009 (confirmed criminal activity); late 2000s assessed (Krebs: "decade already" as of 2019)</td></tr>
+      <tr><th>Assessed Location</th><td>St. Petersburg, Russia (assessed; confirmed registered director of St. Petersburg entity; not arrested)</td></tr>
+      <tr><th>Legal Status</th><td>At large; no arrest, indictment, or criminal charges; sanctioned by OFAC, UK FCDO, AU DFAT November 19, 2025</td></tr>
+      <tr><th>OFAC Designation Basis</th><td>E.O. 13694 (as amended by E.O. 13757, 14144, 14306) for cyber-enabled activities reasonably likely to result in a threat to US national security, foreign policy, or economic health</td></tr>
+      <tr><th>Sanctioned BTC Address</th><td><code>18dLDAWi8LmrHbEq3QzDJb9SLxCf4uimXB</code></td></tr>
+    </table>
+
+    <h4>2.2 Kirill Andreevich Zatolokin: Operations / Customer Support Lead</h4>
+    <table class="attr-table">
+      <tr><th>Full Name</th><td>Kirill Andreevich Zatolokin (Кирилл Андреевич Затолокин)</td></tr>
+      <tr><th>Date of Birth</th><td>30 April 1992</td></tr>
+      <tr><th>Origin</th><td>Vladivostok, Russia: graduated School No. 23 (МОУ СОШ 23), Vladivostok, 2009</td></tr>
+      <tr><th>Education</th><td>Beijing Institute of Fashion Technology, enrolled 2009; documented physically present in Beijing at least through 2014</td></tr>
+      <tr><th>Handle</th><td>Slim Shady</td></tr>
+      <tr><th>Contact</th><td>Telegram @ohyehhellno (operational contact for Yalishanda clients, observed from at least November 2018)</td></tr>
+      <tr><th>Known Emails</th><td>der_fan@mail.ru; sseeaawind@gmail.com</td></tr>
+      <tr><th>Operational Role</th><td>Responsible for collecting payment from customers; coordinating with cyber actors; primary customer support interface for Yalishanda services; direct liaison to BlackBasta (via gg) per leaked chats</td></tr>
+      <tr><th>Connection to Volosovik</th><td>Both from Vladivostok; both spent time in Beijing: assessed to have met in Beijing, no earlier than May 2014 per Analyst1</td></tr>
+      <tr><th>Legal Status</th><td>At large; sanctioned OFAC/UK FCDO/AU DFAT November 19, 2025</td></tr>
+    </table>
+
+    <h4>2.3 Yulia Vladimirovna Pankova</h4>
+    <table class="attr-table">
+      <tr><th>Full Name</th><td>Yulia Vladimirovna Pankova</td></tr>
+      <tr><th>DOB / Location</th><td>Unknown</td></tr>
+      <tr><th>Assessed Role</th><td>Legal and financial associate to Volosovik; described by OFAC as having assisted Volosovik with legal issues and having handled his personal finances</td></tr>
+      <tr><th>Relationship to Volosovik</th><td>Personal relationship confirmed via OFAC photo release (Figure 2, sb0319)</td></tr>
+      <tr><th>Legal Status</th><td>At large; sanctioned OFAC/UK FCDO November 19, 2025 as having materially assisted Volosovik</td></tr>
+    </table>
+
+    <h4>2.4 Andrei Valerevich Kozlov</h4>
+    <table class="attr-table">
+      <tr><th>Full Name</th><td>Andrei Valerevich Kozlov</td></tr>
+      <tr><th>DOB / Location</th><td>Unknown</td></tr>
+      <tr><th>Assessed Role</th><td>Employed by or associated with Media Land LLC; OFAC does not specify function; grouping with MLT/DC Kirishi entities in sanctions documentation suggests possible management role in subsidiary operations</td></tr>
+      <tr><th>Legal Status</th><td>At large; sanctioned OFAC/UK FCDO November 19, 2025</td></tr>
+    </table>
+
+    <h4>2.5 "lapa": Infrastructure Staff (Alias Only)</h4>
+    <table class="attr-table">
+      <tr><th>Handle</th><td>lapa</td></tr>
+      <tr><th>Real Identity</th><td>Not published: anonymous source behind BlackBasta leak suggested an identity; Analyst1 declined to publish pending LE confirmation</td></tr>
+      <tr><th>Role</th><td>Managed key parts of BlackBasta's infrastructure; procured SOCKS proxies for BlackBasta operations; received salary payments from BlackBasta operator gg totaling $94,000 USDT</td></tr>
+      <tr><th>USDT Address</th><td><code>0xa0A7d2C6b288927cf73a5cf59970373262ea73c6</code> (received payments from gg at 0xB54c17E5ea215f45A61E8790cf546AD175Af2Cf0)</td></tr>
+      <tr><th>Legal Status</th><td>Not sanctioned; identity not publicly confirmed by LE</td></tr>
+    </table>
+
+    <h3>Disputed Assessments</h3>
+    <p>No vendor disputes the attribution of Yalishanda to Volosovik or the linkage between Yalishanda and Media Land LLC. The primary open question is the precise functional role of Kozlov and the corporate function of Media Land Technology; OFAC's designation basis (ownership by Media Land LLC) is clear but Kozlov's specific job title or seniority is not in the public record. Pankova's personal relationship to Volosovik is inferred from the OFAC photo release but not explicitly stated in the sanctions text.</p>
+  </section>
+
+  <!-- SECTION 03 -->
+  <section id="operations">
+    <div class="section-label">Section 03</div>
+    <h2>Operational and Business Model</h2>
+
+    <h3>Service Model</h3>
+    <p>Media Land/Yalishanda operated as a full-stack bulletproof hosting provider delivering servers, IP addresses, SOCKS proxies, and DDoS-resistant hosting to cybercriminal clients. The provider's core value proposition is identical to that of other Russian BPH operators but distinguished by longevity, owned physical infrastructure, and the ability to accommodate VIP-scale deployments. Key service components: dedicated servers from owned DC, virtual servers, SOCKS proxy services, and technical troubleshooting. The provider's own-hardware DC, marketed as superior to "public" hosting where networks are "simply rented," was used as a competitive differentiator with high-value clients. <span class="ref">[3][4]</span></p>
+    <p>Total non-cooperation with law enforcement and abuse reporters is the explicit and advertised posture. Forum advertising explicitly names Spamhaus as an ignored organization. <span class="ref">[1][3]</span></p>
+
+    <h3>Verbatim Advertising Copy</h3>
+    <div class="verbatim">
+      <div class="verbatim-source">Yalishanda underground forum advertisement: Exploit forum, 2011 (KrebsOnSecurity, 2019)</div>
+      <div class="verbatim-text">"Based in Asia and Europe. It is allowed to host: ordinary sites, doorway pages, satellites, codecs, adware, tds, warez, pharma, spyware, exploits, zeus, IRC, etc. Passive SPAM is allowed... Forbidden: Any outgoing Email spam, DP, porn, phishing (exclude phishing email, social networks). There is a server with instant activation under botnets (zeus) and so on."</div>
+    </div>
+    <div class="verbatim">
+      <div class="verbatim-source">Slim Shady (Zatolokin): direct message to BlackBasta operator gg, leaked July 2024</div>
+      <div class="verbatim-text">"RU. These are servers from a private data center, not public ones like many others use, where networks are simply rented. This is all our own: our own data center, our own hardware, etc. If you take volume, we can also deploy in Europe, if needed."</div>
+    </div>
+    <div class="verbatim">
+      <div class="verbatim-source">Yalishanda: arbitration response to user "Loadbaks" complaint, underground forum, August 27, 2020</div>
+      <div class="verbatim-text">[Refunded $222.89 BTC with transaction hash 27b2d61d5c0c3c2b2d66fcd5b48be459a7d3a417cb84e3b41f76ad327c4e63a4 without additional comment. Described by Analyst1 as "cold blockchain receipt" followed by implied "now shut up."]</div>
+    </div>
+
+    <h3>Onboarding and Client Tiers</h3>
+    <p>Forum-based advertising on Exploit[.]in, XSS[.]pro, and predecessor platforms constitutes the primary acquisition channel. Customer support was handled via Telegram (@ohyehhellno, Zatolokin) and Jabber contacts, both consistently listed in advertising posts. No invitation-only or referral requirement documented in open sources.</p>
+    <p>A two-tier client structure is evident from leak data: standard clients interacted with customer support via forum-advertised channels; VIP clients such as BlackBasta had direct relationships with Zatolokin for custom deployments, bandwidth negotiations, and capacity planning. VIP status provided access to owned DC hardware, custom bandwidth agreements, and dedicated account management. <span class="ref">[3]</span></p>
+
+    <h3>Pricing (Partial)</h3>
+    <p>Full price list not confirmed in open sources. From BlackBasta leaked chat context (Analyst1): standard plan included 20 Gbps bandwidth per 100 servers; overage priced at $4,000 per additional 10 Gbps. A 200-server BlackBasta deployment consuming 17-20 Gbps was flagged as unsustainable at existing pricing. Cryptocurrency-only payment. <span class="ref">[3]</span></p>
+
+    <h3>Abuse-Handling and LE Posture</h3>
+    <p>Total non-cooperation is the confirmed and advertised posture, including explicit naming of Spamhaus as ignored. No documented instance of Media Land/Yalishanda responding to abuse complaints or cooperating with law enforcement requests over 15+ years of operation. The 2020 arbitration refund incident is the only documented instance of customer dispute resolution, and even that was conducted through a bare transactional response with no acknowledgment. <span class="ref">[1][3]</span></p>
+
+    <h3>OPSEC</h3>
+    <p>Volosovik registered Media Land LLC as a legitimate Russian entity to provide surface-level commercial legitimacy, enabling contract signing, IP leasing, and employment of staff. The corporate structure creates a legal separation between the Yalishanda underground brand and a nominally registered company. Volosovik's VKontakte and Odnoklassniki profiles used partial real-name attribution, suggesting confidence in the Russian legal operating environment rather than technical OPSEC discipline. Staff (Zatolokin, lapa) operated under pseudonyms while the principal's identity was quasi-public in underground circles for at least a decade before formal sanctions.</p>
+  </section>
+
+  <!-- SECTION 04 -->
+  <section id="technical">
+    <div class="section-label">Section 04</div>
+    <h2>Technical Capabilities and Infrastructure Footprint</h2>
+
+    <h3>Autonomous System</h3>
+    <table class="data-table">
+      <thead><tr><th>ASN</th><th>Name</th><th>RIR</th><th>Country</th><th>Registered</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>AS206728</code></td><td>MEDIALAND-AS</td><td>RIPE</td><td>Russian Federation</td><td>2016-11-17</td><td><span class="badge confirmed">Active (June 6, 2026)</span></td></tr>
+        <tr><td><code>AS211805</code></td><td>Media Land LLC</td><td>RIPE</td><td>Russian Federation</td><td>Unknown</td><td><span class="badge credible">Active (IPinfo data)</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>IPv4 Prefix Table (AS206728)</h3>
+    <table class="data-table">
+      <thead><tr><th>Prefix</th><th>Registered Description</th><th>RPKI</th><th>IRR</th></tr></thead>
+      <tbody>
+        <tr><td><code>45.141.84.0/24</code></td><td>ML Cloud LLC</td><td>Valid</td><td>Valid</td></tr>
+        <tr><td><code>45.141.85.0/24</code></td><td>Media Land LLC</td><td>Valid</td><td>Valid</td></tr>
+        <tr><td><code>45.141.86.0/24</code></td><td>ML Cloud LLC</td><td>Valid</td><td>Valid</td></tr>
+        <tr><td><code>45.141.87.0/24</code></td><td>Grisha Maslinikov</td><td>Valid</td><td>Valid</td></tr>
+        <tr><td><code>91.220.163.0/24</code></td><td>Media Land LLC</td><td>Valid</td><td>Valid</td></tr>
+        <tr><td><code>193.242.153.0/24</code></td><td>IT Outsourcing LLC</td><td>No ROA</td><td>Valid</td></tr>
+        <tr><td><code>194.26.29.0/24</code></td><td>Media Land LLC</td><td>Valid</td><td>Valid</td></tr>
+        <tr><td><code>194.26.69.0/24</code></td><td>Media Land LLC</td><td>Valid</td><td>Valid</td></tr>
+      </tbody>
+    </table>
+
+    <h3>IPv6 Prefixes (AS206728)</h3>
+    <table class="data-table">
+      <thead><tr><th>Prefix</th><th>Registered Description</th><th>RPKI</th></tr></thead>
+      <tbody>
+        <tr><td><code>2a0b:7ec0:1320::/48</code></td><td>Media Land LLC</td><td>Valid</td></tr>
+        <tr><td><code>2a0b:7ec0:7701::/48</code></td><td>Media Land LLC</td><td>Valid</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Upstream Transit Chain</h3>
+    <p>AS206728 current BGP peers observed (Hurricane Electric BGP Toolkit, June 6, 2026):</p>
+    <table class="data-table">
+      <thead><tr><th>Peer ASN</th><th>Entity</th><th>Country</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code>AS49531</code></td><td>NetCom-R LLC</td><td>Russian Federation</td><td>IPv4 and IPv6 upstream peer</td></tr>
+        <tr><td><code>AS20632</code></td><td>PJSC MegaFon</td><td>Russian Federation</td><td>IPv4 upstream peer (major Russian carrier)</td></tr>
+        <tr><td><code>AS202799</code></td><td>SYSECT D.O.O.</td><td>Montenegro</td><td>IPv4 upstream peer</td></tr>
+        <tr><td><code>AS51538</code></td><td>Lavrentyev Aleksandr Arkadievich</td><td>Russian Federation</td><td>IPv4 upstream peer</td></tr>
+      </tbody>
+    </table>
+    <p>Historical RIPE IRR records show import/export relationships with AS3216 (Vimpelcom/Beeline, major Russian tier-1 carrier) and AS9049 (ERTH Corporation JSC). These may represent earlier transit arrangements prior to current peer configuration.</p>
+    <p><span class="badge confirmed">Confirmed:</span> No documented de-peering events for AS206728 in open sources. Unlike PROSPERO (AS200593, Bearhost), which attracted public attention when Kaspersky Lab was identified as an upstream provider in 2025, no equivalent upstream controversy has been publicly reported for MEDIALAND-AS.</p>
+
+    <h3>Physical Infrastructure</h3>
+    <p><span class="badge confirmed">Confirmed</span> Data Center Kirishi (100% subsidiary of Media Land LLC, registered July 2022, Kirishi, Leningrad Oblast) is assessed to represent an owned physical data center, not leased rack space in a third-party facility. Zatolokin directly stated to BlackBasta client "gg": "our own data center, our own hardware." This constitutes a structural differentiator from most Russian BPH operators who lease upstream capacity. <span class="ref">[3]</span></p>
+    <p><span class="badge confirmed">Confirmed</span> Standard plan: 20 Gbps per 100 servers on owned hardware. Documented BlackBasta deployment: approximately 200 servers consuming 17-20 Gbps with plans to scale to 50 Gbps. <span class="ref">[3]</span></p>
+
+    <h3>Hosted Activity Types</h3>
+    <p>From PRODAFT LARVA-34 analysis and Media Land leak data (March 2025), confirmed hosted activity categories:</p>
+    <ul>
+      <li>Malware command-and-control (C2) servers</li>
+      <li>Code-signing infrastructure</li>
+      <li>Phishing kit hosting</li>
+      <li>Data exfiltration panels</li>
+      <li>Ransomware operational platforms (BlackBasta confirmed)</li>
+      <li>Data leak site hosting</li>
+      <li>Underground marketplace infrastructure</li>
+      <li>DDoS botnet infrastructure (confirmed in OFAC press release: attacks against US telecom)</li>
+      <li>SOCKS proxy networks (purchased and layered over Media Land servers by BlackBasta)</li>
+    </ul>
+
+    <h3>Blocklist Standing</h3>
+    <table class="data-table">
+      <thead><tr><th>List</th><th>Status</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr><td>Spamhaus SBL</td><td><span class="bl-listed">Listed (confirmed)</span></td><td>SBL and CBL listings noted by community on 2019 Krebs article; advertising explicitly claims to ignore Spamhaus, confirming ongoing listing relationship</td></tr>
+        <tr><td>Spamhaus CBL</td><td><span class="bl-listed">Listed (confirmed)</span></td><td>Noted in 2019 KrebsOnSecurity article comments by security researchers examining IP ranges</td></tr>
+        <tr><td>Spamhaus DROP / EDROP</td><td><span class="bl-probable">Probable</span></td><td>EDROP covers cybercriminal-controlled IP space; no direct confirmation for current state; probable given operator sanctions status</td></tr>
+        <tr><td>abuse.ch Feodo Tracker</td><td><span class="bl-probable">Probable</span></td><td>Confirmed C2 hosting in IP ranges; direct entry IDs not confirmed in open sources</td></tr>
+        <tr><td>abuse.ch URLhaus</td><td><span class="bl-probable">Probable</span></td><td>Phishing and malware URLs from these ranges documented; entry-level confirmation via multiple reports</td></tr>
+        <tr><td>abuse.ch MalwareBazaar</td><td><span class="bl-unknown">Unknown</span></td><td>No direct confirmation in open sources</td></tr>
+        <tr><td>Firehol</td><td><span class="bl-probable">Probable</span></td><td>No direct confirmation; range behavior and CBL/SBL status strongly suggest inclusion</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Known Weaknesses</h3>
+    <p>Infrastructure concentration: all prefixes under a single ASN (AS206728) makes AS-level blocking straightforward for defenders. The AS has relatively few upstream peers (4 observed), limiting routing redundancy. Ownership of physical DC hardware (DC Kirishi) creates a fixed, locatable choke point that is, in principle, subject to seizure by Russian authorities: though no Russian LE action has occurred.</p>
+    <p>Financial weakness: OFAC/UK/AU sanctions designate both the operator (Volosovik) and the Bitcoin address, restricting access to Western payment rails and exchange services. Customers transacting with sanctioned entities face secondary sanctions exposure.</p>
+  </section>
+
+  <!-- SECTION 05 -->
+  <section id="financial">
+    <div class="section-label">Section 05</div>
+    <h2>Financial Infrastructure</h2>
+
+    <h3>Payment Methods</h3>
+    <p>Cryptocurrency-only payment confirmed. Bitcoin (BTC) and USDT (Tether, ERC-20) documented in leak and sanctions data. No fiat payment methods documented. Anonymity enforced through cryptocurrency-only onboarding, consistent with BPH operator norms. <span class="ref">[3][7]</span></p>
+
+    <h3>Known Wallet Clusters</h3>
+    <table class="data-table">
+      <thead><tr><th>Address</th><th>Currency</th><th>Attribution</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><code>18dLDAWi8LmrHbEq3QzDJb9SLxCf4uimXB</code></td><td>Bitcoin (BTC)</td><td>Aleksandr Volosovik / Media Land LLC (OFAC designation)</td><td>OFAC SDN list, November 19, 2025 [7]</td></tr>
+        <tr><td><code>1PY4JX82rhKTSyP7ywhJgiYeVvTcpcaW8d</code></td><td>Bitcoin (BTC)</td><td>Yalishanda (refund address provided in 2020 arbitration case: forum public record)</td><td>Analyst1 [3]</td></tr>
+        <tr><td><code>0xa0A7d2C6b288927cf73a5cf59970373262ea73c6</code></td><td>USDT (ERC-20)</td><td>"lapa": Media Land infrastructure staffer; received $94,000 USDT salary from BlackBasta operator gg</td><td>Analyst1 / Arkham blockchain data [3]</td></tr>
+        <tr><td><code>0xB54c17E5ea215f45A61E8790cf546AD175Af2Cf0</code></td><td>USDT (ERC-20)</td><td>BlackBasta operator "gg": sending wallet for lapa salary payments</td><td>Analyst1 [3]</td></tr>
+      </tbody>
+    </table>
+
+    <h3>On-Chain Volume</h3>
+    <p><span class="badge confirmed">Confirmed</span> TRM Labs documented over $2 million USD in received volume across wallets linked to Yalishanda/Abushost, with direct and indirect flow intersections across BlackSuit, BlackBasta, LockBit, and MedusaLocker operations. <span class="ref">[7]</span></p>
+    <p><span class="badge confirmed">Confirmed</span> Chainalysis assessed Volosovik's hosting services as supporting "nearly every component of the cyber kill chain" and identified interactions across "thousands of addresses" with "millions of dollars" in transactions, serving underground exchanges, laundering services, scammers, hackers, and ransomware operators. <span class="ref">[6]</span></p>
+
+    <h3>Three-Phase Laundering Model</h3>
+    <p>Evidence from BlackBasta leak and TRM analysis supports a standard three-phase laundering model consistent with Russian cybercrime norms:</p>
+    <p><strong>Phase 1: Receipt:</strong> Ransomware payments received in Bitcoin from victims. Yalishanda receives payment for hosting services, primarily in BTC or USDT.</p>
+    <p><strong>Phase 2: Conversion:</strong> BlackBasta operator "gg" confirmed in leaked chats that funds paid to lapa for SOCKS procurement and salary came from money already "cleaned" by an internal laundering operation. USDT used for stable-value salary payments post-laundering. TRM identifies fund flows to "intermediary wallets and major global exchanges."</p>
+    <p><strong>Phase 3: Cash-out:</strong> Funds moved through no-KYC exchanges and OTC desks consistent with Russian ransomware cash-out patterns. Specific cash-out venues for Media Land/Volosovik not confirmed in open sources (contrast with ZServers: Garantex documented).</p>
+
+    <h3>Sanctions and Regulatory Risk</h3>
+    <p>OFAC SDN designation: Media Land LLC, ML Cloud LLC, Media Land Technology, Data Center Kirishi (entities); Volosovik, Zatolokin, Pankova, Kozlov (individuals): all designated November 19, 2025. Volosovik's BTC address <code>18dLDAWi8LmrHbEq3QzDJb9SLxCf4uimXB</code> explicitly listed on SDN. UK OFSI and AU DFAT coordinated designations on same date. All property and interests in US/UK/AU jurisdictions blocked; US persons and entities in US prohibited from transacting with designated parties. Secondary sanctions risk extends to financial institutions worldwide. <span class="ref">[7][8][9]</span></p>
+  </section>
+
+  <!-- SECTION 06 -->
+  <section id="clientele">
+    <div class="section-label">Section 06</div>
+    <h2>Client Profile and Hosted Operations</h2>
+
+    <h3>Crimeware Verticals by Evidence Tier</h3>
+    <table class="data-table">
+      <thead><tr><th>Client / Activity</th><th>Category</th><th>Confidence</th><th>Sources</th></tr></thead>
+      <tbody>
+        <tr><td>LockBit ransomware infrastructure</td><td>Ransomware</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC press release sb0319; UK FCDO; Chainalysis [6][7][8]</td></tr>
+        <tr><td>BlackBasta ransomware infrastructure</td><td>Ransomware</td><td><span class="badge confirmed">Confirmed</span></td><td>Analyst1 (leaked chats + Media Land leak correlation); OFAC/UK FCDO; leaked chat data [3][7][8]</td></tr>
+        <tr><td>BlackSuit ransomware infrastructure</td><td>Ransomware</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC press release sb0319; Bleeping Computer [6][7]</td></tr>
+        <tr><td>Play ransomware infrastructure</td><td>Ransomware</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC press release sb0319; Bleeping Computer [6][7]</td></tr>
+        <tr><td>Evil Corp infrastructure</td><td>Ransomware / CaaS</td><td><span class="badge confirmed">Confirmed</span></td><td>UK FCDO / Foreign Secretary statement; Bleeping Computer (citing UK) [8]</td></tr>
+        <tr><td>MedusaLocker ransomware infrastructure</td><td>Ransomware</td><td><span class="badge credible">Credible</span> <span class="badge single-source">[Single Source]</span></td><td>TRM Labs blockchain analysis [7]</td></tr>
+        <tr><td>Underground exchanges and laundering services</td><td>Financial crime infrastructure</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC; Chainalysis [6][7]</td></tr>
+        <tr><td>Scammers and fraud operators</td><td>Fraud</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC; Chainalysis [6][7]</td></tr>
+        <tr><td>Initial access brokers (IABs)</td><td>Access brokerage</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC; Chainalysis [6][7]</td></tr>
+        <tr><td>Malware-as-a-Service operators</td><td>MaaS</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC; PRODAFT LARVA-34 [4][7]</td></tr>
+        <tr><td>DDoS-for-hire / DDoS attack infrastructure</td><td>DDoS</td><td><span class="badge confirmed">Confirmed</span></td><td>OFAC: "multiple DDoS attacks against U.S. companies and critical infrastructure, including telecommunications systems" [7]</td></tr>
+        <tr><td>Magecart and card-skimming infrastructure</td><td>Financial fraud</td><td><span class="badge credible">Credible</span></td><td>KrebsOnSecurity 2019 citing active hosting of Magecart-related infra [1]</td></tr>
+        <tr><td>Cybercrime forum hosting</td><td>Forum / marketplace</td><td><span class="badge credible">Credible</span></td><td>KrebsOnSecurity 2019: "hundreds of dodgy sites" including cybercrime forums and stolen card shops [1]</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Client Geography</h3>
+    <p>Client geography not confirmed in open sources. Given that Yalishanda advertised on Russian-language underground forums (Exploit, XSS) and the operator network is entirely Russia/CIS-based, a predominantly Russian-speaking/CIS client base is assessed. The presence of internationally active ransomware groups (LockBit, BlackBasta, BlackSuit, Play) confirms that service is not geographically restricted and supports attacks on Western targets globally.</p>
+
+    <h3>Notable Hosted Cases</h3>
+    <div class="callout info">
+      <div class="callout-label">BlackBasta 200-Server Deployment (2023-2024)</div>
+      <p><span class="badge confirmed">Confirmed</span> Based on BlackBasta leaked chats correlated with Media Land internal data by Analyst1. BlackBasta maintained a ~200-server deployment on Media Land infrastructure, consuming 17-20 Gbps bandwidth with negotiated plans to expand to 50 Gbps. Infrastructure staffer "lapa" managed day-to-day operations and SOCKS proxy procurement layered over Media Land's servers. Total confirmed USDT payments to lapa from BlackBasta operator gg: $94,000 USD across five transactions (February-May 2024). <span class="ref">[3]</span></p>
+    </div>
+    <div class="callout info">
+      <div class="callout-label">LockBit Administrator Dmitry Khoroshev: Infrastructure Link</div>
+      <p><span class="badge confirmed">Confirmed</span> OFAC specifically notes that Volosovik's hosting services supported sanctioned LockBit administrator Dmitry Khoroshev (aka LockBitSupp). This establishes a direct confirmed link between Yalishanda infrastructure and the LockBit RaaS operation at the administrator level. <span class="ref">[6][7]</span></p>
+    </div>
+    <div class="callout info">
+      <div class="callout-label">REvil Forum Confrontation (2019)</div>
+      <p><span class="badge confirmed">Confirmed</span> A REvil member posting under the handle "Unknown" (attributed to a prominent REvil operator by Analyst1) directly addressed Volosovik by his first name "Sasha" during a 2019 arbitration thread on XSS forum, demonstrating that Volosovik's real identity was known within top-tier Russian ransomware circles well before Western public exposure. <span class="ref">[3]</span></p>
+    </div>
+  </section>
+
+  <!-- SECTION 07 -->
+  <section id="nexus">
+    <div class="section-label">Section 07</div>
+    <h2>State Nexus Assessment</h2>
+
+    <h3>Jurisdictional Separation</h3>
+    <div class="jurisdiction-grid">
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Entity Registration Jurisdiction</div>
+        <div class="jurisdiction-value">Russian Federation</div>
+        <div class="jurisdiction-detail">Media Land LLC: St. Petersburg, registered Oct 2015. Data Center Kirishi: Kirishi, Leningrad Oblast, registered July 2022. ML Cloud and Media Land Technology: Russia (dates not confirmed). All entities OOO (LLC) structure under Russian law.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Infrastructure Hosting Jurisdiction</div>
+        <div class="jurisdiction-value">Russian Federation</div>
+        <div class="jurisdiction-detail">Primary infrastructure in St. Petersburg per entity registration. DC Kirishi physical hardware in Kirishi, Leningrad Oblast. No confirmed infrastructure in non-Russian jurisdictions, though Zatolokin mentioned potential European deployment capability for VIP clients.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Assessed Operator Location</div>
+        <div class="jurisdiction-value">Russian Federation</div>
+        <div class="jurisdiction-detail">Volosovik: St. Petersburg, assessed (Intel 471: relocated from Vladivostok approximately 2018; registered director of St. Petersburg company). Zatolokin, Pankova, Kozlov: Russia (assessed; no confirmed location). All remain at large within Russia.</div>
+      </div>
+    </div>
+
+    <h3>Assigned Tier: TOLERATED SAFE HARBOR (Tier 2 of 4)</h3>
+    <div class="callout warning">
+      <div class="callout-label">State Nexus Assessment</div>
+      <p>Media Land/Yalishanda is assessed at <strong>Tier 2: Tolerated Safe Harbor</strong>. The Russian state is assessed to be aware of Media Land's operations and to refrain from enforcement or prosecution despite over a decade of public exposure. No evidence supports Tier 3 (active cooperation/tasking) or Tier 4 (direct state control).</p>
+    </div>
+
+    <h3>Evidence Supporting Tier 2 Assessment</h3>
+    <ul>
+      <li>Volosovik was publicly named by KrebsOnSecurity in July 2019 with full identifying information including passport scan. No Russian domestic law enforcement action followed in the subsequent six years.</li>
+      <li>Media Land LLC has operated as a registered Russian legal entity since October 2015, filing required regulatory disclosures. Operating a criminal BPH service through a registered company is only viable if operators assess domestic prosecution risk as negligible.</li>
+      <li>Krebs (2019) explicitly observed that "bulletproof hosting administrators operating from within Russia probably are not going to get taken down or arrested, provided they remain within that country." This assessment has been validated by Volosovik's continued at-large status through June 2026.</li>
+      <li>The 2019 passport issuance via Russia-Beijing embassy confirms continued legitimate Russian state documentation relationship through the height of Yalishanda activity.</li>
+    </ul>
+
+    <h3>Negative Evidence (Against Tier 3 or 4)</h3>
+    <ul>
+      <li>No credible reporting from any Western intelligence service, vendor, or government body asserts direct GRU, FSB, or SVR tasking of Volosovik or Media Land.</li>
+      <li>No documented state-directed targeting of Western government entities, military networks, or critical national infrastructure specifically attributable to Yalishanda-hosted actors (beyond general ransomware ecosystem hosting).</li>
+      <li>The provider's criminal client base is broadly commercial (ransomware affiliates, fraud operators, IABs), inconsistent with state-directed operational infrastructure which typically serves more targeted purposes.</li>
+      <li>OFAC designated Media Land under E.O. 13694 (cyber-enabled activities), not under any Russia-state-actor-specific sanctions framework, suggesting US government assessment does not place Media Land under direct state control.</li>
+    </ul>
+
+    <p>Expected indicators if Tier 3/4 existed (and are absent): documented FSB handler relationships, targeting of government rather than commercial victims, evidence of intelligence-sharing between operator and state, or classified sourcing suggesting coordinated operations. None of these indicators are present in available reporting.</p>
+  </section>
+
+  <!-- SECTION 08 -->
+  <section id="disruption">
+    <div class="section-label">Section 08</div>
+    <h2>Law Enforcement and Regulatory Response</h2>
+
+    <h3>Arrests and Indictments</h3>
+    <p>None. As of June 2026, no individual associated with Media Land/Yalishanda has been arrested, extradited, indicted, or charged in any jurisdiction. Volosovik, Zatolokin, Pankova, and Kozlov remain at large in Russia.</p>
+
+    <h3>Sanctions Chronology</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">July 16, 2019</div>
+        <div class="timeline-text">KrebsOnSecurity publicly names Volosovik as Yalishanda with full passport documentation. Intel 471 confirms real identity. No Russian LE response. Provider continues operating.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">February 2025</div>
+        <div class="timeline-text">ExploitWhispers leaks approximately 200,000 BlackBasta internal chat messages on Telegram, revealing Zatolokin (Slim Shady) as Media Land's customer liaison and BlackBasta's primary infrastructure contact.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">March 28, 2025</div>
+        <div class="timeline-text">Unknown actor leaks Media Land internal database including server configurations, client purchase history, user account data, and cryptocurrency addresses. Volosovik acknowledges breach on hacking forum.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">November 19, 2025</div>
+        <div class="timeline-text"><strong>Coordinated trilateral sanctions:</strong> OFAC, UK FCDO, and AU DFAT designate Media Land LLC, ML Cloud LLC, Media Land Technology, Data Center Kirishi, Volosovik, Zatolokin, Pankova, and Kozlov. FBI coordination noted in OFAC press release. CISA releases joint Five Eyes guidance on BPH defense mitigations. All US/UK/AU assets of designated parties frozen.</div>
+      </div>
+    </div>
+
+    <h3>Server Seizures</h3>
+    <p>None confirmed as of June 2026. Unlike ZServers (127 servers seized in Netherlands, February 2025), no physical server seizure or infrastructure takedown has been executed against Media Land. This is consistent with the infrastructure being located entirely within Russia, outside the jurisdictional reach of Western law enforcement.</p>
+
+    <h3>Post-Sanctions Infrastructure Status</h3>
+    <p><span class="badge confirmed">Confirmed</span> AS206728 remains active and advertising routes as of June 6, 2026 per Hurricane Electric BGP data. All 8 IPv4 prefixes and 2 IPv6 prefixes remain announced. No ASN deregistration, no route withdrawal, no documented client migration away from the platform confirmed in open sources.</p>
+
+    <h3>Post-Disruption Client Migration</h3>
+    <p><span class="badge inference">Analyst Inference</span> Sanctions reduce Media Land's ability to receive payments from clients using Western-facing exchange infrastructure and may deter clients who face secondary sanctions exposure from transacting with a designated provider. However, given the Russia-based operator network and primarily Russian/CIS client base, near-term operational disruption is expected to be limited. Clients can continue transacting in cryptocurrency via peer-to-peer channels, Russian exchanges, and non-KYC services outside OFAC jurisdiction.</p>
+
+    <h3>Five Eyes Joint Guidance</h3>
+    <p>On November 19, 2025, CISA (coordinating with US, UK, Australian, Canadian, and New Zealand cyber agencies) released joint guidance titled "Bulletproof Defense: Mitigating Risks from Bulletproof Hosting Providers." The guidance advised ISPs to implement high-confidence malicious resource block lists, conduct regular traffic analysis, and establish know-your-customer verification for new clients. The timing alongside Media Land sanctions confirms BPH providers were the primary target of the joint guidance release. <span class="ref">[6][8]</span></p>
+  </section>
+
+  <!-- SECTION 09 -->
+  <section id="connected">
+    <div class="section-label">Section 09</div>
+    <h2>Connected Groups and Ecosystem Relationships</h2>
+
+    <p>All connected entity claims carry two-tier confidence assessed independently: <strong>Tier 1</strong> (infrastructure relationship: did Media Land host their infrastructure?) and <strong>Tier 2</strong> (operational relationship: did Media Land operators know the client's identity and coordinate operationally?). These are analytically distinct claims.</p>
+
+    <div class="connected-entity">
+      <div class="entity-name">BlackBasta</div>
+      <div class="entity-meta">Ransomware-as-a-Service operation // Active 2022-2024 (assessed disbanded early 2025)</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+        </div>
+      </div>
+      <div class="entity-text">T1: BlackBasta maintained approximately 200 servers on Media Land infrastructure per correlated BlackBasta chat leak and Media Land internal data (Analyst1, January 2026). Bandwidth consumption documented at 17-20 Gbps. Specific IP 45.141.87.127 cited in Zatolokin speed-test message to gg. T2: Zatolokin (Slim Shady) personally managed the BlackBasta account, conducted capacity planning calls with operator gg, and had direct knowledge of the client's identity and operational scale. lapa, acting as infrastructure manager, received $94,000 USDT in salary from gg across 5 transactions (Feb-May 2024). The operational relationship is among the most extensively documented BPH-client relationships in any public reporting.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Analyst1 (corroborating)</span>
+        <span class="vendor-tag cor">OFAC (corroborating)</span>
+        <span class="vendor-tag cor">UK FCDO (corroborating)</span>
+        <span class="vendor-tag cor">Chainalysis (corroborating)</span>
+        <span class="vendor-tag cor">PRODAFT (corroborating)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">LockBit</div>
+      <div class="entity-meta">Ransomware-as-a-Service operation // Active 2019-2024 (disrupted Operation Cronos, February 2024)</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">T1: OFAC press release explicitly states Media Land "provided BPH services to... ransomware actors, including prolific ransomware actors such as Lockbit." Chainalysis further confirms Volosovik's services supported sanctioned LockBit administrator Dmitry Khoroshev (LockBitSupp). T2: Direct operational coordination between Volosovik/Zatolokin and LockBit operators is not documented in the same granular detail as BlackBasta. OFAC/Chainalysis framing implies a business-level service relationship; individual operator identity awareness at the Yalishanda side is credible given operational duration but not confirmed by leak data.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">OFAC (corroborating)</span>
+        <span class="vendor-tag cor">Chainalysis (corroborating)</span>
+        <span class="vendor-tag cor">UK FCDO (corroborating)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">BlackSuit</div>
+      <div class="entity-meta">Ransomware-as-a-Service operation // Active 2023-present (assessed successor to Royal ransomware)</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">T1: OFAC press release explicitly includes BlackSuit among Media Land's ransomware clients. T2: No direct operational relationship evidence beyond the OFAC designation and TRM on-chain flow analysis.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">OFAC (corroborating)</span>
+        <span class="vendor-tag cor">TRM Labs (corroborating)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Play Ransomware</div>
+      <div class="entity-meta">Ransomware-as-a-Service operation // Active 2022-present</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">T1: OFAC press release explicitly includes Play among Media Land's ransomware clients. T2: No direct operational relationship evidence beyond the OFAC designation. Business relationship inferred from OFAC attribution and on-chain flows.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">OFAC (corroborating)</span>
+        <span class="vendor-tag cor">Chainalysis (corroborating)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Evil Corp</div>
+      <div class="entity-meta">Russia-based cybercrime group / Dridex / WastedLocker / Indrik Spider // Active 2009-present</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">T1: UK Foreign Secretary Yvette Cooper specifically cited Volosovik as having "worked with... Evil Corp" in the November 2025 sanctions announcement. Bleeping Computer confirmed this attribution citing UK government. Evil Corp's Dridex malware was documented on Yalishanda infrastructure in a 90-day 2017 period per Intel 471 Black Hat talk. T2: Given Evil Corp's notoriety and longevity, and the 2017 Intel 471 documentation, the operational relationship is credible but not confirmed at the same level as BlackBasta.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">UK FCDO (corroborating)</span>
+        <span class="vendor-tag cor">Intel 471 (corroborating)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">MedusaLocker</div>
+      <div class="entity-meta">Ransomware-as-a-Service operation // Active 2019-present</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge credible">Credible</span> <span class="badge single-source">[Single Source]</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">T1: TRM Labs on-chain analysis identifies MedusaLocker in the flow graph connected to Yalishanda/Abushost wallets. Single-source claim; not corroborated by OFAC or other government sources. T2: Operational relationship not established; inference only based on T1 financial flows.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag ss">TRM Labs (single source)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Aeza Group LLC</div>
+      <div class="entity-meta">Russian bulletproof hosting provider // Sanctioned by OFAC July 1, 2025; UK FCDO November 19, 2025 (same action as Media Land)</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1: Infrastructure Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2: Operational Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">Aeza Group is a separate BPH provider sanctioned in the same November 2025 coordinated action but as a distinct entity. Coordinated designation does not imply a direct infrastructure or operational relationship with Media Land; both were targeted in the same sweep due to providing analogous services. No infrastructure sharing or direct operational coordination between Aeza and Media Land is documented in available reporting. Aeza's post-sanctions rebranding (Hypercore Ltd., Serbia/Uzbekistan entities) appears to be an independent evasion strategy. Relationship type: same-sector designation, not client or partner relationship.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag">No vendor has published a formal Media Land-Aeza relationship assessment</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section id="status">
+    <div class="section-label">Section 10</div>
+    <h2>Trajectory Assessment</h2>
+
+    <h3>Infrastructure Churn</h3>
+    <p><span class="badge confirmed">Confirmed</span> AS206728 (MEDIALAND-AS) remains fully active as of June 6, 2026 per Hurricane Electric BGP data, with all 8 IPv4 prefixes and 2 IPv6 prefixes announced. No AS deregistration, prefix withdrawal, or transit provider change documented post-sanctions. Unlike Aeza Group, which immediately began a rebranding and entity restructuring strategy after its July 2025 designation, no analogous reconstitution activity has been confirmed for Media Land as of this writing. This may reflect greater operator confidence in Russian territorial protection or a deliberate assessment that the infrastructure itself is not at seizure risk.</p>
+
+    <h3>Market Position</h3>
+    <p>Media Land/Yalishanda occupies the top tier of the Russian BPH market by longevity, documented client base quality (flagship-tier ransomware operators), and the unusual distinction of owning physical data center hardware (DC Kirishi). KrebsOnSecurity's 2019 characterization of Yalishanda as potentially the "world's biggest bulletproof hoster": while likely an overstatement: reflects genuine scale. The provider has sustained operations through multiple exposure events (Krebs 2019 identification, BlackBasta and internal data leaks 2025) without operational interruption, demonstrating resilience that reflects the Russian legal operating environment rather than technical hardening.</p>
+
+    <h3>Disruption History Assessment</h3>
+    <p>Disruption record through June 2026: zero arrests, zero server seizures, zero successful de-peering actions. The November 2025 sanctions constitute the first formal Western government action against Media Land after 15+ years of documented criminal activity. No Russian domestic action has occurred. This track record, combined with wholly Russia-based infrastructure, suggests that sanctions represent the primary available lever and that physical disruption is not achievable under current conditions.</p>
+
+    <h3>Trajectory Direction: DEGRADED / STABLE</h3>
+    <p>Assessed trajectory is <strong>Degraded but stable</strong>. Sanctions impose meaningful financial friction (blocked Western payment rails, secondary sanctions risk for clients, SDN-listed Bitcoin address) but do not impair the underlying technical infrastructure. As long as Volosovik and Zatolokin remain at large in Russia, the operated-hardware DC Kirishi is operational, and Russian clients continue to pay in cryptocurrency outside OFAC jurisdiction, core functionality persists. Potential disruptive catalysts include: Russian domestic prosecution (assessed low probability), operator-level defection or internal disruption, or loss of key upstream peers forcing routing changes.</p>
+
+    <h3>Mandatory Intelligence Gaps</h3>
+    <div class="gap-list">
+      <div class="gap-item">
+        <strong>Post-Sanctions Operational Tempo</strong>
+        <p>Whether Media Land has experienced meaningful client attrition, pricing changes, or capacity reduction following November 2025 sanctions is unknown. Internal data post-March 2025 leak is not available in open sources.</p>
+      </div>
+      <div class="gap-item">
+        <strong>New Entity / ASN Registration Activity</strong>
+        <p>No confirmed post-sanctions ASN registrations or new entity registrations by Volosovik or associates have been documented, unlike Aeza Group's documented evasion strategy. This gap should be monitored via RIPE NCC WHOIS and Russian corporate registry.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Full Hosted Client Roster</strong>
+        <p>The March 2025 Media Land internal data leak is understood to be comprehensive, but full analysis has not been publicly published. The complete client list beyond the named ransomware groups is unknown in open sources.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Pankova and Kozlov Functional Roles</strong>
+        <p>OFAC designations establish legal status but do not specify job titles, reporting relationships, or operational responsibilities for Pankova (legal/financial) and Kozlov (associated). Understanding whether Kozlov holds a technical infrastructure role (e.g., DC Kirishi management) would refine the operational succession picture.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Volosovik Current Location Confirmation</strong>
+        <p>Assessed as St. Petersburg, Russia, based on Media Land LLC registration address and Intel 471 2018 relocation reporting. No post-2019 confirmed location information in open sources.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Cash-Out Venue Mapping</strong>
+        <p>Specific exchanges, OTC desks, or money services businesses used by Media Land for cryptocurrency cash-out are not identified in open sources (contrast: ZServers cash-out via Garantex is confirmed). This represents a key financial intelligence gap for tracing proceeds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT REPORTING -->
+  <section id="recent-reporting">
+    <div class="section-label">Additional</div>
+    <h2>Recent Reporting</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">January 15, 2026</div>
+        <div class="timeline-text">Analyst1 publishes "Infrastructure in the Shadows" (author: Anastasia Sentsova), correlating BlackBasta chat leak and Media Land internal data leak to document the operational relationship between Yalishanda and BlackBasta, including Zatolokin's dual role and lapa salary payments. <a href="https://analyst1.com/infrastructure-in-the-shadows/" style="color: var(--accent)">analyst1.com</a></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">November 19, 2025</div>
+        <div class="timeline-text">OFAC, UK FCDO, and AU DFAT announce coordinated trilateral sanctions against Media Land network (4 entities, 4 individuals). FBI coordination noted. CISA releases simultaneous Five Eyes BPH guidance. <a href="https://home.treasury.gov/news/press-releases/sb0319" style="color: var(--accent)">Treasury.gov</a></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">April 7, 2025</div>
+        <div class="timeline-text">PRODAFT publishes thread identifying Medialand as LARVA-34 and analyzing the March 28 data leak, noting the hosted infrastructure far beyond ransomware including code-signing, phishing, and data exfiltration systems. <a href="https://x.com/PRODAFT/status/1909342469617053720" style="color: var(--accent)">PRODAFT on X</a></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">March 28, 2025</div>
+        <div class="timeline-text">Unknown actor leaks Media Land internal database. Volosovik acknowledges breach on hacking forum. Data included server configs, client purchase history, user accounts, and cryptocurrency addresses. Cybersecurity-help.cz reports on the incident.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">February 2025</div>
+        <div class="timeline-text">ExploitWhispers leaks approximately 200,000 BlackBasta Matrix messenger messages on Telegram, revealing Zatolokin as "Slim Shady" and his role as Media Land's liaison to BlackBasta's operational leadership.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <div class="section-label">Additional</div>
+    <h2>Sources</h2>
+    <div class="sources-list">
+      <div class="source-item"><span class="source-num">[1]</span><span class="source-text">KrebsOnSecurity, "Meet the World's Biggest 'Bulletproof' Hoster," July 16, 2019. <a href="https://krebsonsecurity.com/2019/07/meet-the-worlds-biggest-bulletproof-hoster/" target="_blank">krebsonsecurity.com</a></span></div>
+      <div class="source-item"><span class="source-num">[2]</span><span class="source-text">UK Government, "UK smashes Russian cybercrime networks responsible for attacks on UK businesses," November 19, 2025. <a href="https://www.gov.uk/government/news/uk-smashes-russian-cybercrime-networks-responsible-for-attacks-on-uk-businesses" target="_blank">gov.uk</a></span></div>
+      <div class="source-item"><span class="source-num">[3]</span><span class="source-text">Analyst1 (Anastasia Sentsova), "Infrastructure in the Shadows," January 15, 2026. <a href="https://analyst1.com/infrastructure-in-the-shadows/" target="_blank">analyst1.com</a></span></div>
+      <div class="source-item"><span class="source-num">[4]</span><span class="source-text">PRODAFT, "Threat Actor Leaks Internal Data from Medialand (LARVA-34)," April 7, 2025. <a href="https://x.com/PRODAFT/status/1909342469617053720" target="_blank">x.com/PRODAFT</a></span></div>
+      <div class="source-item"><span class="source-num">[5]</span><span class="source-text">Cybersecurity-help.cz, "One of largest bulletproof web hosting providers Media Land got its internal data leaked," 2025. <a href="https://www.cybersecurity-help.cz/blog/4671.html" target="_blank">cybersecurity-help.cz</a></span></div>
+      <div class="source-item"><span class="source-num">[6]</span><span class="source-text">Chainalysis, "U.S., U.K., and Australia Target Russian Cybercrime Infrastructure," November 2025. <a href="https://www.chainalysis.com/blog/ofac-targets-russian-cybercrime-infrastructure-ransomware-november-2025/" target="_blank">chainalysis.com</a></span></div>
+      <div class="source-item"><span class="source-num">[7]</span><span class="source-text">U.S. Department of the Treasury / OFAC, "United States, Australia, and United Kingdom Sanction Russian Cybercrime Infrastructure Supporting Ransomware," November 19, 2025. <a href="https://home.treasury.gov/news/press-releases/sb0319" target="_blank">treasury.gov</a></span></div>
+      <div class="source-item"><span class="source-num">[8]</span><span class="source-text">Bleeping Computer (Sergiu Gatlan), "Russian bulletproof hosting provider sanctioned over ransomware ties," November 19, 2025. <a href="https://www.bleepingcomputer.com/news/security/us-sanctions-russian-bulletproof-hosting-provider-media-land-over-ransomware-ties/" target="_blank">bleepingcomputer.com</a></span></div>
+      <div class="source-item"><span class="source-num">[9]</span><span class="source-text">Australian Government (AFP / DFAT), "Sanctions imposed on Russian cybercrime service providers for malicious cyber activity," November 19-20, 2025. <a href="https://www.afp.gov.au/news-centre/media-release/afp-supports-government-sanctions-two-dark-web-services-and-their" target="_blank">afp.gov.au</a></span></div>
+      <div class="source-item"><span class="source-num">[10]</span><span class="source-text">TRM Labs, "US, Australia, and UK Sanction Russian Cybercrime Infrastructure Supporting Ransomware," November 20, 2025. <a href="https://www.trmlabs.com/resources/blog/us-australia-and-uk-sanction-russian-cybercrime-infrastructure-supporting-ransomware" target="_blank">trmlabs.com</a></span></div>
+      <div class="source-item"><span class="source-num">[11]</span><span class="source-text">Elliptic, "US cracks down on Russian bulletproof hosting services enabling cybercrime," November 2025. <a href="https://www.elliptic.co/blog/us-cracks-down-on-russian-bulletproof-hosting-services" target="_blank">elliptic.co</a></span></div>
+      <div class="source-item"><span class="source-num">[12]</span><span class="source-text">Reuters, "US, UK and Australia sanction Russian cyber firms over ransomware support," November 19, 2025. <a href="https://www.reuters.com/world/asia-pacific/us-uk-australia-announce-sanctions-against-russia-based-media-land-over-2025-11-19/" target="_blank">reuters.com</a></span></div>
+      <div class="source-item"><span class="source-num">[13]</span><span class="source-text">Hurricane Electric BGP Toolkit, AS206728 MEDIALAND-AS. Accessed June 6, 2026. <a href="https://bgp.he.net/AS206728" target="_blank">bgp.he.net</a></span></div>
+      <div class="source-item"><span class="source-num">[14]</span><span class="source-text">CybersecurityNews, "Inside the Leaks that Exposed the Hidden Infrastructure Behind a Ransomware Operation," 2025. <a href="https://cybersecuritynews.com/inside-the-leaks-that-exposed-the-hidden-infrastructure/" target="_blank">cybersecuritynews.com</a></span></div>
+      <div class="source-item"><span class="source-num">[15]</span><span class="source-text">National Crime Agency (UK), "Prolific bulletproof hosting service sanctioned by the UK and allies," November 2025. <a href="https://www.nationalcrimeagency.gov.uk/news/prolific-bulletproof-hosting-service-sanctioned-by-the-uk-and-allies" target="_blank">nationalcrimeagency.gov.uk</a></span></div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
