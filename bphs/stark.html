@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stark Industries Solutions / THE.Hosting / WorkTitans — BPH Analytical Profile | EDP</title>
+  <style>
+    :root {
+      --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+      --border: #30363d; --border-light: #21262d;
+      --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+      --accent: #58a6ff; --accent-dim: #1f6feb;
+      --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+      --credible-bg: #341a00; --credible-text: #e3b341;
+      --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+      --ss-bg: #2d1a17; --ss-text: #f85149;
+      --disrupted: #e3b341; --active: #3fb950; --defunct: #8b949e;
+      --sidebar-width: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+    .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: var(--inference-bg); color: var(--inference-text); border: 1px solid var(--accent-dim); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .group-switcher { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .group-switcher-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 6px; }
+    .group-select { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 4px; font-size: 12px; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all .15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+    .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+    /* MAIN */
+    .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; }
+    .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+    .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .profile-title-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+    .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+    .status-badge.active { background: rgba(63,185,80,.12); color: var(--active); border: 1px solid rgba(63,185,80,.3); }
+    .status-badge.degraded { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* SECTIONS */
+    section { padding: 32px 40px; border-bottom: 1px solid var(--border-light); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 15px; font-weight: 600; color: var(--text-heading); margin: 20px 0 10px; }
+    h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .05em; }
+    p { margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 12px 20px; line-height: 2; }
+
+    /* OPERATOR HERO */
+    .operator-hero { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .operator-hero-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ss-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .operator-hero-label::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--ss-text); border-radius: 50%; }
+    .operator-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .operator-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .operator-name { font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .operator-role { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .operator-meta { font-size: 11px; color: var(--text); line-height: 1.7; }
+    .operator-meta strong { color: var(--text-heading); }
+    .sanction-flag { display: inline-block; padding: 2px 8px; background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .04em; margin-top: 6px; }
+    .arrest-flag { display: inline-block; padding: 2px 8px; background: rgba(227,179,65,.1); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .04em; margin-top: 6px; }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .kpi-value { font-size: 20px; font-weight: 700; color: var(--text-heading); line-height: 1.2; }
+    .kpi-value.active { color: var(--active); }
+    .kpi-value.degraded { color: var(--disrupted); }
+    .kpi-value.accent { color: var(--accent); }
+    .kpi-value.danger { color: var(--ss-text); }
+    .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+
+    /* TABLES */
+    .attr-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .attr-table th, .attr-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; vertical-align: top; }
+    .attr-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; width: 200px; background: var(--bg-secondary); }
+    .attr-table tr:last-child th, .attr-table tr:last-child td { border-bottom: none; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    .data-table th { background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13px; color: var(--text); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    .badge.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); border: 1px solid rgba(35,134,54,.3); }
+    .badge.credible { background: var(--credible-bg); color: var(--credible-text); border: 1px solid rgba(158,106,3,.3); }
+    .badge.inference { background: var(--inference-bg); color: var(--inference-text); border: 1px solid rgba(31,111,235,.3); }
+    .badge.single-source { background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); }
+
+    /* TWO-TIER */
+    .two-tier { display: flex; flex-direction: column; gap: 5px; }
+    .tier-row { display: flex; align-items: center; gap: 8px; }
+    .tier-label { font-size: 10px; color: var(--text-muted); min-width: 160px; }
+
+    /* VERBATIM */
+    .verbatim { background: var(--bg-secondary); border-left: 3px solid var(--accent-dim); padding: 12px 16px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+    .verbatim-source { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .verbatim-text { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.6; }
+
+    /* CALLOUT */
+    .callout { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 14px 0; }
+    .callout.warning { border-left: 3px solid var(--disrupted); }
+    .callout.info { border-left: 3px solid var(--accent); }
+    .callout-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout.warning .callout-label { color: var(--disrupted); }
+    .callout.info .callout-label { color: var(--accent); }
+
+    /* GALLERY */
+    .gallery-heading { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 24px 0 12px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .gallery-item img { width: 100%; height: 180px; object-fit: cover; display: block; background: var(--bg-secondary); }
+    .gallery-caption { padding: 10px 12px; }
+    .gallery-caption-text { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .gallery-source { font-size: 10px; color: var(--text-muted); }
+    .img-source { font-size: 10px; color: var(--text-muted); }
+
+    /* CONNECTED ENTITY */
+    .connected-entity { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .entity-name { font-size: 15px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .entity-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .entity-confidence { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+    .entity-confidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .entity-text { font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+    .vendor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .vendor-tag { padding: 2px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text-muted); }
+    .vendor-tag.cor { border-color: rgba(35,134,54,.3); color: var(--confirmed-text); }
+    .vendor-tag.ss { border-color: rgba(248,81,73,.3); color: var(--ss-text); }
+
+    /* JURISDICTIONS */
+    .jurisdiction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+    .jurisdiction-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .jurisdiction-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .jurisdiction-value { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+    .jurisdiction-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; margin: 16px 0; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -16px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--bg); }
+    .timeline-date { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+    .timeline-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* GAPS */
+    .gap-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .gap-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+    .gap-item strong { color: var(--text-heading); font-size: 13px; }
+    .gap-item p { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
+
+    /* BLOCKLIST */
+    .bl-listed { color: var(--ss-text); font-weight: 700; font-size: 11px; }
+    .bl-probable { color: var(--disrupted); font-weight: 700; font-size: 11px; }
+    .bl-unknown { color: var(--text-muted); font-weight: 700; font-size: 11px; }
+
+    /* SOURCES */
+    .sources-list { display: flex; flex-direction: column; gap: 7px; }
+    .source-item { display: flex; gap: 12px; font-size: 12px; line-height: 1.5; }
+    .source-num { color: var(--accent); font-weight: 700; min-width: 28px; }
+    .source-text a { color: var(--accent); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
+    code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; background: var(--bg-secondary); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+    .ref { font-size: 11px; color: var(--text-muted); vertical-align: super; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; }
+      .jurisdiction-grid { grid-template-columns: 1fr; }
+      section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">EDP // Ransomware Ecosystem</div>
+    <div class="sidebar-title">Stark Industries Solutions / THE.Hosting / WorkTitans</div>
+    <span class="node-type-badge">Bulletproof Hosting Provider</span>
+  </div>
+  <div class="group-switcher">
+    <div class="group-switcher-label">Node Library</div>
+    <select class="group-select">
+      <option>BPH Providers</option>
+      <option selected>Stark Industries / THE.Hosting</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Profile Sections</div>
+    <a href="#overview" class="nav-link"><span class="nav-num">01</span> Executive Summary</a>
+    <a href="#lineage" class="nav-link"><span class="nav-num">02</span> Lineage &amp; Heritage</a>
+    <a href="#operations" class="nav-link"><span class="nav-num">03</span> Business Model</a>
+    <a href="#technical" class="nav-link"><span class="nav-num">04</span> Technical Footprint</a>
+    <a href="#financial" class="nav-link"><span class="nav-num">05</span> Financial Infrastructure</a>
+    <a href="#clientele" class="nav-link"><span class="nav-num">06</span> Client Profile</a>
+    <a href="#nexus" class="nav-link"><span class="nav-num">07</span> State Nexus</a>
+    <a href="#disruption" class="nav-link"><span class="nav-num">08</span> LE Response</a>
+    <a href="#connected" class="nav-link"><span class="nav-num">09</span> Connected Groups</a>
+    <a href="#status" class="nav-link"><span class="nav-num">10</span> Trajectory</a>
+    <div class="nav-section-label" style="margin-top:8px">Additional</div>
+    <a href="#recent-reporting" class="nav-link"><span class="nav-num"></span> Recent Reporting</a>
+    <a href="#sources" class="nav-link"><span class="nav-num"></span> Sources</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">EDP // BPH Library<br>Profile v1 // June 2026<br>Author: Reno</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-breadcrumb">
+      <a href="https://ransomwareedp.github.io/">EDP</a> /
+      <a href="https://ransomwareedp.github.io/bph/">BPH Providers</a> /
+      Stark Industries Solutions / THE.Hosting / WorkTitans
+    </div>
+    <div class="profile-title-row">
+      <div>
+        <div class="profile-name">Stark Industries Solutions / THE.Hosting / WorkTitans</div>
+        <div class="profile-subtitle">Russia-aligned bulletproof hosting brand cluster // UK-registered, Moldova/Netherlands-hosted // Active February 2022 to present; core operators arrested May 2026</div>
+      </div>
+      <span class="status-badge degraded"><span class="status-dot"></span>Degraded</span>
+    </div>
+  </div>
+
+  <!-- SECTION 01 -->
+  <section id="overview">
+    <div class="section-label">Section 01</div>
+    <h2>Executive Summary and Provider Overview</h2>
+
+    <!-- Operator Hero -->
+    <div class="operator-hero">
+      <div class="operator-hero-label">Sanctioned and Arrested Operators — Escalated Module</div>
+      <div class="operator-cards">
+        <div class="operator-card">
+          <div class="operator-name">Iurie (Iuri / Yuri) NECULITI</div>
+          <div class="operator-role">CEO, Stark Industries Solutions Ltd</div>
+          <div class="operator-meta">
+            <strong>Nationality:</strong> Moldovan (assessed)<br>
+            <strong>Location:</strong> Moldova / EEA (not publicly confirmed)<br>
+            <strong>Role:</strong> CEO of Stark Industries Solutions Ltd; associated with PQ Hosting and PQ Hosting Plus S.R.L. via corporate records<br>
+            <strong>Legal status:</strong> Sanctioned; no indictment or arrest reported
+          </div>
+          <span class="sanction-flag">EU RUSDA — 20 May 2025</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Ivan NECULITI</div>
+          <div class="operator-role">Owner, Stark Industries Solutions Ltd</div>
+          <div class="operator-meta">
+            <strong>Nationality:</strong> Moldovan (assessed)<br>
+            <strong>Location:</strong> Moldova / EEA (not publicly confirmed)<br>
+            <strong>Role:</strong> Owner of Stark Industries Solutions Ltd; co-owner of PQ Hosting (Moldova)<br>
+            <strong>Legal status:</strong> Sanctioned; no indictment or arrest reported
+          </div>
+          <span class="sanction-flag">EU RUSDA — 20 May 2025</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Youssef ZINAD</div>
+          <div class="operator-role">Director, WorkTitans B.V. / THE.Hosting</div>
+          <div class="operator-meta">
+            <strong>Age / Location:</strong> 57, Amsterdam, Netherlands<br>
+            <strong>Corporate links:</strong> Formed WorkTitans B.V. in 2019 (y.zinad@worktitans.nl); linked to Fezzy B.V. (sole shareholder of WorkTitans) and MIRhosting<br>
+            <strong>Legal status:</strong> Arrested 18 May 2026 by Dutch FIOD; charged with sanctions violations; case ongoing
+          </div>
+          <span class="arrest-flag">ARRESTED — FIOD, 18 May 2026</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Andrey NESTERENKO</div>
+          <div class="operator-role">Co-operator, MIRhosting / WorkTitans infrastructure</div>
+          <div class="operator-meta">
+            <strong>Age / Location:</strong> 39, The Hague, Netherlands<br>
+            <strong>Corporate links:</strong> Managed hosting infrastructure linked to WorkTitans and MIRhosting; email thread with Zinad documented by KrebsOnSecurity (2024)<br>
+            <strong>Legal status:</strong> Arrested 18 May 2026 by Dutch FIOD; charged with sanctions violations; case ongoing
+          </div>
+          <span class="arrest-flag">ARRESTED — FIOD, 18 May 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value degraded">Degraded</div><div class="kpi-label">Operational Status</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">AS209847</div><div class="kpi-label">Active Successor ASN</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">200+</div><div class="kpi-label">Prefixes Active (Jun 2026)</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">800+</div><div class="kpi-label">Servers Seized (May 2026)</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">4</div><div class="kpi-label">Named Operators</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">EU RUSDA</div><div class="kpi-label">Sanctions Authority</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">Feb 2022</div><div class="kpi-label">Founded</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">Probable Listed</div><div class="kpi-label">Spamhaus Status</div></div>
+    </div>
+
+    <!-- Attribute Table -->
+    <h3>Quick-Reference Attributes</h3>
+    <table class="attr-table">
+      <tr><th>Common Names</th><td>Stark Industries Solutions Ltd; stark-industries[.]solutions; PQ Hosting; PQ Hosting Plus S.R.L.; THE.Hosting; the[.]hosting; WorkTitans B.V.; MIRhosting; WT Hosting; Misfits Media</td></tr>
+      <tr><th>Node Type</th><td>Bulletproof Hosting Provider</td></tr>
+      <tr><th>Status</th><td><span class="status-badge degraded" style="margin-top:0"><span class="status-dot"></span>Degraded</span> — 800+ servers seized May 2026; two operators arrested; AS209847 (WorkTitans / THE.Hosting) still announcing 200+ prefixes as of 6 June 2026</td></tr>
+      <tr><th>Entity Registration Jurisdiction</th><td>United Kingdom — Stark Industries Solutions Ltd (Companies House 13906017; 71-75 Shelton Street, London); Netherlands — WorkTitans B.V. (Hoge Bothofstraat 39, 7511 ZA Enschede); Moldova — PQ Hosting Plus S.R.L.</td></tr>
+      <tr><th>Infrastructure Hosting Jurisdiction</th><td>Netherlands (primary: Dronten, Enschede, Almere, Schiphol-Rijk); Moldova (secondary: PQ Hosting DCs)</td></tr>
+      <tr><th>Assessed Operator Location</th><td>Neculiti brothers: Moldova / EEA (not confirmed); Zinad: Amsterdam, Netherlands (arrested); Nesterenko: The Hague, Netherlands (arrested)</td></tr>
+      <tr><th>Active Period</th><td>February 10, 2022 to present (Stark entity); WorkTitans B.V. formed 2019; AS209847 active from June 24, 2025</td></tr>
+      <tr><th>Primary ASNs</th><td><code>AS44477</code> — STARK-INDUSTRIES / PQ Hosting Plus S.R.L. (de-registered; announced=false as of June 2026); <code>AS43624</code> — PQ Hosting, MD (de-registered; announced=false as of June 2026); <code>AS209847</code> — THE WorkTitans B.V. (ACTIVE; 200+ prefixes announced as of June 2026)</td></tr>
+      <tr><th>Key IPv4 Ranges (AS209847)</th><td><code>171.22.126.0/24</code>; <code>171.22.127.0/24</code>; <code>171.22.112.0/24</code>; <code>171.22.113.0/24</code>; <code>171.22.118.0/24</code>; <code>171.22.131.0/24</code> (formerly in Stark /23 blocks; RIPE confirmed active June 2026)</td></tr>
+      <tr><th>RIPE Verification (June 2026)</th><td>AS44477: holder="" announced=false (de-registered). AS43624: holder="" announced=false (de-registered). AS209847: holder="THE WorkTitans B.V." announced=true. Source: RIPE NCC RIPEstat API, queried 6 June 2026.</td></tr>
+      <tr><th>Upstream Transit</th><td>MIRhosting (Almere, Netherlands) — physical colocation and transit to AMS-IX and DE-CIX Frankfurt. MIRhosting denied knowingly supporting illegal operations.</td></tr>
+      <tr><th>Sanctions</th><td>EU Council (RUSDA program): Stark Industries Solutions Ltd, Iurie Neculiti, Ivan Neculiti — 20 May 2025. PQ Hosting and PQ Hosting Plus S.R.L. included in related EU hybrid-threat sanctions package.</td></tr>
+      <tr><th>OFAC / UK FCDO</th><td>OFAC SDN: Not confirmed as of June 2026. UK OFSI / FCDO: EU-mirrored measures applied; independent UK listing not confirmed in open sources.</td></tr>
+      <tr><th>Primary Clients</th><td>NoName057(16) (DDoS / hacktivist); TAG-53 / Callisto / COLDRIVER-like cluster (credential harvesting); FIN7 (financial crime); LockBit, ALPHV/BlackCat, Qilin, Ursnif (ransomware/crimeware); RedLine Stealer and commodity RATs</td></tr>
+      <tr><th>State Nexus Tier</th><td>Probable Cooperation (Tier 3 of 4)</td></tr>
+      <tr><th>Corporate Shell Chain</th><td>Stark Industries Solutions Ltd (UK) owned by Neculiti brothers (Moldova); WorkTitans B.V. (NL) owned by Fezzy B.V. (Almere, NL); Fezzy B.V. linked to Zinad via phone number and email</td></tr>
+    </table>
+
+    <h3>Overall Assessment</h3>
+    <p>Stark Industries Solutions Ltd is a UK-registered, Russia-aligned bulletproof hosting provider that emerged two weeks before Russia's full-scale invasion of Ukraine in February 2022 and rapidly became "prime real estate" for Kremlin-linked cyberattacks and disinformation campaigns. Operated through a layered corporate structure by Moldovan brothers Iurie and Ivan Neculiti, with Dutch infrastructure managers Youssef Zinad and Andrey Nesterenko, Stark hosted credential-harvesting operations for Russian state-aligned espionage clusters, DDoS infrastructure for hacktivist group NoName057(16), and server capacity for major cybercrime groups including FIN7 and multiple ransomware ecosystems.</p>
+    <p>The provider demonstrated exceptional resilience against regulatory pressure. When EU sanctions were announced on 20 May 2025, the Neculiti brothers had already transferred AS44477 to a freshly-created RIPE organization (PQ Hosting Plus S.R.L.) on 16 May, migrated Russian infrastructure to UFO Hosting LLC as early as 10 April, and within weeks rebranded operations as THE.Hosting under Dutch entity WorkTitans B.V. with a new ASN (AS209847, created 24 June 2025). GreyNoise data confirmed a seamless migration of malicious activity between the two ASNs between August and November 2025, with virtually identical behavioral signatures, VPN profiles, and scanning patterns.</p>
+    <p>As of June 2026, Dutch FIOD arrested Zinad and Nesterenko on 18 May 2026 and seized 800+ servers from five locations. Despite this, AS209847 remains active with over 200 prefixes still routing as of 6 June 2026, confirmed by direct RIPE NCC RIPEstat query. The Neculiti brothers remain at large and sanctioned. The overall assessment is Degraded: infrastructure substantially disrupted but not dismantled, with high reconstitution capacity demonstrated by prior rebranding behavior.</p>
+
+    <!-- Gallery -->
+    <div class="gallery-heading">Provider Presence and Infrastructure Evidence</div>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="https://cdn.prod.website-files.com/667dd40ebb8095e89f27565d/691799b351e89c7b5c6e74de_GreyNoise-Stark-Industries-blog-1600x900-.png"
+             alt="GreyNoise Stark Industries Shell Game blog header graphic"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">GreyNoise blog header for "The Stark Industries Shell Game," documenting the seamless migration of malicious infrastructure from AS44477 (PQ Hosting Plus) to AS209847 (WorkTitans B.V. / THE.Hosting) between August and November 2025.</div>
+          <div class="img-source">GreyNoise, November 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://cdn.prod.website-files.com/667dd40ebb8095e89f27565d/69179bd304faa56be1d90035_GreyNoise-Stark-Industries-hosting.png"
+             alt="GreyNoise data chart showing AS44477 to AS209847 migration pattern"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">GreyNoise Global Observation Grid data showing the migration of malicious activity from AS44477 (peak Aug 18 to Sep 15, near-complete abandonment by Nov 10, 2025) to AS209847 (ramp-up begins Aug 25; maintained post-AS44477).</div>
+          <div class="img-source">GreyNoise, November 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://cdn.prod.website-files.com/667dd40ebb8095e89f27565d/69179afb046efde9c6db286c_GreyNoise-Stark-Industries-Daily-Unique-Tags-Distribution.png"
+             alt="GreyNoise daily unique tags distribution chart comparing AS44477 and AS209847"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">GreyNoise daily unique tag distribution showing virtually identical behavioral signatures across the AS44477 to AS209847 transition. The post-migration ASN achieved the same malicious activity volume with a smaller IP footprint.</div>
+          <div class="img-source">GreyNoise, November 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://www.bleepstatic.com/content/hl-images/2026/05/22/FIOD.jpg"
+             alt="Dutch FIOD enforcement action header image"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Dutch FIOD (Tax Intelligence and Investigation Service) enforcement action against Stark Industries / WorkTitans infrastructure, May 2026. Raids conducted at three business addresses in Enschede and Almere, and two data centers in Dronten and Schiphol-Rijk.</div>
+          <div class="img-source">BleepingComputer / FIOD, May 2026</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://www.bleepstatic.com/images/news/u/1220909/2026/May/1.jpg"
+             alt="FIOD seized servers photograph from the May 2026 raids"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Servers seized during the FIOD raids at Stark Industries / WorkTitans / MIRhosting facilities, May 18-22, 2026. FIOD seized over 800 servers, plus laptops, phones, and administrative records from five locations.</div>
+          <div class="img-source">FIOD / BleepingComputer, May 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02 -->
+  <section id="lineage">
+    <div class="section-label">Section 02</div>
+    <h2>Lineage and Organizational Heritage</h2>
+
+    <h3>Brand and Entity Structure</h3>
+    <table class="data-table">
+      <thead><tr><th>Brand / Entity</th><th>Type</th><th>Jurisdiction</th><th>Role</th><th>Active Window</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Stark Industries Solutions Ltd</strong></td><td>UK Limited Company (Companies House 13906017)</td><td>United Kingdom</td><td>Primary branded entity; focal point of EU sanctions; front for Neculiti-controlled infrastructure</td><td>February 10, 2022 to present (sanctioned entity)</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>PQ Hosting / pq[.]hosting</strong></td><td>Hosting service (Moldova)</td><td>Moldova</td><td>Early upstream and infrastructure partner; deeply intertwined with Stark from 2022; Neculiti-controlled</td><td>Pre-2022 through at least mid-2025; Moldovan DCs</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>PQ Hosting Plus S.R.L.</strong></td><td>Moldovan company; RIPE org (ORG-PHPS1-RIPE)</td><td>Moldova</td><td>New RIPE organization created 13 May 2025 (7 days before EU sanctions); AS44477 transferred to it on 16 May 2025 as preemptive sanctions evasion</td><td>May 13, 2025 onward</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>WorkTitans B.V.</strong></td><td>Dutch company (Hoge Bothofstraat 39, Enschede)</td><td>Netherlands</td><td>Post-sanctions corporate vehicle; held AS209847; presented as ostensibly separate hosting firm; sole shareholder is Fezzy B.V. (linked to Zinad); also traded as WT Hosting and Misfits Media</td><td>Formed 2019; active as BPH vehicle from ~May/June 2025 onward</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>THE.Hosting / the[.]hosting</strong></td><td>Service brand</td><td>Netherlands</td><td>Rebranded service name post-sanctions; PQ.Hosting announced rebrand to THE.Hosting on 29 May 2025; inherits Stark infrastructure and clients</td><td>May 29, 2025 to present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>MIRhosting</strong></td><td>Dutch hosting/colocation operator (Almere)</td><td>Netherlands</td><td>Physical server operator and transit provider; provided colocation and high-capacity connectivity to AMS-IX (Amsterdam) and DE-CIX (Frankfurt); Nesterenko-associated; denied knowing of illegal operations</td><td>Active throughout 2022-2026</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>UFO Hosting LLC</strong></td><td>Russian hosting company (Moscow)</td><td>Russia</td><td>Russian infrastructure migrated from Stark to UFO Hosting LLC as early as 10 April 2025, ahead of EU sanctions; assessed as a parallel migration for Russia-located workloads</td><td>From April 2025</td><td><span class="badge credible">Credible</span> [SINGLE SOURCE: Recorded Future Insikt]</td></tr>
+        <tr><td><strong>Fezzy B.V.</strong></td><td>Dutch holding company (Almere)</td><td>Netherlands</td><td>Sole shareholder of WorkTitans B.V.; linked to Youssef Zinad via phone number (31651079755) and Facebook profile; corporate layer for Zinad's control of WorkTitans</td><td>Active</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Evidentiary Pillars for Lineage</h3>
+    <p><strong>Infrastructure continuity (CONFIRMED):</strong> GreyNoise Global Observation Grid data confirms a seamless migration of malicious activity from AS44477 (PQ Hosting Plus S.R.L.) to AS209847 (WorkTitans B.V.) between August and November 2025. The two ASNs share 24 VPN service signatures in common, with near-identical behavioral tags, JA4T hashes, scanning patterns, and geographic distribution. Recorded Future Insikt independently tracked prefix migration and client reappearance on AS209847.</p>
+    <p><strong>Personnel continuity (CONFIRMED):</strong> EU and French sanctions registers identify Iurie and Ivan Neculiti as controlling both Stark Industries Solutions Ltd and PQ Hosting / PQ Hosting Plus via shared phone numbers and corporate records. KrebsOnSecurity documented that Nesterenko included Zinad in email correspondence as early as 2024, linking MIRhosting and WorkTitans to a shared operator circle. Dutch Chamber of Commerce records confirm WorkTitans' sole shareholder is Fezzy B.V., tied to Zinad.</p>
+    <p><strong>Preemptive sanctions evasion (CONFIRMED):</strong> Insikt Group documents the Neculiti brothers received advance notice of EU sanctions via leaked Moldovan and EU media reporting on 8-9 May 2025, 12 days before the official designation. Between April 10 and May 16, the network migrated Russian infrastructure to UFO Hosting, created ORG-PHPS1-RIPE (PQ Hosting Plus), and transferred AS44477 to the new organization. By the time sanctions landed, the infrastructure was already repositioned.</p>
+
+    <h3>Disputed Assessments</h3>
+    <p>No substantial public dispute exists about the core Stark / PQ / WorkTitans / MIRhosting lineage. The primary analytical disagreement in open sources concerns how deliberate the state nexus is (see Section 07) rather than whether these entities are linked. MIRhosting publicly denied knowingly supporting illegal operations, claiming it acted on abuse complaints; FIOD's charging theory rejects this framing by treating infrastructure provision to sanctioned entities as sufficient for sanctions violation regardless of stated intent.</p>
+
+    <h3>Operator Profiles</h3>
+
+    <h4>2.1 Iurie (Iuri / Yuri) NECULITI</h4>
+    <p><strong>Aliases:</strong> Iurie Neculiti; Iuri Neculiti; Yuri Neculiti (variations across EU and French sanctions documents). No confirmed online handles or forum nicks in open sources [Intelligence Gap].</p>
+    <p><strong>Role:</strong> CEO of Stark Industries Solutions Ltd; associated with PQ Hosting and PQ Hosting Plus S.R.L. through corporate records and sanctions findings.</p>
+    <p><strong>Assessed nationality:</strong> Moldovan (EU sanctions materials; Moldovan company registration for PQ entities).</p>
+    <p><strong>Assessed current location:</strong> Moldova or EEA region; not publicly confirmed post-sanctions.</p>
+    <p><strong>Legal status:</strong> Sanctioned by EU Council (RUSDA program), 20 May 2025. Mirrored in Belgian, Latvian, French, and other national sanctions registries. No public indictment or arrest as of June 2026.</p>
+    <p><strong>Designation basis:</strong> Providing web-hosting infrastructure used by Russian state-aligned threat actors to conduct cyberattacks, credential harvesting, and influence operations against EU and NATO-aligned targets including government, military, and critical infrastructure.</p>
+
+    <h4>2.2 Ivan NECULITI</h4>
+    <p><strong>Role:</strong> Owner of Stark Industries Solutions Ltd; co-owner of PQ Hosting (Moldova).</p>
+    <p><strong>Assessed nationality:</strong> Moldovan.</p>
+    <p><strong>Assessed current location:</strong> Moldova or EEA region; not publicly confirmed.</p>
+    <p><strong>Legal status:</strong> Sanctioned by EU Council (RUSDA program), 20 May 2025, jointly with Iurie. No public indictment or arrest as of June 2026.</p>
+    <p><strong>Designation basis:</strong> Ownership and control of Stark Industries Solutions and PQ Hosting infrastructure used for cyberattacks and information operations aligned with Russian state interests.</p>
+
+    <h4>2.3 Youssef ZINAD</h4>
+    <p><strong>Role:</strong> Director of WorkTitans B.V.; principal of Fezzy B.V.; linked to MIRhosting operations. Formed WorkTitans B.V. in 2019 using email y.zinad@worktitans.nl.</p>
+    <p><strong>Age / Location:</strong> 57, Amsterdam, Netherlands.</p>
+    <p><strong>Legal status:</strong> Arrested 18 May 2026 by Dutch FIOD. Charged with violating EU sanctions by providing economic resources (hosting and connectivity) to sanctioned Stark-linked entities. Case ongoing; presumed innocent pending trial.</p>
+    <p><strong>Designation basis:</strong> Not individually sanctioned at time of writing. Charged under Dutch sanctions law for infrastructure support to EU-sanctioned entities.</p>
+
+    <h4>2.4 Andrey NESTERENKO</h4>
+    <p><strong>Role:</strong> Co-operator of hosting infrastructure linked to WorkTitans and MIRhosting. Documented in 2024 KrebsOnSecurity email thread that included Zinad in correspondence, establishing the Nesterenko-Zinad-MIRhosting-WorkTitans operational link.</p>
+    <p><strong>Age / Location:</strong> 39, The Hague, Netherlands. Nationality not stated in English-language reporting.</p>
+    <p><strong>Legal status:</strong> Arrested 18 May 2026 by Dutch FIOD. Charged with sanctions violations. Case ongoing; presumed innocent pending trial.</p>
+    <p><strong>Designation basis:</strong> Charged for providing hosting capacity and connectivity to EU-sanctioned Stark-linked entities; not individually sanctioned as of June 2026.</p>
+  </section>
+
+  <!-- SECTION 03 -->
+  <section id="operations">
+    <div class="section-label">Section 03</div>
+    <h2>Operational and Business Model</h2>
+
+    <h3>Service Model</h3>
+    <p>Stark and its successor brands operated as high-risk, abuse-tolerant infrastructure providers offering VPS and dedicated servers with liberal abuse handling, high-volume bandwidth suitable for DDoS and C2, and optional "bulletproofing" via ASNs resistant to quick de-peering. The provider targeted clients requiring persistent infrastructure immune to abuse complaints, law enforcement requests, and network-level takedown.</p>
+    <p>Primary service categories: VPS/dedicated servers (Moldova and Netherlands DCs); high-bandwidth nodes for DDoS campaigns; proxy and VPN relay infrastructure; VM images deployable via ISPsystem's VMmanager (enabling rapid re-provisioning).</p>
+
+    <h3>Verbatim Advertising Copy</h3>
+    <div class="callout warning">
+      <div class="callout-label">Intelligence Gap</div>
+      Exact Stark forum advertising text (e.g., from XSS or Exploit.in threads) has not been reproduced in prioritized open sources. The following are reconstructed from vendor paraphrases.
+    </div>
+
+    <div class="verbatim">
+      <div class="verbatim-source">GreyNoise, November 2025 — paraphrasing Stark marketing</div>
+      <div class="verbatim-text">"[Stark] offered all the bulletproof hosting classics: crypto payments, servers in jurisdictions with flexible abuse policies, and a business model built around plausible deniability."</div>
+    </div>
+
+    <div class="verbatim">
+      <div class="verbatim-source">KrebsOnSecurity / Coastline Cyber, September 2025</div>
+      <div class="verbatim-text">"A web hosting provider that materialized two weeks before Russia invaded Ukraine and quickly became a top source of Kremlin-linked cyberattacks and disinformation campaigns."</div>
+    </div>
+
+    <h3>Onboarding and Vetting</h3>
+    <p>No detailed documentation of KYC or vetting procedures is available in open sources. Available evidence is consistent with open signup via website with minimal verification, the standard BPH posture. The concentration of high-end state-aligned and criminal actors suggests possible informal vetting for especially sensitive services (dedicated boxes, high-bandwidth nodes), but this is ANALYST INFERENCE not directly evidenced.</p>
+
+    <h3>Pricing and Service Tiers</h3>
+    <p>Specific price tables and named service tiers are not captured in open sources. Stark's offerings appear in the mid-tier range compared to other BPHs on Russian-language forums, based on OWN-CERT's BPH landscape analysis. No historical price lists or archived website snapshots with pricing are available in the prioritized source set [Intelligence Gap].</p>
+
+    <h3>Downstream Reseller Chain</h3>
+    <p>Evidence points to downstream use of Stark / PQ / MIRhosting infrastructure via ISPsystem VMmanager installations, enabling third-party resellers to package and sell capacity. Sophos documents widely reused VM images associated with Stark infrastructure that served multiple criminal actors. Specific named reseller brands marketing Stark explicitly are not documented in open sources.</p>
+
+    <h3>Abuse Handling and LE Posture</h3>
+    <p>Phish.report and similar abuse services list STARK-INDUSTRIES-SOLUTIONS-AS, MD (AS43624) with standard abuse mailbox entries; however, CERT-EU and vendor reporting consistently notes that complaints resulted in slow or no action, consistent with bulletproof behavior. MIRhosting publicly claimed to act on abuse complaints; FIOD's May 2026 enforcement action rejected this as a defense against sanctions liability. The operator set's behavior across multiple rebrands (Stark to THE.Hosting to WorkTitans) demonstrates a consistently adversarial posture toward regulators and LE.</p>
+
+    <h3>OPSEC and Support Channels</h3>
+    <p>Stark's specific operational communications (Jabber, Telegram, ticketing portals) are not documented in open sources. A ticket-based support system via the stark-industries[.]solutions and later the[.]hosting portals is a reasonable inference from standard BPH operational models. No leaked chat logs or panel screenshots have appeared in the prioritized source set [Intelligence Gap].</p>
+
+    <div class="callout info">
+      <div class="callout-label">Post-Sanctions Operational Adaptation</div>
+      The PQ.Hosting-to-THE.Hosting rebrand included a public website migration to the[.]hosting, presentation of WorkTitans B.V. as an ostensibly new Dutch company with no apparent connection to Stark, and service continuity for existing clients (confirmed by GreyNoise migration data). This represents a documented, deliberate OPSEC protocol for sanctions evasion, not an ad hoc response.
+    </div>
+  </section>
+
+  <!-- SECTION 04 -->
+  <section id="technical">
+    <div class="section-label">Section 04</div>
+    <h2>Technical Capabilities and Infrastructure Footprint</h2>
+
+    <h3>ASN Summary</h3>
+    <table class="data-table">
+      <thead><tr><th>ASN</th><th>Registered Name</th><th>Status (June 2026)</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>AS44477</code></td><td>STARK-INDUSTRIES / PQ Hosting Plus S.R.L. (ORG-PHPS1-RIPE, created 13 May 2025)</td><td><span class="badge single-source">De-registered</span></td><td>holder="" announced=false per RIPE NCC RIPEstat API, 6 June 2026. Originally Stark's primary ASN; transferred to PQ Hosting Plus S.R.L. on 16 May 2025, 4 days before EU sanctions. Malicious activity migrated to AS209847 by Nov 2025.</td></tr>
+        <tr><td><code>AS43624</code></td><td>STARK-INDUSTRIES-SOLUTIONS-AS, MD (PQ Hosting, Moldova)</td><td><span class="badge single-source">De-registered</span></td><td>holder="" announced=false per RIPE NCC RIPEstat API, 6 June 2026. Moldovan ASN with abuse contacts listed in phish.report. Now withdrawn.</td></tr>
+        <tr><td><code>AS209847</code></td><td>THE WorkTitans B.V.</td><td><span class="badge confirmed">Active</span></td><td>holder="THE WorkTitans B.V." announced=true per RIPE NCC RIPEstat API, 6 June 2026. Created 24 June 2025. Still announcing 200+ IPv4 prefixes as of 6 June 2026, three weeks after FIOD arrests and server seizures.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Representative IPv4 Ranges (AS209847, Active June 2026)</h3>
+    <p>Direct RIPE NCC query of AS209847 on 6 June 2026 returned the following active /24 prefixes (non-exhaustive selection; 200+ total active prefixes confirmed):</p>
+    <table class="data-table">
+      <thead><tr><th>Prefix</th><th>Active as of</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><code>171.22.126.0/24</code></td><td>6 June 2026</td><td>Formerly in Stark /23 block (171.22.126.0/23)</td></tr>
+        <tr><td><code>171.22.127.0/24</code></td><td>6 June 2026</td><td>Formerly in Stark /23 block</td></tr>
+        <tr><td><code>171.22.112.0/24</code></td><td>6 June 2026</td><td>WorkTitans range</td></tr>
+        <tr><td><code>171.22.113.0/24</code></td><td>6 June 2026</td><td>WorkTitans range</td></tr>
+        <tr><td><code>171.22.118.0/24</code></td><td>6 June 2026</td><td>WorkTitans range</td></tr>
+        <tr><td><code>171.22.131.0/24</code></td><td>6 June 2026</td><td>WorkTitans range</td></tr>
+        <tr><td><code>45.12.109.0/24</code>, <code>45.12.132.0/24</code>, <code>45.12.133.0/24</code></td><td>6 June 2026</td><td>45.12.x ranges (multiple active)</td></tr>
+        <tr><td><code>5.182.36.0/24</code>, <code>5.182.37.0/24</code>, <code>5.182.38.0/24</code></td><td>6 June 2026</td><td>5.182.x cluster</td></tr>
+        <tr><td><code>185.234.56.0/24</code>, <code>185.234.57.0/24</code>, <code>185.234.58.0/24</code></td><td>6 June 2026</td><td>185.234.x cluster</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Data Center Footprint</h3>
+    <table class="data-table">
+      <thead><tr><th>Location</th><th>Entity</th><th>Role</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Dronten, Netherlands</td><td>MIRhosting / WorkTitans</td><td>Data center; servers seized in FIOD raid</td><td>Raided May 2026</td></tr>
+        <tr><td>Schiphol-Rijk, Netherlands</td><td>MIRhosting / WorkTitans</td><td>Data center; servers seized in FIOD raid</td><td>Raided May 2026</td></tr>
+        <tr><td>Enschede, Netherlands</td><td>WorkTitans B.V. (Hoge Bothofstraat 39)</td><td>Business address searched by FIOD</td><td>Raided May 2026</td></tr>
+        <tr><td>Almere, Netherlands</td><td>Fezzy B.V. / MIRhosting</td><td>Business address searched by FIOD</td><td>Raided May 2026</td></tr>
+        <tr><td>Moldova</td><td>PQ Hosting / PQ Hosting Plus</td><td>Moldovan DCs; core early infrastructure; status post-EU-sanctions unclear</td><td>Degraded (sanctions on PQ entities)</td></tr>
+      </tbody>
+    </table>
+    <p>Stark and its successor entities leased or colocated hardware via PQ Hosting, MIRhosting, and WorkTitans rather than owning datacenter real estate directly. MIRhosting provided physical servers and transit to AMS-IX (Amsterdam) and DE-CIX (Frankfurt) as the connectivity backbone.</p>
+
+    <h3>Upstream Transit Chain</h3>
+    <p><strong>Phase 1 (2022 to mid-2025):</strong> PQ Hosting (Moldova) as primary upstream and infrastructure layer; Stark-branded ASNs (AS44477, AS43624) routed via PQ facilities.</p>
+    <p><strong>Phase 2 (mid-2025 to present):</strong> MIRhosting (Almere, Netherlands) as primary colocation and transit provider for WorkTitans / THE.Hosting (AS209847), with high-capacity connections to AMS-IX and DE-CIX Frankfurt. MIRhosting served as the transport layer through which THE.Hosting traffic entered European internet infrastructure.</p>
+    <p><strong>De-peering events:</strong> EU sanctions on PQ Hosting and PQ Hosting Plus (May 2025) triggered financial exclusion and forced migration of RIPE resources to new entities. AS44477 and AS43624 are now fully de-registered. No documented upstream de-peering events targeted AS209847 before the FIOD arrests, explaining its persistence post-sanctions. As of June 2026, AS209847 continues to route despite the May 2026 arrests.</p>
+    <p><strong>RIPE abuse contacts:</strong> AS43624 (PQ Hosting, MD) listed standard NOC/abuse mailboxes per phish.report. AS209847 (WorkTitans) lists a Dutch address and abuse mailbox in its RIPE object; these were the formal complaint channels for Stark/THE.Hosting traffic after the sanctions rebrand.</p>
+
+    <h3>Resilience Techniques</h3>
+    <ul>
+      <li><strong>ASN agility:</strong> Rapid migration of prefixes from Stark-labeled ASNs to AS209847 while preserving customer base and malicious activity profiles. The transfer of AS44477 to PQ Hosting Plus S.R.L. four days before sanctions was a documented preemptive maneuver.</li>
+      <li><strong>Multi-datacenter redundancy:</strong> Multiple Dutch facilities (Dronten, Enschede, Almere, Schiphol-Rijk) plus Moldovan facilities provided resilience against single-facility takedowns.</li>
+      <li><strong>Rebranding and shell layering:</strong> Serial use of Stark, PQ Hosting Plus, THE.Hosting / WorkTitans, with MIRhosting providing the physical layer; each rebrand inserted a new legal entity between the operator and the infrastructure.</li>
+      <li><strong>Preemptive intelligence:</strong> Demonstrated ability to receive advance warning of sanctions (via leaked EU media, May 2025) and execute infrastructure migration before formal designation.</li>
+      <li><strong>VM image standardization:</strong> Use of ISPsystem VMmanager installations to enable rapid re-provisioning of customer VMs across infrastructure, reducing the impact of node-level takedowns.</li>
+    </ul>
+
+    <h3>Hosted Activity Types</h3>
+    <table class="data-table">
+      <thead><tr><th>Activity Type</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Credential harvesting / phishing (state-aligned)</td><td>Recorded Future / Insikt: TAG-53 / Callisto / COLDRIVER-like cluster infrastructure hosted on Stark ASNs</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>DDoS / hacktivist infrastructure</td><td>CERT-EU briefs: NoName057(16) C2, staging, and propaganda sites</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Ransomware C2 and staging</td><td>Sophos / OWN-CERT: LockBit, ALPHV/BlackCat, Qilin, Ursnif on widely reused Stark VM images</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Financial crime infrastructure (FIN7)</td><td>Team Cymru / Silent Push: FIN7 credential-harvesting and fake corporate sites on Stark IPs</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Commodity stealer / RAT C2</td><td>Centripetal: RedLine Stealer and NetSupport RAT C2 on Stark ranges</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>VPN / proxy obfuscation nodes</td><td>TRM Labs; GreyNoise (24+ VPN service signatures on AS44477/AS209847)</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Blocklist Standing</h3>
+    <table class="data-table">
+      <thead><tr><th>Blocklist</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Spamhaus SBL / CBL / XBL</td><td><span class="bl-probable">Probable Listed</span></td><td>Vendor and CERT reporting confirms repeated listings for spam, malware C2, and abusive scanning on Stark-associated ranges. Specific SBL entry numbers and first-listing dates not publicly documented in prioritized source set. AS209847 continues to announce from the same IP space. [Intelligence Gap: complete historical listing table]</td></tr>
+        <tr><td>abuse.ch (Feodo, URLhaus, MalwareBazaar)</td><td><span class="bl-probable">Probable Listed</span></td><td>Multiple individual IPs and domains resolving to Stark/WorkTitans ranges appear in abuse.ch feeds per Centripetal and vendor IOC reporting. Presented as IOC feeds rather than ASN-level narrative; no full enumeration available.</td></tr>
+        <tr><td>FireHOL level-1 / level-2</td><td><span class="bl-probable">Probable Listed</span></td><td>FireHOL high-risk ASN lists historically included PQ Hosting ranges; Stark-specific annotations not called out by name in available sources.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Known Weaknesses Exploited</h3>
+    <p><strong>Dutch jurisdictional vulnerability:</strong> Concentrating physical infrastructure in Netherlands facilities created a jurisdictional exposure that FIOD leveraged in May 2026. Under Dutch sanctions law, providing economic resources (hosting, connectivity) to sanctioned entities constitutes a violation regardless of whether the provider claims ignorance of client identity. This enabled rack-level seizures, not just individual IP takedowns.</p>
+    <p><strong>Limited operator set:</strong> Reliance on a small circle of operators (Neculiti brothers, Zinad, Nesterenko) and known corporate shells (Fezzy B.V., WorkTitans, MIRhosting) allowed sanctions packages to target overlapping individuals and companies, concentrating legal pressure even when technical impact was limited.</p>
+    <p><strong>Shell company transparency:</strong> KrebsOnSecurity traced WorkTitans to Fezzy B.V. to Zinad through public Dutch Chamber of Commerce records and open-source OSINT on phone numbers. The shell structure was legally obfuscating but not operationally opaque.</p>
+  </section>
+
+  <!-- SECTION 05 -->
+  <section id="financial">
+    <div class="section-label">Section 05</div>
+    <h2>Financial Infrastructure</h2>
+
+    <h3>Payment Methods</h3>
+    <p>Direct evidence of Stark's payment interfaces is sparse in open sources, consistent with BPH operational security norms.</p>
+    <ul>
+      <li><strong>Cryptocurrencies (CONFIRMED):</strong> GreyNoise and other vendors explicitly list crypto payments as part of Stark's offering. Post-sanctions, crypto is the dominant plausible channel given financial exclusion from EU banking.</li>
+      <li><strong>Traditional bank / card payments:</strong> Not documented in available sources. EU sanctions effectively cut Stark and PQ entities off from formal EU financial systems from May 2025 onward.</li>
+    </ul>
+
+    <h3>Wallet Clusters and On-Chain Analysis</h3>
+    <div class="callout warning">
+      <div class="callout-label">Intelligence Gap — Critical</div>
+      No public TRM Labs, Chainalysis, or Elliptic reporting attributes specific on-chain wallet clusters to Stark operators or entities. TRM Labs' EU/UK crackdown blog names Stark as part of a "Russian hybrid threat network" but does not publish wallet addresses. If Stark-specific wallets exist in blockchain analytics platforms, they are behind customer portals or law enforcement channels only.
+    </div>
+
+    <h3>Three-Phase Laundering Model</h3>
+    <p>The three-phase laundering pattern (acquisition, layering, extraction) cannot be reconstructed from open sources given the absence of wallet IOCs. This remains a significant intelligence gap that limits financial disruption options (OFAC wallet designation, exchange-level blocking).</p>
+
+    <h3>Sanctions and Risk Ratings</h3>
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Entity / Individual</th><th>Designation Date</th><th>Program</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>EU Council</td><td>Stark Industries Solutions Ltd</td><td>20 May 2025</td><td>RUSDA (Russia destabilizing actions)</td><td>Active</td></tr>
+        <tr><td>EU Council</td><td>Iurie Neculiti</td><td>20 May 2025</td><td>RUSDA</td><td>Active</td></tr>
+        <tr><td>EU Council</td><td>Ivan Neculiti</td><td>20 May 2025</td><td>RUSDA</td><td>Active</td></tr>
+        <tr><td>EU Council</td><td>PQ Hosting; PQ Hosting Plus S.R.L.</td><td>20 May 2025</td><td>RUSDA</td><td>Active</td></tr>
+        <tr><td>National mirrors (BE, LV, FR, others)</td><td>All of the above</td><td>May 2025</td><td>EU mirror</td><td>Active</td></tr>
+        <tr><td>OFAC (US Treasury)</td><td>Stark entities / operators</td><td>N/A</td><td>N/A</td><td>Not confirmed on SDN list as of June 2026</td></tr>
+        <tr><td>UK OFSI / FCDO</td><td>Stark entities / operators</td><td>N/A</td><td>N/A</td><td>EU-mirrored measures applied; independent UK listing not confirmed in open sources as of June 2026</td></tr>
+      </tbody>
+    </table>
+    <p>TRM Labs and other risk-rating vendors classify Stark as a high-risk "hybrid threat infrastructure" entity, but specific VASP-level risk scores are not public.</p>
+  </section>
+
+  <!-- SECTION 06 -->
+  <section id="clientele">
+    <div class="section-label">Section 06</div>
+    <h2>Client Profile and Hosted Operations</h2>
+
+    <h3>Crimeware Verticals by Evidence Tier</h3>
+    <table class="data-table">
+      <thead><tr><th>Client Vertical</th><th>Evidence</th><th>Tier 1 Hosting</th><th>Tier 2 Operational</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Russia-aligned APT / Espionage</strong><br>TAG-53 / Callisto / COLDRIVER-like cluster</td>
+          <td>Recorded Future Insikt: credential-harvesting and phishing infrastructure hosted on Stark ASNs; technical infrastructure overlap (ASNs, domains)</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+          <td><span class="badge credible">Credible</span></td>
+        </tr>
+        <tr>
+          <td><strong>Pro-Russian Hacktivist / DDoS</strong><br>NoName057(16) and related fronts</td>
+          <td>CERT-EU briefs (CB24-06, CB25-10): IP/ASN overlap, campaign timing and targeting patterns; De Volkskrant (May 2026) links WorkTitans to NoName057(16) DDoS attacks</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+          <td><span class="badge credible">Credible</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware Ecosystems</strong><br>LockBit, ALPHV/BlackCat, Qilin, Ursnif</td>
+          <td>Sophos: widely reused Stark-heavy VM images; OWN-CERT: BPH landscape placing Stark-type hosts; NetSupport RAT and Ursnif observed on Stark ranges</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+          <td><span class="badge inference">Analyst Inference</span></td>
+        </tr>
+        <tr>
+          <td><strong>High-End Financial Crime</strong><br>FIN7</td>
+          <td>Team Cymru: Stark-assigned IPs hosting FIN7 credential-harvesting and fake corporate sites; Silent Push Year-in-Review referencing Stark infrastructure</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+          <td><span class="badge inference">Analyst Inference</span> [SINGLE SOURCE: primarily Team Cymru / Silent Push]</td>
+        </tr>
+        <tr>
+          <td><strong>Commodity Stealers / RATs</strong><br>RedLine Stealer, NetSupport RAT</td>
+          <td>Centripetal: RedLine and NetSupport RAT C2 on Stark ranges</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+          <td><span class="badge inference">Analyst Inference</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Client Geography</h3>
+    <p>Client infrastructure concentrated in Moldova and Netherlands IP ranges, but used to target EU, UK, US, and Ukrainian entities. No evidence of a CIS exclusion zone, consistent with a provider serving Russian state-aligned actors targeting outward rather than protecting domestic interests. Campaign targeting patterns documented in CERT-EU confirm EU and NATO-aligned government, military, energy, and democratic institutions as primary targets.</p>
+
+    <h3>Notable Hosted Cases</h3>
+    <p><strong>EU/UK hybrid threat sanctions package (May 2025):</strong> Stark cited as a key enabler of Russian cyber and information operations in the RUSDA sanctions package. Underlying EU designation narratives summarized in TRM Labs and Cyfluence highlight use for campaigns against military, energy, logistics, and democratic institutions, though the full technical annex is not public.</p>
+    <p><strong>Dutch FIOD enforcement action (May 2026):</strong> 800+ servers used by Russian-aligned cyberattack and disinformation operations seized from five locations. FIOD and De Volkskrant explicitly linked the seized infrastructure to Stark / WorkTitans / MIRhosting and to NoName057(16) DDoS operations against Danish infrastructure.</p>
+  </section>
+
+  <!-- SECTION 07 -->
+  <section id="nexus">
+    <div class="section-label">Section 07</div>
+    <h2>State Nexus Assessment</h2>
+
+    <h3>Assessed Tier: Probable Cooperation (Tier 3 of 4)</h3>
+    <p>Evidence supports more than tolerated safe harbor. The EU sanctions designation explicitly states that Stark "enabled Russian state-sponsored cyber operations" including information manipulation, cyberattacks, and destabilizing hybrid activities. CTI reporting shows systematic and repeated hosting of infrastructure for Russia-aligned APT and influence clusters, not merely generic cybercrime. The emergence of the provider two weeks before Russia's February 2022 invasion, the consistent alignment of hosted operations with Russian state objectives (targeting NATO democracies, Ukrainian entities, EU critical infrastructure), and the use by TAG-53 / Callisto / COLDRIVER-like clusters (assessed FSB-linked by multiple vendors) collectively support probable cooperation.</p>
+    <p>Tier 4 (Direct Control) is not justified: no public leaks, court documents, or technical evidence show direct FSB/GRU tasking, payment flows to Stark operators from Russian state actors, or shared infrastructure administration accounts between Stark and Russian state agencies.</p>
+
+    <h3>Evidence Supporting Probable Cooperation</h3>
+    <ul>
+      <li>EU Council RUSDA designation language: "enabling Russian state-sponsored cyber operations and information manipulation" — this exceeds the language typically used for tolerated-safe-harbor assessments.</li>
+      <li>Systematic co-location of state-aligned espionage clusters (TAG-53 / COLDRIVER) and hacktivist infrastructure (NoName057(16)) on the same ASNs, suggesting deliberate client selection or at minimum willful blindness.</li>
+      <li>Emergence timing: provider formed February 10, 2022, two weeks before Russia's full-scale invasion, suggesting anticipatory infrastructure preparation aligned with Russian operational planning.</li>
+      <li>Rapid, orderly sanctions preemption (April-May 2025) requiring advance intelligence about EU regulatory actions, suggesting access to information channels beyond public media.</li>
+    </ul>
+
+    <h3>Negative Evidence</h3>
+    <ul>
+      <li>No public court documents or leaked communications showing direct FSB/GRU tasking of Stark operators.</li>
+      <li>No technical evidence of shared administrative accounts between Stark infrastructure and Russian state agencies.</li>
+      <li>No confirmed payments from Russian state entities to Neculiti brothers or associated companies in open sources.</li>
+      <li>Both arrested operators (Zinad, Nesterenko) are Netherlands-based, not Russian nationals; their charging is under sanctions law, not espionage or state-directed cyber statutes.</li>
+    </ul>
+
+    <h3>Jurisdictional Separation</h3>
+    <div class="jurisdiction-grid">
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Entity Registration Jurisdiction</div>
+        <div class="jurisdiction-value">United Kingdom / Netherlands / Moldova</div>
+        <div class="jurisdiction-detail">Stark Industries Solutions Ltd: UK (Companies House 13906017). WorkTitans B.V.: Netherlands (Enschede). PQ Hosting Plus S.R.L.: Moldova. Fezzy B.V.: Netherlands (Almere).</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Infrastructure Hosting Jurisdiction</div>
+        <div class="jurisdiction-value">Netherlands (primary) / Moldova (secondary)</div>
+        <div class="jurisdiction-detail">Primary DCs: Dronten, Enschede, Almere, Schiphol-Rijk (Netherlands). Secondary: PQ Hosting facilities (Moldova). No confirmed Russian-hosted infrastructure for the primary Stark/WorkTitans footprint.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Assessed Operator Location</div>
+        <div class="jurisdiction-value">Moldova / Netherlands</div>
+        <div class="jurisdiction-detail">Neculiti brothers: Moldova (assessed; not confirmed post-sanctions). Zinad: Amsterdam, Netherlands (confirmed; arrested). Nesterenko: The Hague, Netherlands (confirmed; arrested). Russian-aligned clients / tasking: Russia / proximate jurisdictions.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 08 -->
+  <section id="disruption">
+    <div class="section-label">Section 08</div>
+    <h2>Law Enforcement and Regulatory Response</h2>
+
+    <h3>Sanctions and Policy Actions</h3>
+    <table class="data-table">
+      <thead><tr><th>Date</th><th>Action</th><th>Authority</th><th>Targets</th></tr></thead>
+      <tbody>
+        <tr><td>20 May 2025</td><td>EU Council sanctions (RUSDA program)</td><td>European Union</td><td>Stark Industries Solutions Ltd; Iurie Neculiti; Ivan Neculiti; PQ Hosting; PQ Hosting Plus S.R.L.</td></tr>
+        <tr><td>May 2025</td><td>National mirror measures</td><td>Belgium, Latvia, France, and other EU member states</td><td>Mirror of EU RUSDA designations; all entities listed as "Active" in national registries</td></tr>
+        <tr><td>June 2026</td><td>OFAC SDN</td><td>United States (OFAC)</td><td>Not confirmed on SDN list as of this writing</td></tr>
+        <tr><td>June 2026</td><td>UK OFSI / FCDO</td><td>United Kingdom</td><td>EU-mirrored measures applied; independent UK-only designation not confirmed</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Indictments, Arrests, and Charges</h3>
+    <p><strong>Netherlands (FIOD), 18 May 2026:</strong> Dutch fiscal intelligence and investigation service (FIOD) arrested Youssef Zinad (57, Amsterdam) and Andrey Nesterenko (39, The Hague) following a multi-location enforcement operation. FIOD conducted raids at three business addresses in Enschede and Almere and two data centers in Dronten and Schiphol-Rijk. Seized: 800+ servers, laptops, phones, and administrative records.</p>
+    <p>Charges proceed under Dutch sanctions law (not pure cybercrime statutes): the suspects are alleged to have indirectly provided economic resources to Russian and Belarusian entities sanctioned by the EU, with the infrastructure assessed to have supported Russian Federation activity undermining democracy and security through cyberattacks, foreign interference, and disinformation. Cases are ongoing; both individuals are presumed innocent pending trial.</p>
+    <p>The Neculiti brothers have not been indicted, arrested, or charged in any jurisdiction as of June 2026.</p>
+
+    <h3>Infrastructure Seizures and Takedowns</h3>
+    <p><strong>2024 (preliminary action):</strong> Dutch authorities confiscated several hundred servers during earlier enforcement actions against WorkTitans-linked infrastructure prior to the May 2026 raids. Specifics not fully documented in open sources.</p>
+    <p><strong>May 18-22, 2026 (main FIOD action):</strong> 800+ servers seized from Dronten and Schiphol-Rijk data centers and three business addresses. This represents the largest single enforcement action against Stark-linked infrastructure to date.</p>
+
+    <h3>Post-Disruption Client Migration</h3>
+    <p><strong>After EU sanctions (May 2025):</strong> Recorded Future and GreyNoise confirm near-immediate migration of malicious activity from AS44477 (PQ Hosting Plus) to AS209847 (WorkTitans / THE.Hosting) with minimal downtime, strong IOC continuity, and near-identical behavioral profiles. Clients experienced no apparent operational disruption.</p>
+    <p><strong>After FIOD 2026 raids:</strong> Full migration patterns are still emerging as of June 2026. AS209847 remains active with 200+ prefixes three weeks after the arrests (confirmed RIPE data). Some operations likely shifted to alternative Russia-aligned BPHs; others may remain on surviving WorkTitans infrastructure. Complete post-2026 picture is an intelligence gap.</p>
+
+    <h3>Impact Assessment</h3>
+    <p><strong>Short-term impact:</strong> Noticeable but temporary reduction in malicious traffic from seized IP ranges; some campaigns paused or retooled infrastructure. The 2026 physical server seizure removes hardware, which has a higher reconstitution cost than a legal entity rebrand.</p>
+    <p><strong>Medium-term impact:</strong> Limited. Prior behavior demonstrates high substitution capacity. The operator's documented ability to pre-position infrastructure before enforcement suggests additional shell entities or alternative upstreams may already exist. AS209847 remaining active three weeks post-arrest indicates the infrastructure layer is not fully dependent on Zinad and Nesterenko's continued freedom.</p>
+    <p><strong>Structural impact:</strong> The arrests of two Netherlands-based operators and the seizure of server hardware represent a meaningful escalation above the purely sanctions-based pressure applied in 2025. However, the primary operators (Neculiti brothers) remain at large and sanctioned in jurisdictions (Moldova, possibly Russia) that have not extradited or arrested them.</p>
+  </section>
+
+  <!-- SECTION 09 -->
+  <section id="connected">
+    <div class="section-label">Section 09</div>
+    <h2>Connected Groups and Ecosystem Relationships</h2>
+
+    <div class="callout info">
+      <div class="callout-label">Two-Tier Confidence Applied</div>
+      All connected entity claims use two separate confidence labels. Tier 1 (infrastructure): did Stark host their infrastructure? Tier 2 (operational): did Stark operators knowingly coordinate with the client? These are analytically distinct claims requiring separate evidence.
+    </div>
+
+    <!-- TAG-53 -->
+    <div class="connected-entity">
+      <div class="entity-name">TAG-53 / Callisto / COLDRIVER-like Credential-Harvesting Cluster</div>
+      <div class="entity-meta">Russia-aligned espionage cluster; assessed FSB-linked by multiple vendors</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure hosting:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational relationship:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">Recorded Future Insikt Group documents credential-harvesting and phishing infrastructure attributed to TAG-53 hosted on Stark ASNs (AS44477 and predecessor ranges). Technical infrastructure overlap confirmed via ASN attribution and domain resolution analysis. Tier 2 assessed Credible rather than Confirmed based on Stark's consistent alignment with Russian state interests and deliberate hosting of this cluster, but no direct evidence of coordination between Stark operators and TAG-53 principals.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Recorded Future Insikt</span>
+        <span class="vendor-tag cor">CERT-EU</span>
+        <span class="vendor-tag">CRC Blog (Cyfluence)</span>
+      </div>
+    </div>
+
+    <!-- NoName057(16) -->
+    <div class="connected-entity">
+      <div class="entity-name">NoName057(16) and Pro-Russian DDoS Fronts</div>
+      <div class="entity-meta">Pro-Russian hacktivist group; DDoS campaigns against NATO/EU targets</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure hosting:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational relationship:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">CERT-EU briefs (CB24-06, CB25-10) confirm IP/ASN overlap between Stark/WorkTitans infrastructure and NoName057(16) C2 and staging nodes. Campaign timing and targeting patterns (EU government, military, critical infrastructure) align with the RUSDA sanctions narrative. De Volkskrant (May 2026) further links WorkTitans specifically to NoName057(16) attacks on Danish infrastructure.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">CERT-EU</span>
+        <span class="vendor-tag cor">De Volkskrant (May 2026)</span>
+        <span class="vendor-tag">EU sanctions narrative</span>
+      </div>
+    </div>
+
+    <!-- FIN7 -->
+    <div class="connected-entity">
+      <div class="entity-name">FIN7</div>
+      <div class="entity-meta">Russia-linked financially motivated threat actor; credential harvesting, fake enterprise sites</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure hosting:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational relationship:</span><span class="badge inference">Analyst Inference</span> <span class="badge single-source">Single Source</span></div>
+        </div>
+      </div>
+      <div class="entity-text">Team Cymru blog ("FIN7: The Truth Doesn't Need to Be So Stark") and Silent Push Year-in-Review identify Stark-assigned IPs hosting FIN7 credential-harvesting and fake corporate sites. Infrastructure clustering of FIN7 IOCs on Stark IPs confirmed. Tier 2 is Analyst Inference as no evidence shows Stark operators coordinating specifically with FIN7 principals; the attribution is based on IOC-level infrastructure overlap.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Team Cymru</span>
+        <span class="vendor-tag cor">Silent Push</span>
+        <span class="vendor-tag ss">No other corroborating vendors identified</span>
+      </div>
+    </div>
+
+    <!-- Ransomware Ecosystems -->
+    <div class="connected-entity">
+      <div class="entity-name">Ransomware Ecosystems (LockBit, ALPHV/BlackCat, Qilin, Ursnif)</div>
+      <div class="entity-meta">Multiple ransomware affiliates and crimeware operators using shared Stark VM infrastructure</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure hosting:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational relationship:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">Sophos documents widely reused Stark-heavy VM images (ISPsystem VMmanager deployments) with LockBit, ALPHV/BlackCat, Qilin, NetSupport RAT, and Ursnif payloads observed. OWN-CERT BPH landscape analysis places Stark-type hosts as a key ransomware enabler. Detection telemetry from Stark/WorkTitans IP ranges. Tier 2 is Analyst Inference: Stark's profile and behavior strongly suggest awareness of ransomware clients, but no direct evidence of operator-level coordination with specific ransomware groups.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Sophos</span>
+        <span class="vendor-tag cor">OWN-CERT</span>
+        <span class="vendor-tag">Centripetal</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section id="status">
+    <div class="section-label">Section 10</div>
+    <h2>Trajectory Assessment</h2>
+
+    <h3>Infrastructure Churn and Market Position</h3>
+    <p>Stark / WorkTitans / THE.Hosting is best characterized as a major backbone provider in the Russia-aligned hybrid threat ecosystem, not a niche host. Its recurring appearance across high-profile CTI, the RUSDA sanctions package, and the FIOD enforcement action places it among the most extensively documented BPH operators in Europe. The breadth of hosted activity (state-aligned APT, hacktivist DDoS, ransomware, financial crime) indicates a provider serving the full spectrum of Russian-aligned threat actors rather than a speciality niche.</p>
+
+    <h3>Disruption History</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">February 10, 2022</div>
+        <div class="timeline-text">Stark Industries Solutions Ltd incorporated in UK (Companies House 13906017), two weeks before Russia's full-scale invasion of Ukraine. Rapid emergence as prime infrastructure for Russian-aligned cyber and influence operations.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2023-early 2025</div>
+        <div class="timeline-text">Infrastructure heavily used by TAG-53 / Callisto cluster, NoName057(16), FIN7, and ransomware affiliates. Recorded Future, Team Cymru, Cyfluence, and CERT-EU publish attribution linking Stark to Russian hybrid threat ecosystem. Stark well-known in CTI community.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">April 10, 2025</div>
+        <div class="timeline-text">Russian infrastructure begins migration to UFO Hosting LLC, indicating advance intelligence about forthcoming EU sanctions (confirmed Insikt Group). Preemptive sanctions evasion phase begins.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">May 13-16, 2025</div>
+        <div class="timeline-text">New RIPE organization PQ Hosting Plus S.R.L. (ORG-PHPS1-RIPE) created May 13; AS44477 transferred to it May 16, four days before EU sanctions. Shell repositioning complete before official designation.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">May 20, 2025</div>
+        <div class="timeline-text">EU Council (RUSDA program) sanctions Stark Industries Solutions Ltd, Iurie Neculiti, Ivan Neculiti, PQ Hosting, and PQ Hosting Plus S.R.L. Limited operational impact due to preemptive infrastructure migration.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">May 29, 2025</div>
+        <div class="timeline-text">PQ.Hosting announces rebrand as THE.Hosting, presenting WorkTitans B.V. as the new corporate entity. Website migration to the[.]hosting.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">June 24, 2025</div>
+        <div class="timeline-text">AS209847 (THE WorkTitans B.V.) created and begins routing. Becomes the successor ASN for THE.Hosting / WorkTitans operations.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">August-November 2025</div>
+        <div class="timeline-text">GreyNoise data confirms seamless migration of malicious activity from AS44477 to AS209847. AS44477 peak activity Aug 18 to Sep 15; near-complete abandonment by Nov 10. AS209847 ramp-up from Aug 25. Both ASNs share 24 VPN signatures; behavioral profiles virtually identical.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">November 17, 2025</div>
+        <div class="timeline-text">GreyNoise publishes "The Stark Industries Shell Game," documenting the full migration analysis and confirming THE.Hosting / WorkTitans as the operational successor to Stark's sanctioned infrastructure.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">May 18, 2026</div>
+        <div class="timeline-text">Dutch FIOD arrests Youssef Zinad (Amsterdam, 57) and Andrey Nesterenko (The Hague, 39). Raids at five locations in Enschede, Almere, Dronten, and Schiphol-Rijk. 800+ servers, laptops, phones, and administrative records seized.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">June 6, 2026 (current)</div>
+        <div class="timeline-text">AS209847 (WorkTitans B.V. / THE.Hosting) confirmed ACTIVE by direct RIPE NCC RIPEstat query: holder="THE WorkTitans B.V." announced=true; 200+ IPv4 prefixes routing. Neculiti brothers remain sanctioned and at large. Cases against Zinad and Nesterenko ongoing. Post-2026 client migration patterns not yet documented in open sources.</div>
+      </div>
+    </div>
+
+    <h3>Trajectory Direction</h3>
+    <p>Status: <strong>Degraded but Resilient</strong>. The FIOD 2026 server seizure represents the most impactful enforcement action against this ecosystem to date, removing physical hardware rather than merely imposing legal sanctions. However, the continued activity of AS209847 three weeks post-arrest indicates the infrastructure layer is not fully dependent on the arrested Dutch operators. The Neculiti brothers remain the assessed principals of the broader Neculiti-controlled network and have not faced arrest, prosecution, or extradition.</p>
+    <p>The pattern to date (2022-2026) demonstrates a provider with high reconstitution capacity: each disruption (sanctions, preliminary server seizures) has been followed within weeks by a functional rebrand. The 2026 FIOD action is more severe due to physical seizure, but the Neculiti-controlled corporate structure provides multiple reconstitution pathways.</p>
+
+    <h3>Intelligence Gaps (Mandatory)</h3>
+    <div class="gap-list">
+      <div class="gap-item"><strong>1. Post-2026 client re-homing patterns</strong><p>Where Stark/WorkTitans clients will consolidate after May 2026 Dutch seizures; whether a new successor brand or ASN emerges under Neculiti control. Events too recent; no follow-up migration analysis published as of June 2026. Close with: future CERT-EU briefs, GreyNoise ASN-level anomaly monitoring, vendor IOC feed divergence analysis.</p></div>
+      <div class="gap-item"><strong>2. Verbatim advertising copy on criminal forums</strong><p>Exact Stark ad texts on XSS/Exploit.in, including specific claims about abuse tolerance, no-logs policies, and accepted use cases. CTI write-ups summarize behavior rather than reproduce forum posts. Close with: historical XSS/Exploit screenshots, vendor collections of BPH ads, or forum leaks.</p></div>
+      <div class="gap-item"><strong>3. On-chain financial data</strong><p>No cryptocurrency wallets or on-chain flows attributed to Stark operators or entities in public sources. Limits financial disruption options (OFAC wallet designation, exchange-level blocking). Close with: TRM Labs or Chainalysis entity-specific analysis behind customer portals; law enforcement blockchain tracing disclosures.</p></div>
+      <div class="gap-item"><strong>4. Operator handles and OPSEC details</strong><p>No pseudonymous handles for Neculiti brothers on forums or chat platforms identified in open sources. Internal panel screenshots and support portal URLs not leaked. Close with: forum intelligence, law enforcement document disclosures, or leaked support panel dumps.</p></div>
+      <div class="gap-item"><strong>5. Full structured blocklist history</strong><p>Exact dates and ranges of Spamhaus SBL/CBL/XBL/PBL listings, abuse.ch Feodo/URLhaus/MalwareBazaar listing history, and FireHOL entries by ASN. Public sources mention repeated listings without full timeline. Close with: direct DNSBL query of AS44477, AS43624, AS209847 IP blocks with historical snapshots; Spamhaus AS-level data.</p></div>
+      <div class="gap-item"><strong>6. Detailed pricing and service tier history</strong><p>No confirmed price tables or named tiers for Stark or THE.Hosting. Close with: archived copies of stark-industries[.]solutions and the[.]hosting websites; criminal forum sales threads.</p></div>
+      <div class="gap-item"><strong>7. OFAC and UK OFSI independent designations</strong><p>Whether OFAC has placed Stark entities on the SDN list, and whether UK OFSI has issued independent (non-EU-mirrored) designations, is unconfirmed as of June 2026. Close with: direct OFAC SDN list search; UK OFSI consolidated list search.</p></div>
+      <div class="gap-item"><strong>8. Neculiti brothers' current location and legal exposure</strong><p>Precise residence of Iurie and Ivan Neculiti post-sanctions; whether any jurisdiction has issued arrest warrants, requested extradition, or begun criminal proceedings beyond EU sanctions. Close with: Moldovan law enforcement disclosures; EU criminal cooperation channels; investigative journalism.</p></div>
+    </div>
+  </section>
+
+  <!-- RECENT REPORTING -->
+  <section id="recent-reporting">
+    <div class="section-label">Recent Reporting</div>
+    <h2>Developments (2022-June 2026)</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">February 2022</div>
+        <div class="timeline-text"><strong>Stark Industries Solutions Ltd incorporated</strong> (Companies House 13906017), two weeks before Russia's invasion of Ukraine. Rapid emergence as infrastructure provider for Russian-aligned hybrid threat operations.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2023-2024</div>
+        <div class="timeline-text"><strong>Recorded Future Insikt Group, Team Cymru, CERT-EU</strong> publish attribution linking Stark's ASNs to TAG-53 / Callisto credential-harvesting infrastructure, FIN7 operations, and NoName057(16) DDoS campaigns. Stark becomes a standard reference in CTI reporting on Russia-aligned BPH.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">May 20, 2025</div>
+        <div class="timeline-text"><strong>EU Council (RUSDA program)</strong> sanctions Stark Industries Solutions Ltd, Iurie Neculiti, Ivan Neculiti, PQ Hosting, and PQ Hosting Plus S.R.L. Infrastructure already prepositioned via early April-May migration to UFO Hosting and PQ Hosting Plus RIPE org; sanctions have minimal immediate operational impact.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">August-November 2025</div>
+        <div class="timeline-text"><strong>GreyNoise</strong> documents seamless migration of malicious activity from AS44477 (PQ Hosting Plus S.R.L.) to AS209847 (WorkTitans B.V. / THE.Hosting). Migration complete by November 2025; identical behavioral signatures confirmed. Blog published November 17, 2025: "The Stark Industries Shell Game."</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">August 27, 2025</div>
+        <div class="timeline-text"><strong>Recorded Future Insikt Group</strong> publishes "One Step Ahead: Stark Industries Solutions Preempts EU Sanctions" (CTA-2025-0827), documenting the preemptive sanctions evasion maneuvers and THE.Hosting / WorkTitans rebrand in detail.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">September 2025</div>
+        <div class="timeline-text"><strong>KrebsOnSecurity</strong> publishes "Bulletproof Host Stark Industries Evades EU Sanctions," documenting WorkTitans' corporate structure (Fezzy B.V. shareholder, Zinad email connection), the Neculiti brothers' preemptive infrastructure moves, and Augur Security's analysis of continued malicious activity post-sanctions.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">May 18, 2026</div>
+        <div class="timeline-text"><strong>Dutch FIOD</strong> arrests Youssef Zinad and Andrey Nesterenko; raids five locations in Enschede, Almere, Dronten, and Schiphol-Rijk; seizes 800+ servers. Charges: violating EU sanctions by providing economic resources to sanctioned entities. Cases ongoing.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">June 6, 2026 (current)</div>
+        <div class="timeline-text"><strong>AS209847 confirmed active</strong> by direct RIPE NCC RIPEstat query: 200+ IPv4 prefixes routing under holder "THE WorkTitans B.V." AS44477 and AS43624 de-registered (holder="" announced=false). Post-2026 client migration analysis not yet published.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <div class="section-label">Sources</div>
+    <h2>Sources and Evidence Base</h2>
+    <div class="sources-list">
+      <div class="source-item"><span class="source-num">[1]</span><span class="source-text">Recorded Future Insikt Group, "One Step Ahead: Stark Industries Solutions Preempts EU Sanctions" (CTA-2025-0827), August 27, 2025. <a href="https://www.recordedfuture.com/research/one-step-ahead-stark-industries-solutions-preempts-eu-sanctions" target="_blank">recordedfuture.com</a></span></div>
+      <div class="source-item"><span class="source-num">[2]</span><span class="source-text">KrebsOnSecurity, "Bulletproof Host Stark Industries Evades EU Sanctions," September 2025. <a href="https://krebsonsecurity.com/2025/09/bulletproof-host-stark-industries-evades-eu-sanctions/" target="_blank">krebsonsecurity.com</a></span></div>
+      <div class="source-item"><span class="source-num">[3]</span><span class="source-text">GreyNoise (boB Rudis), "When Bulletproof Hosting Proves Bulletproof: The Stark Industries Shell Game," November 17, 2025. <a href="https://www.greynoise.io/blog/stark-industries-shell-game" target="_blank">greynoise.io</a></span></div>
+      <div class="source-item"><span class="source-num">[4]</span><span class="source-text">BleepingComputer (Bill Toulas), "Netherlands seizes 800 servers of hosting firm enabling cyberattacks," May 22, 2026. <a href="https://www.bleepingcomputer.com/news/security/netherlands-seizes-800-servers-of-hosting-firm-enabling-cyberattacks/" target="_blank">bleepingcomputer.com</a></span></div>
+      <div class="source-item"><span class="source-num">[5]</span><span class="source-text">KrebsOnSecurity, "Netherlands Seizes 800 Servers, Arrests 2 for Aiding Cyberattacks," May 2026. <a href="https://krebsonsecurity.com/2026/05/netherlands-seizes-800-servers-arrests-2-for-aiding-cyberattacks/" target="_blank">krebsonsecurity.com</a></span></div>
+      <div class="source-item"><span class="source-num">[6]</span><span class="source-text">Augur Security, "European Union Sanctions Force Stark Industries Solutions Ltd. to Rebrand Again," 2025. <a href="https://www.augursecurity.com/post/european-union-sanctions-force-stark-industries-solutions-ltd-to-rebrand-again" target="_blank">augursecurity.com</a></span></div>
+      <div class="source-item"><span class="source-num">[7]</span><span class="source-text">Recorded Future Insikt Group, "Exposing TAG-53's Credential Harvesting Infrastructure for Russia-Aligned Espionage Operations." <a href="https://www.recordedfuture.com/research/exposing-tag-53-credential-harvesting-infrastructure-for-russia-aligned-espionage-operations" target="_blank">recordedfuture.com</a></span></div>
+      <div class="source-item"><span class="source-num">[8]</span><span class="source-text">CERT-EU Cyber Brief CB25-10, 2025. <a href="https://cert.europa.eu/publications/threat-intelligence/cb25-10/" target="_blank">cert.europa.eu</a></span></div>
+      <div class="source-item"><span class="source-num">[9]</span><span class="source-text">CERT-EU Cyber Brief CB24-06, 2024. <a href="https://cert.europa.eu/publications/threat-intelligence/cb24-06/" target="_blank">cert.europa.eu</a></span></div>
+      <div class="source-item"><span class="source-num">[10]</span><span class="source-text">Team Cymru, "FIN7: The Truth Doesn't Need to Be So Stark." <a href="https://www.team-cymru.com/post/fin7-the-truth-doesn-t-need-to-be-so-stark" target="_blank">team-cymru.com</a></span></div>
+      <div class="source-item"><span class="source-num">[11]</span><span class="source-text">Silent Push, "Year In Review" report (2024-2025), referencing Stark infrastructure. <a href="https://info.silentpush.com/hubfs/Silent%20Push%20Year%20In%20Review.pdf" target="_blank">silentpush.com</a></span></div>
+      <div class="source-item"><span class="source-num">[12]</span><span class="source-text">Sophos, "Malicious Use of Virtual Machine Infrastructure" (documents Stark-heavy VM images). <a href="https://www.sophos.com/en-us/blog/malicious-use-of-virtual-machine-infrastructure" target="_blank">sophos.com</a></span></div>
+      <div class="source-item"><span class="source-num">[13]</span><span class="source-text">Centripetal, "Insights into the Persistence and Resilience of Bulletproof Hosting: A Case Study on Stark Industries Solutions." <a href="https://www.centripetal.ai/threat-research/insights-into-the-persistence-and-resilience-of-bulletproof-hosting-a-case-study-on-stark-industries-solutions" target="_blank">centripetal.ai</a></span></div>
+      <div class="source-item"><span class="source-num">[14]</span><span class="source-text">EU Sanctions Tracker, Stark Industries Solutions Ltd (EU-175827-213604). <a href="https://data.europa.eu/apps/eusanctionstracker/subjects/175827" target="_blank">data.europa.eu</a></span></div>
+      <div class="source-item"><span class="source-num">[15]</span><span class="source-text">OpenSanctions, Stark Industries Solutions Ltd and Neculiti profiles. <a href="https://www.opensanctions.org/entities/NK-cnFPm6CrJcrMApHFDgwfJm/" target="_blank">opensanctions.org</a></span></div>
+      <div class="source-item"><span class="source-num">[16]</span><span class="source-text">TRM Labs, "EU and UK Crackdown on Russian Hybrid Threat Networks," 2025. <a href="https://www.trmlabs.com/resources/blog/eu-and-uk-crackdown-on-russian-hybrid-threat-networks-military-and-energy-supply-chains" target="_blank">trmlabs.com</a></span></div>
+      <div class="source-item"><span class="source-num">[17]</span><span class="source-text">Cyfluence Research (CRC Blog), "Stark Industries Solutions: A Threat Activity Enabler and Influence Operations." <a href="https://www.cyfluence-research.org/post/stark-industries-solutions-a-threat-activity-enabler-tae-influence-operations" target="_blank">cyfluence-research.org</a></span></div>
+      <div class="source-item"><span class="source-num">[18]</span><span class="source-text">Coastline Cyber, "Bulletproof Host Stark Industries Evades EU Sanctions" (mirror of KrebsOnSecurity). <a href="https://coastlinecyber.com/bulletproof-host-stark-industries-evades-eu-sanctions/" target="_blank">coastlinecyber.com</a></span></div>
+      <div class="source-item"><span class="source-num">[19]</span><span class="source-text">SafeState / Safestate.com, "Dutch Authorities Seize 800 Stark Industries Servers in Sanctions Crackdown," May 2026. <a href="https://www.safestate.com/post/dutch-authorities-seize-800-stark-industries-servers-in-sanctions-crackdown" target="_blank">safestate.com</a></span></div>
+      <div class="source-item"><span class="source-num">[20]</span><span class="source-text">TechTimes, "Dutch FIOD Seizes 800 Servers of Bulletproof Hoster Powering Russian Cyberattacks," May 2026. <a href="https://www.techtimes.com/articles/317282/20260527/dutch-fiod-seizes-800-servers-bulletproof-hoster-powering-russian-cyberattacks.htm" target="_blank">techtimes.com</a></span></div>
+      <div class="source-item"><span class="source-num">[21]</span><span class="source-text">OWN Security (OWN-CERT), "50 Shades of Bulletproof Hosting: BPH Landscape on Russian-Language Cybercrime Forums." <a href="https://www.own.security/en/ressources/blog/50-shades-of-bulletproof-hosting-bph-landscape-on-russian-language-cybercrime-forums" target="_blank">own.security</a></span></div>
+      <div class="source-item"><span class="source-num">[22]</span><span class="source-text">RIPE NCC RIPEstat API — AS44477, AS43624, AS209847 status queries, performed 6 June 2026. <a href="https://stat.ripe.net/" target="_blank">stat.ripe.net</a></span></div>
+      <div class="source-item"><span class="source-num">[23]</span><span class="source-text">Phish.report abuse contacts, STARK-INDUSTRIES-SOLUTIONS-AS, MD. <a href="https://phish.report/contacts/STARK-INDUSTRIES-SOLUTIONS-AS-MD" target="_blank">phish.report</a></span></div>
+      <div class="source-item"><span class="source-num">[24]</span><span class="source-text">LowEndSpirit forum discussion, "PQ.Hosting (Stark Industries Solutions Ltd, formerly MoreneHost) sanctioned by EU." <a href="https://lowendspirit.com/discussion/9587/pq-hosting-stark-industries-solutions-ltd-formerly-morenehost-sanctioned-by-eu" target="_blank">lowendspirit.com</a></span></div>
+      <div class="source-item"><span class="source-num">[25]</span><span class="source-text">The Record from Recorded Future News, "Dutch authorities arrest men suspected of providing infrastructure for Russian cyber operations," May 2026. <a href="https://therecord.media/dutch-authorities-arrest-suspects-over-russian-cyber-operations" target="_blank">therecord.media</a></span></div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

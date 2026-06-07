@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZServers / XHost — BPH Analytical Profile | EDP</title>
+  <style>
+    :root {
+      --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+      --border: #30363d; --border-light: #21262d;
+      --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+      --accent: #58a6ff; --accent-dim: #1f6feb;
+      --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+      --credible-bg: #341a00; --credible-text: #e3b341;
+      --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+      --ss-bg: #2d1a17; --ss-text: #f85149;
+      --disrupted: #e3b341; --active: #3fb950; --defunct: #8b949e;
+      --sidebar-width: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+    .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: var(--inference-bg); color: var(--inference-text); border: 1px solid var(--accent-dim); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .group-switcher { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .group-switcher-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 6px; }
+    .group-select { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 4px; font-size: 12px; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all .15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+    .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+    /* MAIN */
+    .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; }
+    .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+    .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .profile-title-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+    .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+    .status-badge.disrupted { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* SECTIONS */
+    section { padding: 32px 40px; border-bottom: 1px solid var(--border-light); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 15px; font-weight: 600; color: var(--text-heading); margin: 20px 0 10px; }
+    h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .05em; }
+    p { margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 12px 20px; line-height: 2; }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .kpi-value { font-size: 20px; font-weight: 700; color: var(--text-heading); line-height: 1.2; }
+    .kpi-value.disrupted { color: var(--disrupted); }
+    .kpi-value.accent { color: var(--accent); }
+    .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+
+    /* OPERATOR HERO */
+    .operator-hero { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .operator-hero-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ss-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .operator-hero-label::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--ss-text); border-radius: 50%; }
+    .operator-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .operator-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .operator-name { font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .operator-role { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .operator-meta { font-size: 11px; color: var(--text); line-height: 1.7; }
+    .operator-meta strong { color: var(--text-heading); }
+    .sanction-flag { display: inline-block; padding: 2px 8px; background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .04em; margin-top: 6px; }
+
+    /* TABLES */
+    .attr-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .attr-table th, .attr-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; vertical-align: top; }
+    .attr-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; width: 200px; background: var(--bg-secondary); }
+    .attr-table tr:last-child th, .attr-table tr:last-child td { border-bottom: none; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    .data-table th { background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13px; color: var(--text); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    .badge.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); border: 1px solid rgba(35,134,54,.3); }
+    .badge.credible { background: var(--credible-bg); color: var(--credible-text); border: 1px solid rgba(158,106,3,.3); }
+    .badge.inference { background: var(--inference-bg); color: var(--inference-text); border: 1px solid rgba(31,111,235,.3); }
+    .badge.single-source { background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); }
+
+    /* TWO-TIER */
+    .two-tier { display: flex; flex-direction: column; gap: 5px; }
+    .tier-row { display: flex; align-items: center; gap: 8px; }
+    .tier-label { font-size: 10px; color: var(--text-muted); min-width: 160px; }
+
+    /* VERBATIM */
+    .verbatim { background: var(--bg-secondary); border-left: 3px solid var(--accent-dim); padding: 12px 16px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+    .verbatim-source { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .verbatim-text { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.6; }
+
+    /* CALLOUT */
+    .callout { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 14px 0; }
+    .callout.warning { border-left: 3px solid var(--disrupted); }
+    .callout.info { border-left: 3px solid var(--accent); }
+    .callout-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout.warning .callout-label { color: var(--disrupted); }
+    .callout.info .callout-label { color: var(--accent); }
+
+    /* GALLERY */
+    .gallery-heading { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 24px 0 12px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .gallery-item img { width: 100%; height: 180px; object-fit: cover; display: block; background: var(--bg-secondary); }
+    .gallery-caption { padding: 10px 12px; }
+    .gallery-caption-text { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .gallery-source { font-size: 10px; color: var(--text-muted); }
+
+    /* CONNECTED ENTITY */
+    .connected-entity { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .entity-name { font-size: 15px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .entity-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .entity-confidence { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+    .entity-confidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .entity-text { font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+    .vendor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .vendor-tag { padding: 2px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text-muted); }
+    .vendor-tag.cor { border-color: rgba(35,134,54,.3); color: var(--confirmed-text); }
+    .vendor-tag.ss { border-color: rgba(248,81,73,.3); color: var(--ss-text); }
+
+    /* JURISDICTIONS */
+    .jurisdiction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+    .jurisdiction-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .jurisdiction-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .jurisdiction-value { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+    .jurisdiction-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; margin: 16px 0; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -16px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--bg); }
+    .timeline-date { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+    .timeline-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* GAPS */
+    .gap-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .gap-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+    .gap-item strong { color: var(--text-heading); font-size: 13px; }
+    .gap-item p { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
+
+    /* BLOCKLIST */
+    .bl-listed { color: var(--ss-text); font-weight: 700; font-size: 11px; }
+    .bl-probable { color: var(--disrupted); font-weight: 700; font-size: 11px; }
+    .bl-unknown { color: var(--text-muted); font-weight: 700; font-size: 11px; }
+
+    /* SOURCES */
+    .sources-list { display: flex; flex-direction: column; gap: 7px; }
+    .source-item { display: flex; gap: 12px; font-size: 12px; line-height: 1.5; }
+    .source-num { color: var(--accent); font-weight: 700; min-width: 28px; }
+    .source-text a { color: var(--accent); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
+    code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; background: var(--bg-secondary); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+    .ref { font-size: 11px; color: var(--text-muted); vertical-align: super; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; }
+      .jurisdiction-grid { grid-template-columns: 1fr; }
+      section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">EDP // Ransomware Ecosystem</div>
+    <div class="sidebar-title">ZServers / XHost</div>
+    <span class="node-type-badge">Bulletproof Hosting Provider</span>
+  </div>
+  <div class="group-switcher">
+    <div class="group-switcher-label">Node Library</div>
+    <select class="group-select">
+      <option>BPH Providers</option>
+      <option selected>ZServers / XHost</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Profile Sections</div>
+    <a href="#overview" class="nav-link"><span class="nav-num">01</span> Executive Summary</a>
+    <a href="#lineage" class="nav-link"><span class="nav-num">02</span> Lineage &amp; Heritage</a>
+    <a href="#operations" class="nav-link"><span class="nav-num">03</span> Business Model</a>
+    <a href="#technical" class="nav-link"><span class="nav-num">04</span> Technical Footprint</a>
+    <a href="#financial" class="nav-link"><span class="nav-num">05</span> Financial Infrastructure</a>
+    <a href="#clientele" class="nav-link"><span class="nav-num">06</span> Client Profile</a>
+    <a href="#nexus" class="nav-link"><span class="nav-num">07</span> State Nexus</a>
+    <a href="#disruption" class="nav-link"><span class="nav-num">08</span> LE Response</a>
+    <a href="#connected" class="nav-link"><span class="nav-num">09</span> Connected Groups</a>
+    <a href="#status" class="nav-link"><span class="nav-num">10</span> Trajectory</a>
+    <div class="nav-section-label" style="margin-top:8px">Additional</div>
+    <a href="#recent-reporting" class="nav-link"><span class="nav-num"></span> Recent Reporting</a>
+    <a href="#sources" class="nav-link"><span class="nav-num"></span> Sources</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">EDP // BPH Library<br>Profile v1 // June 2026<br>Author: Reno</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-breadcrumb">
+      <a href="https://ransomwareedp.github.io/">EDP</a> /
+      <a href="https://ransomwareedp.github.io/bph/">BPH Providers</a> /
+      ZServers / XHost
+    </div>
+    <div class="profile-title-row">
+      <div>
+        <div class="profile-name">ZServers / XHost</div>
+        <div class="profile-subtitle">Russia-based bulletproof hosting provider // Barnaul, Altai Krai, Russia // Active ~2010 to February 2025</div>
+      </div>
+      <span class="status-badge disrupted"><span class="status-dot"></span>Disrupted</span>
+    </div>
+  </div>
+
+  <!-- SECTION 01 -->
+  <section id="overview">
+    <div class="section-label">Section 01</div>
+    <h2>Executive Summary and Provider Overview</h2>
+
+    <!-- Operator Hero -->
+    <div class="operator-hero">
+      <div class="operator-hero-label">Sanctioned Operators — Escalated Module</div>
+      <div class="operator-cards">
+        <div class="operator-card">
+          <div class="operator-name">Alexander Igorevich Mishin</div>
+          <div class="operator-role">Administrator / Sales Lead (OFAC)</div>
+          <div class="operator-meta">
+            <strong>DOB:</strong> 18 March 1994, Altai Krai, Russia<br>
+            <strong>Location:</strong> Barnaul, Altai Krai (assessed; not arrested)<br>
+            <strong>Handles:</strong> triplex560, alex560560, james1789, ZserverS, sasha-brn<br>
+            <strong>BTC (OFAC):</strong> <code>3FfRvC3kSo2SxiQe5e7SSuNdegwgq8iusL</code>
+          </div>
+          <span class="sanction-flag">OFAC CYBER3 · UK FCDO · AU DFAT — Feb 11, 2025</span>
+        </div>
+        <div class="operator-card">
+          <div class="operator-name">Aleksandr Sergeyevich Bolshakov</div>
+          <div class="operator-role">Owner (AU) / Administrator (UK, OFAC)</div>
+          <div class="operator-meta">
+            <strong>DOB:</strong> 23 July 1994, Semipalatinsk, Kazakhstan<br>
+            <strong>Location:</strong> Barnaul, Altai Krai (assessed; not arrested)<br>
+            <strong>Handles:</strong> aaelbas, wtlfnt<br>
+            <strong>Address:</strong> 97 Vzletnaya, Apt 170, Barnaul 656067, Russia
+          </div>
+          <span class="sanction-flag">OFAC CYBER3 · UK FCDO · AU DFAT — Feb 11, 2025</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value disrupted">Disrupted</div><div class="kpi-label">Operational Status</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">127</div><div class="kpi-label">Servers Seized</div></div>
+      <div class="kpi-card"><div class="kpi-value disrupted">AS197414</div><div class="kpi-label">ASN — De-registered</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">$5.2M+</div><div class="kpi-label">On-Chain Activity</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">3</div><div class="kpi-label">Sanctioning Authorities</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">6</div><div class="kpi-label">Individuals Sanctioned</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">~15 yrs</div><div class="kpi-label">Years Active</div></div>
+    </div>
+
+    <!-- Attribute Table -->
+    <h3>Quick-Reference Attributes</h3>
+    <table class="attr-table">
+      <tr><th>Common Names</th><td>ZServers; XHost; XHOST Internet Solutions LP; zservers.ru</td></tr>
+      <tr><th>Node Type</th><td>Bulletproof Hosting Provider</td></tr>
+      <tr><th>Status</th><td><span class="status-badge disrupted"><span class="status-dot"></span>Disrupted</span> — February 2025</td></tr>
+      <tr><th>Entity Registration (ZServers)</th><td>Russia — Barnaul, Altai Krai</td></tr>
+      <tr><th>Entity Registration (XHOST LP)</th><td>United Kingdom — Limited Partnership (front company for ZServers)</td></tr>
+      <tr><th>Infrastructure Jurisdiction</th><td>Netherlands (primary — 127 servers seized Amsterdam); Russia, United States, Bulgaria, Finland (secondary, advertised)</td></tr>
+      <tr><th>Operator Location</th><td>Russia — Barnaul, Altai Krai (Mishin and Bolshakov, per sanctions and OSINT)</td></tr>
+      <tr><th>Active Period</th><td>~2010 to February 2025 (approximately 15 years; Intel 471: "more than a dozen years")</td></tr>
+      <tr><th>Primary ASN</th><td><code>AS197414</code> — De-registered (RIPE WHOIS record empty as of June 2026; last BGP announcement December 4, 2025; registered to XHOST Internet Solutions LP as of March 2025)</td></tr>
+      <tr><th>IP Ranges</th><td><code>87.251.64.0/24</code> (XHOST); <code>185.170.144.0/24</code> (Vault Dweller OU, Estonia) — 0 prefixes announced as of June 2026</td></tr>
+      <tr><th>Abuse Contact</th><td><code>abuse@isxhost.com</code> (shared across both ranges)</td></tr>
+      <tr><th>Confirmed Upstream Provider</th><td>Hostkey (Netherlands) — confirmed via September 2024 data breach (Mishin account under real name)</td></tr>
+      <tr><th>Sanctions</th><td>OFAC CYBER3; UK FCDO Cyber Sanctions; AU DFAT — all February 11, 2025</td></tr>
+      <tr><th>Primary Clients</th><td>LockBit, Conti, BianLian, Hunters International; Mallox, Dharma, Phobos, Globeimposter; IABs; darknet markets</td></tr>
+      <tr><th>On-Chain Activity</th><td>$5.2M+ documented (Chainalysis Reactor); cash-out via Garantex and no-KYC exchanges</td></tr>
+      <tr><th>Blocklist Status</th><td>Historically listed — Spamhaus SBL/abuse.ch probable; specific entry IDs not publicly enumerated</td></tr>
+      <tr><th>State Nexus Tier</th><td>Tolerated Safe Harbor (Tier 2 of 4)</td></tr>
+    </table>
+
+    <h3>Overall Assessment</h3>
+    <p>ZServers/XHost operated for approximately 15 years as one of Russia's most prominent bulletproof hosting providers, explicitly advertising crimeware-friendly services on Russian underground forums from at least 2010. Its primary administrator, Alexander Mishin (handle: triplex560), began advertising abuse-tolerant hosting on criminal forums with the zservers.ru domain circa 2010-2011; Intel 471 traces the persona to a forum post as early as January 2006. The provider's model centered on cryptocurrency-only anonymous payments, multi-jurisdiction hosting to resist law enforcement action, and a UK front company (XHOST Internet Solutions LP) to mediate relationships with Western data centers.</p>
+    <p>Coordinated US/UK/AU sanctions on February 11, 2025 and the Dutch National Police seizure of 127 Amsterdam servers on February 12-13, 2025 effectively dismantled its Western-facing infrastructure. Chainalysis documented at least $5.2 million in on-chain activity, with cash-outs through sanctioned exchange Garantex. Australia's Signals Directorate independently deleted 520 GB of Medibank health data stored on ZServers infrastructure. As of mid-2026, AS197414 remains registered to XHOST, the website was still online as of March 2025, and forum commentary predicted a rebrand — but no confirmed successor brand has been publicly identified.</p>
+
+    <!-- Gallery -->
+    <div class="gallery-heading">Provider Presence and Infrastructure Evidence</div>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="https://www.chainalysis.com/wp-content/uploads/2025/02/zservers-website-screenshot.png"
+             alt="ZServers homepage"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">ZServers homepage advertising server locations in US, Russia, Bulgaria, Netherlands, and Finland with custom configuration services.</div>
+          <div class="gallery-source">Chainalysis, February 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://cdn.sanity.io/images/fo9xc2x1/production/0b47fda1bf1d8ff91ee863497cfa551559fb0424-2564x1386.jpg"
+             alt="ZServers website translated, March 2025"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Machine-translated ZServers website confirming continued online presence weeks after sanctions and server seizure.</div>
+          <div class="gallery-source">Intel 471, March 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://cdn.sanity.io/images/fo9xc2x1/production/e8b616b85b792d4be5c33553f5933c1ea2c1a70b-1968x1090.jpg"
+             alt="Amsterdam Cybercrime Team seized ZServers equipment"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Equipment seized by Amsterdam's Cybercrime Team from the Paul van Vlissingenstraat colocation facility, February 2025.</div>
+          <div class="gallery-source">Intel 471 / Amsterdam Cybercrime Team, February 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://www.chainalysis.com/wp-content/uploads/2025/02/zservers-graph-1.png"
+             alt="Chainalysis Reactor graph — ZServers on-chain exposure"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Chainalysis Reactor visualization of ZServers on-chain exposure showing inbound payments from ransomware affiliates and outflows to Garantex and no-KYC exchanges ($5.2M+ documented).</div>
+          <div class="gallery-source">Chainalysis, February 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://cdn.sanity.io/images/fo9xc2x1/production/59bbb86471019347626e8f0f4c2bddea895c3f91-1734x1202.jpg"
+             alt="triplex560 Exploit forum post, July 2024"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">triplex560 (Mishin) post on Exploit forum, July 27, 2024, disclosing a malicious attack against ZServers infrastructure — likely by a BPH competitor.</div>
+          <div class="gallery-source">Intel 471, July 2024</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://cdn.sanity.io/images/fo9xc2x1/production/b6ec29ceba93dcdefb8f09c6601d1c399ab9073c-1804x858.jpg"
+             alt="Russian passport from ZServers September 2024 data leak"
+             onerror="this.style.background='#1c2128';this.style.height='180px';this.removeAttribute('src')">
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Partially redacted Russian passport from the September 2024 ZServers data leak showing given name Aleksandr and birth year 1994 — consistent with OFAC-designated Mishin Alexander Igorevich.</div>
+          <div class="gallery-source">Intel 471 / ZServers data leak, September 2024</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02 -->
+  <section id="lineage">
+    <div class="section-label">Section 02</div>
+    <h2>Lineage and Organizational Heritage</h2>
+
+    <h3>Brands and Entity Structure</h3>
+    <table class="data-table">
+      <thead><tr><th>Brand / Entity</th><th>Type</th><th>Role</th><th>Active Window</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ZServers / zservers.ru</strong></td><td>Russia-based hosting company</td><td>Core BPH operation; primary entity</td><td>~2010 to Feb 2025; residual post-takedown</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>XHOST Internet Solutions LP</strong></td><td>UK Limited Partnership</td><td>Front/obfuscation layer for ZServers; holds AS197414; interfaces with EU data centers</td><td>Pre-2025 to sanctions Feb 11, 2025; ASN still registered March 2025</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+    <p>UK sanctions explicitly state XHOST was "established to support and obfuscate relevant cyber activity by ZSERVERS, a Russian-based provider of bulletproof hosting." <span class="ref">[3]</span></p>
+
+    <h3>Predecessor Lineage</h3>
+    <p><span class="badge inference">Analyst Inference</span> No public evidence ties ZServers to prior-generation BPH brands such as Maxided or Yalishanda. Government designations treat ZServers as a distinct provider. The triplex560 persona's earliest confirmed hosting advertisement dates to August 2010 on xeksec.com; Intel 471 assessed "more than a dozen years" of operation from 2025. Founding circa 2010-2012 is most consistent with available evidence. <span class="ref">[1]</span></p>
+
+    <h3>Evidence Pillars</h3>
+    <div class="callout info"><div class="callout-label">Infrastructure Continuity</div><p><span class="badge confirmed">Confirmed</span> Clear continuity between ZServers and XHOST Internet Solutions LP: shared AS197414, shared abuse contact abuse@isxhost.com, 127 servers in Amsterdam confirmed as ZServers/XHost infrastructure by Dutch police and international LE statements. <span class="ref">[1][2][3][5]</span></p></div>
+    <div class="callout info"><div class="callout-label">Personnel Continuity</div><p><span class="badge confirmed">Confirmed</span> Mishin and Bolshakov identified as administrators by OFAC, UK, and AU. Intel 471 independently corroborated Mishin's identity via social media, leaked database records (SDEK, Pikabu), WHMCS account, GitHub, and Skype IDs — all converging on Mishin Alexander Igorevich in November 2024. Forum IPs traced to Barnaul/Biysk, Altai Territory. <span class="ref">[1]</span></p></div>
+    <div class="callout info"><div class="callout-label">Financial Links</div><p><span class="badge confirmed">Confirmed</span> OFAC listed one BTC address for Mishin and three digital currency addresses for ZServers. Chainalysis confirmed $5.2M+ on-chain activity with direct exposure to LockBit, Mallox, Dharma, Phobos, Globeimposter, IABs, and darknet markets. Cash-out via Garantex confirmed. <span class="ref">[6][7]</span></p></div>
+
+    <h3>Operator Profiles</h3>
+
+    <h4>2.1 Alexander Igorevich Mishin</h4>
+    <table class="attr-table">
+      <tr><th>Full Name</th><td>Mishin, Alexander Igorevich (Мишин Александр Игоревич)</td></tr>
+      <tr><th>Date / Place of Birth</th><td>18 March 1994, Altai Krai, Russia</td></tr>
+      <tr><th>Address</th><td>Ul. Yubileynaya, D. 32, Barnaul, Altai Krai, Russia</td></tr>
+      <tr><th>Assessed Location</th><td>Russia (Barnaul / Altai Krai) — assessed; not arrested or extradited</td></tr>
+      <tr><th>Handles / Aliases</th><td>triplex560, alex560560, james1789, ZserverS, sasha-brn, PIPPIN James, KLICHKO Ivan P.</td></tr>
+      <tr><th>Role</th><td>Administrator; personally managed advertising on criminal forums and cryptocurrency payments</td></tr>
+      <tr><th>Forum History</th><td>zloy.bz from Jan 2006; xeksec.com Aug 2010 (verbatim ad); Antichat, Exploit, XSS, proxy-base.com, hackersoft.ru (ongoing to Feb 2025)</td></tr>
+      <tr><th>BTC Address (OFAC)</th><td><code>3FfRvC3kSo2SxiQe5e7SSuNdegwgq8iusL</code></td></tr>
+      <tr><th>Sanctions</th><td>OFAC CYBER3 (Feb 11, 2025); UK FCDO Cyber Sanctions (Feb 11, 2025); AU DFAT (Feb 11, 2025)</td></tr>
+      <tr><th>Legal Status</th><td>Sanctioned; at large in Russia; no public arrest or criminal indictment confirmed</td></tr>
+    </table>
+
+    <h4>2.2 Aleksandr Sergeyevich Bolshakov</h4>
+    <table class="attr-table">
+      <tr><th>Full Name</th><td>Bolshakov, Aleksandr Sergeyevich (Большаков Александр Сергеевич)</td></tr>
+      <tr><th>Date / Place of Birth</th><td>23 July 1994, Semipalatinsk, Kazakhstan</td></tr>
+      <tr><th>Address</th><td>97 Vzletnaya, Apt 170, Barnaul 656067, Russia</td></tr>
+      <tr><th>Assessed Location</th><td>Russia (Barnaul) — assessed; not arrested</td></tr>
+      <tr><th>Handles / Aliases</th><td>aaelbas, wtlfnt</td></tr>
+      <tr><th>Role</th><td>Owner per AU designation; implicated in 2023 IP reassignment episode (LockBit client reprotection)</td></tr>
+      <tr><th>Sanctions</th><td>OFAC CYBER3; UK FCDO; AU DFAT — all February 11, 2025</td></tr>
+      <tr><th>Legal Status</th><td>Sanctioned; at large in Russia; no public arrest</td></tr>
+    </table>
+
+    <h4>2.3 Additional Sanctioned Individuals (UK / AU Only)</h4>
+    <p>UK FCDO designated six individuals total; AU DFAT designated five. Four beyond Mishin and Bolshakov:</p>
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Sanctioning Authorities</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Ilya Sidorov</td><td>UK FCDO, AU DFAT</td><td>Employee; specific role not publicly detailed</td></tr>
+        <tr><td>Dmitriy Bolshakov</td><td>UK FCDO, AU DFAT</td><td>Employee; relation to Aleksandr Bolshakov unclear from public sources</td></tr>
+        <tr><td>Igor Odintsov</td><td>UK FCDO, AU DFAT</td><td>Employee; specific role not publicly detailed</td></tr>
+        <tr><td>Vladimir Ananev</td><td>UK FCDO only</td><td>Employee; specific role not publicly detailed</td></tr>
+      </tbody>
+    </table>
+    <p><span class="badge credible">Credible</span> Full roles for these four individuals are an intelligence gap. Complete UK and AU sanctions notices may contain additional detail not indexed in public sources.</p>
+
+    <h3>Disputed Assessments</h3>
+    <p>No vendor disputes identified regarding ZServers' core identity, the XHOST front relationship, or Mishin/Bolshakov attribution. Successor infrastructure remains unconfirmed.</p>
+  </section>
+
+  <!-- SECTION 03 -->
+  <section id="operations">
+    <div class="section-label">Section 03</div>
+    <h2>Operational and Business Model</h2>
+
+    <h3>Service Model</h3>
+    <p>ZServers operated as a full-service bulletproof hosting provider: leasing dedicated servers, VPS instances, and IP address blocks to cybercriminal clients on an anonymous, cryptocurrency-only basis. Services explicitly included C2 hosting, ransomware operational portals, botnet C2, malware distribution, and phishing/fraud infrastructure. The provider explicitly guaranteed protection from law enforcement and abuse reporters, and advertised that criminals were welcome.</p>
+
+    <h3>Verbatim Advertising Copy</h3>
+    <div class="verbatim">
+      <div class="verbatim-source">triplex560 — xeksec.com, August 9, 2010 (earliest confirmed ZServers ad, verbatim)</div>
+      <div class="verbatim-text">"We offer a hosting that is loyal to abuse. + Acceptance of payments via WebMoney. + Adequate pricing policy. + Individual approach to each client. + High UpTime. + Allowed: Drop projects, Exploits, Trojans, Botnets, Phishing, Satellites, adware, tds, etc. + Prohibited: Spam, fraud, pornography."</div>
+    </div>
+    <div class="verbatim">
+      <div class="verbatim-source">Dr.Samuil (ransomware affiliate) — Exploit forum, January 18, 2020 (client review, verbatim)</div>
+      <div class="verbatim-text">"Отличный и отзывчивый хостер, четкая работа в срок и хороший аптайм. Мои позитивные рекомендации за данный сервис." [Trans: "Excellent and responsive hosting, precise work on time and good uptime. My positive recommendations for this service."]</div>
+    </div>
+    <div class="verbatim">
+      <div class="verbatim-source">Dutch National Police characterization — February 2025</div>
+      <div class="verbatim-text">"The company stood out because it advertised that online criminals were welcome to exploit criminal activities from its servers."</div>
+    </div>
+    <div class="verbatim">
+      <div class="verbatim-source">SecurityWeek summarizing ZServers marketing — February 16, 2025</div>
+      <div class="verbatim-text">"Zservers (XHost) offered its services to cybercriminals, guaranteeing that their identity would remain protected against law enforcement and offering them the possibility to pay anonymously through cryptocurrencies."</div>
+    </div>
+
+    <h3>Onboarding and Vetting</h3>
+    <p>Open signup with high anonymity: cryptocurrency payment, minimal or no KYC, remote provisioning. Forum-based advertising on Exploit, XSS, and Antichat constitutes implicit vetting — clientele self-selects from established underground forums. No invite-only or referral requirements confirmed. Full onboarding workflow details are an intelligence gap.</p>
+
+    <h3>Pricing</h3>
+    <p>No confirmed public price list. Homepage described servers in five countries with support, equipment, and custom configuration, implying tiered geographic and hardware offerings. Monthly subscription model inferred from BPH standard practice. Early 2010 ads listed WebMoney as a payment method; later operations shifted to cryptocurrency-only. Specific package names and prices are an intelligence gap.</p>
+
+    <h3>Reseller Chain and Front Company</h3>
+    <p>XHOST Internet Solutions LP (UK) functioned as ZServers' obfuscation and interface layer with Western infrastructure — a legal-entity wrapper used to contract with European data centers and handle formal correspondence. UK sanctions: XHOST was "established to support and obfuscate relevant cyber activity by ZSERVERS." <span class="ref">[3]</span></p>
+    <p>The September 2024 data breach confirmed Mishin held a Hostkey (Netherlands) reseller account under his real name, confirming Hostkey as at least one upstream provider from which ZServers resold capacity. No additional named sub-reseller brands documented. This is an intelligence gap.</p>
+
+    <h3>Abuse-Handling and LE Posture</h3>
+    <p>Explicitly classified by OFAC as a provider that "ignores or evades law enforcement requests" and provided "specialized servers designed to resist law enforcement actions." <span class="ref">[4][6]</span></p>
+    <p>A 2023 exception demonstrates selective, deceptive responsiveness: following a complaint from a Lebanese company about a ZServers-hosted LockBit IP, Mishin instructed Bolshakov to change the IP address, then falsely told the company the original IP was cut off — while secretly reassigning a new IP to the LockBit client. This preserves upstream ISP relationships without actually cooperating. <span class="ref">[1][4]</span></p>
+
+    <h3>OPSEC Posture</h3>
+    <p>Anonymous cryptocurrency payments; pseudonymous forum advertising; UK front company for EU contracts; multi-jurisdiction infrastructure. Client communication likely via ticket panels (WHMCS-style), Jabber/XMPP, and Telegram. Specific panel domains and Telegram handles are an intelligence gap. OPSEC failed significantly in September 2024 (data breach exposing 9,500 client records and Mishin's upstream accounts).</p>
+  </section>
+
+  <!-- SECTION 04 -->
+  <section id="technical">
+    <div class="section-label">Section 04</div>
+    <h2>Technical Capabilities and Infrastructure Footprint</h2>
+
+    <h3>ASN Registration and IP Ranges</h3>
+    <table class="data-table">
+      <thead><tr><th>ASN</th><th>Registered Name</th><th>IP Range</th><th>Abuse Contact</th><th>Status (March 2025)</th></tr></thead>
+      <tbody>
+        <tr><td><code>AS197414</code></td><td>XHOST Internet Solutions LP (registered to XHOST as of March 2025; RIPE WHOIS record now empty)</td><td><code>87.251.64.0/24</code></td><td><code>abuse@isxhost.com</code></td><td><span class="badge single-source">De-registered</span></td></tr>
+        <tr><td><code>AS197414</code></td><td>XHOST Internet Solutions LP (via Vault Dweller OU, Estonia)</td><td><code>185.170.144.0/24</code></td><td><code>abuse@isxhost.com</code></td><td><span class="badge single-source">Last announced Dec 4, 2025</span></td></tr>
+      </tbody>
+    </table>
+    <p><span class="badge confirmed">Confirmed</span> RIPE RIS and WHOIS queried June 2026: AS197414 WHOIS record is empty (no aut-num object exists); 0 of 327 RIS peers see any announcement; 0 prefixes, 0 IPs advertised. The ASN has been de-registered. Last observed BGP announcement: <strong>December 4, 2025</strong>, prefix <code>185.170.144.0/24</code> — approximately 10 months after sanctions. As of March 2025 the ASN was still registered to XHOST Internet Solutions LP (Intel 471 WHOIS verification); it was de-registered sometime between March and December 2025. First seen active: May 28, 2011. Full historical RIPE/ARIN allocations and additional ASNs are an intelligence gap. <span class="ref">[1]</span></p>
+    <div class="callout warning"><div class="callout-label">IP Space Reallocation — RIPE Verified June 2026</div>
+    <p>Both previously XHOST-associated IP ranges are actively routed as of June 5, 2026 by entities unrelated to AS197414:</p>
+    <p><code>87.251.64.0/24</code> is announced by <strong>AS200730</strong>, holder: <em>ISAEV ISAEV Igor</em> (324/327 RIS peers). AS200730 WHOIS returns empty records — same pattern observed with AS197414 post-de-registration. Relationship to ZServers operators unconfirmed. <span class="badge inference">Analyst Inference</span> — warrants monitoring as potential reconstitution signal or routine RIPE reallocation.</p>
+    <p><code>185.170.144.0/24</code> is announced by <strong>AS50053</strong>, holder: <em>VDSKA-AS Anton Levin</em> (324/327 RIS peers). No assessed connection to ZServers operators.</p></div>
+
+    <h3>Physical Infrastructure</h3>
+    <p>Primary EU infrastructure concentrated at <strong>Paul van Vlissingenstraat colocation facility, Amsterdam, Netherlands</strong> — 127 servers seized here by Dutch National Police on February 12-13, 2025. Additional servers advertised in Russia, United States, Bulgaria, and Finland, suggesting leased rack or dedicated server arrangements at facilities in those countries. Whether seizures occurred outside the Netherlands is not confirmed.</p>
+
+    <h3>Upstream Transit Provider Chain</h3>
+    <p>The September 2024 data breach confirmed Mishin held a reseller account at <strong>Hostkey</strong> (Netherlands-based dedicated server provider) registered under his real name — establishing Hostkey as at least one upstream provider from which ZServers leased and resold capacity. <span class="ref">[1]</span></p>
+    <p>No documented de-peering events prior to February 2025 appear in public reporting. The coordinated action went directly to sanctions and physical seizure rather than relying on upstream de-peering. Additional upstream ISPs providing transit to the Amsterdam facility are not documented in open sources. This is an intelligence gap requiring BGP historical data or network operator community records. No upstream de-peering events documented.</p>
+
+    <h3>Resilience Features</h3>
+    <p>Multi-jurisdiction advertising (five countries) as classic resilience pattern. OFAC: "specialized servers designed to resist law enforcement actions." Leased capacity from multiple upstream providers (Hostkey confirmed; others unconfirmed). IP rotation demonstrated in the 2023 LockBit episode. Fast-flux or anycast operations not documented in open sources.</p>
+
+    <h3>Hosted Activity Types</h3>
+    <table class="data-table">
+      <thead><tr><th>Activity Type</th><th>Evidence Basis</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Ransomware C2 and operational infrastructure (LockBit)</td><td>OFAC, UK FCDO, AU DFAT, Chainalysis, TRM Labs, Reuters, The Record — LockBit affiliates explicitly cited using ZServers for chat servers and C2</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Ransomware infrastructure (Conti)</td><td>Dutch National Police press statements; SecurityWeek; SecurityAffairs</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Data exfiltration / extortion site hosting</td><td>ASD found Medibank data (520GB) on ZServers; Intel 471: Hunters International ransom note and exfil file list found in September 2024 ZServers data breach</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Botnet C2</td><td>Dutch National Police; Bleeping Computer; Cybernews; multiple press sources</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Malware distribution (loaders, stealers, generic)</td><td>Dutch police; SecurityOnline; SecurityAffairs; multiple outlets</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Ransomware infrastructure (BianLian, Hunters International)</td><td>Intel 471; AU DFAT Minister statement (BianLian); Infopercept (both)</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Phishing / fraud infrastructure</td><td>2010 ad explicitly listed phishing as allowed; LegalData; LE characterizations</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>DDoS-for-hire</td><td>No direct references in open sources</td><td><span class="badge inference">Analyst Inference</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Blocklist Standing</h3>
+    <table class="data-table">
+      <thead><tr><th>Source / List</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Spamhaus SBL</td><td><span class="bl-probable">Historically Listed (Probable)</span></td><td>Multiple sources characterize ZServers as BPH used for malware, botnets, and ransomware — consistent with SBL criteria. Specific SBL entry IDs, first-listing dates, and delisting events not documented in open sources. No public dispute filings by ZServers.</td></tr>
+        <tr><td>Spamhaus CBL / XBL</td><td><span class="bl-probable">Historically Listed (Probable)</span></td><td>IP ranges associated with documented botnet C2. Specific entries not publicly enumerated.</td></tr>
+        <tr><td>Spamhaus DROP / eDROP</td><td><span class="bl-probable">Probable</span></td><td>AS197414 and IP ranges consistent with DROP criteria (cybercrime-leased netblocks). Specific DROP list entries not confirmed in open sources.</td></tr>
+        <tr><td>abuse.ch Feodo Tracker</td><td><span class="bl-probable">Historically Listed (Probable)</span></td><td>Documented ransomware C2 and botnet hosting makes Feodo Tracker entries for ZServers IPs likely. Not specifically cited in open-source reporting.</td></tr>
+        <tr><td>abuse.ch URLhaus</td><td><span class="bl-probable">Historically Listed (Probable)</span></td><td>Malware distribution function suggests URLhaus entries for hosted payload URLs. Not publicly enumerated.</td></tr>
+        <tr><td>abuse.ch MalwareBazaar</td><td><span class="bl-unknown">Unknown</span></td><td>No direct references to MalwareBazaar entries in available reporting.</td></tr>
+        <tr><td>Firehol Level 1/2</td><td><span class="bl-probable">Probable</span></td><td>As an aggregator, Firehol almost certainly included ZServers-associated IPs given documented activity. Not specifically confirmed in reporting.</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Summary:</strong> ZServers/XHost IP space is widely characterized as malicious infrastructure associated with ransomware, botnets, and malware distribution. Historical listings on Spamhaus SBL and abuse.ch are highly probable given the documented activity types, but specific entry IDs, first-listing dates, and delisting events are not enumerated in available open-source reporting. No evidence of ZServers challenging or disputing blocklist entries; operational posture was systematic non-cooperation.</p>
+
+    <h3>Known Weaknesses Exploited</h3>
+    <p>Concentration of 127 servers in a single Amsterdam facility created a physical single point of failure exploited by Dutch police in February 2025. The XHOST UK front created a sanctionable legal hook in a Western jurisdiction. Multi-jurisdiction hosting provided resilience against single-country action but not against coordinated three-country sanctions plus a physical seizure in 48 hours. Mishin's Hostkey account under his real name, revealed in the September 2024 breach, exposed upstream relationships and contributed to OPSEC failure.</p>
+  </section>
+
+  <!-- SECTION 05 -->
+  <section id="financial">
+    <div class="section-label">Section 05</div>
+    <h2>Financial Infrastructure</h2>
+
+    <h3>Payment Methods</h3>
+    <p>ZServers accepted payments predominantly via cryptocurrency for anonymous client signups. Dutch police and multiple outlets confirm "cybercriminals could purchase services anonymously, by paying with cryptocurrency." The 2010 ad copy listed WebMoney as an accepted method, suggesting early e-money use before full cryptocurrency adoption. No card payments or fiat bank transfers referenced in post-2020 reporting.</p>
+
+    <h3>Wallet Clusters and Designated Addresses</h3>
+    <table class="data-table">
+      <thead><tr><th>Address</th><th>Currency</th><th>Designation</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><code>3FfRvC3kSo2SxiQe5e7SSuNdegwgq8iusL</code></td><td>BTC (XBT)</td><td>Mishin (individual)</td><td>OFAC SDN, Feb 11, 2025</td></tr>
+        <tr><td>3 additional addresses (full addresses not publicly indexed)</td><td>Digital currency</td><td>ZServers entity designation</td><td>OFAC SDN, Feb 11, 2025; confirmed by TRM Labs, Chainalysis</td></tr>
+      </tbody>
+    </table>
+
+    <h3>On-Chain Activity: Three-Phase Laundering Model</h3>
+    <h4>Phase 1 — Acquisition (Service Fees Inbound)</h4>
+    <p>ZServers-linked wallets received hosting fee payments from ransomware affiliates and other criminal clients. Chainalysis confirmed inbound payments from LockBit affiliates, Mallox, Cryptolocker, Dharma, Phobos, and Globeimposter, as well as IABs and darknet markets. Documented on-chain activity: at least <strong>$5.2 million</strong>. <span class="ref">[6][7]</span></p>
+
+    <h4>Phase 2 — Layering</h4>
+    <p>Funds moved through intermediary wallets. Chainalysis documented movement to mixing services and high-risk exchanges. TRM Labs noted chain-hopping behavior consistent with standard ransomware ecosystem layering. Specific mixing services or cross-chain bridges not named in public reporting. <span class="ref">[6][7]</span></p>
+
+    <h4>Phase 3 — Extraction (Cash-Out)</h4>
+    <p>Chainalysis confirmed cash-out at: (1) <strong>Garantex</strong> — Russia-based exchange sanctioned by OFAC in 2022 for AML non-compliance; (2) <strong>merchant services providers</strong>; (3) <strong>no-KYC exchanges</strong>. The Garantex link places ZServers within the broader sanctioned Russian financial infrastructure cluster. <span class="ref">[6][7]</span></p>
+    <div class="callout warning"><div class="callout-label">Garantex Subsequently Seized — March 6, 2025</div><p>Garantex was taken down on March 6, 2025 — 23 days after ZServers sanctions — by US Secret Service, German BKA, and Finnish law enforcement. Domain seized; $26M in cryptocurrency frozen; two administrators indicted (Aleksej Besciokov and Aleksandr Mira Serda). Successor exchange Grinex created immediately post-seizure; OFAC designated Grinex; Grinex suspended operations April 16, 2026. The Garantex cash-out flows documented by Chainalysis occurred prior to the March 2025 seizure and represent historical activity, not a current operational route.</div></div>
+
+    <h3>Sanctions and Risk Designations</h3>
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Program</th><th>Date</th><th>Entities Designated</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td>OFAC (US)</td><td>CYBER3 / SDN</td><td>Feb 11, 2025</td><td>ZServers; Mishin; Bolshakov; 4 crypto addresses</td><td>Materially assisted LockBit ransomware operations</td></tr>
+        <tr><td>UK FCDO</td><td>Cyber Sanctions Regime</td><td>Feb 11, 2025</td><td>ZServers; XHOST LP; 6 individuals</td><td>"Key component of Russia's cybercrime supply chain"; LockBit attacks against UK organizations including hospitals</td></tr>
+        <tr><td>AU DFAT</td><td>Autonomous Cyber Sanctions</td><td>Feb 11, 2025</td><td>ZServers; 5 individuals</td><td>BPH for BianLian; hosted Medibank stolen data (Oct 2022); first Australian sanctions against a hosting entity</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SECTION 06 -->
+  <section id="clientele">
+    <div class="section-label">Section 06</div>
+    <h2>Client Profile and Hosted Operations</h2>
+
+    <h3>Crimeware Verticals by Evidence Tier</h3>
+    <table class="data-table">
+      <thead><tr><th>Category</th><th>Named Clients</th><th>Evidence Basis</th><th>Classification</th></tr></thead>
+      <tbody>
+        <tr><td>Ransomware RaaS (LockBit)</td><td>LockBit 2.0 and 3.0 affiliates</td><td>OFAC, UK FCDO, AU DFAT, Chainalysis, TRM Labs, Reuters, The Record</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Ransomware RaaS (Conti)</td><td>Conti</td><td>Dutch National Police press statements; SecurityWeek; SecurityAffairs</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Botnets</td><td>Not named</td><td>Dutch National Police; Bleeping Computer; Cybernews; multiple outlets</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Malware distribution</td><td>Not named</td><td>Dutch police; SecurityOnline; SecurityAffairs</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Ransomware (BianLian)</td><td>BianLian</td><td>Intel 471; AU DFAT Minister statement (Medibank context); Infopercept</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Ransomware (Hunters International)</td><td>Hunters International</td><td>Intel 471 data breach analysis (ransom note in ZServers data); Infopercept</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Multi-family ransomware (Chainalysis cluster)</td><td>Mallox, Cryptolocker, Dharma, Phobos, Globeimposter</td><td>Chainalysis Reactor on-chain payment tracing — direct payments to ZServers designated wallets <span class="badge single-source">Single Source</span></td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Initial Access Brokers</td><td>Not named</td><td>Chainalysis on-chain exposure data <span class="badge single-source">Single Source</span></td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Darknet markets</td><td>Not named</td><td>Chainalysis on-chain exposure data <span class="badge single-source">Single Source</span></td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Phishing / fraud</td><td>Not named</td><td>2010 ad explicitly listed phishing as allowed; LegalData; LE characterizations</td><td><span class="badge credible">Credible</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Client Geography</h3>
+    <p>Infrastructure concentrated in the Netherlands with secondary nodes in Russia, US, Bulgaria, and Finland. Clients target organizations globally. No CIS exclusion clause documented — ZServers appears to have operated without geographic restrictions on victims. UK FCDO cited attacks against UK hospitals as a direct use case. AU DFAT cited Medibank Private (October 2022, Australia's largest healthcare breach).</p>
+
+    <h3>Notable Hosted Cases</h3>
+    <div class="callout warning">
+      <div class="callout-label">Medibank Private — October 2022 (Confirmed)</div>
+      <p>ASD assessed ZServers infrastructure was used to store approximately 520 GB of data stolen in the October 2022 Medibank Private extortion attack. Attacker Aleksandr Ermakov (sanctioned January 2024, arrested by Russia) was attributed to the REvil ecosystem. ASD conducted an offensive cyber operation deleting the stolen data from ZServers' servers. ASD Director-General publicly cited this as part of ASD deleting up to 250 TB of stolen data from adversary systems globally. <span class="ref">[1]</span></p>
+    </div>
+    <div class="callout warning">
+      <div class="callout-label">LockBit Operational Infrastructure (Confirmed)</div>
+      <p>ZServers leased IP addresses and servers to LockBit affiliates for C2, victim communication portals, and operational infrastructure. OFAC explicitly designated ZServers for "materially assisting LockBit ransomware operations." UK FCDO cited LockBit affiliates using ZServers to launch attacks against UK organizations. <span class="ref">[4][3]</span></p>
+    </div>
+  </section>
+
+  <!-- SECTION 07 -->
+  <section id="nexus">
+    <div class="section-label">Section 07</div>
+    <h2>State Nexus Assessment</h2>
+
+    <h3>Assessment: Tier 2 — Tolerated Safe Harbor</h3>
+    <div class="callout info">
+      <div class="callout-label">Tier 2 Assessment Basis</div>
+      <p>The Russian state is assessed to be aware of ZServers' operations and to have refrained from enforcement or prosecution of its operators, despite 15 years of operation and extensive international notoriety. This constitutes tolerated safe harbor. No public evidence supports active operational cooperation, tasking, or direct protection beyond passive non-enforcement.</p>
+    </div>
+    <p>Entity headquartered in Barnaul, Russia; primary operators are Russian nationals in Barnaul; primary victims are Western organizations. Despite coordinated US/UK/AU sanctions and a high-profile Dutch takedown in February 2025, no Russian criminal proceedings against ZServers, Mishin, or Bolshakov appear in open sources. The US State Department explicitly criticized Russia in its February 2025 sanctions announcement, writing that Russia "continues to offer safe harbor for cybercriminals where groups are free to launch and support ransomware attacks against the United States and its allies and partners." <span class="ref">[1]</span></p>
+
+    <h3>Negative Evidence (Tier 3/4 Not Supported)</h3>
+    <ul>
+      <li>No documented use of ZServers for Russian state espionage (GRU/FSB) campaigns</li>
+      <li>No leaked communications showing direct tasking from Russian security services</li>
+      <li>No explicit legal immunity or cooperation agreements referenced in any sanctioning government material</li>
+      <li>No attribution of ZServers to named state-sponsored threat actor groups (APT28, APT29, Sandworm, etc.)</li>
+    </ul>
+    <p><span class="badge inference">Analyst Inference</span> The possibility that classified IC holdings contain Tier 3/4 evidence cannot be excluded but is not supported by available open-source reporting.</p>
+
+    <h3>Jurisdictional Separation</h3>
+    <div class="jurisdiction-grid">
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Entity Registration</div>
+        <div class="jurisdiction-value">Russia (ZServers)</div>
+        <div class="jurisdiction-detail">Barnaul, Altai Krai, Russia</div>
+        <div class="jurisdiction-value" style="margin-top:8px">United Kingdom (XHOST LP)</div>
+        <div class="jurisdiction-detail">Registered as Limited Partnership</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Infrastructure Hosting</div>
+        <div class="jurisdiction-value">Netherlands (Primary)</div>
+        <div class="jurisdiction-detail">Paul van Vlissingenstraat, Amsterdam — 127 servers seized</div>
+        <div class="jurisdiction-detail" style="margin-top:6px">Secondary (advertised): Russia, US, Bulgaria, Finland</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Operator Location</div>
+        <div class="jurisdiction-value">Russia (Assessed)</div>
+        <div class="jurisdiction-detail">Mishin: Barnaul, Altai Krai (sanctions and OSINT)</div>
+        <div class="jurisdiction-detail" style="margin-top:6px">Bolshakov: Barnaul, Altai Krai (sanctions)</div>
+      </div>
+    </div>
+    <p>This separation enabled Western authorities to act aggressively against infrastructure (Dutch seizure) and finances (trilateral sanctions) while primary operators remained in Russia outside arrest range. This is a deliberate and common BPH pattern.</p>
+  </section>
+
+  <!-- SECTION 08 -->
+  <section id="disruption">
+    <div class="section-label">Section 08</div>
+    <h2>Law Enforcement and Regulatory Response</h2>
+
+    <h3>Arrests, Indictments, Criminal Charges</h3>
+    <p>As of mid-2026, no US DOJ indictment, UK CPS charges, or Dutch criminal charges against ZServers operators are confirmed in open sources. Mishin and Bolshakov are sanctioned but at large in Russia. Intel 471 notes that sealed indictments may exist — US prosecutors frequently seal grand jury indictments until arrest — making international travel risky for sanctioned actors. No public confirmation of criminal charges. <span class="ref">[1]</span></p>
+
+    <h3>Infrastructure Seizures</h3>
+    <div class="callout warning">
+      <div class="callout-label">Dutch National Police — Amsterdam, February 12-13, 2025</div>
+      <p>Dutch National Police, coordinating with international partners, seized and took offline <strong>127 servers</strong> associated with ZServers/XHost at the Paul van Vlissingenstraat colocation facility in Amsterdam. The operation followed over a year of investigation and occurred within 24-48 hours of the joint sanctions announcement on February 11, 2025. This action effectively dismantled ZServers/XHost's major Western-facing infrastructure. <span class="ref">[2][5]</span></p>
+    </div>
+
+    <h3>ASD Offensive Cyber Action (Undated)</h3>
+    <p><span class="badge credible">Credible</span> Australia's Signals Directorate (ASD) deleted approximately 520 GB of data stolen from Medibank Private in the October 2022 attack from ZServers infrastructure. ASD Director-General Abigail Bradshaw publicly described this and stated ASD has deleted up to 250 TB of stolen data from adversary systems globally. Exact timing of the ZServers-specific action not publicly stated. <span class="ref">[1]</span></p>
+
+    <h3>Sanctions Actions</h3>
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Date</th><th>Action</th><th>Legal Basis</th></tr></thead>
+      <tbody>
+        <tr><td>OFAC (US)</td><td>Feb 11, 2025</td><td>Added ZServers, Mishin, Bolshakov, and 4 crypto addresses to SDN list</td><td>EO 13694 / CYBER3; materially assisted LockBit ransomware</td></tr>
+        <tr><td>UK FCDO</td><td>Feb 11, 2025</td><td>Asset freeze: ZServers, XHOST Internet Solutions LP, and 6 individuals</td><td>UK Cyber Sanctions Regime; LockBit attacks against UK organizations including hospitals</td></tr>
+        <tr><td>AU DFAT</td><td>Feb 11, 2025</td><td>Designated ZServers and 5 individuals; first Australian sanctions against a hosting entity; first Australian cyber sanctions related to network infrastructure</td><td>Australian autonomous cyber sanctions framework; BianLian hosting; Medibank stolen data hosting</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Post-Disruption Client Migration</h3>
+    <p><span class="badge credible">Credible</span> Vendor commentary (Intel 471, Arete, TRM Labs) confirms the sanctions and takedown forced LockBit affiliates and other clients to seek alternative infrastructure. Significant substitution capacity exists in the broader BPH ecosystem. <span class="ref">[1][7]</span></p>
+    <p><span class="badge inference">Analyst Inference</span> One Exploit forum actor predicted ZServers would rebrand; another characterized it as "a typical resource seller" that could be taken down by a higher-level data center at any time. Named successor providers and documented migration paths are an intelligence gap.</p>
+    <p>In July 2025, OFAC sanctioned <strong>Aeza Group</strong> (St. Petersburg, Russia) — a separate BPH provider with partial client overlap (BianLian) — confirming the ecosystem continued operating via alternative providers after ZServers' disruption. No public connection between Aeza Group and ZServers/XHost has been established.</p>
+  </section>
+
+  <!-- SECTION 09 -->
+  <section id="connected">
+    <div class="section-label">Section 09</div>
+    <h2>Connected Groups and Ecosystem Relationships</h2>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">Each entity carries two independent confidence assessments: Tier 1 (infrastructure relationship) and Tier 2 (operational relationship). These are analytically distinct claims requiring separate evidence bases and are never collapsed into a single label.</p>
+
+    <div class="connected-entity">
+      <div class="entity-name">LockBit</div>
+      <div class="entity-meta">Ransomware-as-a-Service // Russia-linked // Disrupted February 2024 and ongoing</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational:</span><span class="badge credible">Credible</span></div>
+        </div>
+      </div>
+      <div class="entity-text">
+        <strong>Tier 1:</strong> OFAC, UK FCDO, AU DFAT, Chainalysis, TRM Labs, Reuters, The Record, and multiple additional sources explicitly confirm LockBit affiliates leased ZServers IPs and servers for victim communication portals and C2. On-chain payments from LockBit affiliates to ZServers-designated wallets confirmed by Chainalysis. OFAC designated ZServers specifically for "materially assisting LockBit ransomware operations."<br><br>
+        <strong>Tier 2:</strong> OFAC confirms Mishin marketed ZServers to ransomware actors "with the understanding that they would use those services in their cybercriminal activities." The 2023 IP reassignment episode demonstrates active facilitation of the LockBit client against an abuse complainant. However, no public evidence establishes joint operational planning beyond hosting and financial services.
+      </div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">OFAC — Corroborates</span>
+        <span class="vendor-tag cor">UK FCDO — Corroborates</span>
+        <span class="vendor-tag cor">AU DFAT — Corroborates</span>
+        <span class="vendor-tag cor">Chainalysis — Corroborates</span>
+        <span class="vendor-tag cor">TRM Labs — Corroborates</span>
+        <span class="vendor-tag cor">Intel 471 — Corroborates</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Conti</div>
+      <div class="entity-meta">Ransomware-as-a-Service // Russia-linked // Disbanded May 2022</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure:</span><span class="badge confirmed">Confirmed</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">
+        <strong>Tier 1:</strong> Dutch National Police press statements and multiple media reports (SecurityWeek, SecurityAffairs) explicitly list Conti among cybercrime groups using ZServers/XHost infrastructure.<br><br>
+        <strong>Tier 2:</strong> No public evidence ZServers operators were involved in Conti operational planning beyond providing hosting services.
+      </div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Dutch National Police — Corroborates</span>
+        <span class="vendor-tag cor">SecurityWeek — Corroborates</span>
+        <span class="vendor-tag">SecurityAffairs — Corroborates</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">BianLian</div>
+      <div class="entity-meta">Ransomware-as-a-Service // Russia-linked // Active as of mid-2026</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure:</span><span class="badge credible">Credible</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">
+        <strong>Tier 1:</strong> Intel 471 confirms ZServers "provided hosting services for ransomware groups such as LockBit, BianLian, and Hunters International." AU DFAT Minister also associated ZServers with BianLian in sanctions context. Infopercept cites BianLian independently. Intel 471 and AU DFAT provide corroboration; Infopercept is a third source.<br><br>
+        <strong>Tier 2:</strong> No evidence of operational coordination beyond hosting.
+      </div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Intel 471 — Corroborates</span>
+        <span class="vendor-tag cor">AU DFAT — Corroborates</span>
+        <span class="vendor-tag">Infopercept — Corroborates</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Hunters International</div>
+      <div class="entity-meta">Ransomware-as-a-Service // Active (claimed shutdown late 2024; rebrand signals 2025)</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure:</span><span class="badge credible">Credible</span><span class="badge single-source">Single Source</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">
+        <strong>Tier 1:</strong> Intel 471 found a Hunters International ransom note and exfiltrated file list from a 2024 European company attack in the September 2024 ZServers data breach, implying data staging or storage on ZServers infrastructure. Infopercept cites Hunters International independently. Both sources derive from the same post-breach period; wider independent corroboration not confirmed. <span class="badge single-source">Single Source Concern</span><br><br>
+        <strong>Tier 2:</strong> No evidence of operational coordination beyond hosting relationship.
+      </div>
+      <div class="vendor-tags">
+        <span class="vendor-tag ss">Intel 471 — Primary Source</span>
+        <span class="vendor-tag">Infopercept — Corroborates</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Mallox, Dharma, Phobos, Globeimposter, Cryptolocker affiliates</div>
+      <div class="entity-meta">Ransomware groups / affiliate operators — multi-family</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure:</span><span class="badge credible">Credible</span><span class="badge single-source">Single Source</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">
+        <strong>Tier 1:</strong> Chainalysis Reactor confirmed direct on-chain payment flows from affiliates of these groups to ZServers-designated wallet addresses, inferred as service fees for BPH infrastructure. Single-source — Chainalysis only; no corroborating vendor has published independent confirmation per family.<br><br>
+        <strong>Tier 2:</strong> On-chain payment establishes financial relationship only, not operational coordination.
+      </div>
+      <div class="vendor-tags">
+        <span class="vendor-tag ss">Chainalysis — Single Source</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Initial Access Brokers and Darknet Markets</div>
+      <div class="entity-meta">Criminal service economy actors (not individually named in public reporting)</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="two-tier">
+          <div class="tier-row"><span class="tier-label">Tier 1 — Infrastructure:</span><span class="badge credible">Credible</span><span class="badge single-source">Single Source</span></div>
+          <div class="tier-row"><span class="tier-label">Tier 2 — Operational:</span><span class="badge inference">Analyst Inference</span></div>
+        </div>
+      </div>
+      <div class="entity-text">
+        <strong>Tier 1:</strong> Chainalysis confirmed on-chain exposure to IAB and darknet market wallets sending payments to ZServers. Specific actors not named in public reporting. Single-source.<br><br>
+        <strong>Tier 2:</strong> Financial connection only.
+      </div>
+      <div class="vendor-tags">
+        <span class="vendor-tag ss">Chainalysis — Single Source</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section id="status">
+    <div class="section-label">Section 10</div>
+    <h2>Trajectory Assessment</h2>
+
+    <h3>Historical Market Position</h3>
+    <p>ZServers/XHost occupied a significant structural position in the Russia/CIS-linked ransomware ecosystem for approximately 15 years, serving as a preferred BPH provider for high-end ransomware operations. OFAC and UK FCDO descriptions as "a key component of Russia's cybercrime supply chain" and "the launchpad for crippling ransomware attacks" reflect its prominence by 2023-2024. The September 2024 data breach offering 9,500 client records for sale indicates a substantial historical client base, though active clients at seizure time would be a subset.</p>
+
+    <h3>Disruption History and Timeline</h3>
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-date">January 2006</div><div class="timeline-text">triplex560 persona first appears on Russian-language criminal forum zloy.bz. Identity later confirmed as Mishin by Intel 471.</div></div>
+      <div class="timeline-item"><div class="timeline-date">August 9, 2010</div><div class="timeline-text">Earliest confirmed verbatim hosting advertisement by triplex560 on xeksec.com: "We offer a hosting that is loyal to abuse." zservers.ru domain appears on forums ~3 months later.</div></div>
+      <div class="timeline-item"><div class="timeline-date">October 2022</div><div class="timeline-text">Medibank Private breach: ZServers infrastructure used to store 520GB of stolen Australian health data. ASD later deletes the data via offensive cyber operation.</div></div>
+      <div class="timeline-item"><div class="timeline-date">2023</div><div class="timeline-text">Lebanese company complaint re: ZServers-hosted LockBit-linked IP. Mishin instructs Bolshakov to change the IP but secretly assigns a new one to the LockBit client — demonstrating active client protection against abuse complaints.</div></div>
+      <div class="timeline-item"><div class="timeline-date">July 27, 2024</div><div class="timeline-text">triplex560 posts on Exploit disclosing a malicious attack on ZServers infrastructure — likely by a BPH competitor.</div></div>
+      <div class="timeline-item"><div class="timeline-date">September 2024</div><div class="timeline-text">Major data leak: ~9,500 ZServers client records (IPs, email addresses, passwords, credit cards) offered for sale online. Leak included Mishin's Hostkey account details and a Hunters International ransom note.</div></div>
+      <div class="timeline-item"><div class="timeline-date">November 2024</div><div class="timeline-text">Intel 471 independently concludes Mishin Alexander Igorevich is the triplex560 persona, based on OSINT and breach analysis.</div></div>
+      <div class="timeline-item"><div class="timeline-date">February 11, 2025</div><div class="timeline-text">US (OFAC), UK (FCDO), and Australia (DFAT) jointly sanction ZServers, XHOST Internet Solutions LP, and 6 individuals. 4 cryptocurrency addresses designated.</div></div>
+      <div class="timeline-item"><div class="timeline-date">February 12-13, 2025</div><div class="timeline-text">Dutch National Police seize 127 ZServers/XHost servers, Amsterdam. Major Western-facing infrastructure dismantled. triplex560 posts on Exploit: new orders paused, existing customers can still request service.</div></div>
+      <div class="timeline-item"><div class="timeline-date">Early March 2025</div><div class="timeline-text">ZServers website remains online. AS197414 still registered to XHOST Internet Solutions LP. Exploit forum actor predicts ZServers will rebrand. Website not taking new orders.</div></div>
+      <div class="timeline-item"><div class="timeline-date">December 4, 2025</div><div class="timeline-text">AS197414 last BGP announcement: prefix 185.170.144.0/24, origin AS197414. This is the final observed routing event. The ASN subsequently goes dark.</div></div>
+      <div class="timeline-item"><div class="timeline-date">June 2026 (RIPE verified)</div><div class="timeline-text">RIPE WHOIS query returns empty records for AS197414 — no aut-num object exists. ASN de-registered. 0 of 327 RIS peers observe any announcement. 0 prefixes, 0 IPs. First seen active May 28, 2011; last seen December 4, 2025 — approximately 14.5 years of operation.</div></div>
+    </div>
+
+    <h3>Trajectory Direction</h3>
+    <p><strong>Disrupted — Reconstitution Risk: Elevated.</strong> The February 2025 actions destroyed Western-hosted infrastructure and imposed financial/legal constraints. However, the brand is not definitively defunct: website online as of March 2025, ASN still registered, forum commentary anticipated rebrand. Given the pattern of Russia-based BPH providers reconstituting under new names (see: Aeza Group, sanctioned July 2025, operating concurrently and separately), the probability of Mishin or associates reconstituting a BPH operation under a new brand in Russian or permissive-jurisdiction hosting is assessed as elevated, though unconfirmed as of mid-2026.</p>
+
+    <h3>Intelligence Gaps</h3>
+    <div class="gap-list">
+      <div class="gap-item"><strong>1. AS200730 identity and connection to ZServers operators</strong><p>87.251.64.0/24 (formerly XHOST) is now announced by AS200730, holder "ISAEV ISAEV Igor" (RIPE as-overview, June 2026). AS200730 WHOIS returns empty records — same pattern as de-registered AS197414. No confirmed connection to Mishin, Bolshakov, or other named operators. Close with: RIPE WHOIS history for AS200730; abuse reporting on that /24; vendor infrastructure tracking. Escalate if activity on that range matches ZServers historical abuse patterns.</p></div>
+      <div class="gap-item"><strong>2. Confirmed reconstitution brand or new ASN registrations</strong><p>Whether ZServers reconstituted post-February 2025 under a new brand, legal entity, or new ASN beyond the documented IP space reallocation. Close with: longitudinal C2/infrastructure tracking; criminal forum monitoring for new BPH ads by triplex560-linked personas.</p></div>
+      <div class="gap-item"><strong>2. Full ASN/IP inventory beyond the two documented ranges</strong><p>Whether ZServers held additional ASNs or IP allocations. Close with: RIPE/ARIN historical data; Spamhaus SBL records correlated to entity; vendor infrastructure mapping.</p></div>
+      <div class="gap-item"><strong>3. Named additional upstream ISPs</strong><p>Upstream transit providers beyond confirmed Hostkey. Close with: BGP historical analysis; network operator community posts; additional breach material.</p></div>
+      <div class="gap-item"><strong>4. Spamhaus SBL/abuse.ch specific entry IDs and timelines</strong><p>First-listing dates, delisting events, specific SBL entry numbers. Close with: direct Spamhaus/abuse.ch dataset queries against documented IP ranges; vendor correlation.</p></div>
+      <div class="gap-item"><strong>5. Full September 2024 breach client dataset</strong><p>9,500 client records not publicly enumerated — specific named clients and their criminal operations. Close with: law enforcement analysis of the breach; vendor processing of the leaked dataset.</p></div>
+      <div class="gap-item"><strong>6. Roles of four additional sanctioned individuals</strong><p>Technical responsibilities of Sidorov, Dmitriy Bolshakov, Odintsov, and Ananev. Close with: full UK FCDO and AU DFAT sanctions notices; law enforcement evidence.</p></div>
+      <div class="gap-item"><strong>7. Post-disruption client migration mapping</strong><p>Which specific BPH providers absorbed LockBit and other clients post-February 2025. Close with: longitudinal C2/leak-site infrastructure tracking; vendor reports on successor infrastructure.</p></div>
+      <div class="gap-item"><strong>8. Sealed criminal indictments</strong><p>Whether US DOJ or allied prosecutors filed sealed charges against operators. Close with: public disclosure upon arrest; non-sealed docket records.</p></div>
+      <div class="gap-item"><strong>9. Russian state nexus beyond tolerance</strong><p>Any direct tasking, protection, or coordination with Russian security services. Close with: court documents, leaked communications, or declassified intelligence.</p></div>
+      <div class="gap-item"><strong>10. Specific IoCs (IPs/domains) for named campaigns</strong><p>Concrete ZServers-hosted IPs and domains used in documented LockBit, Conti, or BianLian campaigns. Close with: law enforcement technical annexes; vendor IoC feeds with explicit ZServers attribution.</p></div>
+    </div>
+  </section>
+
+  <!-- RECENT REPORTING -->
+  <section id="recent-reporting">
+    <div class="section-label">Recent Reporting</div>
+    <h2>Post-Disruption Developments (February 2025 – June 2026)</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">March 6, 2025</div>
+        <div class="timeline-text"><strong>Garantex seized.</strong> US Secret Service, German BKA, and Finnish law enforcement take down Garantex — ZServers' documented primary cash-out exchange — 23 days after ZServers sanctions. Domain seized; approximately $26M in cryptocurrency frozen; administrators Aleksej Besciokov and Aleksandr Mira Serda indicted. Successor exchange Grinex created immediately.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">March 11, 2025</div>
+        <div class="timeline-text"><strong>Intel 471</strong> publishes deep-dive profile confirming AS197414 registration status, Hostkey upstream relationship, full six-individual sanctions list, Medibank/ASD connection, September 2024 data breach details, and triplex560 identity corroboration. As of publication, ZServers website still online and AS197414 still registered to XHOST Internet Solutions LP. <span class="ref">[1]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">July 2, 2025</div>
+        <div class="timeline-text"><strong>OFAC sanctions Aeza Group</strong> (separate Russia-based BPH provider, St. Petersburg) for hosting ransomware (BianLian, RedLine, Meduza, Lumma), the BlackSprut darknet drug market, and the Doppelganger Russian influence operation. Aeza CEO Penzev and co-owners Bozoyan and Knyazev designated. Four Aeza employees had been arrested by Russian authorities in April 2025 on drug trafficking charges. <em>No assessed connection to ZServers/XHost.</em> Confirms BPH ecosystem continued operating via alternative providers post-ZServers disruption.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">April 16, 2026</div>
+        <div class="timeline-text"><strong>Grinex suspends operations.</strong> Garantex successor exchange Grinex — created immediately after the March 2025 seizure to absorb Garantex customer deposits — suspends operations following OFAC designation. Closes the Garantex cash-out pathway entirely.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">June 2026 (RIPE verified)</div>
+        <div class="timeline-text">AS197414 de-registered: RIPE WHOIS record empty (no aut-num object); 0 RIS peers observing; last BGP announcement December 4, 2025. Both formerly XHOST-associated IP ranges now announced by different entities: <code>87.251.64.0/24</code> by AS200730 (holder: ISAEV ISAEV Igor, WHOIS empty); <code>185.170.144.0/24</code> by AS50053 (VDSKA-AS, Anton Levin). No confirmed ZServers rebrand or successor entity. ZServers remains on OFAC SDN, UK FCDO, and AU DFAT sanctions lists.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <div class="section-label">Sources</div>
+    <h2>Sources and Evidence Base</h2>
+    <div class="sources-list">
+      <div class="source-item"><span class="source-num">[1]</span><span class="source-text">Intel 471, "Zservers: Bulletproof hosting for online crime," March 11, 2025. <a href="https://www.intel471.com/blog/zservers-bulletproof-hosting-for-crime" target="_blank">intel471.com/blog/zservers-bulletproof-hosting-for-crime</a></span></div>
+      <div class="source-item"><span class="source-num">[2]</span><span class="source-text">US Department of the Treasury, "United States, Australia, and the United Kingdom Jointly Sanction Key Infrastructure that Enables Ransomware Attacks," February 11, 2025. <a href="https://home.treasury.gov/news/press-releases/sb0018" target="_blank">home.treasury.gov/news/press-releases/sb0018</a></span></div>
+      <div class="source-item"><span class="source-num">[3]</span><span class="source-text">LexisNexis UK / UK FCDO, "FCDO announces new sanctions targeting Russian cybercrime network Zservers," February 11, 2025. <a href="https://www.lexisnexis.co.uk/legal/news/fcdo-announces-new-sanctions-targeting-russian-cybercrime-network-zservers" target="_blank">lexisnexis.co.uk</a></span></div>
+      <div class="source-item"><span class="source-num">[4]</span><span class="source-text">The Record (Recorded Future News), "Russian bulletproof hosting service Zservers sanctioned by US for LockBit coordination," February 11, 2025. <a href="https://therecord.media/zservers-russia-bulletproof-hosting-us-uk-sanctions" target="_blank">therecord.media</a></span></div>
+      <div class="source-item"><span class="source-num">[5]</span><span class="source-text">Bleeping Computer, "Dutch Police seizes 127 XHost servers, dismantles bulletproof hoster," February 13, 2025. <a href="https://www.bleepingcomputer.com/news/legal/dutch-police-seizes-127-xhost-servers-dismantles-bulletproof-hoster/" target="_blank">bleepingcomputer.com</a></span></div>
+      <div class="source-item"><span class="source-num">[6]</span><span class="source-text">Chainalysis, "OFAC Sanctions Zservers for Facilitating Ransomware Attacks," February 11, 2025. <a href="https://www.chainalysis.com/blog/ofac-sanctions-zservers-ransomware-attacks-lockbit-february-2025/" target="_blank">chainalysis.com/blog/ofac-sanctions-zservers</a></span></div>
+      <div class="source-item"><span class="source-num">[7]</span><span class="source-text">TRM Labs, "US, UK and Australia Target Zservers and LockBit Affiliates," February 2025. <a href="https://www.trmlabs.com/resources/blog/us-uk-and-australia-target-zservers-and-lockbit-affiliates" target="_blank">trmlabs.com</a></span></div>
+      <div class="source-item"><span class="source-num">[8]</span><span class="source-text">OFAC, "Cyber-related Designations," February 11, 2025. <a href="https://ofac.treasury.gov/recent-actions/20250211" target="_blank">ofac.treasury.gov/recent-actions/20250211</a></span></div>
+      <div class="source-item"><span class="source-num">[9]</span><span class="source-text">SecurityWeek, "127 Servers of Bulletproof Hosting Service Zservers Seized by Dutch Police," February 16, 2025. <a href="https://www.securityweek.com/127-servers-of-bulletproof-hosting-service-zservers-seized-by-dutch-police/" target="_blank">securityweek.com</a></span></div>
+      <div class="source-item"><span class="source-num">[10]</span><span class="source-text">SecurityAffairs, "Dutch Police shut down bulletproof hosting provider Zservers and seized 127 servers," February 2025. <a href="https://securityaffairs.com/174321/hacking/dutch-police-seized-127-servers-bulletproof-hosting-service-zservers-xhost.html" target="_blank">securityaffairs.com</a></span></div>
+      <div class="source-item"><span class="source-num">[11]</span><span class="source-text">Cybernews, "Dutch police dismantle bulletproof hosting provider, seize 127 servers," February 2025. <a href="https://cybernews.com/cybercrime/dutch-police-dismantle-zservers" target="_blank">cybernews.com</a></span></div>
+      <div class="source-item"><span class="source-num">[12]</span><span class="source-text">Arete IR, "Sanctions Against Zservers," February 2025. <a href="https://areteir.com/resources/us-uk-australia-sanction-zservers-ransomware" target="_blank">areteir.com</a></span></div>
+      <div class="source-item"><span class="source-num">[13]</span><span class="source-text">UK FCDO / Lursoft, "XHOST Internet Solutions LP — Sanctions Notice," February 11, 2025. <a href="https://sanctions.lursoft.lv/person/isxhost/UK-16747?pdf=1" target="_blank">sanctions.lursoft.lv</a></span></div>
+      <div class="source-item"><span class="source-num">[14]</span><span class="source-text">Reuters, "US, UK, Australia target Russia-based Zservers over LockBit ransomware attacks," February 11, 2025. <a href="https://www.reuters.com/technology/cybersecurity/us-uk-australia-target-russia-based-zservers-over-lockbit-ransomware-attacks-2025-02-11/" target="_blank">reuters.com</a></span></div>
+      <div class="source-item"><span class="source-num">[15]</span><span class="source-text">The Hacker News, "U.S. Sanctions Russian Bulletproof Hosting Provider [Aeza Group] for Supporting Cybercriminals Behind Ransomware," July 2, 2025. <a href="https://thehackernews.com/2025/07/us-sanctions-russian-bulletproof.html" target="_blank">thehackernews.com</a></span></div>
+      <div class="source-item"><span class="source-num">[16]</span><span class="source-text">Infopercept, "ZServers — Bulletproof Hosting for Crime." <a href="https://www.infopercept.com/news/zservers-bulletproof-hosting-for-crime" target="_blank">infopercept.com</a></span></div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

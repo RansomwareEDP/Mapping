@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEDBROPRO — BPH Analytical Profile | EDP</title>
+  <style>
+    :root {
+      --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+      --border: #30363d; --border-light: #21262d;
+      --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+      --accent: #58a6ff; --accent-dim: #1f6feb;
+      --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+      --credible-bg: #341a00; --credible-text: #e3b341;
+      --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+      --ss-bg: #2d1a17; --ss-text: #f85149;
+      --disrupted: #e3b341; --active: #3fb950; --defunct: #8b949e;
+      --sidebar-width: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+    .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: var(--inference-bg); color: var(--inference-text); border: 1px solid var(--accent-dim); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .group-switcher { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .group-switcher-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 6px; }
+    .group-select { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 4px; font-size: 12px; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all .15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+    .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+    /* MAIN */
+    .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; }
+    .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+    .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .profile-title-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+    .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+    .status-badge.active { background: rgba(63,185,80,.12); color: var(--active); border: 1px solid rgba(63,185,80,.3); }
+    .status-badge.disrupted { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* SECTIONS */
+    section { padding: 32px 40px; border-bottom: 1px solid var(--border-light); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 15px; font-weight: 600; color: var(--text-heading); margin: 20px 0 10px; }
+    h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .05em; }
+    p { margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 12px 20px; line-height: 2; }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .kpi-value { font-size: 20px; font-weight: 700; color: var(--text-heading); line-height: 1.2; }
+    .kpi-value.active { color: var(--active); }
+    .kpi-value.disrupted { color: var(--disrupted); }
+    .kpi-value.accent { color: var(--accent); }
+    .kpi-value.danger { color: var(--ss-text); }
+    .kpi-value.muted { color: var(--text-muted); }
+    .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+
+    /* TABLES */
+    .attr-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .attr-table th, .attr-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; vertical-align: top; }
+    .attr-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; width: 200px; background: var(--bg-secondary); }
+    .attr-table tr:last-child th, .attr-table tr:last-child td { border-bottom: none; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    .data-table th { background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13px; color: var(--text); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    .badge.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); border: 1px solid rgba(35,134,54,.3); }
+    .badge.credible { background: var(--credible-bg); color: var(--credible-text); border: 1px solid rgba(158,106,3,.3); }
+    .badge.inference { background: var(--inference-bg); color: var(--inference-text); border: 1px solid rgba(31,111,235,.3); }
+    .badge.single-source { background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); }
+
+    /* TWO-TIER */
+    .two-tier { display: flex; flex-direction: column; gap: 5px; }
+    .tier-row { display: flex; align-items: center; gap: 8px; }
+    .tier-label { font-size: 10px; color: var(--text-muted); min-width: 160px; }
+
+    /* VERBATIM */
+    .verbatim { background: var(--bg-secondary); border-left: 3px solid var(--accent-dim); padding: 12px 16px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+    .verbatim-source { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .verbatim-text { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.6; }
+
+    /* CALLOUT */
+    .callout { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 14px 0; }
+    .callout.warning { border-left: 3px solid var(--disrupted); }
+    .callout.info { border-left: 3px solid var(--accent); }
+    .callout-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout.warning .callout-label { color: var(--disrupted); }
+    .callout.info .callout-label { color: var(--accent); }
+
+    /* GALLERY */
+    .gallery-heading { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 24px 0 12px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .gallery-item img { width: 100%; height: 180px; object-fit: contain; display: block; background: var(--bg-secondary); padding: 20px; }
+    .gallery-caption { padding: 10px 12px; }
+    .gallery-caption-text { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .gallery-source { font-size: 10px; color: var(--text-muted); }
+    .gallery-placeholder { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+
+    /* CONNECTED ENTITY */
+    .connected-entity { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .entity-name { font-size: 15px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .entity-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .entity-confidence { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+    .entity-confidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .entity-text { font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+    .vendor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .vendor-tag { padding: 2px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text-muted); }
+    .vendor-tag.cor { border-color: rgba(35,134,54,.3); color: var(--confirmed-text); }
+    .vendor-tag.ss { border-color: rgba(248,81,73,.3); color: var(--ss-text); }
+
+    /* JURISDICTIONS */
+    .jurisdiction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+    .jurisdiction-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .jurisdiction-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .jurisdiction-value { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+    .jurisdiction-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; margin: 16px 0; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -16px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--bg); }
+    .timeline-date { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+    .timeline-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* GAPS */
+    .gap-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .gap-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+    .gap-item strong { color: var(--text-heading); font-size: 13px; }
+    .gap-item p { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
+
+    /* BLOCKLIST */
+    .bl-listed { color: var(--ss-text); font-weight: 700; font-size: 11px; }
+    .bl-probable { color: var(--disrupted); font-weight: 700; font-size: 11px; }
+    .bl-unknown { color: var(--text-muted); font-weight: 700; font-size: 11px; }
+
+    /* SOURCES */
+    .sources-list { display: flex; flex-direction: column; gap: 7px; }
+    .source-item { display: flex; gap: 12px; font-size: 12px; line-height: 1.5; }
+    .source-num { color: var(--accent); font-weight: 700; min-width: 28px; }
+    .source-text a { color: var(--accent); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
+    code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; background: var(--bg-secondary); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+    .ref { font-size: 11px; color: var(--text-muted); vertical-align: super; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; }
+      .jurisdiction-grid { grid-template-columns: 1fr; }
+      section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">EDP // Ransomware Ecosystem</div>
+    <div class="sidebar-title">DEDBROPRO</div>
+    <span class="node-type-badge">Bulletproof Hosting Provider</span>
+  </div>
+  <div class="group-switcher">
+    <div class="group-switcher-label">Node Library</div>
+    <select class="group-select">
+      <option>BPH Providers</option>
+      <option selected>DEDBROPRO</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Profile Sections</div>
+    <a href="#overview" class="nav-link"><span class="nav-num">01</span> Executive Summary</a>
+    <a href="#lineage" class="nav-link"><span class="nav-num">02</span> Lineage &amp; Heritage</a>
+    <a href="#operations" class="nav-link"><span class="nav-num">03</span> Business Model</a>
+    <a href="#technical" class="nav-link"><span class="nav-num">04</span> Technical Footprint</a>
+    <a href="#financial" class="nav-link"><span class="nav-num">05</span> Financial Infrastructure</a>
+    <a href="#clientele" class="nav-link"><span class="nav-num">06</span> Client Profile</a>
+    <a href="#nexus" class="nav-link"><span class="nav-num">07</span> State Nexus</a>
+    <a href="#disruption" class="nav-link"><span class="nav-num">08</span> LE Response</a>
+    <a href="#connected" class="nav-link"><span class="nav-num">09</span> Connected Groups</a>
+    <a href="#status" class="nav-link"><span class="nav-num">10</span> Trajectory</a>
+    <div class="nav-section-label" style="margin-top:8px">Additional</div>
+    <a href="#recent-reporting" class="nav-link"><span class="nav-num"></span> Recent Reporting</a>
+    <a href="#sources" class="nav-link"><span class="nav-num"></span> Sources</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">EDP // BPH Library<br>Profile v1 // June 2026<br>Author: Reno</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-breadcrumb">
+      <a href="https://ransomwareedp.github.io/">EDP</a> /
+      <a href="https://ransomwareedp.github.io/bph/">BPH Providers</a> /
+      DEDBROPRO
+    </div>
+    <div class="profile-title-row">
+      <div>
+        <div class="profile-name">DEDBROPRO</div>
+        <div class="profile-subtitle">Estonian-registered bulletproof hosting provider // AS203834 (dedbropro-as) // Vault Dweller OU // Active from at least 2024</div>
+      </div>
+      <span class="status-badge active"><span class="status-dot"></span>Active</span>
+    </div>
+  </div>
+
+  <!-- SECTION 01 -->
+  <section id="overview">
+    <div class="section-label">Section 01</div>
+    <h2>Executive Summary and Provider Overview</h2>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value active">Active</div><div class="kpi-label">Operational Status</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">AS203834</div><div class="kpi-label">Primary ASN</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">195.82.146.0/24</div><div class="kpi-label">IPv4 Prefix</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">2022-07-19</div><div class="kpi-label">AS Created</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">307</div><div class="kpi-label">ThreatFox IOCs (ASN)</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">2+</div><div class="kpi-label">Malware Families (Confirmed)</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">None</div><div class="kpi-label">Sanctions / LE Actions</div></div>
+      <div class="kpi-card"><div class="kpi-value muted">Unknown</div><div class="kpi-label">Spamhaus SBL Status</div></div>
+    </div>
+
+    <!-- Attribute Table -->
+    <h3>Quick-Reference Attributes</h3>
+    <table class="attr-table">
+      <tr><th>Common Names</th><td>DEDBROPRO; DedBro; DEDBRO; dedbro.pro</td></tr>
+      <tr><th>Node Type</th><td>Bulletproof Hosting Provider</td></tr>
+      <tr><th>Status</th><td><span class="status-badge active" style="margin-top:0"><span class="status-dot"></span>Active</span> — AS operational; Carder.su advertising confirmed March 2026; malware hosting and C2 documented through May 2025</td></tr>
+      <tr><th>Entity Registration Jurisdiction</th><td>Estonia (EE) — Vault Dweller OU (ORG-VDO2-RIPE), Lasnamaee linnaosa, Majaka tn 26, 11412 Tallinn. Registered as an LIR (Local Internet Registry) under RIPE. <span class="ref">[13]</span></td></tr>
+      <tr><th>Infrastructure Hosting Jurisdiction</th><td>Bulgaria (BG) — assessed primary, per IP geolocation of documented C2 endpoints (195.82.147.x). Estonia (EE) — AS registration jurisdiction. <span class="ref">[6][7]</span></td></tr>
+      <tr><th>Operator Location</th><td>Unknown — no named individual identified in open sources. Estonian entity registration does not confirm operator nationality or physical location.</td></tr>
+      <tr><th>Active Period</th><td>AS203834 created 2022-07-19; first ThreatFox sighting 2024-10-16; first URLhaus listing 2025-03-18; Carder.su advertisement confirmed March 2026. <span class="ref">[1][7][9][2]</span></td></tr>
+      <tr><th>Primary ASN</th><td><code>AS203834</code> — dedbropro-as (Vault Dweller OU, Estonia)</td></tr>
+      <tr><th>IPv4 Prefix</th><td><code>195.82.146.0/24</code> — single confirmed /24 allocation. C2 activity documented in adjacent <code>195.82.147.x</code> space. <span class="ref">[11][12]</span></td></tr>
+      <tr><th>Upstream Transit</th><td><code>AS44901</code> — Belcloud (Bulgaria); <code>AS20764</code> — CJSC RASCOM (Russia). <span class="ref">[11][14][15]</span></td></tr>
+      <tr><th>Abuse Contact</th><td>abuse@dedbro.pro (RIPE record); @dedbropro (Telegram); xmpp@dedbro.pro (Jabber). <span class="ref">[3][2]</span></td></tr>
+      <tr><th>Billing Platform</th><td>cp.dedbro.pro — ISPmanager / billmgr (confirmed via direct site fetch). <span class="ref">[3]</span></td></tr>
+      <tr><th>Sanctions</th><td>None — no OFAC, EU, or UK FCDO designations against entity, operator handle, or associated wallets as of June 2026.</td></tr>
+      <tr><th>ThreatFox Standing</th><td>307 IOCs on AS203834 ASN report (all hosted IOCs); 23 tagged DEDBROPRO-AS sightings; first tag 2024-10-16, last tag 2025-05-30. <span class="ref">[1][7]</span></td></tr>
+      <tr><th>Spamhaus SBL Status</th><td>Unknown — operator explicitly states "We do not hold Spamhaus" and promises service suspension if SBL is received. Per-prefix SBL/CBL/XBL status was not confirmed in this pass. <span class="ref">[2]</span></td></tr>
+      <tr><th>Prohibited Activities</th><td>CIS-region targeting; email spam; DDoS attacks; child and animal sexual abuse material; terrorism. <span class="ref">[2]</span></td></tr>
+      <tr><th>Payment Methods</th><td>Bitcoin and other cryptocurrencies (explicit); no fiat, card, or legacy e-money confirmed. <span class="ref">[2]</span></td></tr>
+      <tr><th>State Nexus Tier</th><td>Tolerated Safe Harbor (Tier 2 of 4) — assessed, based on operational persistence without enforcement and dual transit routing through Bulgaria (EU) and Russia (RASCOM). No evidence of active state cooperation or control.</td></tr>
+    </table>
+
+    <h3>Overall Assessment</h3>
+    <p>DEDBROPRO (operating as dedbro.pro, brand handle "DedBro") is a newer bulletproof hosting (BPH) entrant offering dedicated servers, NVMe VPS, and VPN services on an explicitly anonymous and abuse-tolerant basis. The provider's infrastructure is registered under the Estonian company Vault Dweller OU (AS203834, dedbropro-as), with operational address-space activity observed primarily in Bulgaria. As of June 2026, DEDBROPRO is actively advertising to criminal audiences via Carder.su and maintains a public English-language commercial website at dedbro.pro that markets services without KYC requirements and accommodates clients whose "projects might encounter issues or complaints." <span class="ref">[2][3]</span></p>
+    <p>Abuse telemetry from abuse.ch's ThreatFox identifies 307 indicators of compromise hosted on AS203834 over the trailing twelve months, with confirmed SectopRAT and Remcos remote access trojan (RAT) command-and-control (C2) infrastructure in the <code>195.82.147.x</code> space, and generic malware distribution (unattributed PE executables) from <code>195.82.146.34</code> documented by URLhaus beginning March 2025. Criminal forum advertising on Carder.su (March 2026) explicitly endorses use for "scan, brute force and other projects," placing this provider unambiguously in the bulletproof hosting category rather than the privacy-hosting or grey-area hosting categories. <span class="ref">[1][7][8][9][2]</span></p>
+    <p>No law enforcement actions, arrests, indictments, seizures, or sanctions designations targeting DEDBROPRO, Vault Dweller OU, or identified operators have been documented as of June 2026. The provider's single /24 address block, Estonian entity registration (EU regulatory jurisdiction), and dual upstream routing through a Bulgarian transit provider and a Russian ISP (RASCOM, AS20764) represent the primary structural leverage points available to investigators and network operators seeking to degrade this provider's operational capability. <span class="ref">[11][13][14][15]</span></p>
+
+    <!-- Gallery -->
+    <div class="gallery-heading">Provider Presence and Infrastructure Evidence</div>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="https://dedbro.pro/images/tild3031-3035-4539-b132-373237643762__-__resize__504x__logo2.png"
+             alt="DEDBROPRO public website logo and brand identity"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="gallery-placeholder" style="display:none">DEDBROPRO // Website Presence</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">DEDBROPRO public commercial website (dedbro.pro), operated on the Tilda platform, offering dedicated servers from $149, NVMe VPS from $5, and VPN from $5 per month, with explicit no-KYC and anonymity marketing. Billing panel at cp.dedbro.pro (ISPmanager/billmgr). Copyright footer reads "© 2024 DEDBRO.RPO."</div>
+          <div class="gallery-source">dedbro.pro/eng.html, fetched June 2026</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">ThreatFox // AS203834 IOC Record</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">ThreatFox ASN report for AS203834 (dedbropro-as) documenting 307 indicators of compromise with confirmed Remcos and SectopRAT C2 tags. The DEDBROPRO-AS tag page shows 23 discrete tagged sightings between 2024-10-16 and 2025-05-30. Note: direct screenshot unavailable; ThreatFox pages are JavaScript-rendered. Gallery placeholder shown.</div>
+          <div class="gallery-source">abuse.ch ThreatFox, threatfox.abuse.ch/asn/203834 / threatfox.abuse.ch/browse/tag/DEDBROPRO-AS/</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">Carder.su // March 2026 Advertisement</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Carder.su thread "Dedbro.pro - Bulletproof Dedicated Servers, VPS, VPN" (posted March 2026), advertising brute force and scanning tolerance, cryptocurrency payments, and 24/7/365 support. Explicit CIS-exclusion policy. Contacts: xmpp@dedbro.pro (Jabber) and @dedbropro (Telegram).</div>
+          <div class="gallery-source">carder.su/threads/dedbro-pro-bulletproof-dedicated-servers-vps-vpn.1044/, March 2026</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">drb_ra // Remcos C2 Disclosure</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">X (Twitter) post by researcher @drb_ra (May 2025) disclosing Remcos C2 endpoint 195.82.147.97:443 hosted on DEDBROPRO-AS. Classified as unverified in ThreatFox. First open-source attribution of DEDBROPRO to Remcos infrastructure in researcher-facing channels.</div>
+          <div class="gallery-source">@drb_ra, x.com/drb_ra/status/1922545078054047899, May 2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02 -->
+  <section id="lineage">
+    <div class="section-label">Section 02</div>
+    <h2>Lineage and Organizational Heritage</h2>
+
+    <h3>Predecessor and Sibling Analysis</h3>
+    <p>No public evidence links DEDBROPRO or Vault Dweller OU to prior-generation BPH brands (such as Maxided, Yalishanda, Media Land LLC, McColo, or 3FN) or to currently active BPH brand clusters (such as PROSPERO/Bearhost, Zservers, or Stark Industries). AS203834 was created on 2022-07-19, making this a relatively recent autonomous system without the multi-year lineage typical of established BPH conglomerates. The provider is assessed as a newer, independent market entrant rather than a rebrand or shell of an existing criminal infrastructure operation. Confidence: <span class="badge credible">Credible</span> (absence of evidence with moderate search depth; deeper WHOIS history and criminal forum cross-referencing could revise this). <span class="ref">[1][11][12][13]</span></p>
+
+    <div class="callout info">
+      <div class="callout-label">Note on AS47105 Reference</div>
+      <p>One source in the underlying research attributed IP <code>195.82.146.34</code> to "AS47105 dedbropro." Follow-on verification confirms that <code>195.82.146.0/24</code> is registered to AS203834 (Vault Dweller OU), not AS47105. AS47105 does not appear in BGP data as a DEDBROPRO-associated ASN. The discrepancy likely reflects stale IP intelligence data in the upstream source's ASN lookup. AS203834 is the sole confirmed autonomous system for this provider. <span class="ref">[11][12]</span></p>
+    </div>
+
+    <h3>Brand Continuity and Entity Structure</h3>
+    <table class="data-table">
+      <thead><tr><th>Entity / Brand</th><th>Type</th><th>Role</th><th>Active Window</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>DEDBROPRO / DedBro / dedbro.pro</strong></td>
+          <td>BPH brand; commercial website; forum advertising identity</td>
+          <td>Primary consumer-facing brand; sells directly to criminal end-users via website and chat channels</td>
+          <td>Website live since at least 2024 (copyright footer "© 2024 DEDBRO.RPO"); Carder.su ad March 2026</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>Vault Dweller OU</strong></td>
+          <td>Estonian LLC; RIPE LIR (Local Internet Registry)</td>
+          <td>Corporate shell holding AS203834 registration; abuse contact entity; RIPE organization ORG-VDO2-RIPE</td>
+          <td>AS203834 created 2022-07-19; RIPE record last updated 2025-03-13</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>AS203834 (dedbropro-as)</strong></td>
+          <td>Autonomous System</td>
+          <td>Network infrastructure backbone; single /24 prefix 195.82.146.0/24; upstream via Belcloud (AS44901) and RASCOM (AS20764)</td>
+          <td>Created 2022-07-19; abuse activity documented from 2024-10-16 onward</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Evidentiary Pillars</h3>
+    <div class="callout info">
+      <div class="callout-label">Brand-to-ASN Attribution</div>
+      <p><span class="badge confirmed">Confirmed</span> The RIPE database records AS203834 with AS-name "dedbropro-as" and organization "Vault Dweller OU." ThreatFox tags abuse.ch IOCs hosted on this ASN with the label "DEDBROPRO-AS." The Carder.su forum thread links the "DedBro" advertising handle to dedbro.pro, Telegram @dedbropro, and Jabber xmpp@dedbro.pro, all consistent with the dedbro.pro commercial brand. Multiple independent sources converge on this attribution. <span class="ref">[1][2][3][5][7]</span></p>
+    </div>
+    <div class="callout info">
+      <div class="callout-label">Infrastructure-to-Abuse Telemetry Attribution</div>
+      <p><span class="badge confirmed">Confirmed</span> abuse.ch ThreatFox's ASN-level tagging confirms that malware C2 IPs (195.82.147.x) detected by the security community resolve within AS203834 (dedbropro-as). URLhaus host records link IP 195.82.146.34 to malware-serving URLs. Both data sources are independent of the Carder.su and dedbro.pro commercial evidence and reinforce the same infrastructure attribution. <span class="ref">[1][7][8][9]</span></p>
+    </div>
+
+    <h3>Operator Profiles</h3>
+    <p>No named individual, sanctioned person, or indicted defendant has been publicly linked to DEDBROPRO, dedbro.pro, or Vault Dweller OU as of June 2026. The sole operator-attributable identifier is the forum handle "DedBro" used on Carder.su. All operator information below reflects an unknown individual or individuals behind the Vault Dweller OU entity.</p>
+
+    <h4>2.1 Handle: "DedBro"</h4>
+    <table class="attr-table">
+      <tr><th>Handle / Aliases</th><td>DedBro (Carder.su advertising account); DEDBRO (capitalized brand variant); dedbropro (Telegram handle @dedbropro)</td></tr>
+      <tr><th>Assessed Nationality</th><td>Unknown — Estonian entity registration does not imply operator nationality. Russian-language forum advertising on Carder.su is consistent with a Russian or CIS-origin operator but is not determinative. The CIS-exclusion policy (do not target CIS) is consistent with an operator seeking to minimize exposure to domestic law enforcement.</td></tr>
+      <tr><th>Assessed Location</th><td>Unknown — no geolocatable signals in open sources. Vault Dweller OU registered in Tallinn, Estonia; physical presence in Estonia is unconfirmed and cannot be inferred from RIPE registration alone.</td></tr>
+      <tr><th>Forum Activity</th><td>Carder.su advertising thread, March 2026. Advertising profile categorized as "Guest" (non-member advertiser) on Carder.su. No confirmed activity on Exploit, XSS, WWH-Club, or other major underground forums in open sources for this pass.</td></tr>
+      <tr><th>Current Legal Status</th><td>At large — no public arrest, indictment, criminal charges, or sanctions designation.</td></tr>
+      <tr><th>Sanctions Designations</th><td>None.</td></tr>
+    </table>
+
+    <h4>2.2 Entity: Vault Dweller OU</h4>
+    <table class="attr-table">
+      <tr><th>Registered Jurisdiction</th><td>Estonia (EE) — European Union jurisdiction.</td></tr>
+      <tr><th>RIPE Organization ID</th><td>ORG-VDO2-RIPE</td></tr>
+      <tr><th>Registered Address</th><td>Lasnamaee linnaosa, Majaka tn 26, 11412 Tallinn, Estonia</td></tr>
+      <tr><th>Phone (RIPE record)</th><td>+37125479008</td></tr>
+      <tr><th>RIPE LIR Status</th><td>Registered Local Internet Registry (LIR) — direct RIPE member organization with address space allocation rights.</td></tr>
+      <tr><th>AS203834 Created</th><td>2022-07-19</td></tr>
+      <tr><th>AS203834 Last Modified</th><td>2024-09-02; last updated 2025-03-13 (per RIPE/BGP data). <span class="ref">[4][5]</span></td></tr>
+      <tr><th>Abuse Contact</th><td>abuse@dedbro.pro</td></tr>
+      <tr><th>Sanctions Status</th><td>None — Vault Dweller OU does not appear on OFAC SDN list, EU Official Journal sanctions, or UK FCDO consolidated list as of June 2026.</td></tr>
+    </table>
+
+    <h3>Disputed Assessments</h3>
+    <p>No major security vendors have published assessments specific to DEDBROPRO as of June 2026. Primary attribution and infrastructure data derive from abuse.ch community feeds (ThreatFox, URLhaus), a researcher disclosure on X (@drb_ra), and direct site and forum analysis. No vendor-to-vendor disagreements exist because no vendors beyond the abuse.ch community have formally assessed this provider in the open. This is an intelligence gap rather than a dispute. <span class="badge single-source">Gap: No Formal Vendor Assessments</span></p>
+  </section>
+
+  <!-- SECTION 03 -->
+  <section id="operations">
+    <div class="section-label">Section 03</div>
+    <h2>Operational and Business Model</h2>
+
+    <h3>Service Model</h3>
+    <p>DEDBROPRO operates as a direct-to-criminal bulletproof hosting provider, selling compute infrastructure (dedicated servers, NVMe virtual private servers) and VPN access on an anonymous, no-KYC basis with explicit tolerance for abuse-prone use cases. The service model combines a public English-language commercial website (dedbro.pro) with direct outreach channels (Telegram @dedbropro, Jabber xmpp@dedbro.pro) and criminal forum advertising (Carder.su). The provider's stated value proposition centers on: (1) anonymity ("We do not request KYC, phone number verification, or any other personal identification"), (2) abuse accommodation ("If your project might encounter issues or complaints, please let us know"), (3) DDoS resilience ("Free 500Gbps DDoS Protection"), and (4) round-the-clock human support. <span class="ref">[2][3]</span></p>
+    <p>The Carder.su advertisement specifies tolerance for "scan, brute force and other projects upon agreement," confirming that the service model explicitly accommodates network scanning, credential brute-forcing, and unspecified additional attack infrastructure, with the euphemism "upon agreement" likely referring to advance disclosure to avoid automated abuse detection by upstream providers. <span class="ref">[2]</span></p>
+
+    <h3>Verbatim Advertising Copy</h3>
+
+    <div class="verbatim">
+      <div class="verbatim-source">Carder.su thread "Dedbro.pro – Bulletproof Dedicated Servers, VPS, VPN" — posted by handle "DedBro," March 2026 [2]</div>
+      <div class="verbatim-text">
+        "Friends! We are glad to offer you:"<br>
+        "- Scan, brute force and other projects are allowed on the servers upon agreement;"<br>
+        "- We will select solutions for your tasks;"<br>
+        "- Round-the-clock support 24/7/365;"<br>
+        "- We accept bitcoin and other cryptocurrencies."<br><br>
+        "Bulletproof dedicated and virtual servers from Bro!"<br><br>
+        "How to place an order: You can place an order on the website or directly through our contacts without registration."<br><br>
+        "The following is prohibited on servers:<br>
+        - Work on the CIS;<br>
+        - E-mail spam;<br>
+        - DDoS attacks;<br>
+        - Hosting child and zoo topics;<br>
+        - Terrorism."<br><br>
+        "We do not hold Spamhaus. In case of receiving SBL, the service will be suspended."<br><br>
+        "Contacts: Jabber: xmpp@dedbro.pro / Telegram: @dedbropro / Website: dedbro.pro"
+      </div>
+    </div>
+
+    <div class="verbatim">
+      <div class="verbatim-source">dedbro.pro English site — fetched June 2026 [3]</div>
+      <div class="verbatim-text">
+        "Dedicated and Virtual Servers — We offer high-quality service at competitive prices for your projects."<br><br>
+        "Loyalty — We are dedicated to our clients and always ready to accommodate and find solutions. If your project might encounter issues or complaints, please let us know."<br><br>
+        "Anonymously — We do not request KYC, phone number verification, or any other personal identification. Your privacy is our priority."<br><br>
+        "24/7/365 Support — Our managers and IT specialists are available to assist with any question at any time."<br><br>
+        "Contact us: @dedbropro / abuse@dedbro.pro"<br>
+        "Abuse report / © 2024 DEDBRO.RPO"
+      </div>
+    </div>
+
+    <h3>Pricing and Service Tiers</h3>
+    <table class="data-table">
+      <thead><tr><th>Product</th><th>Entry Price</th><th>Specifications</th><th>DDoS Protection</th><th>Setup Time</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Dedicated Servers</strong></td>
+          <td>$149 / month</td>
+          <td>1 Gbps shared bandwidth; software RAID; virtual KVM console; OS of choice. Example configs: Xeon E3-1241v3 (8x3.90GHz, 8GB RAM, 120GB SSD) to 2x Xeon Platinum 8268 (96x3.90GHz, 512GB RAM, 2TB SSD)</td>
+          <td>Free 500 Gbps</td>
+          <td>2 hours</td>
+        </tr>
+        <tr>
+          <td><strong>10 Gbps Dedicated</strong></td>
+          <td>$300 / month</td>
+          <td>Dedicated 10 Gbps channel; VLAN included; iLo / IPMI / KVM on request; any OS. <em>Note: this tier appears on the commercial website but was not included in the March 2026 Carder.su advertisement, suggesting it was added or promoted separately.</em></td>
+          <td>Not specified</td>
+          <td>From 6 hours</td>
+        </tr>
+        <tr>
+          <td><strong>NVMe VPS</strong></td>
+          <td>$5 / month (Starter) to $80 / month (Pro)</td>
+          <td>KVM virtualization; 100 Mbps bandwidth; backups on request. Tiers: Starter (1 vCPU / 512MB / 10GB SSD), Micro ($15), Basic ($25 / 2 vCPU / 2GB / 30GB), Standard ($45 / 4 vCPU / 4GB / 50GB), Pro ($80 / 8 vCPU / 8GB / 100GB), Custom from $15.</td>
+          <td>Free 500 Gbps</td>
+          <td>1 minute</td>
+        </tr>
+        <tr>
+          <td><strong>VPN</strong></td>
+          <td>$5 / month</td>
+          <td>Protocols: OpenVPN, Shadowsocks, L2TP/IPsec, TOR VPN. Protocol of customer choice.</td>
+          <td>Not specified</td>
+          <td>1 minute</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Solutions</strong></td>
+          <td>Price on request</td>
+          <td>"We will select a solution for your project and specific task." Suggests willingness to accommodate bespoke criminal infrastructure requirements.</td>
+          <td>Varies</td>
+          <td>Varies</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Discounts are offered for ordering three or more services or for prepayment of three months or more. <span class="ref">[3]</span></p>
+
+    <h3>Onboarding and Client Acquisition</h3>
+    <p>Onboarding is explicitly low-friction: customers may place orders via the commercial website (cp.dedbro.pro running ISPmanager/billmgr) or "directly through our contacts without registration." The no-KYC and no-phone-verification policy is stated twice across the commercial site and the forum advertisement. Contact channels include the Telegram handle @dedbropro (public, indexed) and Jabber XMPP (xmpp@dedbro.pro), the latter providing encrypted messaging for operationally sensitive discussions. This structure mirrors standard BPH onboarding patterns: a public commercial face for discovery, chat-based sales for friction-free provisioning of abuse-tolerant resources. <span class="ref">[2][3]</span></p>
+
+    <h3>Abuse Handling and LE Posture</h3>
+    <p>DEDBROPRO's stated abuse posture contains an internal tension that is common to BPH operators seeking to maintain partial legitimacy:</p>
+    <ul>
+      <li>The Carder.su ad explicitly accommodates "scan, brute force and other projects" — confirming criminal use tolerance.</li>
+      <li>The same ad states "We do not hold Spamhaus. In case of receiving SBL, the service will be suspended" — indicating willingness to remove some abusive clients under narrow, blocklist-driven conditions.</li>
+      <li>The public website includes an "Abuse report" link and the abuse contact abuse@dedbro.pro — providing cosmetic compliance infrastructure without evidence of meaningful abuse response.</li>
+    </ul>
+    <p>The practical posture, as evidenced by 307 ThreatFox IOCs and sustained malware C2 and distribution hosting from late 2024 through at least May 2025, is abuse-tolerant with selective (and probably rare) enforcement when Spamhaus SBL pressure would threaten the provider's ability to maintain upstream peering relationships. <span class="ref">[1][2][3][7]</span></p>
+
+    <h3>OPSEC</h3>
+    <p>Operator-level OPSEC indicators: anonymous advertising via forum "Guest" account on Carder.su; Jabber/XMPP contact (encrypted, no phone-linked identity); Telegram (pseudonymous). No Russian-language linguistic slippage visible in available advertising copy. The CIS-exclusion policy functions as a LE-risk management mechanism, reducing the probability of Russian-language victim complaints that could draw domestic attention. Estonian RIPE registration as an LIR adds a layer of apparent legitimacy (recognized regional registry member) while placing the entity in EU jurisdiction where direct law enforcement requests could theoretically be served. <span class="ref">[2][3][13]</span></p>
+  </section>
+
+  <!-- SECTION 04 -->
+  <section id="technical">
+    <div class="section-label">Section 04</div>
+    <h2>Technical Capabilities and Infrastructure Footprint</h2>
+
+    <h3>ASN Registration</h3>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Value</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AS Number</strong></td><td><code>AS203834</code></td><td><span class="ref">[11][12]</span></td></tr>
+        <tr><td><strong>AS Name</strong></td><td>dedbropro-as</td><td><span class="ref">[1][5]</span></td></tr>
+        <tr><td><strong>Organization</strong></td><td>Vault Dweller OU (ORG-VDO2-RIPE)</td><td><span class="ref">[5][13]</span></td></tr>
+        <tr><td><strong>Country (Registration)</strong></td><td>Estonia (EE)</td><td><span class="ref">[1][4][5]</span></td></tr>
+        <tr><td><strong>Registered Address</strong></td><td>Lasnamaee linnaosa, Majaka tn 26, 11412 Tallinn, Estonia</td><td><span class="ref">[13]</span></td></tr>
+        <tr><td><strong>Phone (RIPE)</strong></td><td>+37125479008</td><td><span class="ref">[13]</span></td></tr>
+        <tr><td><strong>Abuse Contact</strong></td><td>abuse@dedbro.pro</td><td><span class="ref">[5]</span></td></tr>
+        <tr><td><strong>RIPE LIR</strong></td><td>Yes — Vault Dweller OU is a RIPE member LIR with direct allocation rights</td><td><span class="ref">[13]</span></td></tr>
+        <tr><td><strong>AS Created</strong></td><td>2022-07-19</td><td><span class="ref">[4][5]</span></td></tr>
+        <tr><td><strong>AS Last Modified</strong></td><td>2024-09-02</td><td><span class="ref">[4][5]</span></td></tr>
+        <tr><td><strong>RIPE Record Last Updated</strong></td><td>2025-03-13</td><td><span class="ref">[4][5]</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>IP Ranges and Geolocation</h3>
+    <table class="data-table">
+      <thead><tr><th>Prefix</th><th>Allocation</th><th>Geolocated Country</th><th>Documented Use</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>195.82.146.0/24</code></td>
+          <td>Confirmed RIPE allocation to AS203834 / Vault Dweller OU</td>
+          <td>Bulgaria (BG) — per IP intelligence sources; Estonian AS registration</td>
+          <td>Malware distribution hosting (195.82.146.34 serving 888.exe, AMA.exe per URLhaus)</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><code>195.82.147.x</code></td>
+          <td>Adjacent range; appears in ThreatFox IOC data. Full allocation status of /24 not independently confirmed in this pass — may be part of a larger DEDBROPRO block or a neighboring allocation.</td>
+          <td>Bulgaria (BG) — per geolocation of 195.82.147.97 in open source data</td>
+          <td>SectopRAT C2 (195.82.147.132:15747); Remcos C2 unverified (195.82.147.97:443)</td>
+          <td><span class="badge credible">Credible</span> (ThreatFox tags as DEDBROPRO-AS; full allocation status not independently confirmed)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Data Center Footprint</h3>
+    <p>DEDBROPRO's marketing claims "high-quality equipment located in the world's leading data centers" and offers hardware configurations consistent with a dedicated server reseller or colo customer rather than a facility owner. IP geolocation data (Bulgarian geolocations for C2 IPs) is consistent with the Belcloud (AS44901) upstream peering, which is a Bulgarian transit provider. No specific facility names or addresses in Bulgaria or Estonia are documented in open sources. Given the single /24 address block and startup-scale pricing structure, DEDBROPRO almost certainly leases rack space or individual server units from one or more wholesale providers rather than owning physical data center infrastructure. <span class="ref">[3][6][11]</span></p>
+
+    <h3>Upstream Transit Provider Chain</h3>
+    <p>AS203834 (dedbropro-as) peers with two upstream transit providers, confirmed via BGP data: <span class="ref">[11][14][15]</span></p>
+    <table class="data-table">
+      <thead><tr><th>ASN</th><th>Name</th><th>Country</th><th>Tier</th><th>Notable Upstreams</th><th>Significance</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>AS44901</code></td>
+          <td>Belcloud</td>
+          <td>Bulgaria (BG) — EU</td>
+          <td>Regional transit / IP transit provider</td>
+          <td>Seabone (AS6762), Hurricane Electric (AS6939), Telefonica (AS12956), Level3/Lumen (AS3356), GTT (AS3257)</td>
+          <td>Primary IP transit path; Bulgarian routing consistent with IP geolocation data for DEDBROPRO addresses. Belcloud is a mid-tier Eastern European transit provider with connections to major Tier-1 carriers. EU jurisdiction creates potential de-peering leverage.</td>
+        </tr>
+        <tr>
+          <td><code>AS20764</code></td>
+          <td>CJSC RASCOM</td>
+          <td>Russia (RU)</td>
+          <td>Russian ISP / transit provider</td>
+          <td>Cogent (AS174), Level3/Lumen (AS3356), Beeline/VimpelCom (AS3216), MTS (AS8359), TTK (AS20485), Rostelecom (AS12389)</td>
+          <td>Russian upstream path for AS203834. RASCOM is a legitimate Russian commercial ISP; its presence as a DEDBROPRO upstream is notable in that it routes DEDBROPRO through Russian network infrastructure despite the Estonian entity registration. RASCOM provides global connectivity to many clients and its routing of DEDBROPRO does not by itself indicate state coordination. See Section 07 for nexus assessment.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <div class="callout-label">Upstream De-peering History</div>
+      <p>No documented de-peering events against AS203834 were identified in this research pass. No BGP community posts, network operator mailing list (NANOG, RIPE NCC) discussions, or news reports citing upstream action against DEDBROPRO were found. This may reflect the provider's relatively low profile relative to larger BPH operations, or insufficient time depth given the AS was created in 2022. Absence of documented de-peering is explicitly noted here per schema requirements; it should not be interpreted as evidence that no complaints have been filed with Belcloud or RASCOM.</p>
+    </div>
+
+    <h3>Resilience Techniques</h3>
+    <p>DEDBROPRO's resilience posture, as evidenced by the available data, relies primarily on: (1) DDoS mitigation (500 Gbps claimed, likely via upstream scrubbing or a commercial DDoS protection service); (2) moderately persistent IP allocations (SectopRAT and Remcos C2 endpoints documented over multiple months rather than hours, suggesting slow-burn resilience rather than fast-flux techniques); and (3) a consolidated ASN and addressing structure that allows the operator to re-provision customer services within the same IP space when individual IPs are burned. No fast-flux DNS, domain generation algorithms, or Tor-based resilience mechanisms are documented for the DEDBROPRO platform itself, though individual criminal clients may use such techniques independently. <span class="ref">[2][3][7][8]</span></p>
+
+    <h3>Hosted Activity Types</h3>
+    <table class="data-table">
+      <thead><tr><th>Activity Type</th><th>Documented Indicator</th><th>Source</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>SectopRAT (ArechClient) C2</td>
+          <td>195.82.147.132:15747 — ThreatFox IOC #1520971, tagged botnet_cc, confidence HIGH, first seen 2025-05-13, AS203834</td>
+          <td>abuse.ch ThreatFox <span class="ref">[8][7][1]</span></td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td>Remcos RAT C2</td>
+          <td>195.82.147.97:443 — ThreatFox tag DEDBROPRO-AS, Remcos, tagged "unverified"; disclosed by @drb_ra on X, May 2025; Bulgaria geolocation</td>
+          <td>abuse.ch ThreatFox <span class="ref">[7]</span>; @drb_ra <span class="ref">[6]</span></td>
+          <td><span class="badge credible">Credible</span> <span class="badge single-source">Note: Unverified tag in ThreatFox</span></td>
+        </tr>
+        <tr>
+          <td>Generic malware distribution</td>
+          <td>195.82.146.34 — URLhaus host, serving URLs https://195.82.146.34/888.exe and https://195.82.146.34/AMA.exe; first seen 2025-03-18</td>
+          <td>abuse.ch URLhaus <span class="ref">[9]</span></td>
+          <td><span class="badge confirmed">Confirmed</span> (family not attributed in available data)</td>
+        </tr>
+        <tr>
+          <td>Network scanning and brute force</td>
+          <td>Operator-stated policy: "Scan, brute force and other projects are allowed on the servers upon agreement"</td>
+          <td>Carder.su advertisement <span class="ref">[2]</span></td>
+          <td><span class="badge inference">Analyst Inference</span> (policy implies hosting; no specific scanning source IPs documented)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Blocklist Standing</h3>
+    <table class="data-table">
+      <thead><tr><th>Blocklist</th><th>Status</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>ThreatFox (abuse.ch)</td>
+          <td><span class="bl-listed">Listed</span></td>
+          <td>307 IOCs on AS203834 ASN report (all IOCs with IPs hosted on this AS); 23 tagged sightings under DEDBROPRO-AS tag; first seen 2024-10-16, last seen 2025-05-30. Malware families: SectopRAT, Remcos. <span class="ref">[1][7]</span></td>
+        </tr>
+        <tr>
+          <td>URLhaus (abuse.ch)</td>
+          <td><span class="bl-listed">Listed</span></td>
+          <td>Host 195.82.146.34 documented serving malware URLs; first seen 2025-03-18. <span class="ref">[9]</span></td>
+        </tr>
+        <tr>
+          <td>Spamhaus SBL / CBL / XBL / PBL</td>
+          <td><span class="bl-unknown">Unknown</span></td>
+          <td>Operator explicitly states "We do not hold Spamhaus. In case of receiving SBL, the service will be suspended" — indicating awareness of SBL exposure risk and a policy of selective ejection of SBL-triggering clients. Per-prefix SBL/CBL/XBL/PBL listing status was not confirmed via direct dataset query in this pass. This is an open item. <span class="ref">[2]</span></td>
+        </tr>
+        <tr>
+          <td>Spamhaus DROP / EDROP</td>
+          <td><span class="bl-unknown">Unknown</span></td>
+          <td>AS203834 does not appear on the Spamhaus Don't Route or Peer (DROP) ASN list in available data; however, DROP inclusion is not routinely confirmed without direct query. No DROP listing found in this pass.</td>
+        </tr>
+        <tr>
+          <td>FireHOL Level 1 / Level 2</td>
+          <td><span class="bl-unknown">Unknown / Probable</span></td>
+          <td>No direct FireHOL reference to AS203834 found in this pass. Given the abuse.ch telemetry volume and nature, inclusion in FireHOL level 2 or higher is probable but unconfirmed.</td>
+        </tr>
+        <tr>
+          <td>Feodo Tracker (abuse.ch)</td>
+          <td><span class="bl-unknown">Not Confirmed</span></td>
+          <td>No Feodo Tracker entries (banking trojans / botnets: Emotet, QakBot, IcedID, TrickBot, Dridex) specifically linked to AS203834 were found in this pass. The documented RAT families (SectopRAT, Remcos) are tracked via ThreatFox rather than Feodo Tracker.</td>
+        </tr>
+        <tr>
+          <td>MalwareBazaar (abuse.ch)</td>
+          <td><span class="bl-unknown">Not Confirmed</span></td>
+          <td>No MalwareBazaar samples explicitly linked to DEDBROPRO-AS were found in this pass. The generic PE executables served from 195.82.146.34 (888.exe, AMA.exe) may be indexed but family and MalwareBazaar status were not confirmed.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Known Weaknesses and Single Points of Failure</h3>
+    <ul>
+      <li><strong>Narrow address space:</strong> Single /24 allocation (195.82.146.0/24, confirmed) with documented adjacent activity in 195.82.147.x. Null-routing or de-peering this block by either upstream (Belcloud or RASCOM) would effectively terminate the provider's connectivity. <span class="ref">[11]</span></li>
+      <li><strong>Single ASN:</strong> All operations run through one AS (AS203834). No backup ASN identified. Compared to mature BPH operators who maintain multiple ASNs and routing diversity, this represents a significant operational single point of failure.</li>
+      <li><strong>EU-registered entity:</strong> Vault Dweller OU is a legal entity in Estonia (EU), making it subject to Estonian company law, potential court orders, and EU regulatory action including Estonian CERT (CERT-EE) referrals to upstream providers. <span class="ref">[13]</span></li>
+      <li><strong>Belcloud upstream (EU jurisdiction):</strong> AS44901 (Belcloud) is a Bulgarian provider operating within EU law. Documented abuse of AS203834 could support a formal de-peering request to Belcloud via CERT-EE, CERT-BG, or relevant EU coordination mechanisms.</li>
+      <li><strong>ISPmanager billing panel exposed:</strong> cp.dedbro.pro is a publicly accessible billing panel. Its existence and platform (ISPmanager/billmgr) are documented; legal or investigative access to this system would expose customer records, payment data, and provisioned server inventory.</li>
+      <li><strong>Known abuse contact:</strong> abuse@dedbro.pro is documented in RIPE records. Coordinated abuse reporting campaigns targeting this address, combined with upstream provider complaints, represent a low-cost disruption vector.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 05 -->
+  <section id="financial">
+    <div class="section-label">Section 05</div>
+    <h2>Financial Infrastructure</h2>
+
+    <h3>Payment Methods</h3>
+    <p>DEDBROPRO explicitly accepts "bitcoin and other cryptocurrencies" per the Carder.su advertisement. No fiat payment methods (credit card, bank transfer), legacy e-money services (WebMoney, QIWI, Payeer), or mainstream payment processors are mentioned in available advertising or on the commercial website. The exclusive use of cryptocurrency is standard for BPH operations targeting criminal clientele, as it reduces KYC exposure for both provider and client and makes payment tracing more complex. <span class="ref">[2]</span></p>
+    <p>The billing platform at cp.dedbro.pro (ISPmanager/billmgr) confirms automated invoicing infrastructure; the payment integration within billmgr for cryptocurrency typically uses third-party payment gateways (common examples include CoinPayments or NOW Payments in the CIS BPH space). No specific payment gateway has been identified for DEDBROPRO. <span class="ref">[3]</span></p>
+
+    <h3>Wallet Clusters and On-Chain Analysis</h3>
+    <p>No publicly documented Bitcoin or cryptocurrency wallet addresses are specifically linked to DEDBROPRO, dedbro.pro, Vault Dweller OU, or the handle "DedBro" in available open sources. No publications from TRM Labs, Chainalysis, Elliptic, or Crystal Blockchain addressing DEDBROPRO on-chain activity were identified in this research pass.</p>
+    <p><span class="badge inference">Analyst Inference</span> Typical BPH acquisition-layering-extraction patterns would suggest: direct BTC receipt from criminal clients to a provider-controlled address cluster (acquisition); movement through one or more hops using peer-to-peer exchanges, mixing services, or chain-hopping (layering); and conversion to fiat via OTC brokers or regulated exchange with lax controls (extraction). This pattern is speculative and not supported by direct evidence for DEDBROPRO specifically.</p>
+
+    <h3>Sanctions and Risk Ratings</h3>
+    <p>No sanctions designations have been imposed against DEDBROPRO, Vault Dweller OU, or the "DedBro" handle by any of the following as of June 2026: OFAC (U.S. Treasury SDN List), EU Official Journal (EU Consolidated Sanctions List), UK FCDO (UK Consolidated List), or any other national sanctions authority reviewed in this pass. The provider is de-facto high-risk for any counterparty (based on documented malware hosting and explicit criminal marketing) but is de-jure undesignated. No high-risk VASP classifications from FATF-aligned bodies or national financial intelligence units were identified. <span class="badge inference">Financial risk is inferred from operational evidence; formal designation does not exist.</span></p>
+  </section>
+
+  <!-- SECTION 06 -->
+  <section id="clientele">
+    <div class="section-label">Section 06</div>
+    <h2>Client Profile and Hosted Operations</h2>
+
+    <h3>Crimeware Verticals by Evidence Tier</h3>
+    <table class="data-table">
+      <thead><tr><th>Vertical</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>RAT / Botnet C2 (SectopRAT)</strong></td>
+          <td>195.82.147.132:15747 flagged botnet_cc, SectopRAT, high confidence, ThreatFox IOC #1520971, first seen 2025-05-13</td>
+          <td><span class="badge confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>RAT / Botnet C2 (Remcos)</strong></td>
+          <td>195.82.147.97:443, ThreatFox tag DEDBROPRO-AS with Remcos label; corroborated by @drb_ra on X (May 2025); ThreatFox status: "unverified"</td>
+          <td><span class="badge credible">Credible</span> <span class="badge single-source">Unverified in ThreatFox</span></td>
+        </tr>
+        <tr>
+          <td><strong>Malware Distribution (generic PE)</strong></td>
+          <td>195.82.146.34 serving 888.exe and AMA.exe via HTTP, URLhaus, first seen 2025-03-18. Family not attributed in available data.</td>
+          <td><span class="badge confirmed">Confirmed</span> (family unknown)</td>
+        </tr>
+        <tr>
+          <td><strong>Network scanning / brute force</strong></td>
+          <td>Explicitly stated in operator advertising as permitted "upon agreement"</td>
+          <td><span class="badge inference">Analyst Inference</span> (policy implies hosting; no source IPs documented)</td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware infrastructure</strong></td>
+          <td>No ransomware groups, affiliates, or leak sites linked to DEDBROPRO in available open sources</td>
+          <td>Not confirmed</td>
+        </tr>
+        <tr>
+          <td><strong>Carding / fraud shops</strong></td>
+          <td>No carding infrastructure documented on DEDBROPRO IPs in this pass despite Carder.su marketing channel</td>
+          <td>Not confirmed</td>
+        </tr>
+        <tr>
+          <td><strong>DDoS-for-hire panels</strong></td>
+          <td>Not documented; DDoS attacks against others are explicitly prohibited in operator terms</td>
+          <td>Not confirmed</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Client Geography and Target Profile</h3>
+    <p>DEDBROPRO's CIS-exclusion policy ("Work on the CIS" is prohibited) has two practical implications: (1) it excludes victims in Russia, Ukraine, Belarus, Kazakhstan, and other CIS states, and (2) it signals the provider's likely target audience as CIS-based criminal operators who wish to avoid triggering domestic law enforcement scrutiny by harming their own constituencies. This pattern is consistent with the broader BPH norm in the CIS criminal ecosystem, where providers operating with Russian-language forums and Russian-origin operators routinely prohibit CIS-targeting to maintain a low-profile relationship with local authorities. <span class="ref">[2]</span></p>
+    <p>The Carder.su advertising channel targets a Russian-language fraud and carding community. The confirmed RAT families (SectopRAT, Remcos) are general-purpose commodity RATs used across a wide range of criminal operations globally rather than being attributable to a specific nationality or criminal group.</p>
+
+    <h3>Notable Hosted Cases</h3>
+    <p>No law enforcement press releases, court documents, or major vendor case studies naming DEDBROPRO in connection with a specific criminal operation or high-profile incident have been identified in available open sources as of June 2026. Current documented evidence is limited to abuse.ch feed telemetry and a single researcher disclosure on X. This reflects the provider's relatively recent operational history and comparatively low profile relative to larger BPH operators with years of documented client activity. <span class="badge single-source">Intelligence Gap: No Named Client Cases</span></p>
+  </section>
+
+  <!-- SECTION 07 -->
+  <section id="nexus">
+    <div class="section-label">Section 07</div>
+    <h2>State Nexus Assessment</h2>
+
+    <div class="jurisdiction-grid">
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Entity Registration Jurisdiction</div>
+        <div class="jurisdiction-value">Estonia (EE)</div>
+        <div class="jurisdiction-detail">Vault Dweller OU; RIPE LIR; EU member state; subject to Estonian company law and CERT-EE oversight.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Infrastructure Hosting Jurisdiction</div>
+        <div class="jurisdiction-value">Bulgaria (BG) — Assessed</div>
+        <div class="jurisdiction-detail">IP geolocation of documented C2 IPs (195.82.147.x) points to Bulgaria. Upstream Belcloud (AS44901) is a Bulgarian provider. Specific facility unconfirmed.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Assessed Operator Location</div>
+        <div class="jurisdiction-value">Unknown</div>
+        <div class="jurisdiction-detail">Estonian registration does not imply physical presence. CIS-exclusion policy suggests possible CIS-origin operator. No geolocatable signals in open sources.</div>
+      </div>
+    </div>
+
+    <h3>State Nexus Tier Assessment</h3>
+    <div class="callout info">
+      <div class="callout-label">Assessed Tier: Tolerated Safe Harbor (Tier 2 of 4)</div>
+      <p>DEDBROPRO is assessed at Tier 2 (Tolerated Safe Harbor): the provider operates with apparent practical impunity across multiple jurisdictions without evidence of active enforcement or takedown, which is consistent with a degree of passive official tolerance. However, there is no positive evidence of state tasking, coordination, or explicit protection, which would be required to assess Tier 3 (Probable Cooperation) or Tier 4 (Direct Control). The assessment is based on operational persistence rather than any documented state relationship.</p>
+    </div>
+
+    <h4>Evidence Supporting Tolerated Safe Harbor Assessment</h4>
+    <ul>
+      <li>AS203834 has operated with documented abuse (RAT C2, malware distribution) from at least October 2024 through May 2025 without any documented enforcement action by Estonian authorities, Bulgarian CERT, upstream providers, or RIPE NCC. <span class="ref">[1][7][8][9]</span></li>
+      <li>The dual-upstream structure (Belcloud / Bulgaria; RASCOM / Russia) routes DEDBROPRO through Russian network infrastructure despite Estonian entity registration, which is unusual and warrants monitoring. RASCOM (AS20764) is a Russian ISP serving many legitimate clients, and its provision of upstream transit to DEDBROPRO does not by itself establish state coordination.</li>
+      <li>CIS-exclusion policy is consistent with an operator seeking to avoid triggering CIS-region law enforcement, which is a standard self-protective measure for operators of CIS origin rather than a signal of state direction.</li>
+    </ul>
+
+    <h4>Negative Evidence (Expected Indicators Absent)</h4>
+    <p>The following indicators that would be expected if a higher-tier nexus existed are not present in available open sources:</p>
+    <ul>
+      <li>No documented selective protection by Russian or Estonian authorities following formal abuse complaints.</li>
+      <li>No state-aligned APT infrastructure (e.g., GRU/SVR/FSB-attributed tooling) documented on DEDBROPRO. All observed activity is commodity crimeware (SectopRAT, Remcos), which is not characteristic of state-directed operations.</li>
+      <li>No whistleblower reports, leaked communications, or vendor assessments asserting state coordination.</li>
+      <li>No politically sensitive clients (e.g., hacktivism, influence operations, election interference infrastructure) identified on DEDBROPRO in open sources.</li>
+      <li>No court filings or sanctions packages that would reveal state-protection relationships.</li>
+    </ul>
+
+    <h4>RASCOM Upstream: Significance and Limitations</h4>
+    <p><span class="badge inference">Analyst Inference</span> The presence of RASCOM (AS20764, Russia) as one of two upstream transit providers for AS203834 is notable. RASCOM provides connectivity to Cogent, Level3, Beeline, MTS, TTK, and Rostelecom, meaning DEDBROPRO traffic routes through Russian network infrastructure on the RASCOM path. This creates a technical visibility opportunity for Russian intelligence services that would not exist for a purely EU-routed provider. However, RASCOM serves thousands of legitimate commercial clients, and routing through Russian infrastructure is common for Eastern European providers with Russian commercial relationships. This indicator alone is insufficient to elevate the state nexus assessment above Tolerated Safe Harbor. It should be documented as a monitoring flag.</p>
+  </section>
+
+  <!-- SECTION 08 -->
+  <section id="disruption">
+    <div class="section-label">Section 08</div>
+    <h2>Law Enforcement and Regulatory Response</h2>
+
+    <h3>Documented LE and Regulatory Actions</h3>
+    <p>No law enforcement arrests, indictments, criminal charges, civil actions, infrastructure seizures, domain takedowns, or sanctions designations specifically targeting DEDBROPRO, dedbro.pro, Vault Dweller OU, AS203834, or the "DedBro" handle have been documented in open sources as of June 2026. The provider appears to be fully operational across all documented channels (website, billing panel, Telegram, criminal forum advertising) with no disruption indicators observed. <span class="badge single-source">Gap: No LE Actions Documented</span></p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2022-07-19</div>
+        <div class="timeline-text">AS203834 (dedbropro-as) registered to Vault Dweller OU in RIPE. Earliest confirmed infrastructure marker. <span class="ref">[4][5]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2024-09-02</div>
+        <div class="timeline-text">AS203834 RIPE record last modified. May reflect a configuration update, peering change, or organizational update. <span class="ref">[4][5]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2024-10-16</div>
+        <div class="timeline-text">First ThreatFox sighting tagged DEDBROPRO-AS. Earliest documented abuse telemetry for AS203834 in available open sources. <span class="ref">[7]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2025-03-18</div>
+        <div class="timeline-text">URLhaus records IP 195.82.146.34 serving malware payloads (888.exe, AMA.exe). First documented malware distribution from DEDBROPRO address space. <span class="ref">[9]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2025-03-13</div>
+        <div class="timeline-text">RIPE record for AS203834 last updated (per BGP data sources). <span class="ref">[4]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2025-05-13</div>
+        <div class="timeline-text">ThreatFox IOC #1520971: 195.82.147.132:15747 confirmed as SectopRAT C2 with high confidence on AS203834. <span class="ref">[8]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2025-05 (approx.)</div>
+        <div class="timeline-text">@drb_ra discloses Remcos C2 at 195.82.147.97:443 on DEDBROPRO-AS on X. Unverified in ThreatFox. Last DEDBROPRO-AS ThreatFox sighting: 2025-05-30. <span class="ref">[6][7]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">March 2026</div>
+        <div class="timeline-text">Carder.su thread "Dedbro.pro – Bulletproof Dedicated Servers, VPS, VPN" posted by "DedBro" (Guest advertiser). Confirms continued active criminal marketing as of Q1 2026. <span class="ref">[2]</span></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">June 2026</div>
+        <div class="timeline-text">DEDBROPRO website (dedbro.pro/eng.html) and billing panel (cp.dedbro.pro) confirmed live. No LE or regulatory action documented. <span class="ref">[3]</span></div>
+      </div>
+    </div>
+
+    <h3>Post-Disruption Client Migration</h3>
+    <p>Not applicable as of June 2026 — no disruption events have occurred.</p>
+
+    <h3>Regulatory Leverage Points</h3>
+    <p><span class="badge inference">Analyst Inference</span> The following regulatory and network-level leverage points are available to investigators or network defenders, in approximate order of accessibility:</p>
+    <ul>
+      <li><strong>RIPE NCC abuse process:</strong> Vault Dweller OU holds LIR status under RIPE. Documented and repeated abuse without response to abuse@dedbro.pro could support a RIPE member-conduct complaint, though RIPE does not directly revoke allocations for abuse.</li>
+      <li><strong>Estonian company law / CERT-EE:</strong> Vault Dweller OU is an Estonian company subject to Estonian law. CERT-EE referral of abuse complaints to Estonian police and the Estonian Data Protection Authority represents a legitimate pathway. Estonian membership in EUROPOL and EU law enforcement cooperation frameworks may enable international case coordination.</li>
+      <li><strong>Belcloud (AS44901) de-peering:</strong> A coordinated campaign of abuse reports from national CERTs (CERT-EE, CERT-BG) and major security vendors directed at Belcloud could support a de-peering request under Belcloud's acceptable use policy. Loss of Belcloud as upstream would force DEDBROPRO to route exclusively via RASCOM, degrading connectivity quality and increasing its dependency on Russian infrastructure.</li>
+      <li><strong>OFAC sanctions designation:</strong> If sufficient financial flow evidence (wallet addresses, transaction clusters) linking DEDBROPRO to U.S.-nexus crimes is developed, an OFAC SDN designation of Vault Dweller OU is possible under existing cybercrime-related Executive Orders.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 09 -->
+  <section id="connected">
+    <div class="section-label">Section 09</div>
+    <h2>Connected Groups and Ecosystem Relationships</h2>
+
+    <p>The following connected entity assessments apply two independent confidence tiers per the schema requirement. Every claim includes both Tier 1 (infrastructure relationship: did this BPH host their infrastructure?) and Tier 2 (operational relationship: did the BPH operator know the client identity or coordinate operationally?) assessed independently.</p>
+
+    <div class="connected-entity">
+      <div class="entity-name">SectopRAT Operators (ArechClient)</div>
+      <div class="entity-meta">Commodity RAT / infostealer; general cybercriminal clientele; no specific threat actor attribution in available data</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row">
+          <span class="tier-label">Tier 1 — Infrastructure Relationship:</span>
+          <span class="badge confirmed">Confirmed</span>
+        </div>
+        <div class="tier-row" style="margin-top:5px">
+          <span class="tier-label">Tier 2 — Operational Relationship:</span>
+          <span class="badge inference">Analyst Inference</span>
+        </div>
+      </div>
+      <div class="entity-text">ThreatFox IOC #1520971 confirms 195.82.147.132:15747 as a SectopRAT (ArechClient / 1xxbot) botnet C2 endpoint with high confidence, on AS203834 (dedbropro-as), first seen 2025-05-13. Infrastructure hosting is confirmed via an independent, high-confidence community threat intelligence source. Tier 1 is CONFIRMED. Tier 2 is ANALYST INFERENCE: there is no evidence that the DEDBROPRO operator was aware of the client's identity as a SectopRAT operator or that any coordination occurred beyond a standard anonymous commercial transaction. The provider's no-KYC onboarding policy makes Tier 2 confirmation impossible from available data.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: abuse.ch ThreatFox</span>
+        <span class="vendor-tag">Not assessed: Recorded Future, Mandiant, CrowdStrike, Secureworks, Proofpoint, Microsoft MSTIC</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Remcos RAT Operators</div>
+      <div class="entity-meta">Commodity commercial RAT; sold by BreakingSecurity (Italy); used across a wide criminal actor spectrum</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row">
+          <span class="tier-label">Tier 1 — Infrastructure Relationship:</span>
+          <span class="badge credible">Credible</span>
+        </div>
+        <div class="tier-row" style="margin-top:5px">
+          <span class="tier-label">Tier 2 — Operational Relationship:</span>
+          <span class="badge inference">Analyst Inference</span>
+        </div>
+      </div>
+      <div class="entity-text">IP 195.82.147.97:443 is tagged in ThreatFox under DEDBROPRO-AS with a Remcos label but carries a status of "unverified." The disclosure was corroborated by independent researcher @drb_ra on X in May 2025, who explicitly named DEDBROPRO-AS and Remcos C2. Tier 1 is assessed CREDIBLE: two independent sources (ThreatFox tag; @drb_ra researcher) link this IP to both DEDBROPRO infrastructure and Remcos C2, but the unverified ThreatFox status means this has not been fully validated by the abuse.ch community. Tier 2 is ANALYST INFERENCE for the same reasons as above: no-KYC onboarding makes operational relationship confirmation impossible. <span class="badge single-source">ThreatFox status: Unverified</span></div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: abuse.ch ThreatFox (tag, unverified)</span>
+        <span class="vendor-tag cor">Corroborating: @drb_ra (independent researcher, X/Twitter)</span>
+        <span class="vendor-tag">Not assessed: Recorded Future, Mandiant, CrowdStrike, Secureworks, Proofpoint, Microsoft MSTIC</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">Generic Malware Distributors (Unattributed)</div>
+      <div class="entity-meta">Unknown actor(s) serving PE executables (888.exe, AMA.exe) from DEDBROPRO address space; family unattributed</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row">
+          <span class="tier-label">Tier 1 — Infrastructure Relationship:</span>
+          <span class="badge confirmed">Confirmed</span>
+        </div>
+        <div class="tier-row" style="margin-top:5px">
+          <span class="tier-label">Tier 2 — Operational Relationship:</span>
+          <span class="badge inference">Analyst Inference</span>
+        </div>
+      </div>
+      <div class="entity-text">URLhaus host records confirm 195.82.146.34 (on AS203834 dedbropro-as) was actively serving malware download URLs (https://195.82.146.34/888.exe and https://195.82.146.34/AMA.exe) beginning 2025-03-18. The hosting of these payloads on DEDBROPRO infrastructure is confirmed. The threat actor identity and malware family are not attributed in available URLhaus data. Tier 1 is CONFIRMED. Tier 2 is ANALYST INFERENCE as above. <span class="badge single-source">Malware family: Not attributed in URLhaus record</span></div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: abuse.ch URLhaus</span>
+        <span class="vendor-tag">Not assessed: Major AV/EDR vendors (family identification not found in this pass)</span>
+      </div>
+    </div>
+
+    <h3>Entities with No Formal Assessment</h3>
+    <p>The following security vendors and organizations have not published formal assessments of DEDBROPRO as of June 2026: Recorded Future, Mandiant (Google), CrowdStrike, Secureworks, Proofpoint, Microsoft MSTIC, Palo Alto Unit 42, Cisco Talos, Trend Micro, ESET, Kaspersky (public reporting), F-Secure/WithSecure, Group-IB, Team Cymru, SilentPush, DomainTools. This reflects the provider's relatively recent and lower-profile operational footprint compared to larger BPH operators that have attracted formal research attention.</p>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section id="status">
+    <div class="section-label">Section 10</div>
+    <h2>Trajectory Assessment</h2>
+
+    <h3>Infrastructure Churn</h3>
+    <p>Infrastructure churn for DEDBROPRO is assessed as LOW relative to more mature BPH operators. AS203834 has maintained a stable AS-name and single /24 allocation since creation in 2022 without documented rebranding, prefix changes, or upstream provider shifts. C2 infrastructure documented in the 195.82.147.x space showed persistence over months (ThreatFox first sighting 2024-10-16, last 2025-05-30) rather than days, indicating that clients are not being rapidly ejected or forced to rotate infrastructure. The Carder.su advertisement as of March 2026 uses identical contact details (Telegram, Jabber, website) as documented in earlier periods, confirming channel stability. <span class="ref">[1][2][7]</span></p>
+
+    <h3>Market Position</h3>
+    <p>DEDBROPRO occupies the entry-level to mid-tier BPH market segment. Pricing ($5 VPS entry point, $149 dedicated server entry) is competitive with other smaller CIS-affiliated BPH providers but well below the scale of established large-capacity BPH operators (e.g., Media Land LLC, PROSPERO/Bearhost) with multi-ASN infrastructures and thousands of IPs. The addition of a 10 Gbps dedicated tier ($300+/month) since the Carder.su advertisement suggests incremental product expansion. The use of Carder.su — a well-established Russian-language carding forum — as the primary criminal advertising venue gives DEDBROPRO access to a large, established criminal audience without requiring invitation-only forum presence. <span class="ref">[2][3]</span></p>
+
+    <h3>Disruption History</h3>
+    <p>No disruption events documented as of June 2026. The provider has not been subjected to LE-driven infrastructure seizures, upstream provider de-peering, domain takedowns, or sanctions designations. This is the baseline trajectory condition for an active, undisrupted provider.</p>
+
+    <h3>Trajectory Direction</h3>
+    <div class="callout info">
+      <div class="callout-label">Assessed Trajectory: Active / Expanding</div>
+      <p>DEDBROPRO is assessed as an active and incrementally expanding provider. Key indicators: sustained criminal forum advertising (Carder.su, March 2026); confirmed live website and billing platform (June 2026 web fetch); documented abuse telemetry from late 2024 through mid-2025; product line expansion (10 Gbps tier added to website). The provider has not been disrupted and shows no operational degradation signals. Absent intervention, the trajectory is continued operation with possible growth in client base as criminal awareness of the service increases through forum advertising.</p>
+    </div>
+
+    <h3>Mandatory Intelligence Gaps</h3>
+    <div class="gap-list">
+      <div class="gap-item">
+        <strong>Operator Identity</strong>
+        <p>No real name, additional handles, date of birth, nationality, or confirmed location identified. The handle "DedBro" and entity "Vault Dweller OU" are the only attributable identifiers. This is the most significant gap for any legal or sanctions action.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Full IP Prefix Inventory</strong>
+        <p>Only 195.82.146.0/24 is confirmed as a RIPE allocation. C2 activity in 195.82.147.x suggests possible additional ranges; the full address space controlled by AS203834 was not independently enumerated in this pass.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Spamhaus SBL / CBL / XBL Per-Prefix Status</strong>
+        <p>Operator claims "we do not hold Spamhaus" but per-prefix listing status was not confirmed via direct Spamhaus dataset query. Current SBL standing for 195.82.146.0/24 is unknown.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Upstream De-peering History</strong>
+        <p>No documented de-peering events identified. Whether Belcloud or RASCOM have received and acted on abuse complaints regarding AS203834 is unknown.</p>
+      </div>
+      <div class="gap-item">
+        <strong>On-Chain Wallet Cluster</strong>
+        <p>No Bitcoin or cryptocurrency wallet addresses publicly linked to DEDBROPRO. No on-chain analysis from TRM Labs, Chainalysis, Elliptic, or Crystal. Financial flow cannot be traced without this data.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Reseller or Affiliate Arrangements</strong>
+        <p>No named resellers or affiliates identified. The provider appears to sell directly to end criminal clients. Whether wholesale or white-label arrangements exist with other BPH or hosting entities is unknown.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Data Center Facility Names</strong>
+        <p>No specific colocation facilities or data center names in Bulgaria or elsewhere confirmed. Physical infrastructure location beyond IP geolocation is an open gap.</p>
+      </div>
+      <div class="gap-item">
+        <strong>Criminal Client Roster Beyond Documented C2 Cases</strong>
+        <p>Current documented clients limited to SectopRAT operators, possible Remcos operators, and an unattributed malware distributor. Whether ransomware affiliates, carding operations, or other verticals are present on DEDBROPRO infrastructure is not confirmed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT REPORTING -->
+  <section id="recent-reporting">
+    <div class="section-label">Recent Reporting</div>
+    <h2>Recent Reporting</h2>
+
+    <h3>Source Integrity Notes</h3>
+    <div class="callout warning">
+      <div class="callout-label">Source Misattribution Flagged: Spamhaus "New Kid in Town" Article (2019)</div>
+      <p>The underlying research cited the Spamhaus article "Bulletproof hosting – there's a new kid in town" (December 2019) as a source for DEDBROPRO. Follow-on research confirms this article is NOT about DEDBROPRO. The article describes a 2019 BPH operation that rented VPS from legitimate Russian hosting providers (simplecloud.ru, reg.ru, etc.) and used reverse-proxy chains, with DNSpod for DNS. This operation is entirely distinct from DEDBROPRO's model (owned ASN, direct dedicated server and VPS sales). The 2019 article does not mention DEDBROPRO, dedbro.pro, AS203834, or Vault Dweller OU. It is cited here for context but should not be attributed to DEDBROPRO as a source.</p>
+    </div>
+    <div class="callout warning">
+      <div class="callout-label">AS47105 Reference: Likely Data Quality Issue</div>
+      <p>One source in the underlying research cited "AS47105 dedbropro" in connection with IP 195.82.146.34. Follow-on BGP verification confirms 195.82.146.0/24 is allocated to AS203834 (Vault Dweller OU), not AS47105. AS47105 is a distinct ASN. The discrepancy reflects stale or inaccurate ASN lookup data in the upstream source. AS203834 is the sole confirmed autonomous system for DEDBROPRO.</p>
+    </div>
+
+    <h3>Open-Source Researcher Disclosure</h3>
+    <p>The most specific recent open-source reporting on DEDBROPRO beyond abuse.ch feeds is a May 2025 X post by researcher @drb_ra disclosing Remcos C2 infrastructure on DEDBROPRO-AS at 195.82.147.97:443. This is a single-source disclosure tagged as unverified in ThreatFox. No major security vendor has published a formal technical report or blog post on DEDBROPRO as of June 2026. The provider remains below the attention threshold of mainstream threat intelligence publication cycles. <span class="ref">[6]</span></p>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <div class="section-label">Sources</div>
+    <h2>Sources</h2>
+    <div class="sources-list">
+      <div class="source-item">
+        <div class="source-num">[1]</div>
+        <div class="source-text"><a href="https://threatfox.abuse.ch/asn/203834/" target="_blank">ThreatFox — ASN Report for AS203834 (dedbropro-as)</a> — abuse.ch ThreatFox</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[2]</div>
+        <div class="source-text"><a href="https://carder.su/threads/dedbro-pro-bulletproof-dedicated-servers-vps-vpn.1044/" target="_blank">Dedbro.pro – Bulletproof Dedicated Servers, VPS, VPN</a> — Carder.su forum thread, handle "DedBro," March 2026</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[3]</div>
+        <div class="source-text"><a href="https://dedbro.pro/eng.html" target="_blank">DEDBRO.PRO/ENG — Commercial website (English)</a> — dedbro.pro, fetched June 2026</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[4]</div>
+        <div class="source-text"><a href="https://en.ipshu.com/asn/203834" target="_blank">Autonomous System Number 203834: dedbropro-as</a> — ipshu.com ASN database</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[5]</div>
+        <div class="source-text"><a href="https://ip.cc/zh/topic/asn/AS203834/" target="_blank">AS203834 Vault Dweller OU — ASN detail</a> — ip.cc</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[6]</div>
+        <div class="source-text"><a href="https://x.com/drb_ra/status/1922545078054047899" target="_blank">DEDBROPRO-AS #c2 #Remcos #unverified</a> — @drb_ra, X (Twitter), May 2025</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[7]</div>
+        <div class="source-text"><a href="https://threatfox.abuse.ch/browse/tag/DEDBROPRO-AS/" target="_blank">ThreatFox — IOCs tagged DEDBROPRO-AS</a> — abuse.ch ThreatFox; first seen 2024-10-16, last seen 2025-05-30, 23 sightings</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[8]</div>
+        <div class="source-text"><a href="https://threatfox.abuse.ch/ioc/1520971/" target="_blank">ThreatFox IOC #1520971 — 195.82.147.132:15747 / SectopRAT C2</a> — abuse.ch ThreatFox; confidence HIGH, first seen 2025-05-13</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[9]</div>
+        <div class="source-text"><a href="https://urlhaus.abuse.ch/host/195.82.146.34/" target="_blank">URLhaus — Host 195.82.146.34</a> — abuse.ch URLhaus; malware URLs 888.exe and AMA.exe, first seen 2025-03-18</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[10]</div>
+        <div class="source-text"><a href="https://asrank.caida.org/feedback/asn/203834" target="_blank">CAIDA AS Rank Feedback — AS203834 (dedbropro-as)</a> — CAIDA</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[11]</div>
+        <div class="source-text"><a href="https://bgpview.io/asn/203834" target="_blank">AS203834 Vault Dweller OU — BGP Network Information</a> — BGPView</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[12]</div>
+        <div class="source-text"><a href="https://bgp.he.net/AS203834" target="_blank">AS203834 Vault Dweller OU</a> — bgp.he.net (Hurricane Electric BGP Toolkit)</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[13]</div>
+        <div class="source-text"><a href="https://www.ripe.net/membership/indices/data/ee.vltdweller.html" target="_blank">Vault Dweller OU — RIPE Network Coordination Centre</a> — RIPE NCC membership / LIR index</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[14]</div>
+        <div class="source-text"><a href="https://bgp.he.net/AS44901" target="_blank">AS44901 belcloud</a> — bgp.he.net; Bulgarian IP transit provider; DEDBROPRO upstream 1</div>
+      </div>
+      <div class="source-item">
+        <div class="source-num">[15]</div>
+        <div class="source-text"><a href="https://bgp.he.net/AS20764" target="_blank">AS20764 CJSC RASCOM</a> — bgp.he.net; Russian ISP; DEDBROPRO upstream 2</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
