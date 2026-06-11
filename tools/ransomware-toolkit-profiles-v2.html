@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ransomware Group Toolkit Profiles v2</title>
+<style>
+:root{--bg:#090d12;--panel:#0f1923;--panel2:#162030;--border:#1e2f42;--text:#e8f0f8;--muted:#7a93ad;--accent:#ff8c00;--accent2:#ffa940;--active:#22c55e;--le:#ef4444;--defunct:#475569;--unknown:#8b949e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;background:rgba(9,13,18,.97);flex-shrink:0}
+header h1{font-size:16px;font-weight:700;color:var(--accent)}
+.sub{font-size:11px;color:var(--muted)}
+.hstats{margin-left:auto;display:flex;gap:16px;font-size:11px;color:var(--muted)}
+.hstats span{color:var(--accent);font-weight:700}
+.layout{display:flex;flex:1;overflow:hidden}
+.lpanel{width:265px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--panel)}
+.psec{padding:9px 11px;border-bottom:1px solid var(--border)}
+.psec label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+input[type=text]{width:100%;background:#0a131d;border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 9px;font-size:12px;outline:none}
+input[type=text]:focus{border-color:var(--accent)}
+select{width:100%;background:#0a131d;border:1px solid var(--border);border-radius:5px;color:var(--text);padding:5px 8px;font-size:11px;outline:none}
+select:focus{border-color:var(--accent)}
+select option{background:#0f1923}
+.tier-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:6px 10px 3px;font-weight:700;border-top:1px solid var(--border)}
+.tier-label:first-child{border-top:none}
+.glist{flex:1;overflow-y:auto;padding:4px 6px}
+.gitem{padding:7px 9px;border-radius:6px;cursor:pointer;border:1px solid transparent;margin-bottom:2px}
+.gitem:hover{background:var(--panel2);border-color:var(--border)}
+.gitem.sel{background:var(--panel2);border-color:var(--accent)}
+.gname{font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.gmeta{font-size:10px;color:var(--muted);margin-top:2px}
+.sbadge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;flex-shrink:0;white-space:nowrap}
+.ba{background:rgba(34,197,94,.15);color:var(--active)}
+.bl{background:rgba(239,68,68,.15);color:var(--le)}
+.bd{background:rgba(71,85,105,.2);color:var(--defunct)}
+.stub-b{background:rgba(139,148,158,.08);color:var(--unknown)}
+.main{flex:1;overflow-y:auto;padding:22px 26px}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);text-align:center;gap:10px}
+.empty-state .icon{font-size:36px;opacity:.35}
+.empty-state p{font-size:13px;line-height:1.6;max-width:340px}
+.profile{max-width:900px}
+.profile-header{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.profile-header h2{font-size:20px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.meta-pill{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px}
+.meta-pill span{color:var(--text);font-weight:600}
+.verified{font-size:10px;color:var(--muted);margin-top:6px}
+.verified span{color:#506070}
+.summary{font-size:12px;color:#a0b8cc;line-height:1.65;margin-top:9px;max-width:760px}
+.sections{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.section{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:13px 15px}
+.section.full{grid-column:1/-1}
+.section h3{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.section h3 .ico{font-size:13px}
+.tool-list{display:flex;flex-direction:column;gap:5px}
+.tool-item{display:flex;align-items:flex-start;gap:7px;padding:5px 7px;background:#0a131d;border-radius:5px;border:1px solid var(--border)}
+.tool-name{font-size:11px;font-weight:600;color:var(--text);min-width:140px;flex-shrink:0}
+.tool-desc{font-size:11px;color:var(--muted);flex:1;line-height:1.4}
+.tool-src{font-size:10px;color:#3d5468;margin-top:2px}
+.conf{font-size:9px;padding:2px 5px;border-radius:3px;font-weight:700;flex-shrink:0;white-space:nowrap;align-self:flex-start;margin-top:1px}
+.conf-confirmed{background:rgba(34,197,94,.15);color:#22c55e}
+.conf-credible{background:rgba(59,130,246,.15);color:#60a5fa}
+.conf-reported{background:rgba(234,179,8,.12);color:#ca8a04}
+.conf-suspected{background:rgba(139,148,158,.1);color:#8b949e}
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fin-item{background:#0a131d;border:1px solid var(--border);border-radius:5px;padding:7px 10px}
+.fin-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+.fin-val{font-size:11px;color:var(--text);line-height:1.4}
+.fin-item.full-w{grid-column:1/-1}
+.event-list{display:flex;flex-direction:column;gap:5px}
+.event-item{display:flex;gap:9px;align-items:flex-start;font-size:11px;padding:5px 7px;background:#0a131d;border-radius:5px;border:1px solid var(--border)}
+.event-yr{color:var(--accent);font-weight:700;font-size:10px;min-width:34px;flex-shrink:0;padding-top:1px}
+.event-type{font-size:9px;padding:2px 5px;border-radius:3px;font-weight:700;flex-shrink:0;align-self:flex-start}
+.et-le{background:rgba(239,68,68,.15);color:var(--le)}
+.et-leak{background:rgba(168,85,247,.15);color:#c084fc}
+.et-shutdown{background:rgba(71,85,105,.2);color:#94a3b8}
+.et-hack{background:rgba(255,140,0,.1);color:var(--accent)}
+.et-notable{background:rgba(34,197,94,.1);color:#4ade80}
+.event-text{color:var(--muted);line-height:1.4}
+.no-data{font-size:11px;color:#2d4055;font-style:italic}
+.stub-notice{background:rgba(139,148,158,.04);border:1px dashed var(--border);border-radius:7px;padding:12px 14px;color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
+.conf-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);align-items:center}
+.cl-item{display:flex;align-items:center;gap:4px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Ransomware Group Toolkit Profiles</h1>
+    <div class="sub">v2 · Initial Access · Stealers · C2 · BPH · Tools · Financial Operations · OSINT-sourced</div>
+  </div>
+  <div class="hstats">
+    <div>Groups: <span id="sn">0</span></div>
+    <div>Full: <span id="sfull">0</span></div>
+    <div>Stubs: <span id="sstub">0</span></div>
+    <div>Visible: <span id="svis">0</span></div>
+  </div>
+</header>
+<div class="layout">
+  <div class="lpanel">
+    <div class="psec"><label>Search</label><input type="text" id="q" placeholder="Conti, LockBit, callers…"></div>
+    <div class="psec">
+      <label>Status</label>
+      <select id="fstatus">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="le_disrupted">LE Disrupted</option>
+        <option value="defunct">Defunct</option>
+      </select>
+    </div>
+    <div class="psec" style="border-bottom:none;padding-bottom:3px"><label>Groups (<span id="rc">0</span>)</label></div>
+    <div class="glist" id="glist"></div>
+  </div>
+  <div class="main" id="main">
+    <div class="empty-state" id="empty">
+      <div class="icon">⬡</div>
+      <p>Select a group from the list to view its full toolkit profile — initial access, stealers, C2, BPH, tools, financial operations, and key events.</p>
+    </div>
+    <div class="profile" id="profile" style="display:none"></div>
+  </div>
+</div>
+<script>
+const G = [
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ACTIVE GROUPS — ordered by approximate victim volume descending
+// ══════════════════════════════════════════════════════════════════════════════
+
+{id:"clop",name:"Cl0p / TA505 / FIN11",type:"Threat Actor Group",status:"active",victims:1800,
+ecosystem:"Cl0p",active:"2014–present",verified:"2026-Q2",
+summary:"Long-running Russia/CIS-assessed actor. Pivoted from banking trojans to large-scale mass exploitation of enterprise file transfer software. MOVEit campaign (2023) is the highest victim-count single ransomware campaign on record — 1,000+ organizations, 60M+ individuals. Does not encrypt; exfiltrates and extorts. Highly technically sophisticated.",
+access:[
+  {name:"Oracle EBS zero-day (CVE-2025-61882)",desc:"Exploited July-August 2025 — weeks before patch available. RCE enabling webshell deployment and mass data exfiltration. 234+ environments claimed.",conf:"confirmed",src:"Google Cloud / Mandiant (2025)"},
+  {name:"Gladinet CentreStack (CVE-2025-11371, CVE-2025-14611)",desc:"Dec 2025 campaign targeting MSP file servers. LFI flaw and hardcoded AES keys exploited.",conf:"confirmed",src:"CybersecurityNews (2025)"},
+  {name:"MOVEit exploit (CVE-2023-34362)",desc:"Zero-day SQL injection. Mass exploitation May 2023. 1,000+ orgs, 60M+ individuals.",conf:"confirmed",src:"CISA AA23-158A (2023)"},
+  {name:"GoAnywhere MFT (CVE-2023-0669)",desc:"Zero-day exploitation Feb 2023. 130+ victims.",conf:"confirmed",src:"Fortra advisory (2023)"},
+  {name:"Accellion FTA exploits",desc:"Exploitation Dec 2020–Jan 2021. 100+ organizations.",conf:"confirmed",src:"Mandiant (2021)"},
+  {name:"Get2 / FlawedAmmyy RAT",desc:"Earlier email-campaign delivery tooling.",conf:"confirmed",src:"Proofpoint (2019)"},
+],
+stealers:[{name:"Custom exfil via file transfer exploits",desc:"Data stolen directly via exploited platform rather than deployed stealers.",conf:"confirmed",src:"Multiple (2023)"}],
+c2:[{name:"Custom infrastructure",desc:"Maintains dedicated C2; no reliance on commercial frameworks in recent ops.",conf:"confirmed",src:"Multiple"}],
+bph:[{name:"Various hosting (mixed)",desc:"Distributed infrastructure; no specific BPH consistently attributed.",conf:"reported",src:"Analyst reporting"}],
+tools:[
+  {name:"Rclone",desc:"Data exfiltration to remote storage.",conf:"confirmed",src:"Multiple IR reports (2023)"},
+  {name:"DEWMODE webshell",desc:"Custom webshell deployed post-MOVEit exploitation.",conf:"confirmed",src:"Mandiant (2023)"},
+  {name:"LEMURLOOT",desc:"Custom webshell used in MOVEit exploitation chain.",conf:"confirmed",src:"Mandiant (2023)"},
+],
+financial:{
+  crypto:"Bitcoin primary; demands payment via unique victim portal",
+  laundering:"Victims contact Cl0p directly — no traditional ransom portal. Laundering via mixing and exchange layering.",
+  exchanges:"Garantex (sanctioned RU exchange) reportedly used for off-ramping",
+  revenue:"Estimated $75–100M+ from MOVEit campaign alone (Chainalysis 2024)",
+  negotiation:"Unique model: victims must contact Cl0p proactively. Public leak pressure rather than encrypted ransom note."
+},
+events:[
+  {yr:2021,type:"notable",text:"Accellion campaign — 100+ orgs including law firms, banks, universities"},
+  {yr:2023,type:"notable",text:"GoAnywhere zero-day — 130+ victims including Fortra customers"},
+  {yr:2023,type:"notable",text:"MOVEit zero-day (CVE-2023-34362) — 1,000+ orgs, 60M+ individuals. Largest-ever ransomware campaign by victim count."},
+  {yr:2025,type:"notable",text:"Oracle E-Business Suite zero-day (CVE-2025-61882) — exploited July-August 2025, weeks before patch. Victims include Logitech, Washington Post, Cox Enterprises. 234+ environments claimed by March 2026."},
+  {yr:2025,type:"notable",text:"Executive extortion campaign Sept 29, 2025 — high-volume emails to C-suite from hundreds of compromised accounts pressuring payment."},
+  {yr:2025,type:"notable",text:"Gladinet CentreStack campaign Dec 2025 — exploited CVE-2025-11371 and CVE-2025-14611 against MSP file servers."},
+  {yr:2025,type:"notable",text:"Revenue declining despite activity — only ~$15M in 2025 from Cleo and EBS campaigns combined. Data-only model generating far less than encryption-based competitors."},
+]},
+
+{id:"ransomhub",name:"RansomHub",type:"RaaS Operation",status:"defunct",victims:600,
+ecosystem:"Disputed (BlackCat-linked)",active:"Feb 2024–Apr 2025",verified:"2026-Q2",
+summary:"Emerged Feb 2024 immediately after BlackCat/ALPHV disruption. Rapidly became dominant RaaS by victim volume in 2024. Recruited aggressively from disrupted BlackCat and LockBit affiliate pools. EDRKillShifter is signature tool. Last post January 24, 2025 — ceased operations April 2025 without explanation. Former affiliates absorbed primarily by Qilin and DragonForce, significantly boosting both groups' victim counts.",
+access:[
+  {name:"Phishing / spearphishing",desc:"Common affiliate initial access vector.",conf:"confirmed",src:"CISA AA24-242A (2024)"},
+  {name:"VPN credential exploitation",desc:"Exploits valid VPN credentials acquired through various means.",conf:"confirmed",src:"CISA AA24-242A (2024)"},
+  {name:"Unpatched vulnerabilities",desc:"Exploits public-facing vulnerabilities in internet-exposed infrastructure.",conf:"confirmed",src:"CISA AA24-242A (2024)"},
+],
+stealers:[{name:"Infostealer campaigns (affiliate-sourced)",desc:"Credential theft feeding affiliate initial access brokers.",conf:"credible",src:"Multiple (2024)"}],
+c2:[{name:"Cobalt Strike",desc:"Primary post-exploitation framework across affiliate operations.",conf:"confirmed",src:"CISA AA24-242A (2024)"}],
+bph:[{name:"Various (affiliate-dependent)",desc:"Infrastructure varies by affiliate. No single BPH consistently attributed.",conf:"reported",src:"Analyst reporting (2024)"}],
+tools:[
+  {name:"EDRKillShifter",desc:"Custom EDR/security tool killer. RansomHub's signature tool — exploits vulnerable drivers.",conf:"confirmed",src:"Sophos / CISA (2024)"},
+  {name:"Atera / Splashtop",desc:"Legitimate RMM tools abused for persistent access.",conf:"confirmed",src:"CISA AA24-242A (2024)"},
+  {name:"Rclone / MEGA",desc:"Data exfiltration.",conf:"confirmed",src:"CISA AA24-242A (2024)"},
+  {name:"Impacket",desc:"Network protocol exploitation and lateral movement.",conf:"confirmed",src:"CISA (2024)"},
+],
+financial:{
+  crypto:"Bitcoin. Affiliate receives 90% of ransom — unusually high affiliate share designed to attract top talent.",
+  laundering:"Cross-chain bridges post-mixer disruptions. Centralized exchange layering.",
+  exchanges:"Garantex and other RU/CIS exchanges suspected",
+  revenue:"600+ victims. Estimated $200M+ over 14-month lifespan.",
+  negotiation:"90/10 affiliate split. Affiliates set ransom amounts. Group is now defunct."
+},
+events:[
+  {yr:2024,type:"notable",text:"Change Healthcare attack — $22M ransom paid, ALPHV exit scam, affiliate defected to RansomHub"},
+  {yr:2024,type:"notable",text:"Became #1 most active RaaS by victim count within months of launch"},
+  {yr:2025,type:"shutdown",text:"Last post January 24, 2025. Ceased all operations April 2025 — no explanation given. Former affiliates migrated to Qilin and DragonForce."},
+]},
+
+{id:"akira",name:"Akira / Howling Scorpius",type:"RaaS Operation",status:"active",victims:1200,
+ecosystem:"Conti-derived",active:"2023–present",verified:"2026-Q2",
+summary:"Emerged Q1 2023. Strong Conti/Wizard Spider ecosystem links. Signature initial access via Cisco VPN vulnerabilities. Retro terminal-style leak site. ~980 victims in 2025 alone — $150M+ revenue that year, $244M+ total as of late 2025. Currently #2 globally by victim count (behind Qilin) in Q1 2026. Known as Howling Scorpius in Palo Alto Unit 42 tracking. Expanded targeting to Nutanix AHV hypervisors.",
+access:[
+  {name:"Cisco ASA/FTD exploits (CVE-2023-20269)",desc:"Primary and signature initial access. Credential stuffing and zero-day exploitation of Cisco VPN.",conf:"confirmed",src:"FBI IC3 / Cisco PSIRT (2023)"},
+  {name:"RDP / valid credential abuse",desc:"Secondary initial access via stolen credentials.",conf:"confirmed",src:"FBI advisory (2023)"},
+  {name:"Spearphishing",desc:"Used to deliver payloads and harvest credentials.",conf:"credible",src:"Multiple (2023)"},
+],
+stealers:[{name:"Credential harvesting tools (various)",desc:"Credential theft observed pre-encryption.",conf:"credible",src:"Multiple IR reports"}],
+c2:[
+  {name:"AnyDesk",desc:"Remote access tool used for persistent access and C2.",conf:"confirmed",src:"FBI advisory (2023)"},
+  {name:"Cobalt Strike",desc:"Post-exploitation framework.",conf:"confirmed",src:"Multiple (2023)"},
+],
+bph:[{name:"Various",desc:"Infrastructure details limited in public reporting.",conf:"reported",src:"Analyst reporting"}],
+tools:[
+  {name:"SoftPerfect / Advanced Port Scanner",desc:"Network discovery in pre-ransomware phase.",conf:"confirmed",src:"FBI advisory (2023)"},
+  {name:"WinRAR / 7zip",desc:"Data staging before exfiltration.",conf:"confirmed",src:"Multiple"},
+  {name:"RClone",desc:"Data exfiltration.",conf:"confirmed",src:"Multiple IR reports"},
+  {name:"PowerTool / KillAV",desc:"Security tool disablement.",conf:"confirmed",src:"FBI advisory (2023)"},
+],
+financial:{
+  crypto:"Bitcoin and Monero both accepted",
+  laundering:"Standard crypto laundering — mixers and bridges. Monero use complicates tracing.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"$42M+ in first year. $150M+ in 2025. $244M+ total as of late September 2025 (Chainalysis/FBI).",
+  negotiation:"Negotiates. Known to reduce demands for smaller victims."
+},
+events:[
+  {yr:2024,type:"notable",text:"FBI/Europol joint advisory — $42M+ revenue, 250+ victims confirmed"},
+  {yr:2025,type:"notable",text:"~980 victims posted in 2025. $150M+ revenue. Expanded targeting to Nutanix AHV hypervisors (June 2025)."},
+  {yr:2025,type:"notable",text:"Palo Alto Unit 42 documents 42-day compromise of global infrastructure firm (Nov 2025) — attributed to Howling Scorpius."},
+  {yr:2026,type:"notable",text:"#2 globally in Q1 2026 behind Qilin. LA law firm attack Jan 13, 2026 — 10GB legal data compromised."},
+]},
+
+{id:"play",name:"Play",type:"RaaS Operation",status:"active",victims:350,
+ecosystem:"Play",active:"2022–present",verified:"2025-Q1",
+summary:"Does not use a public leak site initially — pressures victims through out-of-band communication. Known for exploiting Exchange, FortiOS, and RDP vulnerabilities. Developed custom tools (Grixba, VSS Copying Tool). FBI estimate 300+ victims through Oct 2023. Possible connections to Hive and Nokoyawa.",
+access:[
+  {name:"FortiOS exploit (CVE-2018-13379 / CVE-2020-12812)",desc:"Fortinet SSL VPN exploitation for initial access.",conf:"confirmed",src:"FBI advisory (2023)"},
+  {name:"Exchange ProxyNotShell (CVE-2022-41040/41082)",desc:"Microsoft Exchange exploitation.",conf:"confirmed",src:"Trend Micro (2022)"},
+  {name:"Valid accounts / RDP",desc:"Stolen credentials and exposed RDP.",conf:"confirmed",src:"FBI advisory (2023)"},
+],
+stealers:[],
+c2:[
+  {name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"FBI advisory (2023)"},
+  {name:"SystemBC",desc:"Proxy/C2 tunneling.",conf:"confirmed",src:"Multiple"},
+],
+bph:[],
+tools:[
+  {name:"Grixba",desc:"Custom network scanner and info-stealer developed by Play group.",conf:"confirmed",src:"Trend Micro (2023)"},
+  {name:"VSS Copying Tool",desc:"Custom tool for accessing Volume Shadow Service files.",conf:"confirmed",src:"Trend Micro (2023)"},
+  {name:"WinSCP / WinRAR",desc:"Data staging and exfiltration.",conf:"confirmed",src:"FBI advisory (2023)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering chain. No unique laundering behavior publicly documented.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"300+ victims — estimated $50M+ (analyst estimates)",
+  negotiation:"Contacts victims out-of-band (email, phone) rather than via leak site. Known to negotiate."
+},
+events:[
+  {yr:2023,type:"notable",text:"FBI issues advisory — 300+ victims confirmed across Americas, Europe, Australia"},
+]},
+
+{id:"bianlian",name:"BianLian",type:"RaaS Operation",status:"active",victims:300,
+ecosystem:"BianLian",active:"2022–present",verified:"2025-Q1",
+summary:"Pivoted to extortion-only after Avast released a decryptor Feb 2023. Now purely data theft and extortion — no encryption. Russia-assessed. Targets healthcare, finance, professional services. Uses custom Go-based tooling throughout.",
+access:[
+  {name:"RDP via compromised credentials",desc:"Primary initial access vector.",conf:"confirmed",src:"CISA AA23-136A (2023)"},
+  {name:"ProxyShell (CVE-2021-34473/34523/31207)",desc:"Microsoft Exchange exploitation.",conf:"confirmed",src:"CISA AA23-136A (2023)"},
+],
+stealers:[{name:"Custom Go-based stealer",desc:"Custom credential harvester written in Go.",conf:"confirmed",src:"Redacted Inc. (2022)"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"CISA AA23-136A (2023)"},
+  {name:"Custom Go backdoor",desc:"Persistent backdoor written in Go.",conf:"confirmed",src:"Redacted Inc. (2022)"},
+],
+bph:[],
+tools:[
+  {name:"Rclone",desc:"Data exfiltration.",conf:"confirmed",src:"CISA AA23-136A (2023)"},
+  {name:"PsExec",desc:"Lateral movement.",conf:"confirmed",src:"CISA (2023)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin layering. No encryption means no decryptor negotiation — pure extortion.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"300+ victims. Estimated $30M+ (analyst estimates)",
+  negotiation:"Extortion-only model. Sets deadline, publishes partial data as pressure. Less negotiation flexibility than encrypt-and-ransom groups."
+},
+events:[
+  {yr:2023,type:"shutdown",text:"Avast releases BianLian decryptor Feb 2023 — group pivots permanently to extortion-only"},
+]},
+
+{id:"blackcat",name:"BlackCat / ALPHV / Carbon Spider",type:"Threat Actor Group",status:"le_disrupted",victims:500,
+ecosystem:"DarkSide / BlackMatter / ALPHV",active:"2012–2024 (disrupted)",verified:"2025-Q1",
+summary:"Most technically sophisticated RaaS operation observed. Continuous rebrand: DarkSide → BlackMatter → BlackCat/ALPHV. Written in Rust — cross-platform, harder to reverse. LE disrupted Dec 2023. Exit scam — stole $22M Change Healthcare ransom from affiliate. RansomHub assessed as successor for displaced affiliates.",
+access:[
+  {name:"QakBot / IcedID",desc:"Common affiliate delivery chains.",conf:"confirmed",src:"Mandiant M-Trends (2023)"},
+  {name:"Emotet",desc:"Observed in some affiliate delivery chains.",conf:"credible",src:"Multiple (2022)"},
+  {name:"Advertised affiliate access",desc:"Recruited experienced affiliates from disrupted REvil and DarkSide pools.",conf:"confirmed",src:"CrowdStrike (2022)"},
+],
+stealers:[
+  {name:"ExMatter",desc:"Custom automated exfiltration tool. Shared tooling with Black Basta suggests personnel overlap.",conf:"confirmed",src:"Symantec (2022)"},
+  {name:"Fendr",desc:"Additional custom exfil utility observed in BlackCat operations.",conf:"confirmed",src:"Microsoft (2023)"},
+],
+c2:[
+  {name:"Cobalt Strike",desc:"Primary post-exploitation.",conf:"confirmed",src:"FBI AA23-353A (2023)"},
+  {name:"Brute Ratel C4",desc:"Observed as Cobalt Strike alternative in some operations.",conf:"confirmed",src:"Palo Alto Unit 42 (2022)"},
+],
+bph:[{name:"Various RU/CIS providers",desc:"Infrastructure in Russia/CIS. LE seized servers Dec 2023.",conf:"confirmed",src:"FBI / DOJ (2023)"}],
+tools:[
+  {name:"Impacket",desc:"Network protocol exploitation and lateral movement.",conf:"confirmed",src:"CISA AA23-353A (2023)"},
+  {name:"Mimikatz / LaZagne",desc:"Credential dumping.",conf:"confirmed",src:"Multiple"},
+  {name:"MEGAsync / Rclone",desc:"Data exfiltration.",conf:"confirmed",src:"Multiple IR reports"},
+  {name:"Rust-based encryptor",desc:"Cross-platform (Windows, Linux, VMware ESXi). Harder to detect/analyze than C++ equivalents.",conf:"confirmed",src:"Multiple reverse engineering reports (2022)"},
+],
+financial:{
+  crypto:"Bitcoin and Monero both accepted. Preferred Monero for privacy.",
+  laundering:"Cross-chain bridges, mixers (Chipmixer). Monero conversion for obfuscation.",
+  exchanges:"Garantex and other sanctioned RU exchanges suspected",
+  revenue:"$300M+ estimated over operational lifetime (DOJ 2023)",
+  negotiation:"Professional negotiators on staff. Known to negotiate significantly — 50%+ reductions documented."
+},
+events:[
+  {yr:2021,type:"shutdown",text:"DarkSide shutdown after Colonial Pipeline — FBI seized $2.3M in Bitcoin"},
+  {yr:2023,type:"le",text:"FBI disrupts BlackCat/ALPHV infrastructure, releases decryption keys for ~500 victims, Dec 2023"},
+  {yr:2024,type:"shutdown",text:"ALPHV exit scam — stole $22M Change Healthcare ransom from affiliate, shut down operations"},
+]},
+
+{id:"lockbit",name:"LockBit / Bitwise Spider",type:"RaaS Operation",status:"le_disrupted",victims:2800,
+ecosystem:"LockBit",active:"2019–present (disrupted/rebuilding)",verified:"2026-Q2",
+summary:"Largest RaaS by victim count 2022–2024. Aggressive affiliate recruitment. Operation Cronos (Feb 2024) seized infrastructure, arrested members, published affiliate details. Builder leaked 2022 spawning many copycat groups. LockBit 5.0 attempted rebuild in 2025 with limited traction.",
+access:[
+  {name:"Affiliate-dependent (varied)",desc:"Broad affiliate model — phishing, RDP, VPN exploits, IAB-purchased access all observed.",conf:"confirmed",src:"CISA AA23-165A (2023)"},
+  {name:"Emotet / QakBot (historical)",desc:"Observed in affiliate delivery chains.",conf:"confirmed",src:"Multiple"},
+],
+stealers:[{name:"StealBit",desc:"Custom exfiltration tool developed by LockBit for automated data theft.",conf:"confirmed",src:"Trend Micro / Mandiant (2022)"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Widely used across affiliate intrusions.",conf:"confirmed",src:"CISA / FBI (2023)"},
+  {name:"Metasploit",desc:"Observed in some affiliate operations.",conf:"credible",src:"Analyst reporting"},
+],
+bph:[{name:"Zservers (AS58271/AS198953)",desc:"Russian BPH. OFAC sanctioned Jan 2025 specifically for LockBit support. Australian, UK, US coordinated.",conf:"confirmed",src:"OFAC SDN list (Jan 2025)"}],
+tools:[
+  {name:"LockBit builder (leaked 2022)",desc:"Builder leak spawned DarkyLock, Radar, BabyLockerKZ and others.",conf:"confirmed",src:"Threat intel community (2022)"},
+  {name:"AnyDesk / TeamViewer",desc:"Persistent access.",conf:"credible",src:"Multiple IR reports"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin primary",
+  laundering:"Garantex documented. Mixers (Chipmixer). Cross-chain bridges post-2023.",
+  exchanges:"Garantex (sanctioned). Zservers as infrastructure/payment processor link.",
+  revenue:"$91M+ confirmed by DOJ (US victims alone). Total estimated $500M+ over lifetime.",
+  negotiation:"Negotiates. Known to discount significantly for quick payment. Published negotiation logs from victims."
+},
+events:[
+  {yr:2022,type:"leak",text:"LockBit 3.0 builder leaked — sparked widespread copycat operations"},
+  {yr:2024,type:"le",text:"Operation Cronos: NCA/FBI/Europol seize infrastructure, arrest members, publish affiliate list (Feb 2024)"},
+  {yr:2025,type:"le",text:"Zservers (BPH) OFAC sanctioned (Jan 2025) for LockBit infrastructure support"},
+  {yr:2025,type:"leak",text:"LockBit infrastructure breached and defaced May 2025 — data dump exposed Bitcoin wallets, public encryption keys, victim chat logs, affiliate details."},
+  {yr:2025,type:"notable",text:"LockBit 5.0 announced September 2025 — formal rebuild attempt following repeated LE disruptions."},
+  {yr:2025,type:"notable",text:"October 2025 — formal operational alliance announced between LockBit, Qilin, and DragonForce. Shared infrastructure, coordinated targeting, cross-pollinated tooling."},
+  {yr:2026,type:"notable",text:"Q1 2026: 163 victims (106% increase over Q4 2025). Climbed to #4 globally. Shifted targeting — US victims only 21.2%, with Italy, Brazil, Turkey picking up volume."},
+]},
+
+{id:"revil",name:"REvil / GandCrab / Pinchy Spider",type:"Threat Actor Group",status:"le_disrupted",victims:1000,
+ecosystem:"REvil / GandCrab",active:"2018–2022 (disrupted)",verified:"2025-Q1",
+summary:"Operated GandCrab (2018–2019) then REvil/Sodinokibi (2019–2021). GandCrab was the first modern affiliate RaaS model. REvil responsible for JBS Foods ($11M) and Kaseya VSA supply chain attack. Russian FSB arrested 14 members Jan 2022 under US pressure — unprecedented Russian LE cooperation at the time.",
+access:[
+  {name:"QakBot (Qbot)",desc:"Primary affiliate delivery partner. QakBot campaigns repeatedly funneled to REvil.",conf:"confirmed",src:"FBI / Secureworks (2021)"},
+  {name:"IcedID (BokBot)",desc:"Used in affiliate-driven REvil deployments.",conf:"confirmed",src:"Mandiant / DFIR Report (2021)"},
+  {name:"Kaseya VSA (CVE-2021-30116)",desc:"Supply chain attack July 2021. Zero-day via MSP platform. ~1,500 downstream victims.",conf:"confirmed",src:"CISA advisory (2021)"},
+  {name:"Oracle WebLogic (CVE-2019-2725)",desc:"Early initial access vector.",conf:"confirmed",src:"Secureworks (2019)"},
+],
+stealers:[{name:"Vidar stealer",desc:"Used in some campaigns for pre-ransomware credential harvest.",conf:"reported",src:"Analyst reporting"}],
+c2:[{name:"Cobalt Strike",desc:"Standard post-exploitation.",conf:"confirmed",src:"Multiple"}],
+bph:[{name:"Various RU providers",desc:"Infrastructure Russia-based. FSB arrests Jan 2022 included asset seizure.",conf:"confirmed",src:"DOJ press release (2022)"}],
+tools:[
+  {name:"PowerShell / WMIC",desc:"Lateral movement and deployment.",conf:"confirmed",src:"Multiple"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin and Monero",
+  laundering:"Mixers (Chipmixer). Cryptocurrency layering through multiple wallets. DOJ traced specific wallet chains.",
+  exchanges:"Various. DOJ recovered $6M from Kaseya ransom.",
+  revenue:"Estimated $200M+ over REvil lifetime. GandCrab authors claimed $2B before shutdown.",
+  negotiation:"Known floor ~30% of initial ask. Deadline pressure with countdown timers. Professional negotiation team."
+},
+events:[
+  {yr:2021,type:"shutdown",text:"REvil infrastructure taken offline following Kaseya backlash and US diplomatic pressure"},
+  {yr:2021,type:"le",text:"REvil infrastructure seized by RU authorities (unusual cooperation) following US pressure"},
+  {yr:2022,type:"le",text:"Russian FSB arrests 14 REvil members Jan 2022. $5.5M+ in cryptocurrency seized."},
+  {yr:2022,type:"le",text:"Ukrainian authorities arrest REvil affiliates in coordination with US"},
+]},
+
+{id:"hive",name:"Hive / Hive Spider",type:"RaaS Operation",status:"le_disrupted",victims:1500,
+ecosystem:"Hive",active:"2021–2023 (disrupted)",verified:"2025-Q1",
+summary:"Targeted hospitals, schools, and critical infrastructure aggressively. FBI secretly infiltrated Hive network mid-2022, obtained decryption keys and distributed to ~300 victims, preventing ~$130M in ransoms. Infrastructure disrupted Jan 2023 in joint FBI/Europol/German BKA operation. Hunters International emerged with significant code overlap.",
+access:[
+  {name:"Phishing / malicious attachments",desc:"Primary affiliate initial access.",conf:"confirmed",src:"FBI TLP:WHITE advisory (2022)"},
+  {name:"RDP exploitation",desc:"Secondary initial access via exposed or credential-stuffed RDP.",conf:"confirmed",src:"FBI advisory (2022)"},
+  {name:"VPN vulnerabilities",desc:"Fortinet and other VPN appliances exploited.",conf:"confirmed",src:"FBI advisory (2022)"},
+],
+stealers:[],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation across Hive operations.",conf:"confirmed",src:"FBI advisory (2022)"}],
+bph:[{name:"Various (seized)",desc:"Infrastructure seized by FBI/Europol Jan 2023.",conf:"confirmed",src:"DOJ/Europol press release (2023)"}],
+tools:[
+  {name:"PCHunter64",desc:"Used to disable security tools and AV.",conf:"confirmed",src:"FBI advisory (2022)"},
+  {name:"Rclone",desc:"Data exfiltration.",conf:"confirmed",src:"Multiple"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+  {name:"Go/Rust encryptor",desc:"v1-v4 in Go; v5+ shifted to Rust. Code overlap with Hunters International.",conf:"confirmed",src:"Bitdefender reverse engineering (2023)"},
+],
+financial:{
+  crypto:"Bitcoin and Monero",
+  laundering:"Standard crypto laundering chain. FBI infiltration disrupted payment flow for ~300 victims.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"1,500+ victims. Estimated $100M+ (prevented $130M via FBI intervention)",
+  negotiation:"Negotiated. Targeted hospitals with known willingness to pay under operational pressure."
+},
+events:[
+  {yr:2022,type:"le",text:"FBI secretly infiltrated Hive network mid-2022, distributed decryption keys to victims without alerting group"},
+  {yr:2023,type:"le",text:"Hive infrastructure seized Jan 2023 — FBI/Europol/German BKA joint operation"},
+]},
+
+{id:"wizard_spider",name:"Wizard Spider / Conti",type:"Threat Actor Group",status:"le_disrupted",victims:1000,
+ecosystem:"Conti / Ryuk / TrickBot",active:"2016–present (rebranded)",verified:"2025-Q1",
+summary:"Russia-based eCrime group. Operated TrickBot botnet, Ryuk ransomware, and Conti RaaS. Most prolific and well-resourced criminal group of 2019–2022. Conti source code leak (2022) caused brand collapse. Former members dispersed into Black Basta, Royal, Karakurt, Silent Ransom, and other successor operations. Persists through successor entities.",
+access:[
+  {name:"TrickBot",desc:"Primary delivery mechanism for years. Credential theft, lateral movement, Ryuk/Conti staging.",conf:"confirmed",src:"CrowdStrike / FBI (2021)"},
+  {name:"BazarLoader / BazarBackdoor",desc:"Successor to TrickBot modules. Enterprise targeting. Core Conti pre-ransomware tool.",conf:"confirmed",src:"Mandiant / NCC Group (2021)"},
+  {name:"BazarCall",desc:"Callback phishing — victims called, directed to install BazarLoader via fake subscription cancellation.",conf:"confirmed",src:"Multiple (2021)"},
+  {name:"Anchor",desc:"Stealthy TrickBot-derived implant for high-value targets.",conf:"confirmed",src:"SentinelOne / ESET (2020)"},
+],
+stealers:[{name:"TrickBot credential modules",desc:"Browser, RDP, VNC credential theft built into TrickBot.",conf:"confirmed",src:"Multiple"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Primary post-exploitation. Custom beacon profiles observed.",conf:"confirmed",src:"CISA / FBI / Mandiant (2021)"},
+  {name:"SystemBC",desc:"SOCKS5 proxy tunneling C2 traffic. Frequently alongside Cobalt Strike.",conf:"confirmed",src:"Sophos / Mandiant (2021)"},
+],
+bph:[{name:"Various RU/CIS providers",desc:"Consistent Russia/CIS hosting. Sanctioned members include senior leadership.",conf:"credible",src:"Multiple threat intel reports"}],
+tools:[
+  {name:"ADFind",desc:"Active Directory enumeration.",conf:"confirmed",src:"CISA AA20-302A (2020)"},
+  {name:"BloodHound",desc:"AD attack path mapping.",conf:"confirmed",src:"Mandiant (2021)"},
+  {name:"Mimikatz",desc:"Credential dumping.",conf:"confirmed",src:"Multiple"},
+  {name:"PsExec / WMIC",desc:"Lateral movement and deployment.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin primary. Conti leadership documented receiving Bitcoin payments.",
+  laundering:"Garantex. Mixers (Chipmixer pre-takedown). Bitcoin layering through multiple wallets.",
+  exchanges:"Garantex (sanctioned RU exchange) — documented in Conti chat leaks",
+  revenue:"Conti alone estimated $180M+ (2021, Chainalysis). Total Wizard Spider ecosystem $2B+ over lifetime.",
+  negotiation:"Professional negotiators. Conti had dedicated negotiation team documented in leaked chats."
+},
+events:[
+  {yr:2021,type:"le",text:"US indictments of TrickBot / Conti leadership. $5M reward for information."},
+  {yr:2022,type:"leak",text:"Conti source code and internal chats leaked after group stated support for Russia — exposed full operations"},
+  {yr:2022,type:"shutdown",text:"Conti brand retired after catastrophic reputational damage from internal leak"},
+]},
+
+{id:"indrik_spider",name:"Indrik Spider / EvilCorp",type:"Threat Actor Group",status:"le_disrupted",victims:700,
+ecosystem:"BitPaymer / WastedLocker / Hades",active:"2015–present",verified:"2025-Q1",
+summary:"Russia-based. Operated Dridex banking trojan for years before pivoting to enterprise ransomware. No affiliate model — fully in-house operations. Known for very high ransom demands ($10M+). OFAC sanctioned Maksim Yakubets (leader) in 2019 with $5M reward. Evolved through BitPaymer, WastedLocker, Hades, PhoenixLocker, MacawLocker across multiple rebrands to evade sanctions.",
+access:[
+  {name:"Dridex",desc:"Primary loader. Long-running banking trojan repurposed for enterprise ransomware staging.",conf:"confirmed",src:"NCA / OFAC / US-CERT (2019)"},
+  {name:"SocGholish (FakeUpdates)",desc:"JavaScript framework delivering Dridex via fake browser update lures. Ongoing infrastructure.",conf:"confirmed",src:"Red Canary / Mandiant (2021)"},
+],
+stealers:[{name:"Dridex credential modules",desc:"Banking and credential theft built into Dridex.",conf:"confirmed",src:"Multiple"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Post-exploitation across WastedLocker and later operations.",conf:"confirmed",src:"Symantec / NCC Group (2020)"},
+  {name:"Custom infrastructure",desc:"EvilCorp maintains bespoke C2 infrastructure — not shared with affiliates.",conf:"confirmed",src:"NCA / CrowdStrike"},
+],
+bph:[{name:"Various RU providers",desc:"OFAC designations limit Western hosting options. Russia-based infrastructure.",conf:"credible",src:"OFAC"}],
+tools:[
+  {name:"PowerShell Empire",desc:"Post-exploitation.",conf:"credible",src:"Symantec (2020)"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin. OFAC sanctions explicitly target Bitcoin wallets associated with Yakubets.",
+  laundering:"Sophisticated laundering — multiple layers of wallets, mixers. Sanctions created significant off-ramping challenges.",
+  exchanges:"Pre-sanction: Garantex and other RU exchanges. Post-sanction: increasingly difficult to off-ramp.",
+  revenue:"Dridex caused $100M+ in banking losses (DOJ est). WastedLocker/Hades: estimated $30M+ in ransoms.",
+  negotiation:"No affiliate model — all negotiations conducted in-house. Very high initial demands."
+},
+events:[
+  {yr:2019,type:"le",text:"OFAC sanctions against Maksim Yakubets and Igor Turashev — $5M reward, largest-ever for cybercriminal"},
+  {yr:2021,type:"le",text:"NCA / US authorities expand sanctions. Multiple rebrands (Hades, PhoenixLocker, MacawLocker) assessed as sanction evasion."},
+]},
+
+{id:"black_basta",name:"Black Basta",type:"RaaS Operation",status:"defunct",victims:500,
+ecosystem:"Conti-derived",active:"2022–2024",verified:"2025-Q1",
+summary:"Sophisticated Conti successor. 500+ victims in under two years. Strong personnel overlap with Conti evidenced by shared tooling (ExMatter) with BlackCat. Internal chat logs leaked Feb 2024 (Black Basta Buster) revealing $100M+ operations, internal disputes, and actor details. Effectively dissolved following the leak.",
+access:[
+  {name:"QakBot",desc:"Primary delivery before QakBot's Aug 2023 takedown.",conf:"confirmed",src:"Mandiant / CISA AA24-131A (2024)"},
+  {name:"IcedID",desc:"Used following QakBot disruption.",conf:"confirmed",src:"Rapid7 (2023)"},
+  {name:"Emotet",desc:"Observed post-QakBot disruption.",conf:"credible",src:"Analyst reporting (2023)"},
+  {name:"SystemBC",desc:"Proxy/tunnel for C2 and initial staging.",conf:"confirmed",src:"Mandiant (2023)"},
+],
+stealers:[{name:"ExMatter",desc:"Shared with BlackCat/Carbon Spider — strong indicator of Conti-era personnel overlap.",conf:"confirmed",src:"Symantec (2022)"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Consistently used.",conf:"confirmed",src:"Multiple"},
+  {name:"Brute Ratel C4",desc:"Observed in some operations.",conf:"credible",src:"Analyst reporting"},
+],
+bph:[{name:"Various RU/CIS providers",desc:"Tor-based leak site infrastructure. Rotating hosting.",conf:"credible",src:"Multiple"}],
+tools:[
+  {name:"Rclone / MEGAsync",desc:"Data exfiltration.",conf:"confirmed",src:"Multiple IR reports"},
+  {name:"SoftPerfect Network Scanner",desc:"Network discovery.",conf:"confirmed",src:"CISA AA24-131A (2024)"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin primary",
+  laundering:"Garantex documented in chat leaks. Standard Bitcoin laundering chain.",
+  exchanges:"Garantex specifically mentioned in leaked Conti/Black Basta chats",
+  revenue:"$100M+ confirmed in leaked internal chats. Paid out to members.",
+  negotiation:"Professional negotiation. Internal chat logs revealed detailed negotiation strategies and target research."
+},
+events:[
+  {yr:2023,type:"le",text:"Operation Duck Hunt seizes QakBot (Aug 2023) — disrupts Black Basta's primary delivery vector"},
+  {yr:2024,type:"leak",text:"Black Basta internal chat logs leaked (Black Basta Buster) — exposed $100M+ in operations, personnel details"},
+]},
+
+{id:"srg",name:"Silent Ransom Group / Luna Moth",type:"Threat Actor Group",status:"active",victims:300,
+ecosystem:"Conti-derived (callers model)",active:"2022–present",verified:"2025-Q2",
+summary:"Former Conti affiliates who developed a fully caller-based extortion model — no ransomware, no encryption, no traditional malware. Calls victims posing as IT helpdesk or subscription services (callback phishing), social engineers them into installing legitimate RMM tools, then exfiltrates data and extorts. As of March 2025, proactively calling employees posing as internal IT rather than waiting for callbacks. FBI issued specific advisory May 2025. Targets law firms (40%), financial services, accounting. Ransom demands $1M–$8M.",
+access:[
+  {name:"Callback phishing (BazarCall evolved)",desc:"Phishing emails with fake invoices/subscriptions prompt victim to call fake helpdesk number. Operator social engineers them into installing RMM tool.",conf:"confirmed",src:"Palo Alto Unit 42 (2022), FBI advisory (2025)"},
+  {name:"Direct vishing — IT impersonation",desc:"As of March 2025: proactively calling employees posing as internal IT, claiming urgent maintenance requiring remote session. No email step.",conf:"confirmed",src:"EclecticIQ / Bleeping Computer (2025)"},
+  {name:"Fake IT portal infrastructure",desc:"37+ GoDaddy-registered domains impersonating IT helpdesk portals for law firms and financial firms (as of March 2025).",conf:"confirmed",src:"EclecticIQ (2025)"},
+],
+stealers:[
+  {name:"WinSCP (legitimate, abused)",desc:"Data exfiltration immediately on gaining access. Portable version used if insufficient privileges.",conf:"confirmed",src:"Palo Alto Unit 42 (2022)"},
+  {name:"Rclone (stealthy variant)",desc:"Stealthy Rclone version for silent data exfiltration.",conf:"confirmed",src:"Analyst reporting (2023)"},
+],
+c2:[
+  {name:"AnyDesk",desc:"Primary RMM tool installed on victim machines. Legitimate software — very few artifacts.",conf:"confirmed",src:"Multiple (2022–2025)"},
+  {name:"Zoho Assist",desc:"RMM tool used for victim remote sessions.",conf:"confirmed",src:"Palo Alto Unit 42 (2022)"},
+  {name:"Splashtop",desc:"Additional RMM tool observed.",conf:"confirmed",src:"Multiple"},
+],
+bph:[{name:"GoDaddy-registered domains",desc:"37+ impersonation domains registered via GoDaddy for callback phishing infrastructure.",conf:"confirmed",src:"EclecticIQ (2025)"}],
+tools:[
+  {name:"No malware deployed",desc:"Entire operation conducted via legitimate RMM software. Extremely low artifact footprint — no traditional malware artifacts for EDR to detect.",conf:"confirmed",src:"Multiple (2022–2025)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering. No ransomware = no decryptor negotiation. Pure extortion model.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"$1M–$8M per victim. ~300 known victims. Estimated $50M+ (analyst estimates)",
+  negotiation:"Extortion-only. Threatens to publish stolen data to client lists, regulators, and opposing counsel (particularly effective against law firms). Known to negotiate downward."
+},
+events:[
+  {yr:2025,type:"notable",text:"FBI issues specific warning advisory May 2025 — targeting US law firms with IT impersonation calls"},
+  {yr:2025,type:"notable",text:"Tactical shift March 2025 — moved from passive callback to proactive cold-calling of employees"},
+]},
+
+{id:"scattered_spider",name:"Scattered Spider",type:"Threat Actor Group",status:"le_disrupted",victims:250,
+ecosystem:"BlackCat affiliate",active:"2022–2024 (arrests)",verified:"2025-Q1",
+summary:"English-speaking (primarily US/UK) threat group. Predominantly young members. Sophisticated social engineering and SIM swapping. Major BlackCat/ALPHV affiliate. MGM Resorts ($100M+ losses) and Caesars Entertainment attacks. Multiple members arrested 2024.",
+access:[
+  {name:"Social engineering / vishing",desc:"Calls helpdesks impersonating employees. Resets MFA, gains access to identity providers.",conf:"confirmed",src:"CISA AA23-320A (2023)"},
+  {name:"SIM swapping",desc:"Hijacks victim mobile numbers to bypass SMS MFA.",conf:"confirmed",src:"FBI / CISA (2023)"},
+  {name:"Phishing (Okta / MFA)",desc:"Sophisticated phishing targeting Okta, Microsoft, and MFA bypass.",conf:"confirmed",src:"Multiple (2023)"},
+],
+stealers:[{name:"Credential harvesters (post-access)",desc:"Deploys credential harvesting after initial social engineering access.",conf:"confirmed",src:"CISA AA23-320A (2023)"}],
+c2:[
+  {name:"Ngrok / Cloudflare Tunnel",desc:"Abuses legitimate tunneling services for C2.",conf:"confirmed",src:"CISA AA23-320A (2023)"},
+  {name:"AnyDesk / ConnectWise",desc:"RMM tools for persistent access.",conf:"confirmed",src:"Multiple"},
+],
+bph:[],
+tools:[
+  {name:"STONESTOP / POORTRY",desc:"Signed kernel driver-based EDR killers. Exploits legitimate driver signing.",conf:"confirmed",src:"CrowdStrike / SentinelOne (2023)"},
+  {name:"Telegram",desc:"Operational coordination via Telegram channels.",conf:"confirmed",src:"FBI / CISA (2023)"},
+  {name:"Rclone / MEGA",desc:"Data exfiltration.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Members reportedly spent proceeds on luxury goods, sports cars (DOJ). Relatively unsophisticated laundering compared to RU groups.",
+  exchanges:"Various. DOJ asset seizures included cryptocurrency.",
+  revenue:"MGM alone: $100M+ in losses. Caesars: $15M ransom paid. Total estimated $50M+.",
+  negotiation:"Aggressive. Threatened MGM employees directly. Extremely high-pressure tactics."
+},
+events:[
+  {yr:2023,type:"notable",text:"MGM Resorts attack — $100M+ losses, 10-day operational disruption"},
+  {yr:2023,type:"notable",text:"Caesars Entertainment — $15M ransom paid to prevent data release"},
+  {yr:2024,type:"le",text:"Multiple US/UK arrests of Scattered Spider members throughout 2024"},
+]},
+
+{id:"medusa",name:"Medusa / MedusaBlog",type:"RaaS Operation",status:"active",victims:300,
+ecosystem:"Medusa",active:"2022–present",verified:"2025-Q1",
+summary:"Distinct from MedusaLocker. Operates dedicated leak blog (MedusaBlog). Targets healthcare, education, government. Known for posting victims' data in 'Medusa News' blog. CISA advisory issued Feb 2024. Runs dual-extortion — threatens simultaneous release to third parties.",
+access:[
+  {name:"Phishing",desc:"Primary initial access.",conf:"confirmed",src:"CISA AA24-049A (2024)"},
+  {name:"Valid credential abuse",desc:"Purchased or stolen credentials for VPN/RDP.",conf:"confirmed",src:"CISA AA24-049A (2024)"},
+],
+stealers:[],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"CISA AA24-049A (2024)"}],
+bph:[],
+tools:[
+  {name:"Advanced IP Scanner",desc:"Network discovery.",conf:"confirmed",src:"CISA AA24-049A (2024)"},
+  {name:"Rclone",desc:"Data exfiltration.",conf:"confirmed",src:"CISA AA24-049A (2024)"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+  {name:"Telegram bot for ransom comms",desc:"Uses Telegram bots for some victim communication.",conf:"confirmed",src:"CISA AA24-049A (2024)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"300+ known victims. Estimated $20M+ (analyst estimates)",
+  negotiation:"Unique triple-extortion: pay to delay publication, pay to delete data, pay for proof of deletion. Multiple revenue streams per victim."
+},
+events:[
+  {yr:2024,type:"notable",text:"CISA issues advisory AA24-049A — 300+ victims across critical sectors"},
+  {yr:2025,type:"notable",text:"FBI/CISA/MS-ISAC joint advisory March 2025 — 300+ US critical infrastructure orgs affected. Multiple UK orgs hit in coordinated Q1 2025 campaign."},
+  {yr:2025,type:"notable",text:"Storm-1175 (Microsoft tracking name) demonstrated 24-hour attack cadence — from initial access to full encryption within one day."},
+  {yr:2025,type:"notable",text:"RMM abuse documented — SimpleHelp vulnerabilities (CVE-2024-57726/57727/57728) used to gain MSP customer access for Medusa deployment."},
+  {yr:2026,type:"notable",text:"February 2026 — Broadcom/Symantec identifies North Korean Lazarus group using Medusa ransomware in attacks targeting US healthcare and non-profit organizations."},
+]},
+
+{id:"rhysida",name:"Rhysida",type:"RaaS Operation",status:"active",victims:200,
+ecosystem:"Vice Society-derived",active:"2023–present",verified:"2025-Q1",
+summary:"Assessed Vice Society successor. Targets healthcare, education, government. British Library attack (Oct 2023) — months of disruption. Chilean Army attack. Partial decryptor released by researchers due to NTRU implementation flaw. Auctions stolen data on leak site rather than direct ransom-only.",
+access:[
+  {name:"Phishing / valid accounts",desc:"Primary initial access.",conf:"confirmed",src:"CISA AA23-325A (2023)"},
+  {name:"VPN exploitation",desc:"Exploits VPN vulnerabilities for initial access.",conf:"credible",src:"CISA AA23-325A (2023)"},
+],
+stealers:[],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"CISA AA23-325A (2023)"}],
+bph:[],
+tools:[
+  {name:"PsExec / PowerShell",desc:"Lateral movement and deployment.",conf:"confirmed",src:"CISA advisory (2023)"},
+  {name:"Rclone",desc:"Data exfiltration.",conf:"confirmed",src:"CISA AA23-325A (2023)"},
+  {name:"PortScanner (custom)",desc:"Network discovery tool.",conf:"confirmed",src:"Analyst reporting (2023)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"200+ victims. Estimated $15M+ (analyst estimates)",
+  negotiation:"Auctions victim data on leak site — sets timer, accepts bids from anyone including victim. Unusual model creates competitive pressure."
+},
+events:[
+  {yr:2023,type:"notable",text:"British Library attack Oct 2023 — months of disruption to national institution"},
+  {yr:2024,type:"le",text:"Researchers identify NTRU implementation flaw — partial decryptor released"},
+]},
+
+{id:"hunters",name:"Hunters International",type:"RaaS Operation",status:"active",victims:200,
+ecosystem:"Hive-derived",active:"2023–present",verified:"2025-Q1",
+summary:"Emerged late 2023 with significant code overlap with Hive v6. Likely former Hive affiliates/developers who retained code after LE disruption. Claims to be 'data management company' focused on proving organizations have poor security. Active across healthcare, manufacturing, finance.",
+access:[
+  {name:"Various (affiliate-dependent)",desc:"Multiple initial access vectors reported across affiliate operations.",conf:"credible",src:"Analyst reporting (2024)"},
+],
+stealers:[{name:"SharpRhino",desc:"Custom C# backdoor used for initial access and credential theft.",conf:"confirmed",src:"Quorum Cyber (2024)"}],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"credible",src:"Analyst reporting (2024)"}],
+bph:[],
+tools:[{name:"Hive v6-derived encryptor",desc:"Significant code overlap with disrupted Hive. Rust-based.",conf:"confirmed",src:"Bitdefender code analysis (2023)"}],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"200+ victims. Estimated $15M+ (analyst estimates)",
+  negotiation:"Standard dual-extortion model."
+},
+events:[]},
+
+{id:"royal",name:"Royal Spider / Royal / BlackSuit",type:"Threat Actor Group",status:"le_disrupted",victims:350,
+ecosystem:"Conti-derived",active:"2022–2025 (disrupted)",verified:"2026-Q2",
+summary:"Former Conti affiliates. Royal (2022) → BlackSuit (mid-2023). Distinctive partial encryption technique speeds up deployment and evades threshold-based detection. High ransom demands. Targets healthcare, manufacturing, critical infrastructure.",
+access:[
+  {name:"QakBot / IcedID",desc:"Delivery via malware droppers.",conf:"confirmed",src:"CISA AA23-061A (2023)"},
+  {name:"BatLoader / SEO poisoning",desc:"Malware distributed via SEO-poisoned search results.",conf:"confirmed",src:"Mandiant (2023)"},
+  {name:"Phishing",desc:"Standard spearphishing campaigns.",conf:"confirmed",src:"CISA AA23-061A (2023)"},
+],
+stealers:[{name:"Ursnif",desc:"Observed in some pre-intrusion activity.",conf:"reported",src:"Analyst reporting"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Primary post-exploitation.",conf:"confirmed",src:"CISA advisory (2023)"},
+  {name:"Chisel",desc:"Tunneling for C2 traffic over HTTP/S.",conf:"confirmed",src:"CISA AA23-061A (2023)"},
+],
+bph:[],
+tools:[
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+  {name:"Rclone",desc:"Data exfiltration.",conf:"confirmed",src:"CISA advisory (2023)"},
+  {name:"Partial encryption technique",desc:"Encrypts percentage of file content — speeds deployment and evades threshold-based behavioral detection.",conf:"confirmed",src:"Reverse engineering reports (2022)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"350+ victims. FBI confirmed $275M+ in ransom demands (as of March 2023).",
+  negotiation:"Professional negotiation. Very high initial demands — $250K to $2M+ range documented."
+},
+events:[
+  {yr:2023,type:"shutdown",text:"Royal rebrands to BlackSuit mid-2023"},
+  {yr:2024,type:"le",text:"FBI/CISA advisory updated — $275M+ in demands confirmed"},
+  {yr:2025,type:"le",text:"DOJ coordinated disruption action against BlackSuit August 2025 — servers seized, domains taken, ~$1M in laundered proceeds seized."},
+]},
+
+{id:"conti_op",name:"Conti",type:"RaaS Operation",status:"defunct",victims:1000,
+ecosystem:"Conti",active:"2020–2022",verified:"2025-Q1",
+summary:"Wizard Spider's flagship RaaS. One of the most prolific operations of the pandemic era. Leaked source code and internal chats (2022) after pro-Russia statement triggered Ukrainian researcher leak. Full organizational structure exposed — negotiation teams, HR, finance, development. Source code spawned dozens of successor operations.",
+access:[
+  {name:"TrickBot / BazarLoader",desc:"Primary delivery into Conti operations.",conf:"confirmed",src:"Multiple (2021)"},
+  {name:"BazarCall",desc:"Callback phishing delivery chain.",conf:"confirmed",src:"Multiple (2021)"},
+  {name:"Emotet",desc:"Observed in some Conti delivery chains.",conf:"confirmed",src:"Multiple"},
+],
+stealers:[{name:"TrickBot credential modules",desc:"Credential theft via TrickBot loader.",conf:"confirmed",src:"Multiple"}],
+c2:[
+  {name:"Cobalt Strike",desc:"Primary post-exploitation. Custom profiles documented in leaked data.",conf:"confirmed",src:"Leaked Conti chats (2022)"},
+  {name:"SystemBC",desc:"SOCKS5 proxy for C2 tunneling.",conf:"confirmed",src:"Multiple"},
+],
+bph:[{name:"Garantex (documented in leaks)",desc:"Leaked Conti chats explicitly reference Garantex for cryptocurrency operations.",conf:"confirmed",src:"Conti chat leaks (2022)"}],
+tools:[
+  {name:"ADFind / BloodHound",desc:"AD recon and attack path mapping.",conf:"confirmed",src:"CISA (2021)"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+  {name:"PsExec / WMIC",desc:"Lateral movement.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin. Garantex explicitly documented in leaked chats.",
+  laundering:"Garantex for off-ramping. Mixers (Chipmixer). Multiple wallet layering documented in chain analysis.",
+  exchanges:"Garantex — explicitly named in internal communications",
+  revenue:"Estimated $180M in 2021 alone (Chainalysis). Full lifetime estimate $2B+ combined with TrickBot operations.",
+  negotiation:"Dedicated negotiation team. Internal playbooks for victim research and demand calibration revealed in leaks."
+},
+events:[
+  {yr:2021,type:"le",text:"US indictments of Conti/TrickBot leadership. DOJ unseals charges."},
+  {yr:2022,type:"leak",text:"Conti chats and source code leaked by Ukrainian researcher after pro-Russia public statement"},
+  {yr:2022,type:"shutdown",text:"Conti brand retired. Members migrate to Black Basta, Royal, Karakurt, Silent Ransom."},
+]},
+
+{id:"gandcrab",name:"GandCrab / Pinchy Spider",type:"RaaS Operation",status:"defunct",victims:500,
+ecosystem:"GandCrab",active:"2018–2019",verified:"2025-Q1",
+summary:"Pioneered the modern affiliate RaaS model. First ransomware to demand payment in Dash then Monero. Authors voluntarily shut down June 2019 claiming $2B in 'profits.' Code and operational knowledge directly transferred to REvil/Sodinokibi. Partnership with SPAM botnet operators for distribution.",
+access:[
+  {name:"RIG / GrandSoft exploit kits",desc:"Delivered via drive-by exploit kits targeting unpatched browsers.",conf:"confirmed",src:"Multiple (2018)"},
+  {name:"Malspam / SmokeLoader",desc:"Email-based delivery via SmokeLoader and malspam campaigns.",conf:"confirmed",src:"Multiple (2018)"},
+  {name:"RDP brute force",desc:"Manual brute force of exposed RDP as secondary vector.",conf:"confirmed",src:"Multiple"},
+],
+stealers:[],
+c2:[{name:"Custom C2 (DGA-based)",desc:"Domain generation algorithm-based C2 infrastructure.",conf:"confirmed",src:"Multiple reverse engineering (2018)"}],
+bph:[],
+tools:[{name:"Custom encryptor",desc:"Iterated rapidly through versions v1–v5.2. Decryptors released by Bitdefender for several versions.",conf:"confirmed",src:"Multiple"}],
+financial:{
+  crypto:"Dash initially; pivoted to Monero for privacy. One of first groups to use Monero.",
+  laundering:"Early use of Monero for privacy. Layering through multiple crypto assets.",
+  exchanges:"Various. Authors claimed $2B — likely exaggerated.",
+  revenue:"Authors claimed $2B in 'profits' at shutdown. Chainalysis estimated $2B total from victims.",
+  negotiation:"Automated platform. Pricing by victim country — higher demands from wealthier nations. No personal negotiation in early versions."
+},
+events:[
+  {yr:2019,type:"shutdown",text:"Authors voluntarily shut down June 2019 claiming $2B. Directly transitioned to REvil."},
+  {yr:2022,type:"le",text:"Multiple GandCrab affiliates arrested in coordinated Europol/Interpol operations"},
+]},
+
+{id:"maze_eg",name:"Maze / Egregor / Twisted Spider",type:"Threat Actor Group",status:"defunct",victims:400,
+ecosystem:"Maze",active:"2019–2021",verified:"2025-Q1",
+summary:"Pioneered double-extortion ransomware — first group to systematically threaten public data leaks. Maze shut down Oct 2020; Egregor was immediate successor. Egregor disrupted by Belgian/Ukrainian authorities Feb 2021. Introduced the modern ransomware playbook now used by virtually all major groups.",
+access:[
+  {name:"QakBot",desc:"Primary delivery for Maze campaigns.",conf:"confirmed",src:"Mandiant / Sophos (2020)"},
+  {name:"IcedID",desc:"Used in Egregor delivery chains.",conf:"confirmed",src:"Mandiant (2020)"},
+  {name:"Cobalt Strike (as loader)",desc:"Used for staging.",conf:"confirmed",src:"Multiple"},
+],
+stealers:[],
+c2:[{name:"Cobalt Strike",desc:"Primary post-exploitation.",conf:"confirmed",src:"Multiple"}],
+bph:[],
+tools:[
+  {name:"Mimikatz / Procdump",desc:"Credential harvesting.",conf:"confirmed",src:"Multiple"},
+  {name:"ADFind",desc:"AD enumeration.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering. Egregor members arrested with cash proceeds in Ukraine.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"Maze: estimated $75M+. Egregor: estimated $80M+ in ~3 months of operation.",
+  negotiation:"Introduced the public shaming / data leak model. Maze published data on 'Maze News' — the template for all subsequent leak sites."
+},
+events:[
+  {yr:2020,type:"shutdown",text:"Maze shut down Oct 2020 — first group to normalize double-extortion model"},
+  {yr:2021,type:"le",text:"Egregor disrupted — Belgian/Ukrainian police arrest members Feb 2021"},
+]},
+
+{id:"doppelpaymer",name:"DoppelPaymer / Doppel Spider",type:"Threat Actor Group",status:"defunct",victims:200,
+ecosystem:"BitPaymer-derived",active:"2019–2022",verified:"2025-Q1",
+summary:"Split from Indrik Spider ~2019, retaining BitPaymer code base. Targeted public sector, hospitals, critical infrastructure. Düsseldorf University Hospital attack (2020) linked to first ransomware-adjacent patient death. Infrastructure seized Mar 2023.",
+access:[
+  {name:"Dridex",desc:"Shared loader from Indrik Spider infrastructure.",conf:"confirmed",src:"Europol / FBI (2023)"},
+  {name:"Emotet",desc:"Delivered DoppelPaymer in some campaigns.",conf:"confirmed",src:"Analyst reporting"},
+],
+stealers:[{name:"Dridex credential modules",desc:"Built-in credential theft via Dridex.",conf:"confirmed",src:"Multiple"}],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"Multiple"}],
+bph:[],
+tools:[
+  {name:"PsExec / WMI",desc:"Lateral movement.",conf:"confirmed",src:"Multiple"},
+  {name:"Mimikatz",desc:"Credential theft.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering chain.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"Estimated $40M+ in ransom payments.",
+  negotiation:"Known for very high demands against public sector and hospitals — understood victims face political pressure to pay."
+},
+events:[
+  {yr:2020,type:"notable",text:"Düsseldorf University Hospital attack — patient redirect during attack linked to first ransomware-related death"},
+  {yr:2023,type:"le",text:"Infrastructure seized — FBI/Europol/German BKA operation Mar 2023. Two suspects arrested."},
+]},
+
+{id:"netwalker",name:"NetWalker / Mailto / Circus Spider",type:"Threat Actor Group",status:"defunct",victims:300,
+ecosystem:"NetWalker",active:"2019–2021",verified:"2025-Q1",
+summary:"Circus Spider operated NetWalker as an affiliate RaaS targeting healthcare and universities during COVID-19 pandemic. DOJ seized infrastructure and $454K in Bitcoin Jan 2021. Canadian affiliate arrested Feb 2021.",
+access:[
+  {name:"Phishing (COVID-19 lures)",desc:"Exploited pandemic — fake COVID information emails delivering NetWalker.",conf:"confirmed",src:"FBI flash alert (2020)"},
+  {name:"RDP / public-facing vulnerabilities",desc:"Exploited exposed systems.",conf:"confirmed",src:"FBI flash alert (2020)"},
+],
+stealers:[],
+c2:[{name:"Tor-based C2",desc:"C2 infrastructure operated via Tor.",conf:"confirmed",src:"DOJ (2021)"}],
+bph:[],
+tools:[{name:"PowerShell deployment",desc:"Fileless execution via PowerShell.",conf:"confirmed",src:"Multiple (2020)"}],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"DOJ seized $454K in Bitcoin from NetWalker operations.",
+  exchanges:"Various",
+  revenue:"$25M+ in approximately 6 months of peak operation.",
+  negotiation:"Automated portal. Countdown timer with auto-publish threat."
+},
+events:[
+  {yr:2021,type:"le",text:"DOJ seizes NetWalker infrastructure, $454K Bitcoin. Canadian affiliate Sebastien Vachon-Desjardins arrested."},
+]},
+
+{id:"babuk",name:"Babuk",type:"RaaS Operation",status:"defunct",victims:50,
+ecosystem:"Babuk",active:"2021",verified:"2025-Q1",
+summary:"Short-lived but code-historically significant. Targeted DC Metropolitan Police Department. Author publicly released full source code in internal dispute — spawned Abyss, Agenda, DagonLocker and others. Code impact has far outlasted the operation.",
+access:[{name:"Phishing / RDP",desc:"Simple initial access techniques.",conf:"confirmed",src:"FBI flash alert (2021)"}],
+stealers:[],
+c2:[{name:"Custom C2",desc:"Simple custom infrastructure.",conf:"confirmed",src:"Analyst reporting"}],
+bph:[],
+tools:[{name:"Babuk encryptor (source leaked)",desc:"Code reused in Abyss (Linux), Agenda, DagonLocker, and others.",conf:"confirmed",src:"Multiple (2021)"}],
+financial:{
+  crypto:"Bitcoin and Monero",
+  laundering:"Limited — operation was brief.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"Very limited. Group prioritized notoriety over revenue.",
+  negotiation:"Simple — direct contact via Tor site."
+},
+events:[
+  {yr:2021,type:"notable",text:"DC Metropolitan Police Department attacked — sensitive law enforcement data published"},
+  {yr:2021,type:"leak",text:"Author leaked source code publicly — sparked multiple successor operations including Abyss, Agenda, DagonLocker"},
+]},
+
+{id:"ragnarlocker",name:"RagnarLocker / Viking Spider",type:"Threat Actor Group",status:"le_disrupted",victims:150,
+ecosystem:"RagnarLocker",active:"2019–2023",verified:"2025-Q1",
+summary:"Manual, big-game hunting. Known for running ransomware inside an encrypted Windows XP virtual machine to evade endpoint detection — signature evasion technique. Targeted energy, manufacturing, critical infrastructure. Key developer arrested Oct 2023.",
+access:[
+  {name:"RDP exploitation",desc:"Targeted exposed RDP as primary entry.",conf:"confirmed",src:"FBI flash alert (2022)"},
+  {name:"MSP abuse",desc:"Exploited managed service provider access for downstream victims.",conf:"confirmed",src:"Multiple"},
+],
+stealers:[],
+c2:[{name:"Custom / rotating",desc:"Regularly rotated infrastructure.",conf:"confirmed",src:"Analyst reporting"}],
+bph:[],
+tools:[{name:"VM-based encryptor",desc:"Ran encryptor inside Windows XP VM to evade endpoint detection — signature technique.",conf:"confirmed",src:"Sophos / Malwarebytes (2020)"}],
+financial:{
+  crypto:"Bitcoin and Monero",
+  laundering:"Standard laundering. Long-running operation with sophisticated laundering.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"Estimated $20M+ over lifetime.",
+  negotiation:"Big-game only. Demands calibrated to victim size — millions per incident."
+},
+events:[
+  {yr:2023,type:"le",text:"Europol/FBI seize infrastructure and arrest key developer Oct 2023 (Operation GoldDust)"},
+]},
+
+{id:"vice_society",name:"Vice Society",type:"Threat Actor Group",status:"defunct",victims:150,
+ecosystem:"Vice Society",active:"2021–2023",verified:"2025-Q1",
+summary:"Prolific attacker of K-12 education and healthcare. Deployed multiple RaaS payloads (HelloKitty, Zeppelin, custom) — not a developer, a deployer. Russia-assessed. Rhysida emerged as successor 2023. LA Unified School District attack exposed PII of 500K+ students.",
+access:[
+  {name:"Phishing / RDP / public-facing exploits",desc:"Multiple initial access methods.",conf:"confirmed",src:"CISA AA22-249A (2022)"},
+],
+stealers:[],
+c2:[
+  {name:"SystemBC",desc:"Proxy/tunnel.",conf:"confirmed",src:"Analyst reporting"},
+  {name:"Cobalt Strike",desc:"Post-exploitation.",conf:"credible",src:"Multiple"},
+],
+bph:[],
+tools:[
+  {name:"Zeppelin / HelloKitty encryptors",desc:"Deployed multiple external RaaS payloads rather than proprietary encryptor.",conf:"confirmed",src:"CISA AA22-249A (2022)"},
+  {name:"PowerShell / WMI",desc:"Lateral movement.",conf:"confirmed",src:"Multiple"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"Estimated $15M+ (analyst estimates)",
+  negotiation:"Known for targeting institutions with high public pressure (schools, hospitals) — calculated lower resistance to payment."
+},
+events:[
+  {yr:2022,type:"notable",text:"LA Unified School District attack — 500K+ student PII exposed"},
+  {yr:2023,type:"shutdown",text:"Rhysida emerges — assessed Vice Society successor by multiple vendors"},
+]},
+
+{id:"cuba",name:"Cuba",type:"RaaS Operation",status:"active",victims:150,
+ecosystem:"Cuba",active:"2019–present",verified:"2025-Q1",
+summary:"Unrelated to Cuba the country despite the branding. Russia-assessed. Unique custom tooling (BUGHATCH, BURNTCIGAR) not shared with other groups. Targets critical infrastructure and financial sector globally. Montenegro government infrastructure attack notable.",
+access:[
+  {name:"BUGHATCH downloader",desc:"Custom downloader developed exclusively by Cuba group. Unique attribution indicator.",conf:"confirmed",src:"Mandiant / CISA AA22-335A (2022)"},
+  {name:"Hancitor",desc:"Delivered Cuba via malspam campaigns.",conf:"confirmed",src:"FBI flash alert (2021)"},
+],
+stealers:[{name:"BURNTCIGAR",desc:"Custom tool for terminating AV/EDR processes and credential theft.",conf:"confirmed",src:"Mandiant (2022)"}],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"CISA AA22-335A (2022)"}],
+bph:[],
+tools:[
+  {name:"Impacket",desc:"Network protocol exploitation and lateral movement.",conf:"confirmed",src:"CISA (2022)"},
+  {name:"NetScan",desc:"Network discovery.",conf:"confirmed",src:"CISA AA22-335A (2022)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"Estimated $60M+ in ransom payments (CISA 2022).",
+  negotiation:"Standard dual-extortion."
+},
+events:[]},
+
+{id:"avaddon",name:"Avaddon",type:"RaaS Operation",status:"defunct",victims:300,
+ecosystem:"Avaddon",active:"2020–2021",verified:"2025-Q1",
+summary:"Voluntary sudden shutdown in June 2021. Sent 2,934 decryption keys to BleepingComputer without explanation — possibly related to US government pressure following Colonial Pipeline, JBS attacks. Operated as affiliate RaaS. DDoS used as additional pressure tactic.",
+access:[
+  {name:"Malspam / exploit kits",desc:"Delivered via phishing emails and exploit kits.",conf:"confirmed",src:"Multiple (2020)"},
+],
+stealers:[],
+c2:[{name:"Tor-based C2",desc:"Tor-based infrastructure.",conf:"confirmed",src:"Analyst reporting"}],
+bph:[],
+tools:[{name:"DDoS as pressure tactic",desc:"Threatened and executed DDoS attacks against victims refusing to pay — triple extortion.",conf:"confirmed",src:"Multiple (2021)"}],
+financial:{
+  crypto:"Bitcoin and Monero",
+  laundering:"Standard laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"Estimated $30M+ over 14 months of operation.",
+  negotiation:"Triple threat: encryption + data leak + DDoS."
+},
+events:[
+  {yr:2021,type:"shutdown",text:"Sudden voluntary shutdown June 2021 — sent 2,934 decryption keys unprompted. Timing coincided with US government pressure following Colonial Pipeline."},
+]},
+
+{id:"8base",name:"8Base",type:"RaaS Operation",status:"le_disrupted",victims:350,
+ecosystem:"Phobos-derived",active:"2022–2024",verified:"2025-Q1",
+summary:"High-volume Phobos variant. Presented as 'penetration testers' in ransom notes. Primarily SMBs. Thai police arrested four European suspects Feb 2024 in joint international operation. Phobos administrator separately charged by DOJ Nov 2024.",
+access:[
+  {name:"Phishing / exposed RDP",desc:"Primary initial access.",conf:"confirmed",src:"Multiple"},
+  {name:"SmokeLoader",desc:"Observed in some 8Base delivery chains.",conf:"credible",src:"Analyst reporting (2023)"},
+],
+stealers:[{name:"SystemBC",desc:"Tunneling and credential access.",conf:"credible",src:"Analyst reporting"}],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"credible",src:"Multiple"}],
+bph:[],
+tools:[{name:"Phobos encryptor",desc:"Core encryptor derived from Phobos/Dharma family.",conf:"confirmed",src:"Malwarebytes / Cisco Talos (2023)"}],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"350+ victims. Estimated $25M+ (analyst estimates)",
+  negotiation:"Standard. Phobos RaaS model with affiliate revenue share."
+},
+events:[
+  {yr:2024,type:"le",text:"Thai police arrest four European suspects Feb 2024 — joint international operation"},
+  {yr:2024,type:"le",text:"DOJ charges Phobos administrator Evgenii Ptitsyn Nov 2024 — extradited from South Korea"},
+]},
+
+{id:"mallox",name:"Mallox / TargetCompany / Fargo",type:"RaaS Operation",status:"active",victims:150,
+ecosystem:"Mallox",active:"2021–present",verified:"2025-Q1",
+summary:"Targets MS-SQL and ODBC-exposed databases for initial access — signature technique distinguishing it from most groups. Brute forces database servers. Multiple rebrands (TargetCompany, Fargo, XOLLAM). Launched affiliate program 2023.",
+access:[
+  {name:"MS-SQL brute force",desc:"Primary and signature initial access. Targets exposed database servers.",conf:"confirmed",src:"CISA / Palo Alto Unit 42 (2023)"},
+  {name:"PHPUnit exploit (CVE-2017-9841)",desc:"Web application exploitation.",conf:"confirmed",src:"Trend Micro (2022)"},
+],
+stealers:[],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation in enterprise intrusions.",conf:"confirmed",src:"Multiple"}],
+bph:[],
+tools:[
+  {name:"PureCrypter",desc:"Crypter for payload obfuscation.",conf:"confirmed",src:"Palo Alto Unit 42 (2023)"},
+  {name:"Remcos RAT",desc:"Observed in Mallox intrusions.",conf:"credible",src:"Trend Micro (2022)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"No specific exchanges attributed",
+  revenue:"150+ victims. Estimated $10M+ (analyst estimates)",
+  negotiation:"Standard dual-extortion. Launched formal affiliate program 2023 with revenue share."
+},
+events:[]},
+
+{id:"karakurt",name:"Karakurt / Gold Tomahawk",type:"RaaS Operation",status:"active",victims:150,
+ecosystem:"Conti-derived",active:"2021–present",verified:"2025-Q1",
+summary:"Conti's hack-and-leak extortion arm — no encryption, purely data theft and extortion. Claims to sell victim data to third parties if ransom not paid. Targeted healthcare and professional services. Shares infrastructure and personnel with Conti/Wizard Spider ecosystem.",
+access:[
+  {name:"Purchased initial access",desc:"Buys access from initial access brokers (IABs) — no proprietary delivery mechanism.",conf:"confirmed",src:"CISA AA22-152A (2022)"},
+  {name:"Valid credentials / VPN",desc:"Uses purchased or stolen VPN credentials.",conf:"confirmed",src:"CISA AA22-152A (2022)"},
+],
+stealers:[{name:"Rclone / MEGAsync",desc:"Primary data exfiltration tools.",conf:"confirmed",src:"CISA AA22-152A (2022)"}],
+c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"CISA AA22-152A (2022)"}],
+bph:[],
+tools:[
+  {name:"AnyDesk / Mimikatz",desc:"Persistent access and credential theft.",conf:"confirmed",src:"CISA (2022)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Shares laundering infrastructure with Conti/Wizard Spider ecosystem.",
+  exchanges:"Garantex (via Conti shared infrastructure)",
+  revenue:"Estimated $10M+ in ransom payments.",
+  negotiation:"Extortion only — threatens to sell data to competitors, regulators, and media. Particularly aggressive with healthcare targets."
+},
+events:[
+  {yr:2022,type:"notable",text:"CISA advisory AA22-152A — confirmed links to Conti ecosystem"},
+]},
+
+// ── STUBS ─────────────────────────────────────────────────────────────────────
+
+{id:"qilin",name:"Qilin / Agenda",type:"RaaS Operation",status:"active",victims:1500,
+ecosystem:"Qilin",active:"2022–present",verified:"2026-Q2",
+summary:"Currently the #1 most active ransomware group globally by victim count. 1,044 victims in 2025 (578% increase). 128 victims in April 2026 alone — approximately 15% of total monthly global volume. Part of October 2025 LockBit/Qilin/DragonForce operational alliance. Absorbed significant affiliate pool from RansomHub shutdown (April 2025). Claims 31.2 petabytes stolen from victims. Go/Rust-based, targets VMware ESXi and Windows. Also known as Agenda.",
+access:[
+  {name:"Phishing / valid credentials",desc:"Primary initial access methods across affiliate operations.",conf:"confirmed",src:"NHS/NCSC (2024)"},
+  {name:"VPN exploitation",desc:"Exploits VPN vulnerabilities for initial access.",conf:"credible",src:"Analyst reporting (2025)"},
+],
+stealers:[{name:"Chrome credential theft",desc:"Harvests credentials stored in Chrome browser on compromised systems.",conf:"confirmed",src:"Sophos (2024)"}],
+c2:[{name:"Cobalt Strike / custom",desc:"Post-exploitation framework use documented in affiliate operations.",conf:"credible",src:"Analyst reporting"}],
+bph:[{name:"Part of LockBit/Qilin/DragonForce alliance infrastructure",desc:"Shared infrastructure pool as of October 2025 alliance announcement.",conf:"confirmed",src:"Check Point Research (2025)"}],
+tools:[
+  {name:"Go/Rust ESXi encryptor",desc:"Targets VMware hypervisors for maximum organizational impact. Cross-platform.",conf:"confirmed",src:"Group-IB (2023)"},
+  {name:"Safe-mode reboot technique",desc:"Reboots victim systems into safe mode to disable AV before encryption.",conf:"confirmed",src:"Trend Micro (2024)"},
+],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering. Scale of operations suggests sophisticated laundering infrastructure.",
+  exchanges:"No specific exchanges publicly attributed",
+  revenue:"1,500+ victims. Revenue estimated in hundreds of millions across lifetime.",
+  negotiation:"Standard dual-extortion. High volume affiliate model. Recruited aggressively from RansomHub collapse."
+},
+events:[
+  {yr:2024,type:"notable",text:"Synnovis (NHS pathology) attack — blood transfusion disruption across London hospitals. 170+ cases patient harm, one patient death attributed to attack aftermath."},
+  {yr:2025,type:"notable",text:"1,044 victims in 2025 — 578% increase. Became #1 globally by victim count after absorbing RansomHub affiliates."},
+  {yr:2025,type:"notable",text:"Covenant Health breach — 478,188 patients affected across multiple US facilities (Dec 2025)."},
+  {yr:2025,type:"notable",text:"October 2025 — joined formal operational alliance with LockBit and DragonForce. Shared infrastructure and coordinated targeting."},
+  {yr:2026,type:"notable",text:"#1 globally in Q1 2026. 128 victims in April 2026 alone (~15% of total global monthly volume). 168 confirmed healthcare victims by June 2026."},
+]},
+
+{id:"darkangels",name:"Dark Angels",type:"RaaS Operation",status:"active",victims:50,stub:true,
+ecosystem:"Dark Angels",active:"2022–present",verified:"2025-Q1",
+summary:"Low-volume, high-ransom model — targets single large enterprises. $75M ransom from Fortune 50 company (2024) is largest single ransom publicly reported per Zscaler.",
+access:[{name:"Various enterprise vectors",desc:"Big-game targeting via multiple initial access methods.",conf:"credible",src:"Analyst reporting"}],
+stealers:[],c2:[],bph:[],
+tools:[],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"$75M single ransom confirmed (Zscaler 2024)",negotiation:"Targets single large organizations — one massive ransom vs. high volume model."},
+events:[{yr:2024,type:"notable",text:"$75M ransom from Fortune 50 company — largest single ransom publicly reported (Zscaler ThreatLabz 2024)"}]},
+
+{id:"inc",name:"INC Ransom",type:"RaaS Operation",status:"active",victims:100,stub:true,
+ecosystem:"INC",active:"2023–present",verified:"2025-Q1",
+summary:"Targets healthcare and public sector heavily. NHS Scotland attack (March 2024) leaked 3TB patient data. Source code reportedly sold on cybercrime forums 2024.",
+access:[{name:"Phishing / VPN exploits",desc:"Primary initial access.",conf:"credible",src:"Analyst reporting"}],
+stealers:[],c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"credible",src:"Analyst reporting"}],bph:[],tools:[],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"100+ victims est.",negotiation:"Standard dual-extortion."},
+events:[{yr:2024,type:"notable",text:"NHS Scotland attack — 3TB patient data leaked"}]},
+
+{id:"cactus",name:"Cactus",type:"RaaS Operation",status:"active",victims:100,stub:true,
+ecosystem:"Cactus",active:"2023–present",verified:"2025-Q1",
+summary:"Exploits Qlik Sense BI vulnerabilities for initial access. Self-encrypting encryptor to evade AV — unusual technique. Targets manufacturing, retail.",
+access:[{name:"Qlik Sense exploits (CVE-2023-41265/266)",desc:"BI platform exploitation.",conf:"confirmed",src:"Arctic Wolf / Trend Micro (2023)"}],
+stealers:[],c2:[{name:"SSH tunnels",desc:"C2 via SSH tunneling.",conf:"confirmed",src:"Trend Micro (2023)"}],bph:[],
+tools:[{name:"Self-encrypting encryptor",desc:"Encrypts own binary to avoid AV signature detection.",conf:"confirmed",src:"Trend Micro (2023)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"100+ victims est.",negotiation:"Standard dual-extortion."},
+events:[]},
+
+{id:"dragonforce",name:"DragonForce",type:"RaaS Operation",status:"active",victims:300,
+ecosystem:"DragonForce",active:"2023–present",verified:"2026-Q2",
+summary:"Malaysian-origin, evolved from hacktivism into major RaaS operation. Evolved to 'cartel' model in 2025. Absorbed former RansomHub affiliates after April 2025 shutdown — significantly boosting victim count. Part of October 2025 LockBit/Qilin/DragonForce operational alliance. Launched 'data analysis service' August 2025 to help affiliates create tailored extortion materials. One of three leading groups in May 2026 alongside Qilin. Abuses RMM tools (SimpleHelp CVE-2024-57726/57727/57728) for access.",
+access:[
+  {name:"Social engineering / identity provider abuse",desc:"2025 UK retail attacks via identity management platform compromise.",conf:"confirmed",src:"NCSC UK (2025)"},
+  {name:"SimpleHelp RMM vulnerabilities (CVE-2024-57726/57727/57728)",desc:"Weaponized three SimpleHelp RMM platform vulnerabilities to gain downstream MSP customer access.",conf:"confirmed",src:"Gurucul / GBHackers (2025)"},
+],
+stealers:[],
+c2:[{name:"RMM tool abuse (SimpleHelp, AnyDesk)",desc:"Abuses legitimate RMM tools for C2 and persistence.",conf:"confirmed",src:"Multiple (2025)"}],
+bph:[{name:"Part of LockBit/Qilin/DragonForce alliance infrastructure",desc:"Shared infrastructure pool as of October 2025.",conf:"confirmed",src:"Check Point Research (2025)"}],
+tools:[{name:"LockBit-similar payload",desc:"Payload similarities with LockBit noted by researchers.",conf:"reported",src:"Analyst reporting"}],
+financial:{
+  crypto:"Bitcoin",
+  laundering:"Standard Bitcoin laundering.",
+  exchanges:"None specifically attributed",
+  revenue:"300+ victims. Revenue growing rapidly following RansomHub affiliate absorption.",
+  negotiation:"Cartel/franchise model — affiliates operate semi-independently under DragonForce brand. Data analysis service offered to affiliates for tailored extortion."
+},
+events:[
+  {yr:2025,type:"notable",text:"UK retail attacks June 2025 — M&S, Harrods, Co-op attacked via identity provider compromise. Attributed by NCSC UK."},
+  {yr:2025,type:"notable",text:"August 2025 — launched 'data analysis service' for affiliates targeting orgs with $15M+ annual revenue. Tailored extortion materials."},
+  {yr:2025,type:"notable",text:"October 2025 — joined formal operational alliance with LockBit and Qilin. Shared infrastructure, coordinated targeting."},
+  {yr:2025,type:"notable",text:"Absorbed significant RansomHub affiliate pool after April 2025 RansomHub shutdown."},
+  {yr:2026,type:"notable",text:"One of three leading attack groups in May 2026 alongside Qilin. 'The Gentlemen' — a DragonForce-linked subgroup — expanding influence in Q1 2026."},
+]},
+
+{id:"fog",name:"Fog",type:"RaaS Operation",status:"active",victims:80,stub:true,
+ecosystem:"Fog",active:"2024–present",verified:"2025-Q1",
+summary:"Targets US education and technology sectors. Compromised VPN credentials (SonicWall) for initial access. Relatively fast encryption deployment once inside.",
+access:[{name:"Compromised VPN credentials (SonicWall)",desc:"Primary initial access via stolen VPN credentials.",conf:"confirmed",src:"Arctic Wolf (2024)"}],
+stealers:[],c2:[],bph:[],tools:[],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"80+ victims est.",negotiation:"Standard dual-extortion."},
+events:[]},
+
+{id:"interlock",name:"InterLock",type:"RaaS Operation",status:"active",victims:80,stub:true,
+ecosystem:"InterLock",active:"2024–present",verified:"2025-Q1",
+summary:"Targets FreeBSD servers alongside Windows — unusual capability. ClickFix / fake browser update delivery. Targets healthcare and technology. Uses custom RAT for initial access.",
+access:[{name:"ClickFix / fake browser updates",desc:"Fake browser update pages delivering custom RAT.",conf:"confirmed",src:"Sekoia (2024)"}],
+stealers:[],c2:[{name:"Custom RAT",desc:"Delivered via fake browser updates.",conf:"confirmed",src:"Sekoia (2024)"}],bph:[],
+tools:[{name:"FreeBSD encryptor",desc:"FreeBSD targeting — uncommon capability.",conf:"confirmed",src:"Sekoia (2024)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"80+ victims est.",negotiation:"Standard dual-extortion."},
+events:[]},
+
+{id:"blackbyte",name:"BlackByte / Alpha Spider",type:"RaaS Operation",status:"active",victims:80,stub:true,
+ecosystem:"BlackByte",active:"2021–present",verified:"2025-Q1",
+summary:"Alpha Spider operated. Uses custom-developed encryptor. BlackByteNT emerged as updated variant 2023. Targets critical infrastructure including NFL San Francisco 49ers (Feb 2022).",
+access:[{name:"Microsoft Exchange / ProxyShell",desc:"Exploits Exchange vulnerabilities for initial access.",conf:"confirmed",src:"FBI advisory (2022)"}],
+stealers:[],c2:[{name:"Cobalt Strike",desc:"Post-exploitation.",conf:"confirmed",src:"FBI advisory (2022)"}],bph:[],
+tools:[{name:"Custom C# encryptor",desc:"Proprietary encryptor developed in-house.",conf:"confirmed",src:"Symantec (2021)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"80+ victims est.",negotiation:"Standard dual-extortion."},
+events:[{yr:2022,type:"notable",text:"San Francisco 49ers attack Feb 2022 — Super Bowl weekend"}]},
+
+{id:"cicada3301",name:"Cicada3301",type:"RaaS Operation",status:"active",victims:80,stub:true,
+ecosystem:"BlackCat-derived",active:"2024–present",verified:"2025-Q1",
+summary:"Rust-based, targets VMware ESXi. Significant code overlaps with BlackCat/ALPHV. Recruited BlackCat affiliates after ALPHV disruption. Repellent Scorpius attributed as operating group.",
+access:[{name:"Valid credentials / VPN",desc:"Initial access via compromised credentials.",conf:"credible",src:"Analyst reporting (2024)"}],
+stealers:[],c2:[],bph:[],
+tools:[{name:"Rust-based encryptor",desc:"ESXi targeting. Code overlaps with ALPHV confirmed by multiple analysts.",conf:"confirmed",src:"Palo Alto Unit 42 (2024)"}],
+financial:{crypto:"Bitcoin and Monero",laundering:"Standard.",exchanges:"None attributed",revenue:"80+ victims est.",negotiation:"Standard dual-extortion."},
+events:[]},
+
+{id:"braincipher",name:"Brain Cipher",type:"RaaS Operation",status:"active",victims:50,stub:true,
+ecosystem:"Brain Cipher",active:"2024–present",verified:"2025-Q1",
+summary:"Indonesia National Data Center attack (June 2024) disrupted 282 government agencies including immigration. Demanded $8M. Later released decryptor for free following public outcry — unusual for ransomware operators.",
+access:[{name:"Various",desc:"Initial access methods not fully detailed in public reporting.",conf:"reported",src:"Analyst reporting (2024)"}],
+stealers:[],c2:[],bph:[],tools:[],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"Limited — released decryptor for free after Indonesia attack",negotiation:"Unusual — released free decryptor following public pressure."},
+events:[{yr:2024,type:"notable",text:"Indonesia National Data Center attack — 282 government agencies disrupted. Decryptor later released for free."}]},
+
+{id:"blacklock",name:"BlackLock / ElDorado",type:"RaaS Operation",status:"le_disrupted",victims:80,stub:true,
+ecosystem:"ElDorado",active:"2024–2025",verified:"2025-Q1",
+summary:"Emerged 2024, aggressive growth. ElDorado assessed as related/predecessor. BlackLock leak site shut down by hacktivists (Resecurity) in March 2025 — hacktivists breached BlackLock's own infrastructure and leaked their data.",
+access:[{name:"Various affiliate vectors",desc:"Broad affiliate model.",conf:"credible",src:"Analyst reporting (2024)"}],
+stealers:[],c2:[],bph:[],
+tools:[{name:"Go-based encryptor",desc:"Cross-platform targeting Windows and ESXi.",conf:"confirmed",src:"Analyst reporting (2024)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"80+ victims est.",negotiation:"Standard dual-extortion."},
+events:[{yr:2025,type:"hack",text:"BlackLock leak site breached by hacktivists (Resecurity) — operators' own data published"}]},
+
+{id:"embargo",name:"Embargo",type:"RaaS Operation",status:"active",victims:50,stub:true,
+ecosystem:"Embargo",active:"2024–present",verified:"2025-Q1",
+summary:"Rust-based RaaS with a custom safe-mode reboot tool (MS4Killer) to disable security software. Targets healthcare and technology. Recruited affiliates with unusually high 80% commission rate.",
+access:[{name:"Phishing / valid credentials",desc:"Primary initial access.",conf:"credible",src:"ESET (2024)"}],
+stealers:[],c2:[],bph:[],
+tools:[{name:"MS4Killer",desc:"Custom tool to disable EDR/AV via vulnerable driver abuse. Boots system into safe mode.",conf:"confirmed",src:"ESET (2024)"}],
+financial:{crypto:"Bitcoin and Monero",laundering:"Standard.",exchanges:"None attributed",revenue:"50+ victims est.",negotiation:"80% affiliate commission — unusually high to attract talent."},
+events:[]},
+
+{id:"safepay",name:"SafePay",type:"RaaS Operation",status:"active",victims:50,stub:true,
+ecosystem:"SafePay",active:"2024–present",verified:"2025-Q1",
+summary:"LockBit-based encryptor (uses LockBit 3.0 code). Targets various sectors. Operates somewhat quietly relative to victim count.",
+access:[{name:"Valid credentials / RDP",desc:"Primary initial access.",conf:"credible",src:"Huntress (2024)"}],
+stealers:[],c2:[{name:"WinSCP",desc:"Used for data exfiltration.",conf:"confirmed",src:"Huntress (2024)"}],bph:[],
+tools:[{name:"LockBit 3.0-based encryptor",desc:"Built on leaked LockBit 3.0 builder.",conf:"confirmed",src:"Huntress (2024)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"50+ victims est.",negotiation:"Standard dual-extortion."},
+events:[]},
+
+{id:"vanhelsing",name:"VanHelsing",type:"RaaS Operation",status:"active",victims:30,stub:true,
+ecosystem:"VanHelsing",active:"2025–present",verified:"2025-Q2",
+summary:"Emerged early 2025. RaaS with cross-platform capabilities (Windows, Linux, BSD, ARM, ESXi). $5,000 affiliate deposit required. Source code leaked by disgruntled affiliate June 2025.",
+access:[{name:"Various",desc:"Multiple initial access methods reported.",conf:"credible",src:"Check Point (2025)"}],
+stealers:[],c2:[],bph:[],
+tools:[{name:"Cross-platform encryptor",desc:"Windows, Linux, BSD, ARM, ESXi targeting.",conf:"confirmed",src:"Check Point (2025)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"30+ victims est.",negotiation:"Standard dual-extortion. $5K affiliate deposit model."},
+events:[{yr:2025,type:"leak",text:"Source code leaked by disgruntled affiliate June 2025"}]},
+
+{id:"hellcat",name:"HellCat",type:"RaaS Operation",status:"active",victims:30,stub:true,
+ecosystem:"HellCat",active:"2024–present",verified:"2025-Q1",
+summary:"Targets Jira for initial access credential harvesting. Demanded Schneider Electric pay ransom in baguettes (PR stunt). Morpheus assessed as similar payload/related group.",
+access:[{name:"Jira credential harvesting",desc:"Exploits exposed Jira instances for credential theft and initial access.",conf:"confirmed",src:"Hudson Rock (2024)"}],
+stealers:[],c2:[],bph:[],tools:[],
+financial:{crypto:"Bitcoin (and notably demanded baguettes from Schneider Electric as PR stunt)",laundering:"Standard.",exchanges:"None attributed",revenue:"30+ victims est.",negotiation:"Unconventional — Schneider Electric demand was partly for PR attention."},
+events:[{yr:2024,type:"notable",text:"Schneider Electric attack — demanded ransom paid in baguettes as PR stunt alongside cash demand"}]},
+
+{id:"stormous",name:"Stormous",type:"RaaS Operation",status:"active",victims:30,stub:true,
+ecosystem:"Stormous",active:"2021–present",verified:"2025-Q1",
+summary:"Arabic-speaking group with hacktivism roots. Collaborated with GhostSec for dual-extortion. Provides RaaS to other groups via STMX_RaaS platform. Multiple sector targeting.",
+access:[{name:"Various",desc:"Multiple initial access methods.",conf:"credible",src:"Analyst reporting"}],
+stealers:[],c2:[],bph:[],tools:[],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"30+ victims est.",negotiation:"STMX_RaaS platform offers revenue share to affiliates."},
+events:[]},
+
+{id:"sarcoma",name:"Sarcoma",type:"RaaS Operation",status:"active",victims:30,stub:true,
+ecosystem:"Sarcoma",active:"2024–present",verified:"2025-Q1",
+summary:"Emerged late 2024. Targets manufacturing and professional services primarily. Limited public CTI available.",
+access:[],stealers:[],c2:[],bph:[],tools:[],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"30+ victims est.",negotiation:"Standard dual-extortion."},
+events:[]},
+
+{id:"termite",name:"Termite",type:"RaaS Operation",status:"active",victims:30,stub:true,
+ecosystem:"Termite",active:"2024–present",verified:"2025-Q1",
+summary:"Uses Babuk source code. Blue Yonder (supply chain software provider) attack disrupted Starbucks, grocery chains. Significant supply chain impact.",
+access:[{name:"Various",desc:"Initial access not well-documented in public reporting.",conf:"reported",src:"Analyst reporting (2024)"}],
+stealers:[],c2:[],bph:[],
+tools:[{name:"Babuk-derived encryptor",desc:"Based on leaked Babuk source code.",conf:"confirmed",src:"Analyst reporting (2024)"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"30+ victims est.",negotiation:"Standard dual-extortion."},
+events:[{yr:2024,type:"notable",text:"Blue Yonder attack — disrupted Starbucks payroll and grocery supply chains (Morrisons, Sainsbury's)"}]},
+
+{id:"werewolves",name:"Werewolves",type:"RaaS Operation",status:"active",victims:30,stub:true,
+ecosystem:"Werewolves",active:"2023–present",verified:"2025-Q1",
+summary:"Russia-linked. Uses LockBit 3.0 builder and ESXi encryptors. Focuses on Russian-speaking targets — unusual given most Russian groups avoid CIS victims.",
+access:[{name:"Various",desc:"Multiple initial access vectors.",conf:"credible",src:"Analyst reporting (2023)"}],
+stealers:[],c2:[],bph:[],
+tools:[{name:"LockBit 3.0 builder-based encryptor",desc:"Uses leaked LockBit builder.",conf:"confirmed",src:"Analyst reporting"}],
+financial:{crypto:"Bitcoin",laundering:"Standard.",exchanges:"None attributed",revenue:"30+ victims est.",negotiation:"Standard."},
+events:[]},
+
+];
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+const STATUS_ORDER = {active:0,le_disrupted:1,defunct:2};
+G.sort((a,b)=>{
+  const sd = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
+  if(sd!==0) return sd;
+  return (b.victims||0)-(a.victims||0);
+});
+
+const full = G.filter(g=>!g.stub).length;
+const stubs = G.filter(g=>g.stub).length;
+document.getElementById("sn").textContent = G.length;
+document.getElementById("sfull").textContent = full;
+document.getElementById("sstub").textContent = stubs;
+
+let selected = null;
+
+const SL={active:"Active",le_disrupted:"LE Disrupted",defunct:"Defunct"};
+const SC={active:"ba",le_disrupted:"bl",defunct:"bd"};
+const CC={confirmed:"conf-confirmed",credible:"conf-credible",reported:"conf-reported",suspected:"conf-suspected"};
+const CL={confirmed:"Confirmed",credible:"Credible",reported:"Reported",suspected:"Suspected"};
+const ETC={le:"et-le",leak:"et-leak",shutdown:"et-shutdown",hack:"et-hack",notable:"et-notable"};
+const ETL={le:"LE Action",leak:"Code / Data Leak",shutdown:"Shutdown / Rebrand",hack:"Hacktivist Action",notable:"Notable Event"};
+
+function getFiltered(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const fs=document.getElementById("fstatus").value;
+  return G.filter(g=>{
+    if(fs&&g.status!==fs) return false;
+    if(q&&!g.name.toLowerCase().includes(q)&&!(g.ecosystem||"").toLowerCase().includes(q)&&!(g.summary||"").toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function buildList(){
+  const filtered=getFiltered();
+  document.getElementById("rc").textContent=filtered.length;
+  document.getElementById("svis").textContent=filtered.length;
+  const el=document.getElementById("glist");
+  let html="";
+  let lastStatus=null;
+  filtered.forEach(g=>{
+    if(g.status!==lastStatus){
+      const labels={active:"● Active",le_disrupted:"◐ LE Disrupted",defunct:"○ Defunct"};
+      html+=`<div class="tier-label">${labels[g.status]||g.status}</div>`;
+      lastStatus=g.status;
+    }
+    html+=`<div class="gitem${selected&&selected.id===g.id?" sel":""}" data-id="${g.id}">
+      <div class="gname">${g.name}<span class="sbadge ${SC[g.status]}">${SL[g.status]}</span>${g.stub?'<span class="sbadge stub-b">Stub</span>':""}${g.victims>=100?`<span style="font-size:9px;color:#3d5468;margin-left:auto">${g.victims>=500?"★★★":g.victims>=200?"★★":"★"}</span>`:""}</div>
+      <div class="gmeta">${g.ecosystem} · ${g.active}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+  el.querySelectorAll(".gitem").forEach(el=>{
+    el.addEventListener("click",()=>{
+      const g=G.find(x=>x.id===el.dataset.id);
+      if(g){selected=g;buildList();renderProfile(g);}
+    });
+  });
+}
+
+function toolSec(title,icon,items){
+  if(!items||!items.length) return `<div class="section"><h3><span class="ico">${icon}</span>${title}</h3><div class="no-data">No public reporting</div></div>`;
+  return `<div class="section"><h3><span class="ico">${icon}</span>${title}</h3><div class="tool-list">${items.map(t=>`
+    <div class="tool-item">
+      <div class="tool-name">${t.name}</div>
+      <div class="tool-desc">${t.desc}<div class="tool-src">${t.src}</div></div>
+      <span class="conf ${CC[t.conf]}">${CL[t.conf]}</span>
+    </div>`).join("")}</div></div>`;
+}
+
+function finSec(f){
+  if(!f) return "";
+  return `<div class="section full"><h3><span class="ico">💰</span>Financial Operations</h3>
+    <div class="fin-grid">
+      <div class="fin-item"><div class="fin-label">Cryptocurrency</div><div class="fin-val">${f.crypto||"Unknown"}</div></div>
+      <div class="fin-item"><div class="fin-label">Estimated Revenue</div><div class="fin-val">${f.revenue||"Unknown"}</div></div>
+      <div class="fin-item"><div class="fin-label">Known Exchanges / BPH</div><div class="fin-val">${f.exchanges||"None attributed"}</div></div>
+      <div class="fin-item"><div class="fin-label">Negotiation Behavior</div><div class="fin-val">${f.negotiation||"Unknown"}</div></div>
+      <div class="fin-item full-w"><div class="fin-label">Laundering Methods</div><div class="fin-val">${f.laundering||"Unknown"}</div></div>
+    </div>
+  </div>`;
+}
+
+function evSec(evs){
+  if(!evs||!evs.length) return "";
+  return `<div class="section full"><h3><span class="ico">⚡</span>Key Events</h3><div class="event-list">${evs.map(e=>`
+    <div class="event-item">
+      <span class="event-yr">${e.yr}</span>
+      <span class="event-type ${ETC[e.type]||""}">${ETL[e.type]||e.type}</span>
+      <span class="event-text">${e.text}</span>
+    </div>`).join("")}</div></div>`;
+}
+
+function renderProfile(g){
+  document.getElementById("empty").style.display="none";
+  const p=document.getElementById("profile");
+  p.style.display="block";
+  p.innerHTML=`
+    <div class="profile-header">
+      <h2>${g.name}<span class="sbadge ${SC[g.status]}" style="font-size:12px">${SL[g.status]}</span>${g.stub?'<span class="sbadge stub-b" style="font-size:10px">Stub — limited data</span>':""}</h2>
+      <div class="meta-row">
+        <div class="meta-pill">Type: <span>${g.type}</span></div>
+        <div class="meta-pill">Ecosystem: <span>${g.ecosystem}</span></div>
+        <div class="meta-pill">Active: <span>${g.active}</span></div>
+        <div class="meta-pill">~Victims: <span>${g.victims}+</span></div>
+      </div>
+      <div class="verified">Profile last verified: <span>${g.verified||"Unknown"}</span></div>
+      <div class="summary">${g.summary}</div>
+    </div>
+    <div class="sections">
+      ${toolSec("Initial Access & Delivery","⬇",g.access)}
+      ${toolSec("Stealers","🔑",g.stealers)}
+      ${toolSec("C2 Frameworks","📡",g.c2)}
+      ${toolSec("Bulletproof Hosting","🏠",g.bph)}
+      ${toolSec("Tools & Techniques","🔧",g.tools)}
+      ${finSec(g.financial)}
+      ${evSec(g.events)}
+    </div>
+    <div class="conf-legend">
+      <span style="font-size:10px;color:var(--muted);margin-right:4px">Confidence:</span>
+      <div class="cl-item"><span class="conf conf-confirmed">Confirmed</span><span style="color:var(--muted);font-size:10px">Multiple credible sources</span></div>
+      <div class="cl-item"><span class="conf conf-credible">Credible</span><span style="color:var(--muted);font-size:10px">Single strong report</span></div>
+      <div class="cl-item"><span class="conf conf-reported">Reported</span><span style="color:var(--muted);font-size:10px">Single source, unverified</span></div>
+      <div class="cl-item"><span class="conf conf-suspected">Suspected</span><span style="color:var(--muted);font-size:10px">Circumstantial</span></div>
+    </div>
+    ${g.stub?'<div class="stub-notice">Stub profile — public CTI is limited for this group. Will be expanded as intelligence matures.</div>':""}
+  `;
+}
+
+document.getElementById("q").addEventListener("input",buildList);
+document.getElementById("fstatus").addEventListener("change",buildList);
+buildList();
+</script>
+</body>
+</html>

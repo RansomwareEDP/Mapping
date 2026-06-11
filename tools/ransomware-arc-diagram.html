@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ransomware Arc Diagram — OCD WorldWatch v29</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root {
+  --bg:#090d12; --panel:#0f1923; --panel2:#162030; --border:#1e2f42;
+  --text:#e8f0f8; --muted:#7a93ad; --accent:#ff8c00; --accent2:#ffa940;
+  --active:#22c55e; --defunct:#475569; --le:#ef4444; --unknown:#8b949e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{padding:9px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;background:rgba(9,13,18,.97);backdrop-filter:blur(8px);z-index:20;flex-shrink:0}
+header h1{font-size:15px;font-weight:700;color:var(--accent);white-space:nowrap}
+.sub{font-size:11px;color:var(--muted)}
+.hstats{display:flex;gap:14px;margin-left:auto;font-size:11px;color:var(--muted)}
+.hstats span{color:var(--accent);font-weight:700}
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* LEFT PANEL */
+.lpanel{width:230px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--panel);overflow:hidden}
+.psec{padding:9px 11px;border-bottom:1px solid var(--border)}
+.psec label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+input[type=text],select{width:100%;background:#0a131d;border:1px solid var(--border);border-radius:5px;color:var(--text);padding:5px 8px;font-size:11px;outline:none}
+input[type=text]:focus,select:focus{border-color:var(--accent)}
+select option{background:#0f1923}
+.fgroup{display:flex;flex-direction:column;gap:4px}
+.frow{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;padding:1px 0}
+.frow input[type=checkbox]{accent-color:var(--accent);width:12px;height:12px;flex-shrink:0}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sline{width:18px;height:2px;flex-shrink:0}
+
+/* SEARCH RESULTS */
+.slist{flex:1;overflow-y:auto;padding:5px 7px}
+.sitem{padding:6px 8px;border-radius:6px;cursor:pointer;font-size:11px;border:1px solid transparent;margin-bottom:2px}
+.sitem:hover{background:var(--panel2);border-color:var(--border)}
+.sitem.sel{background:var(--panel2);border-color:var(--accent)}
+.sname{font-weight:600}
+.smeta{color:var(--muted);font-size:10px;margin-top:1px}
+.sbadge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:3px}
+.ba{background:rgba(34,197,94,.15);color:var(--active)}
+.bl{background:rgba(239,68,68,.15);color:var(--le)}
+.bd{background:rgba(71,85,105,.2);color:var(--defunct)}
+.bu{background:rgba(139,148,158,.1);color:var(--unknown)}
+
+/* ARC AREA */
+.arc-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+#arc-svg{width:100%;height:100%}
+.arc-path{fill:none;transition:opacity .15s}
+.node-dot{transition:opacity .15s,r .1s}
+.node-label{pointer-events:none;transition:opacity .2s}
+.year-band{pointer-events:none}
+.year-tick{pointer-events:none}
+
+/* RIGHT PANEL */
+.rpanel{width:260px;flex-shrink:0;border-left:1px solid var(--border);background:var(--panel);overflow-y:auto;display:flex;flex-direction:column}
+.dheader{padding:12px 13px 9px;border-bottom:1px solid var(--border)}
+.dheader h2{font-size:14px;font-weight:700}
+.dtype{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.dsec{padding:10px 13px;border-bottom:1px solid var(--border)}
+.dsec h3{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.kv{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;gap:8px}
+.kv .k{color:var(--muted);flex-shrink:0}
+.kv .v{text-align:right;font-weight:500;word-break:break-word}
+.ritem{font-size:11px;padding:5px 0;border-top:1px solid var(--border);display:flex;align-items:flex-start;gap:6px}
+.ritem:first-child{border-top:none}
+.rarrow{flex-shrink:0;font-size:13px;line-height:1.3}
+.rname{font-weight:600;cursor:pointer;color:var(--accent2)}
+.rname:hover{text-decoration:underline}
+.rtype{font-size:10px;color:var(--muted);display:block;margin-top:1px}
+.evitem{font-size:11px;padding:5px 0;border-top:1px solid var(--border)}
+.evitem:first-child{border-top:none}
+.evyear{color:var(--accent);font-weight:700;font-size:10px}
+.empty{padding:24px 13px;text-align:center;color:var(--muted);font-size:12px}
+
+/* CONTROLS */
+.cbar{position:absolute;top:10px;right:10px;display:flex;gap:5px;z-index:10}
+.cbtn{background:var(--panel);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:5px 10px;font-size:11px;cursor:pointer;white-space:nowrap}
+.cbtn:hover{border-color:var(--accent);color:var(--accent)}
+.cbtn.on{border-color:var(--accent);color:var(--accent);background:rgba(255,140,0,.08)}
+
+/* TRACE BANNER */
+.tbanner{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.35);border-radius:6px;padding:4px 13px;font-size:11px;color:var(--accent);display:none;z-index:10;white-space:nowrap}
+
+/* TOOLTIP */
+#tip{position:fixed;background:rgba(15,25,35,.97);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-size:11px;pointer-events:none;max-width:190px;z-index:100;display:none}
+#tip .tn{font-weight:700;margin-bottom:2px}
+#tip .tm{color:var(--muted);font-size:10px}
+
+/* SLIDER */
+.slider-row{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.slider-row input[type=range]{width:100%;accent-color:var(--accent)}
+.sval{font-size:11px;color:var(--accent);font-weight:700}
+.slider-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:1px}
+
+/* LEGEND */
+.legend{position:absolute;bottom:10px;left:10px;background:rgba(15,25,35,.92);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:10px;backdrop-filter:blur(6px);z-index:5}
+.legend h4{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-size:9px}
+.lrow{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.lline{width:20px;height:2px;flex-shrink:0}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Ransomware Arc Diagram</h1>
+    <div class="sub">OCD WorldWatch v29 · 2014–2026 · Arcs above = lineage &nbsp;·&nbsp; Arcs below = code reuse &amp; relationships</div>
+  </div>
+  <div class="hstats">
+    <div>Actors: <span id="sn">0</span></div>
+    <div>Edges: <span id="se">0</span></div>
+    <div>Visible: <span id="sv">0</span></div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT -->
+  <div class="lpanel">
+    <div class="psec">
+      <label>Search</label>
+      <input type="text" id="q" placeholder="LockBit, Conti, BlackCat…">
+    </div>
+    <div class="psec">
+      <label>Year Range</label>
+      <div class="slider-row" style="margin-top:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:var(--muted)">From</span>
+          <span class="sval" id="ysv">2014</span>
+        </div>
+        <input type="range" id="ys" min="2014" max="2026" value="2014">
+      </div>
+      <div class="slider-row" style="margin-top:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:var(--muted)">To</span>
+          <span class="sval" id="yev">2026</span>
+        </div>
+        <input type="range" id="ye" min="2014" max="2026" value="2026">
+      </div>
+    </div>
+    <div class="psec">
+      <label>Status</label>
+      <div class="fgroup">
+        <label class="frow"><input type="checkbox" class="sf" value="active" checked><div class="dot" style="background:var(--active)"></div>Active</label>
+        <label class="frow"><input type="checkbox" class="sf" value="le_disrupted" checked><div class="dot" style="background:var(--le)"></div>LE Disrupted</label>
+        <label class="frow"><input type="checkbox" class="sf" value="defunct" checked><div class="dot" style="background:var(--defunct)"></div>Defunct</label>
+        <label class="frow"><input type="checkbox" class="sf" value="unknown" checked><div class="dot" style="background:var(--unknown)"></div>Unknown</label>
+      </div>
+    </div>
+    <div class="psec">
+      <label>Arc types — Above spine</label>
+      <div class="fgroup">
+        <label class="frow"><input type="checkbox" class="ef" value="rebrand" checked><div class="sline" style="background:#ff8c00"></div>Rebrand / Successor</label>
+        <label class="frow"><input type="checkbox" class="ef" value="derived" checked><div class="sline" style="background:#3b82f6"></div>Derived From</label>
+        <label class="frow"><input type="checkbox" class="ef" value="variant" checked><div class="sline" style="background:#22d3ee"></div>Variant</label>
+      </div>
+      <label style="margin-top:7px">Below spine</label>
+      <div class="fgroup" style="margin-top:4px">
+        <label class="frow"><input type="checkbox" class="ef" value="code_reuse" checked><div class="sline" style="background:#a855f7"></div>Code Reuse</label>
+        <label class="frow"><input type="checkbox" class="ef" value="relationship" checked><div class="sline" style="background:#64748b"></div>Relationship</label>
+        <label class="frow"><input type="checkbox" class="ef" value="unconfirmed" checked><div class="sline" style="background:#374151;border-top:1px dashed #4b5563;height:0"></div>Unconfirmed</label>
+      </div>
+    </div>
+    <div class="psec">
+      <label>Ecosystem</label>
+      <select id="eco"><option value="">All</option></select>
+    </div>
+    <div class="psec" style="border-bottom:none;padding-bottom:3px">
+      <label>Actors (<span id="rc">0</span>)</label>
+    </div>
+    <div class="slist" id="slist"></div>
+  </div>
+
+  <!-- ARC DIAGRAM -->
+  <div class="arc-wrap" id="arc-wrap">
+    <svg id="arc-svg">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g id="arc-g"></g>
+    </svg>
+    <div class="cbar">
+      <button class="cbtn" id="btn-trace">Trace Lineage</button>
+      <button class="cbtn" id="btn-groups-only">Groups Only</button>
+      <button class="cbtn" id="btn-fit">Fit View</button>
+      <button class="cbtn" id="btn-reset">Reset</button>
+    </div>
+    <div class="tbanner" id="tbanner">Lineage Trace — click another node or press Esc to exit</div>
+    <div class="legend">
+      <h4>Arcs — Above</h4>
+      <div class="lrow"><div class="lline" style="background:#ff8c00"></div>Rebrand / Successor</div>
+      <div class="lrow"><div class="lline" style="background:#3b82f6"></div>Derived From</div>
+      <div class="lrow"><div class="lline" style="background:#22d3ee"></div>Variant</div>
+      <h4 style="margin-top:7px">Arcs — Below</h4>
+      <div class="lrow"><div class="lline" style="background:#a855f7"></div>Code Reuse</div>
+      <div class="lrow"><div class="lline" style="background:#64748b"></div>Relationship</div>
+      <div class="lrow"><div class="lline" style="background:transparent;border-top:1px dashed #4b5563"></div>Unconfirmed</div>
+      <h4 style="margin-top:7px">Node Ring</h4>
+      <div class="lrow"><div class="ldot" style="border:2px solid var(--active)"></div>Active</div>
+      <div class="lrow"><div class="ldot" style="border:2px solid var(--le)"></div>LE Disrupted</div>
+      <div class="lrow"><div class="ldot" style="border:2px solid var(--defunct)"></div>Defunct</div>
+      <h4 style="margin-top:7px">Node Fill</h4>
+      <div class="lrow"><div class="ldot" style="background:#3a1800;border:1.5px solid #ff8c00"></div>Threat Group</div>
+      <div class="lrow"><div class="ldot" style="background:#0d1e30;border:1.5px solid #3d6a9e"></div>Operation</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="rpanel" id="rpanel">
+    <div class="empty" id="demp">
+      <div style="font-size:26px;margin-bottom:8px">◉</div>
+      Click any node to see<br>its lineage and details
+    </div>
+    <div id="dcontent" style="display:none"></div>
+  </div>
+
+</div>
+<div id="tip"><div class="tn" id="tn"></div><div class="tm" id="tm"></div></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const NODES = [
+  // GROUPS
+  {id:"wizard_spider",label:"Wizard Spider",t:"G",yr:2016,end:null,s:"active",eco:"conti"},
+  {id:"indrik_spider",label:"Indrik Spider",t:"G",yr:2015,end:null,s:"active",eco:"indrik"},
+  {id:"carbon_spider",label:"Carbon Spider",t:"G",yr:2012,end:null,s:"active",eco:"darkside"},
+  {id:"pinchy_spider",label:"Pinchy Spider",t:"G",yr:2018,end:2022,s:"le_disrupted",eco:"revil"},
+  {id:"doppel_spider",label:"Doppel Spider",t:"G",yr:2019,end:2021,s:"defunct",eco:"doppelpaymer"},
+  {id:"bitwise_spider",label:"Bitwise Spider",t:"G",yr:2019,end:null,s:"le_disrupted",eco:"lockbit"},
+  {id:"viking_spider",label:"Viking Spider",t:"G",yr:2019,end:2023,s:"le_disrupted",eco:"ragnar"},
+  {id:"twisted_spider",label:"Twisted Spider",t:"G",yr:2019,end:2021,s:"defunct",eco:"maze"},
+  {id:"ta505",label:"TA505 / FIN11",t:"G",yr:2014,end:null,s:"active",eco:"clop"},
+  {id:"hive_spider",label:"Hive Spider",t:"G",yr:2021,end:2023,s:"le_disrupted",eco:"hive"},
+  {id:"alpha_spider",label:"Alpha Spider",t:"G",yr:2021,end:null,s:"active",eco:"blackbyte"},
+  {id:"gold_rebellion",label:"Gold Rebellion",t:"G",yr:2019,end:null,s:"active",eco:"stop"},
+  {id:"circus_spider",label:"Circus Spider",t:"G",yr:2018,end:2022,s:"le_disrupted",eco:"netwalker"},
+  {id:"chatty_spider",label:"Chatty Spider",t:"G",yr:2021,end:null,s:"active",eco:"babuk"},
+  {id:"vice_spider",label:"Vice Spider",t:"G",yr:2021,end:2024,s:"defunct",eco:"vice_society"},
+  {id:"boss_spider",label:"Boss Spider",t:"G",yr:2015,end:2018,s:"defunct",eco:"samsam"},
+  {id:"royal_spider",label:"Royal Spider",t:"G",yr:2022,end:null,s:"active",eco:"royal"},
+  {id:"brain_spider",label:"Brain Spider",t:"G",yr:2023,end:null,s:"active",eco:"dispossessor"},
+  {id:"punk_spider",label:"Punk Spider",t:"G",yr:2023,end:null,s:"active",eco:"conti"},
+  {id:"nitro_spider",label:"Nitro Spider",t:"G",yr:2024,end:null,s:"active",eco:"lukaLocker"},
+  {id:"repellent_scorpius",label:"Repellent Scorpius",t:"G",yr:2024,end:null,s:"active",eco:"cicada"},
+  {id:"fin8",label:"FIN8",t:"G",yr:2016,end:null,s:"active",eco:"whiterabbit"},
+  {id:"lazarus",label:"Lazarus",t:"G",yr:2017,end:null,s:"active",eco:"nk_apt"},
+  {id:"storm_0978",label:"Storm-0978",t:"G",yr:2023,end:null,s:"active",eco:"underground"},
+  {id:"storm_0289",label:"Storm-0289",t:"G",yr:2022,end:null,s:"active",eco:"darkside"},
+  {id:"wine_tempest",label:"Wine Tempest",t:"G",yr:2021,end:null,s:"active",eco:"pysa"},
+  {id:"cyborg_spider",label:"Cyborg Spider",t:"G",yr:2021,end:null,s:"active",eco:"pysa"},
+  {id:"traveling_spider",label:"Traveling Spider",t:"G",yr:2022,end:2024,s:"le_disrupted",eco:"unknown"},
+  {id:"tunnel_spider",label:"Tunnel Spider",t:"G",yr:2023,end:null,s:"active",eco:"sugarlocker"},
+  {id:"sprite_spider",label:"Sprite Spider",t:"G",yr:2018,end:null,s:"active",eco:"ransomexx"},
+  {id:"mangled_spider",label:"Mangled Spider",t:"G",yr:2023,end:null,s:"active",eco:"underground"},
+  // OPERATIONS
+  {id:"hermes",label:"Hermes",t:"O",yr:2017,end:2018,s:"defunct",eco:"conti",n:"Sold on Exploit.in Feb 2017. Base for Ryuk."},
+  {id:"ryuk",label:"Ryuk",t:"O",yr:2018,end:2022,s:"defunct",eco:"conti",n:"First observed Aug 2018. Based on Hermes."},
+  {id:"conti",label:"Conti",t:"O",yr:2020,end:2022,s:"defunct",eco:"conti",n:"Major RaaS. Source code leaked 2022."},
+  {id:"diavol",label:"Diavol",t:"O",yr:2021,end:2022,s:"defunct",eco:"conti",n:"Wizard Spider / TrickBot affiliated."},
+  {id:"karakurt",label:"Karakurt",t:"O",yr:2021,end:null,s:"active",eco:"conti",n:"Hack-and-leak arm of Conti."},
+  {id:"silent_ransom",label:"Silent Ransom",t:"O",yr:2022,end:null,s:"active",eco:"conti"},
+  {id:"black_basta",label:"Black Basta",t:"O",yr:2022,end:2024,s:"defunct",eco:"conti",n:"Conti successor. Chats leaked 2024."},
+  {id:"royal",label:"Royal",t:"O",yr:2022,end:2023,s:"defunct",eco:"conti",n:"Former Conti affiliate."},
+  {id:"zeon",label:"Zeon",t:"O",yr:2022,end:2022,s:"defunct",eco:"conti",n:"Precursor to Royal."},
+  {id:"akira",label:"Akira",t:"O",yr:2023,end:null,s:"active",eco:"conti",n:"Strong Conti ecosystem links."},
+  {id:"blacksuit",label:"BlackSuit",t:"O",yr:2023,end:null,s:"active",eco:"conti",n:"Successor to Royal."},
+  {id:"monti",label:"Monti",t:"O",yr:2022,end:null,s:"active",eco:"conti",n:"Based on leaked Conti source code."},
+  {id:"meow",label:"Meow",t:"O",yr:2022,end:null,s:"active",eco:"conti",n:"Leaked Conti source code."},
+  {id:"meowleaks",label:"MeowLeaks",t:"O",yr:2023,end:null,s:"active",eco:"conti"},
+  {id:"megazord",label:"MegaZord",t:"O",yr:2023,end:null,s:"active",eco:"conti"},
+  {id:"bl00dy",label:"Bl00dy",t:"O",yr:2022,end:null,s:"active",eco:"conti",n:"Uses leaked Conti builder."},
+  {id:"schoolboys",label:"SchoolBoys",t:"O",yr:2023,end:null,s:"active",eco:"conti"},
+  {id:"3am",label:"3AM",t:"O",yr:2023,end:null,s:"active",eco:"conti",n:"Linked to former Conti affiliates."},
+  {id:"darkrace",label:"Darkrace",t:"O",yr:2023,end:2023,s:"defunct",eco:"conti"},
+  {id:"tommyleaks",label:"TommyLeaks",t:"O",yr:2022,end:2023,s:"defunct",eco:"conti"},
+  {id:"gazprom",label:"Gazprom",t:"O",yr:2022,end:2022,s:"defunct",eco:"conti"},
+  {id:"lockbit_green",label:"LockBit Green",t:"O",yr:2023,end:2024,s:"defunct",eco:"lockbit",n:"Based on leaked Conti code."},
+  {id:"bitpaymer",label:"BitPaymer",t:"O",yr:2017,end:2019,s:"defunct",eco:"indrik"},
+  {id:"wastedlocker",label:"WastedLocker",t:"O",yr:2020,end:2021,s:"defunct",eco:"indrik"},
+  {id:"hades",label:"Hades",t:"O",yr:2020,end:2021,s:"defunct",eco:"indrik"},
+  {id:"phoenixlocker",label:"PhoenixLocker",t:"O",yr:2021,end:2021,s:"defunct",eco:"indrik"},
+  {id:"macawlocker",label:"MacawLocker",t:"O",yr:2021,end:2021,s:"defunct",eco:"indrik"},
+  {id:"grief",label:"Grief",t:"O",yr:2021,end:2021,s:"defunct",eco:"indrik"},
+  {id:"entropy",label:"Entropy",t:"O",yr:2021,end:2022,s:"defunct",eco:"indrik"},
+  {id:"doppelpaymer",label:"DoppelPaymer",t:"O",yr:2019,end:2022,s:"defunct",eco:"doppelpaymer",n:"Derived from BitPaymer."},
+  {id:"lockbit1",label:"LockBit 1.0",t:"O",yr:2019,end:2021,s:"defunct",eco:"lockbit",n:"Originally ABCD."},
+  {id:"lockbit2",label:"LockBit 2.0",t:"O",yr:2021,end:2022,s:"defunct",eco:"lockbit"},
+  {id:"lockbit3",label:"LockBit 3.0",t:"O",yr:2022,end:2024,s:"le_disrupted",eco:"lockbit",n:"Builder leaked. Operation Cronos Feb 2024."},
+  {id:"lockbit4",label:"LockBit 4.0",t:"O",yr:2024,end:2025,s:"le_disrupted",eco:"lockbit"},
+  {id:"lockbit5",label:"LockBit 5.0",t:"O",yr:2025,end:null,s:"active",eco:"lockbit"},
+  {id:"darkylock",label:"DarkyLock",t:"O",yr:2023,end:null,s:"active",eco:"lockbit",n:"Uses leaked LockBit builder."},
+  {id:"radar",label:"Radar",t:"O",yr:2023,end:null,s:"active",eco:"lockbit",n:"Copies LockBit leak site."},
+  {id:"babukle",label:"BabyLockerKZ",t:"O",yr:2024,end:null,s:"active",eco:"lockbit",n:"Uses LockBit builder."},
+  {id:"darkside",label:"DarkSide",t:"O",yr:2020,end:2021,s:"defunct",eco:"darkside",n:"Shutdown after Colonial Pipeline."},
+  {id:"blackmatter",label:"BlackMatter",t:"O",yr:2021,end:2021,s:"defunct",eco:"darkside",n:"Rebranded from DarkSide."},
+  {id:"blackcat",label:"BlackCat / ALPHV",t:"O",yr:2021,end:2024,s:"le_disrupted",eco:"darkside",n:"LE disruption + exit scam Dec 2023."},
+  {id:"blackcat2",label:"BlackCat 2.0",t:"O",yr:2023,end:2024,s:"le_disrupted",eco:"darkside"},
+  {id:"ransomhub",label:"RansomHub",t:"O",yr:2024,end:null,s:"active",eco:"darkside",n:"Debated affiliation with BlackCat."},
+  {id:"gandcrab",label:"GandCrab",t:"O",yr:2018,end:2019,s:"defunct",eco:"revil",n:"Voluntary shutdown. Hugely successful RaaS."},
+  {id:"revil",label:"REvil",t:"O",yr:2019,end:2021,s:"le_disrupted",eco:"revil",n:"Sodinokibi. LE arrests 2021-2022."},
+  {id:"lv",label:"LV",t:"O",yr:2020,end:null,s:"active",eco:"revil",n:"Uses modified REvil codebase."},
+  {id:"ransomcartel",label:"RansomCartel",t:"O",yr:2021,end:null,s:"active",eco:"revil",n:"Code overlap with REvil."},
+  {id:"blogxx",label:"BlogXX",t:"O",yr:2022,end:2022,s:"defunct",eco:"revil"},
+  {id:"nemty",label:"Nemty",t:"O",yr:2019,end:2020,s:"defunct",eco:"revil"},
+  {id:"jsworm",label:"JSWorm",t:"O",yr:2019,end:2020,s:"defunct",eco:"revil"},
+  {id:"nefilim",label:"Nefilim",t:"O",yr:2020,end:2021,s:"defunct",eco:"revil"},
+  {id:"karma",label:"Karma",t:"O",yr:2021,end:2022,s:"defunct",eco:"revil"},
+  {id:"maze",label:"Maze",t:"O",yr:2019,end:2020,s:"defunct",eco:"maze",n:"Pioneered double-extortion."},
+  {id:"egregor",label:"Egregor",t:"O",yr:2020,end:2021,s:"le_disrupted",eco:"maze",n:"LE disruption Feb 2021."},
+  {id:"sekhmet",label:"Sekhmet",t:"O",yr:2020,end:2021,s:"defunct",eco:"maze"},
+  {id:"ragnarlocker",label:"RagnarLocker",t:"O",yr:2019,end:2023,s:"le_disrupted",eco:"ragnar",n:"LE arrests Oct 2023."},
+  {id:"clop",label:"Cl0p",t:"O",yr:2019,end:null,s:"active",eco:"clop",n:"TA505. Major MOVEit campaign 2023."},
+  {id:"cryptomix",label:"CryptoMix",t:"O",yr:2016,end:2019,s:"defunct",eco:"clop"},
+  {id:"locky",label:"Locky",t:"O",yr:2016,end:2018,s:"defunct",eco:"clop"},
+  {id:"babuk",label:"Babuk",t:"O",yr:2021,end:2021,s:"defunct",eco:"babuk",n:"Source code leaked by author."},
+  {id:"payloadbin",label:"PayloadBin",t:"O",yr:2021,end:2022,s:"defunct",eco:"babuk"},
+  {id:"abyss",label:"Abyss",t:"O",yr:2023,end:null,s:"active",eco:"babuk",n:"Linux variant based on Babuk."},
+  {id:"agenda",label:"Agenda",t:"O",yr:2022,end:null,s:"active",eco:"babuk",n:"Based on leaked Babuk code."},
+  {id:"dagonlocker",label:"DagonLocker",t:"O",yr:2021,end:null,s:"active",eco:"babuk"},
+  {id:"hive",label:"Hive",t:"O",yr:2021,end:2023,s:"le_disrupted",eco:"hive",n:"LE disruption Jan 2023 (FBI infiltration)."},
+  {id:"hunters",label:"Hunters International",t:"O",yr:2023,end:null,s:"active",eco:"hive",n:"Code overlap with Hive v6."},
+  {id:"ransomhouse",label:"RansomHouse",t:"O",yr:2022,end:null,s:"active",eco:"ransomhouse",n:"Copies Hive leak site design."},
+  {id:"mountlocker",label:"MountLocker",t:"O",yr:2020,end:2022,s:"defunct",eco:"mountlocker"},
+  {id:"astrolocker",label:"AstroLocker",t:"O",yr:2021,end:2022,s:"defunct",eco:"mountlocker"},
+  {id:"xinglocker",label:"XingLocker",t:"O",yr:2021,end:2022,s:"defunct",eco:"mountlocker"},
+  {id:"nightsky",label:"NightSky",t:"O",yr:2021,end:2022,s:"defunct",eco:"mountlocker"},
+  {id:"rook",label:"Rook",t:"O",yr:2021,end:2022,s:"defunct",eco:"mountlocker"},
+  {id:"pandora",label:"Pandora",t:"O",yr:2022,end:2022,s:"defunct",eco:"mountlocker"},
+  {id:"quantum",label:"Quantum",t:"O",yr:2021,end:2023,s:"defunct",eco:"mountlocker"},
+  {id:"chaos",label:"Chaos",t:"O",yr:2021,end:null,s:"active",eco:"chaos",n:"Sold as malware builder."},
+  {id:"onyx",label:"Onyx",t:"O",yr:2022,end:2022,s:"defunct",eco:"chaos"},
+  {id:"yashma",label:"Yashma",t:"O",yr:2022,end:null,s:"active",eco:"chaos"},
+  {id:"solidbit",label:"SolidBit",t:"O",yr:2022,end:2022,s:"defunct",eco:"chaos"},
+  {id:"globe",label:"Globe",t:"O",yr:2016,end:2019,s:"defunct",eco:"globe"},
+  {id:"globeimposter",label:"GlobeImposter",t:"O",yr:2017,end:null,s:"active",eco:"globe"},
+  {id:"crysis",label:"Crysis",t:"O",yr:2016,end:null,s:"active",eco:"crysis",n:"Decryption keys released but variants continue."},
+  {id:"phobos",label:"Phobos",t:"O",yr:2019,end:null,s:"active",eco:"crysis"},
+  {id:"dharma",label:"Dharma",t:"O",yr:2017,end:null,s:"active",eco:"crysis",n:"Regular new variants."},
+  {id:"faust",label:"Faust",t:"O",yr:2023,end:null,s:"active",eco:"crysis"},
+  {id:"venus",label:"Venus",t:"O",yr:2022,end:null,s:"active",eco:"crysis"},
+  {id:"8base",label:"8Base",t:"O",yr:2022,end:2024,s:"le_disrupted",eco:"crysis",n:"Phobos payload. LE 2024."},
+  {id:"netwalker",label:"NetWalker",t:"O",yr:2019,end:2021,s:"le_disrupted",eco:"netwalker",n:"LE arrests Jan 2021."},
+  {id:"stop_djvu",label:"Stop / DJVU",t:"O",yr:2018,end:null,s:"active",eco:"stop",n:"Consumer-focused. Many extensions."},
+  {id:"thanos",label:"Thanos",t:"O",yr:2020,end:null,s:"active",eco:"thanos",n:"Sold as malware builder."},
+  {id:"prometheus",label:"Prometheus",t:"O",yr:2021,end:2021,s:"defunct",eco:"thanos"},
+  {id:"spook",label:"Spook",t:"O",yr:2021,end:2022,s:"defunct",eco:"thanos"},
+  {id:"haron",label:"Haron",t:"O",yr:2021,end:2022,s:"defunct",eco:"thanos"},
+  {id:"rorschach",label:"Rorschach",t:"O",yr:2023,end:null,s:"active",eco:"thanos"},
+  {id:"whiterabbit",label:"White Rabbit",t:"O",yr:2021,end:null,s:"active",eco:"whiterabbit",n:"FIN8 affiliated."},
+  {id:"medusalocker",label:"MedusaLocker",t:"O",yr:2019,end:null,s:"active",eco:"medusa"},
+  {id:"medusablog",label:"Medusa Blog",t:"O",yr:2022,end:null,s:"active",eco:"medusa"},
+  {id:"avoslocker",label:"AvosLocker",t:"O",yr:2021,end:2023,s:"defunct",eco:"avoslocker"},
+  {id:"avaddon",label:"Avaddon",t:"O",yr:2020,end:2021,s:"defunct",eco:"avaddon",n:"Sudden shutdown, released keys."},
+  {id:"blackbyte",label:"BlackByte",t:"O",yr:2021,end:null,s:"active",eco:"blackbyte"},
+  {id:"blackbytent",label:"BlackByteNT",t:"O",yr:2023,end:null,s:"active",eco:"blackbyte"},
+  {id:"deathransom",label:"DeathRansom",t:"O",yr:2019,end:2020,s:"defunct",eco:"hellokitty"},
+  {id:"hellokitty",label:"HelloKitty",t:"O",yr:2020,end:2022,s:"defunct",eco:"hellokitty"},
+  {id:"fivehands",label:"FiveHands",t:"O",yr:2021,end:2022,s:"defunct",eco:"hellokitty"},
+  {id:"zeppelin",label:"Zeppelin",t:"O",yr:2019,end:2022,s:"defunct",eco:"zeppelin"},
+  {id:"vega",label:"VegaLocker",t:"O",yr:2019,end:2019,s:"defunct",eco:"zeppelin"},
+  {id:"mespinoza",label:"Mespinoza",t:"O",yr:2019,end:2021,s:"defunct",eco:"pysa"},
+  {id:"pysa",label:"Pysa",t:"O",yr:2020,end:2022,s:"defunct",eco:"pysa"},
+  {id:"vice_society",label:"Vice Society",t:"O",yr:2021,end:2023,s:"defunct",eco:"vice_society",n:"Deployed multiple RaaS payloads."},
+  {id:"rhysida",label:"Rhysida",t:"O",yr:2023,end:null,s:"active",eco:"vice_society"},
+  {id:"play",label:"Play",t:"O",yr:2022,end:null,s:"active",eco:"play"},
+  {id:"nokoyawa",label:"Nokoyawa",t:"O",yr:2022,end:2023,s:"defunct",eco:"play"},
+  {id:"makop",label:"Makop",t:"O",yr:2020,end:null,s:"active",eco:"makop",n:"Many variants."},
+  {id:"mallox",label:"Mallox",t:"O",yr:2021,end:null,s:"active",eco:"mallox"},
+  {id:"samsam",label:"SamSam",t:"O",yr:2015,end:2018,s:"defunct",eco:"samsam",n:"Boss Spider. Manual RDP attacks."},
+  {id:"wannacry",label:"WannaCry",t:"O",yr:2017,end:2017,s:"defunct",eco:"nk_apt",n:"Lazarus Group. EternalBlue exploit."},
+  {id:"ransomexx",label:"RansomExx",t:"O",yr:2018,end:null,s:"active",eco:"ransomexx",n:"Sprite Spider."},
+  {id:"snatch",label:"Snatch",t:"O",yr:2018,end:null,s:"active",eco:"snatch"},
+  {id:"cryakl",label:"Cryakl",t:"O",yr:2014,end:2022,s:"defunct",eco:"cryakl"},
+  {id:"crylock",label:"CryLock",t:"O",yr:2020,end:2022,s:"defunct",eco:"cryakl"},
+  {id:"lokilocker",label:"LokiLocker",t:"O",yr:2021,end:null,s:"active",eco:"loki"},
+  {id:"blackbit",label:"BlackBit",t:"O",yr:2022,end:null,s:"active",eco:"loki"},
+  {id:"cuba",label:"Cuba",t:"O",yr:2019,end:null,s:"active",eco:"cuba"},
+  {id:"lorenz",label:"Lorenz",t:"O",yr:2021,end:null,s:"active",eco:"lorenz"},
+  {id:"bianlian",label:"BianLian",t:"O",yr:2022,end:null,s:"active",eco:"bianlian",n:"Doxxed. Pivoted to extortion only."},
+  {id:"inc",label:"INC",t:"O",yr:2023,end:null,s:"active",eco:"inc"},
+  {id:"cactus",label:"Cactus",t:"O",yr:2023,end:null,s:"active",eco:"cactus"},
+  {id:"darkangels",label:"Dark Angels",t:"O",yr:2022,end:null,s:"active",eco:"darkangels"},
+  {id:"daixin",label:"Daixin",t:"O",yr:2022,end:null,s:"active",eco:"daixin"},
+  {id:"donex",label:"Donex",t:"O",yr:2023,end:2024,s:"defunct",eco:"donex",n:"Decryptor released."},
+  {id:"darkrace",label:"Darkrace",t:"O",yr:2023,end:2023,s:"defunct",eco:"donex"},
+  {id:"eldorado",label:"ElDorado",t:"O",yr:2024,end:null,s:"active",eco:"eldorado"},
+  {id:"blacklock",label:"BlackLock",t:"O",yr:2024,end:2025,s:"le_disrupted",eco:"eldorado",n:"Leak site shut by hacktivists."},
+  {id:"mamona",label:"Mamona",t:"O",yr:2025,end:2025,s:"le_disrupted",eco:"eldorado"},
+  {id:"cicada3301",label:"Cicada3301",t:"O",yr:2024,end:null,s:"active",eco:"cicada",n:"Code overlaps with ALPHV."},
+  {id:"lukaLocker",label:"LukaLocker",t:"O",yr:2024,end:null,s:"active",eco:"lukaLocker"},
+  {id:"dispossessor",label:"Dispossessor",t:"O",yr:2023,end:2024,s:"le_disrupted",eco:"dispossessor",n:"LE disruptions."},
+  {id:"dragonforce",label:"DragonForce",t:"O",yr:2023,end:null,s:"active",eco:"dragonforce"},
+  {id:"fog",label:"Fog",t:"O",yr:2024,end:null,s:"active",eco:"fog"},
+  {id:"interlock",label:"InterLock",t:"O",yr:2024,end:null,s:"active",eco:"interlock"},
+  {id:"vanhelsing",label:"VanHelsing",t:"O",yr:2025,end:null,s:"active",eco:"vanhelsing"},
+  {id:"nitrogen",label:"Nitrogen",t:"O",yr:2024,end:null,s:"active",eco:"nitrogen"},
+  {id:"funksec",label:"FunkSec",t:"O",yr:2024,end:2025,s:"defunct",eco:"funksec",n:"Cracked source code sold."},
+  {id:"kryptina",label:"Kryptina",t:"O",yr:2024,end:2025,s:"defunct",eco:"funksec",n:"Source code leaked."},
+  {id:"sugarlocker",label:"SugarLocker",t:"O",yr:2021,end:null,s:"active",eco:"sugarlocker"},
+  {id:"safepay",label:"SafePay",t:"O",yr:2024,end:null,s:"active",eco:"safepay"},
+  {id:"hellcat",label:"HellCat",t:"O",yr:2024,end:null,s:"active",eco:"hellcat"},
+  {id:"morpheus",label:"Morpheus",t:"O",yr:2024,end:null,s:"active",eco:"hellcat",n:"Similar payload to HellCat."},
+  {id:"arkana",label:"Arkana",t:"O",yr:2025,end:null,s:"active",eco:"arkana"},
+  {id:"sarcoma",label:"Sarcoma",t:"O",yr:2024,end:null,s:"active",eco:"sarcoma"},
+  {id:"termite",label:"Termite",t:"O",yr:2024,end:null,s:"active",eco:"termite"},
+  {id:"braincipher",label:"Brain Cipher",t:"O",yr:2024,end:null,s:"active",eco:"braincipher",n:"Decryptor released."},
+  {id:"werewolves",label:"Werewolves",t:"O",yr:2023,end:null,s:"active",eco:"werewolves"},
+  {id:"stormous",label:"Stormous",t:"O",yr:2021,end:null,s:"active",eco:"stormous"},
+  {id:"paradise",label:"Paradise",t:"O",yr:2017,end:2021,s:"defunct",eco:"paradise",n:"Source code leaked."},
+  {id:"rapture",label:"Rapture",t:"O",yr:2023,end:null,s:"active",eco:"paradise"},
+  {id:"ragnarok",label:"Ragnarok",t:"O",yr:2019,end:2021,s:"defunct",eco:"ragnarok",n:"Released decryptor before shutdown."},
+  {id:"underground",label:"Underground Team",t:"O",yr:2023,end:null,s:"active",eco:"underground"},
+];
+
+// above-spine: rebrand, derived, variant
+// below-spine: code_reuse, relationship, unconfirmed
+const ABOVE = new Set(["rebrand","derived","variant"]);
+const EDGES = [
+  {s:"hermes",t:"ryuk",type:"derived"},{s:"wizard_spider",t:"ryuk",type:"relationship"},
+  {s:"wizard_spider",t:"conti",type:"relationship"},{s:"ryuk",t:"conti",type:"derived"},
+  {s:"conti",t:"diavol",type:"relationship"},{s:"conti",t:"karakurt",type:"relationship"},
+  {s:"conti",t:"silent_ransom",type:"relationship"},{s:"conti",t:"black_basta",type:"derived"},
+  {s:"conti",t:"royal",type:"relationship"},{s:"conti",t:"akira",type:"code_reuse"},
+  {s:"conti",t:"monti",type:"code_reuse"},{s:"conti",t:"meow",type:"code_reuse"},
+  {s:"conti",t:"bidon",type:"code_reuse"},{s:"conti",t:"megazord",type:"code_reuse"},
+  {s:"conti",t:"darkrace",type:"code_reuse"},{s:"conti",t:"tommyleaks",type:"code_reuse"},
+  {s:"conti",t:"bl00dy",type:"code_reuse"},{s:"conti",t:"gazprom",type:"code_reuse"},
+  {s:"conti",t:"lockbit_green",type:"code_reuse"},{s:"royal",t:"zeon",type:"rebrand"},
+  {s:"royal",t:"blacksuit",type:"rebrand"},{s:"royal_spider",t:"royal",type:"relationship"},
+  {s:"bl00dy",t:"schoolboys",type:"relationship"},{s:"black_basta",t:"3am",type:"relationship"},
+  {s:"meow",t:"meowleaks",type:"rebrand"},
+  {s:"indrik_spider",t:"bitpaymer",type:"relationship"},{s:"indrik_spider",t:"wastedlocker",type:"relationship"},
+  {s:"indrik_spider",t:"hades",type:"relationship"},{s:"bitpaymer",t:"doppelpaymer",type:"derived"},
+  {s:"bitpaymer",t:"wastedlocker",type:"derived"},{s:"wastedlocker",t:"hades",type:"derived"},
+  {s:"hades",t:"phoenixlocker",type:"rebrand"},{s:"hades",t:"macawlocker",type:"derived"},
+  {s:"doppel_spider",t:"doppelpaymer",type:"relationship"},{s:"doppelpaymer",t:"grief",type:"rebrand"},
+  {s:"doppelpaymer",t:"entropy",type:"code_reuse"},
+  {s:"bitwise_spider",t:"lockbit1",type:"relationship"},{s:"lockbit1",t:"lockbit2",type:"variant"},
+  {s:"lockbit2",t:"lockbit3",type:"variant"},{s:"lockbit3",t:"lockbit4",type:"variant"},
+  {s:"lockbit4",t:"lockbit5",type:"variant"},{s:"lockbit3",t:"darkylock",type:"code_reuse"},
+  {s:"lockbit3",t:"radar",type:"code_reuse"},{s:"lockbit3",t:"babukle",type:"code_reuse"},
+  {s:"lockbit2",t:"lockbit_green",type:"relationship"},
+  {s:"carbon_spider",t:"darkside",type:"relationship"},{s:"darkside",t:"blackmatter",type:"rebrand"},
+  {s:"blackmatter",t:"blackcat",type:"rebrand"},{s:"blackcat",t:"blackcat2",type:"variant"},
+  {s:"blackcat",t:"ransomhub",type:"unconfirmed"},{s:"storm_0289",t:"blackcat",type:"relationship"},
+  {s:"cicada3301",t:"blackcat",type:"code_reuse"},{s:"repellent_scorpius",t:"cicada3301",type:"relationship"},
+  {s:"nitro_spider",t:"lukaLocker",type:"relationship"},{s:"lukaLocker",t:"cicada3301",type:"code_reuse"},
+  {s:"lukaLocker",t:"blackcat",type:"code_reuse"},
+  {s:"pinchy_spider",t:"gandcrab",type:"relationship"},{s:"pinchy_spider",t:"revil",type:"relationship"},
+  {s:"gandcrab",t:"revil",type:"rebrand"},{s:"revil",t:"lv",type:"code_reuse"},
+  {s:"revil",t:"ransomcartel",type:"code_reuse"},{s:"revil",t:"blogxx",type:"relationship"},
+  {s:"jsworm",t:"nemty",type:"derived"},{s:"nemty",t:"nefilim",type:"derived"},
+  {s:"nefilim",t:"karma",type:"derived"},
+  {s:"twisted_spider",t:"maze",type:"relationship"},{s:"maze",t:"egregor",type:"rebrand"},
+  {s:"maze",t:"sekhmet",type:"derived"},{s:"viking_spider",t:"ragnarlocker",type:"relationship"},
+  {s:"ta505",t:"clop",type:"relationship"},{s:"ta505",t:"locky",type:"relationship"},
+  {s:"cryptomix",t:"clop",type:"derived"},
+  {s:"babuk",t:"payloadbin",type:"rebrand"},{s:"babuk",t:"abyss",type:"code_reuse"},
+  {s:"babuk",t:"agenda",type:"code_reuse"},{s:"babuk",t:"dagonlocker",type:"code_reuse"},
+  {s:"chatty_spider",t:"dagonlocker",type:"relationship"},
+  {s:"hive_spider",t:"hive",type:"relationship"},{s:"hive",t:"hunters",type:"code_reuse"},
+  {s:"hive",t:"ransomhouse",type:"relationship"},
+  {s:"mountlocker",t:"astrolocker",type:"variant"},{s:"mountlocker",t:"xinglocker",type:"variant"},
+  {s:"mountlocker",t:"nightsky",type:"derived"},{s:"mountlocker",t:"rook",type:"derived"},
+  {s:"rook",t:"pandora",type:"derived"},{s:"rook",t:"quantum",type:"derived"},
+  {s:"chaos",t:"onyx",type:"variant"},{s:"chaos",t:"yashma",type:"variant"},
+  {s:"chaos",t:"solidbit",type:"variant"},{s:"globe",t:"globeimposter",type:"derived"},
+  {s:"crysis",t:"dharma",type:"derived"},{s:"dharma",t:"phobos",type:"derived"},
+  {s:"dharma",t:"faust",type:"variant"},{s:"crysis",t:"venus",type:"relationship"},
+  {s:"phobos",t:"8base",type:"code_reuse"},
+  {s:"thanos",t:"prometheus",type:"variant"},{s:"thanos",t:"spook",type:"variant"},
+  {s:"thanos",t:"haron",type:"variant"},{s:"thanos",t:"rorschach",type:"code_reuse"},
+  {s:"fin8",t:"whiterabbit",type:"relationship"},
+  {s:"deathransom",t:"hellokitty",type:"derived"},{s:"hellokitty",t:"fivehands",type:"variant"},
+  {s:"vega",t:"zeppelin",type:"derived"},
+  {s:"wine_tempest",t:"pysa",type:"relationship"},{s:"cyborg_spider",t:"mespinoza",type:"relationship"},
+  {s:"mespinoza",t:"pysa",type:"rebrand"},
+  {s:"vice_spider",t:"vice_society",type:"relationship"},{s:"vice_society",t:"rhysida",type:"derived"},
+  {s:"alpha_spider",t:"blackbyte",type:"relationship"},{s:"blackbyte",t:"blackbytent",type:"variant"},
+  {s:"paradise",t:"rapture",type:"code_reuse"},
+  {s:"circus_spider",t:"netwalker",type:"relationship"},
+  {s:"boss_spider",t:"samsam",type:"relationship"},
+  {s:"lazarus",t:"wannacry",type:"relationship"},
+  {s:"sprite_spider",t:"ransomexx",type:"relationship"},
+  {s:"cryakl",t:"crylock",type:"derived"},{s:"lokilocker",t:"blackbit",type:"derived"},
+  {s:"play",t:"nokoyawa",type:"relationship"},
+  {s:"storm_0978",t:"underground",type:"relationship"},
+  {s:"darkrace",t:"donex",type:"rebrand"},
+  {s:"eldorado",t:"blacklock",type:"derived"},{s:"blacklock",t:"mamona",type:"derived"},
+  {s:"dragonforce",t:"blacklock",type:"unconfirmed"},
+  {s:"hellcat",t:"morpheus",type:"relationship"},
+  {s:"tunnel_spider",t:"sugarlocker",type:"relationship"},
+  {s:"brain_spider",t:"dispossessor",type:"relationship"},
+  {s:"kryptina",t:"funksec",type:"code_reuse"},
+  {s:"gold_rebellion",t:"stop_djvu",type:"relationship"},
+  {s:"mangled_spider",t:"underground",type:"relationship"},
+  {s:"akira",t:"play",type:"relationship"},
+];
+
+const EVENTS = [
+  {yr:2021,ids:["revil"],label:"REvil arrested by Russian FSB",type:"le"},
+  {yr:2021,ids:["netwalker"],label:"NetWalker LE arrests",type:"le"},
+  {yr:2021,ids:["egregor"],label:"Egregor shutdown after LE",type:"le"},
+  {yr:2022,ids:["conti"],label:"Conti source code leaked (Ukraine war)",type:"leak"},
+  {yr:2021,ids:["babuk"],label:"Babuk source code leaked by author",type:"leak"},
+  {yr:2021,ids:["darkside"],label:"DarkSide shutdown after Colonial Pipeline",type:"shutdown"},
+  {yr:2021,ids:["avaddon"],label:"Avaddon sudden shutdown, released keys",type:"shutdown"},
+  {yr:2023,ids:["hive"],label:"Hive LE disruption (FBI infiltration)",type:"le"},
+  {yr:2023,ids:["lockbit3"],label:"LockBit 3.0 builder leaked",type:"leak"},
+  {yr:2023,ids:["ragnarlocker"],label:"RagnarLocker LE arrests Oct 2023",type:"le"},
+  {yr:2024,ids:["blackcat"],label:"BlackCat LE disruption + exit scam",type:"le"},
+  {yr:2024,ids:["lockbit3"],label:"LockBit Operation Cronos Feb 2024",type:"le"},
+  {yr:2024,ids:["8base"],label:"8Base LE disruptions",type:"le"},
+  {yr:2024,ids:["dispossessor"],label:"Dispossessor LE disruptions",type:"le"},
+  {yr:2024,ids:["black_basta"],label:"Black Basta internal chats leaked",type:"leak"},
+  {yr:2025,ids:["blacklock"],label:"BlackLock leak site shut by hacktivists",type:"hack"},
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const ST = {
+  q:"", ys:2014, ye:2026,
+  sf: new Set(["active","le_disrupted","defunct","unknown"]),
+  ef: new Set(["rebrand","derived","variant","code_reuse","relationship","unconfirmed"]),
+  eco:"", groupsOnly:false,
+  selected:null, traceMode:false, traceIds:new Set()
+};
+
+// ─── COLORS ───────────────────────────────────────────────────────────────────
+const EC = {rebrand:"#ff8c00",derived:"#3b82f6",variant:"#22d3ee",code_reuse:"#a855f7",relationship:"#64748b",unconfirmed:"#374151"};
+const SC = {active:"#22c55e",le_disrupted:"#ef4444",defunct:"#475569",unknown:"#8b949e"};
+const NODE_SP = 20; // px between nodes
+const SPINE_Y = 300;
+const LABEL_OFFSET = 16;
+const MAX_ARC_H = 270;
+
+// ─── SETUP ────────────────────────────────────────────────────────────────────
+const svg = d3.select("#arc-svg");
+const g = svg.select("#arc-g");
+const wrap = document.getElementById("arc-wrap");
+
+const zoom = d3.zoom().scaleExtent([0.08, 8]).on("zoom", e => {
+  g.attr("transform", e.transform);
+  const z = e.transform.k;
+  // Show labels above zoom threshold
+  g.selectAll(".node-label").attr("opacity", z > 0.6 ? 1 : 0);
+  g.selectAll(".group-label").attr("opacity", 1); // always show group labels
+});
+svg.call(zoom).on("dblclick.zoom", null);
+
+// Click on empty svg to deselect
+svg.on("click", () => { ST.selected = null; ST.traceMode = false; document.getElementById("btn-trace").classList.remove("on"); document.getElementById("tbanner").style.display = "none"; applyHighlight(); renderDetail(null); });
+
+// Ecosystems
+const ecos = [...new Set(NODES.map(n=>n.eco).filter(Boolean))].sort();
+const ecoEl = document.getElementById("eco");
+ecos.forEach(e => { const o = document.createElement("option"); o.value=e; o.textContent=e; ecoEl.appendChild(o); });
+
+document.getElementById("sn").textContent = NODES.length;
+document.getElementById("se").textContent = EDGES.length;
+
+// ─── LAYOUT ───────────────────────────────────────────────────────────────────
+function filterNodes() {
+  return NODES.filter(n => {
+    if (!ST.sf.has(n.s)) return false;
+    if (ST.eco && n.eco !== ST.eco) return false;
+    if (ST.groupsOnly && n.t !== "G") return false;
+    const y0 = n.yr||2014, y1 = n.end||2026;
+    if (y1 < ST.ys || y0 > ST.ye) return false;
+    if (ST.q) {
+      const qq = ST.q.toLowerCase();
+      if (!n.label.toLowerCase().includes(qq) && !n.eco.toLowerCase().includes(qq)) return false;
+    }
+    return true;
+  });
+}
+
+function sortNodes(nodes) {
+  return [...nodes].sort((a,b) => {
+    if ((a.yr||2014) !== (b.yr||2014)) return (a.yr||2014)-(b.yr||2014);
+    if (a.eco !== b.eco) return a.eco.localeCompare(b.eco);
+    return a.label.localeCompare(b.label);
+  });
+}
+
+function arcH(x1, x2) {
+  return Math.min(MAX_ARC_H, Math.sqrt(Math.abs(x2-x1)) * 7.5);
+}
+
+function arcPath(x1, x2, above) {
+  const h = arcH(x1, x2);
+  const mx = (x1+x2)/2;
+  const cy = above ? SPINE_Y - h : SPINE_Y + h;
+  return `M${x1},${SPINE_Y} Q${mx},${cy} ${x2},${SPINE_Y}`;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const vis = sortNodes(filterNodes());
+  const nMap = new Map();
+  vis.forEach((n,i) => {
+    n._x = 60 + i * NODE_SP;
+    nMap.set(n.id, n);
+  });
+
+  const visEdges = EDGES.filter(e => {
+    if (!ST.ef.has(e.type)) return false;
+    return nMap.has(e.s) && nMap.has(e.t);
+  });
+
+  document.getElementById("sv").textContent = vis.length;
+  document.getElementById("rc").textContent = vis.length;
+
+  const totalW = 60 + vis.length * NODE_SP + 60;
+  const totalH = 700;
+  g.selectAll("*").remove();
+
+  // ── Year bands ──
+  const years = [...new Set(vis.map(n=>n.yr||2014))].sort((a,b)=>a-b);
+  const yearBands = g.append("g").attr("class","year-bands");
+  years.forEach((yr,i) => {
+    const nodesInYr = vis.filter(n=>(n.yr||2014)===yr);
+    if (!nodesInYr.length) return;
+    const x0 = nodesInYr[0]._x - NODE_SP/2;
+    const x1 = nodesInYr[nodesInYr.length-1]._x + NODE_SP/2;
+    yearBands.append("rect")
+      .attr("x",x0).attr("y",0).attr("width",x1-x0).attr("height",totalH)
+      .attr("fill", i%2===0 ? "rgba(255,255,255,0.012)" : "transparent");
+    yearBands.append("text")
+      .attr("x", (x0+x1)/2).attr("y", SPINE_Y - MAX_ARC_H - 18)
+      .attr("text-anchor","middle").attr("fill","#2a3f55")
+      .attr("font-size","13px").attr("font-weight","700")
+      .attr("font-family","Inter,Arial,sans-serif")
+      .text(yr);
+    yearBands.append("line")
+      .attr("x1",x0).attr("x2",x0)
+      .attr("y1",SPINE_Y-MAX_ARC_H-8).attr("y2",SPINE_Y+MAX_ARC_H+8)
+      .attr("stroke","#1a2a3a").attr("stroke-width",1);
+  });
+
+  // ── Spine ──
+  g.append("line")
+    .attr("x1",40).attr("x2",totalW-20)
+    .attr("y1",SPINE_Y).attr("y2",SPINE_Y)
+    .attr("stroke","#1e3048").attr("stroke-width",2);
+
+  // ── Above / below zone labels ──
+  g.append("text").attr("x",30).attr("y",SPINE_Y-MAX_ARC_H-22)
+    .attr("text-anchor","middle").attr("fill","#2a3f55").attr("font-size","9px")
+    .attr("font-family","Inter,Arial,sans-serif").attr("writing-mode","tb")
+    .attr("transform",`translate(18,${SPINE_Y-MAX_ARC_H/2}) rotate(-90)`)
+    .text("LINEAGE");
+  g.append("text")
+    .attr("fill","#2a3f55").attr("font-size","9px")
+    .attr("font-family","Inter,Arial,sans-serif")
+    .attr("transform",`translate(18,${SPINE_Y+MAX_ARC_H/2+30}) rotate(-90)`)
+    .text("CODE REUSE / RELATIONSHIPS");
+
+  // ── Arcs ──
+  const arcG = g.append("g").attr("class","arcs");
+  visEdges.forEach(e => {
+    const src = nMap.get(e.s), tgt = nMap.get(e.t);
+    if (!src||!tgt) return;
+    const above = ABOVE.has(e.type);
+    const col = EC[e.type]||"#64748b";
+    arcG.append("path")
+      .attr("class","arc-path")
+      .attr("d", arcPath(src._x, tgt._x, above))
+      .attr("stroke", col)
+      .attr("stroke-width", e.type==="rebrand"?2.2:e.type==="variant"?1.8:1.4)
+      .attr("stroke-dasharray", e.type==="unconfirmed"?"5,3":null)
+      .attr("stroke-opacity", 0.55)
+      .attr("data-s", e.s).attr("data-t", e.t).attr("data-type", e.type)
+      .attr("data-label", e.label||"");
+  });
+
+  // ── Nodes ──
+  const nodeG = g.append("g").attr("class","nodes");
+  vis.forEach(n => {
+    const ng = nodeG.append("g")
+      .attr("class","node-g")
+      .attr("transform",`translate(${n._x},${SPINE_Y})`)
+      .attr("data-id",n.id)
+      .style("cursor","pointer")
+      .on("click",(ev)=>{ ev.stopPropagation(); onNodeClick(n); })
+      .on("mouseover",(ev)=>showTip(ev,n))
+      .on("mousemove",(ev)=>moveTip(ev))
+      .on("mouseout",hideTip);
+
+    const r = n.t==="G" ? 7 : 5;
+    // status ring
+    ng.append("circle").attr("r",r+2.5)
+      .attr("fill","none")
+      .attr("stroke",SC[n.s]||"#8b949e")
+      .attr("stroke-width",1.8)
+      .attr("opacity",0.8);
+    // fill
+    ng.append("circle").attr("r",r)
+      .attr("fill", n.t==="G" ? "#3a1800" : "#0d1e30")
+      .attr("stroke", n.t==="G" ? "#ff8c00" : "#3d6a9e")
+      .attr("stroke-width",1.5);
+
+    // Label — always for groups, only at high zoom for ops
+    const lClass = n.t==="G" ? "group-label node-label" : "node-label";
+    ng.append("text")
+      .attr("class",lClass)
+      .attr("transform",`translate(0,${r+3}) rotate(-60)`)
+      .attr("text-anchor","end")
+      .attr("font-size", n.t==="G" ? "10px" : "8.5px")
+      .attr("font-weight", n.t==="G" ? "700" : "400")
+      .attr("fill", n.t==="G" ? "#ffa940" : "#7a93ad")
+      .attr("stroke","#090d12").attr("stroke-width","2px").attr("paint-order","stroke")
+      .text(n.label);
+  });
+
+  // Initial zoom: fit all nodes in view
+  fitView(vis, totalW);
+  updateList(vis);
+  if (ST.selected) {
+    const sel = nMap.get(ST.selected.id);
+    if (sel) { applyHighlight(); }
+    else { ST.selected = null; renderDetail(null); }
+  }
+}
+
+function fitView(vis, totalW) {
+  const ww = wrap.clientWidth || 900;
+  const wh = wrap.clientHeight || 600;
+  const scale = Math.min(1.2, ww / (totalW + 40));
+  const tx = (ww - totalW * scale) / 2;
+  const ty = wh/2 - SPINE_Y*scale;
+  svg.call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+}
+
+// ─── TRACE / HIGHLIGHT ────────────────────────────────────────────────────────
+function getLineage(id) {
+  const ids = new Set([id]);
+  let frontier = [id];
+  for (let i=0;i<30;i++) {
+    const next=[];
+    frontier.forEach(fid=>{
+      EDGES.forEach(e=>{
+        if(e.s===fid && !ids.has(e.t)){ids.add(e.t);next.push(e.t);}
+        if(e.t===fid && !ids.has(e.s)){ids.add(e.s);next.push(e.s);}
+      });
+    });
+    frontier=next;
+    if(!frontier.length) break;
+  }
+  return ids;
+}
+
+function applyHighlight() {
+  if (!ST.selected) {
+    g.selectAll(".node-g").attr("opacity",1);
+    g.selectAll(".arc-path").attr("opacity",0.55).attr("stroke-width", function(){
+      const t=this.getAttribute("data-type");
+      return t==="rebrand"?2.2:t==="variant"?1.8:1.4;
+    });
+    return;
+  }
+  const lid = ST.traceMode ? getLineage(ST.selected.id) : new Set([ST.selected.id]);
+  // direct connections for non-trace
+  const directIds = new Set([ST.selected.id]);
+  EDGES.forEach(e=>{
+    if(e.s===ST.selected.id) directIds.add(e.t);
+    if(e.t===ST.selected.id) directIds.add(e.s);
+  });
+  const activeIds = ST.traceMode ? lid : directIds;
+
+  g.selectAll(".node-g").attr("opacity", function(){
+    const id=this.getAttribute("data-id");
+    return activeIds.has(id)?1:0.07;
+  });
+  g.selectAll(".arc-path").attr("opacity", function(){
+    const s=this.getAttribute("data-s"),t=this.getAttribute("data-t");
+    if (activeIds.has(s)&&activeIds.has(t)) return 0.9;
+    return 0.03;
+  }).attr("stroke-width", function(){
+    const s=this.getAttribute("data-s"),t=this.getAttribute("data-t");
+    const active = activeIds.has(s)&&activeIds.has(t);
+    const tp=this.getAttribute("data-type");
+    const base = tp==="rebrand"?2.2:tp==="variant"?1.8:1.4;
+    return active ? base*1.8 : base;
+  });
+}
+
+function onNodeClick(n) {
+  if (ST.traceMode && ST.selected && ST.selected.id===n.id) {
+    ST.traceMode=false;
+    document.getElementById("btn-trace").classList.remove("on");
+    document.getElementById("tbanner").style.display="none";
+    ST.selected=null; applyHighlight(); renderDetail(null); return;
+  }
+  ST.selected = n;
+  if (ST.traceMode) applyHighlight();
+  else applyHighlight();
+  renderDetail(n);
+  // highlight in list
+  document.querySelectorAll(".sitem").forEach(el=>el.classList.toggle("sel",el.dataset.id===n.id));
+  // scroll to node in view
+  const ng = g.select(`.node-g[data-id="${n.id}"]`);
+  if (!ng.empty()) {
+    const tr = ng.attr("transform");
+    const m = tr.match(/translate\(([^,]+),([^)]+)\)/);
+    if (m) {
+      const nx=+m[1], ny=+m[2];
+      const ww=wrap.clientWidth, wh=wrap.clientHeight;
+      const cur = d3.zoomTransform(svg.node());
+      const tx = ww/2 - nx*cur.k;
+      const ty = wh/2 - ny*cur.k;
+      svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity.translate(tx,ty).scale(cur.k));
+    }
+  }
+}
+
+// ─── DETAIL PANEL ────────────────────────────────────────────────────────────
+function renderDetail(n) {
+  document.getElementById("demp").style.display = n ? "none" : "block";
+  const dc = document.getElementById("dcontent");
+  dc.style.display = n ? "block" : "none";
+  if (!n) return;
+
+  const sl = {active:"ba",le_disrupted:"bl",defunct:"bd",unknown:"bu"};
+  const st = {active:"Active",le_disrupted:"LE Disrupted",defunct:"Defunct",unknown:"Unknown"};
+  const outE = EDGES.filter(e=>e.s===n.id);
+  const inE  = EDGES.filter(e=>e.t===n.id);
+  const evs  = EVENTS.filter(e=>e.ids.includes(n.id));
+  const nById = id => NODES.find(x=>x.id===id);
+
+  let html = `<div class="dheader">
+    <h2>${n.label}</h2>
+    <div class="dtype">${n.t==="G"?"Threat Actor Group":"Operation / Variant"}
+      <span class="sbadge ${sl[n.s]}">${st[n.s]}</span>
+    </div>
+  </div>
+  <div class="dsec">
+    <h3>Overview</h3>
+    <div class="kv"><span class="k">Ecosystem</span><span class="v">${n.eco||"—"}</span></div>
+    <div class="kv"><span class="k">First seen</span><span class="v">${n.yr||"—"}</span></div>
+    <div class="kv"><span class="k">Last seen</span><span class="v">${n.end||"Ongoing"}</span></div>
+    ${n.n?`<div style="font-size:11px;color:#7a93ad;margin-top:6px;line-height:1.45">${n.n}</div>`:""}
+  </div>`;
+
+  if (outE.length) {
+    html+=`<div class="dsec"><h3>Leads to (${outE.length})</h3>`;
+    outE.forEach(e=>{
+      const tgt=nById(e.t); if(!tgt) return;
+      const c=EC[e.type]||"#64748b";
+      html+=`<div class="ritem"><span class="rarrow" style="color:${c}">→</span>
+        <div><span class="rname" data-id="${tgt.id}">${tgt.label}</span>
+        <span class="rtype">${e.type.replace("_"," ")} ${e.label?`· ${e.label}`:""}</span></div></div>`;
+    });
+    html+="</div>";
+  }
+  if (inE.length) {
+    html+=`<div class="dsec"><h3>Derived from / linked (${inE.length})</h3>`;
+    inE.forEach(e=>{
+      const src=nById(e.s); if(!src) return;
+      const c=EC[e.type]||"#64748b";
+      html+=`<div class="ritem"><span class="rarrow" style="color:${c}">←</span>
+        <div><span class="rname" data-id="${src.id}">${src.label}</span>
+        <span class="rtype">${e.type.replace("_"," ")} ${e.label?`· ${e.label}`:""}</span></div></div>`;
+    });
+    html+="</div>";
+  }
+  if (evs.length) {
+    html+=`<div class="dsec"><h3>Events</h3>`;
+    evs.forEach(ev=>{
+      const tl={le:"LE Action",leak:"Code Leak",shutdown:"Shutdown",hack:"Hacktivist"};
+      html+=`<div class="evitem"><span class="evyear">${ev.yr}</span> · ${tl[ev.type]||ev.type}
+        <br><span style="color:#7a93ad;font-size:10px">${ev.label}</span></div>`;
+    });
+    html+="</div>";
+  }
+
+  dc.innerHTML = html;
+  dc.querySelectorAll(".rname").forEach(el=>{
+    el.addEventListener("click",()=>{
+      const nd = NODES.find(x=>x.id===el.dataset.id);
+      if (nd) {
+        const ng2 = g.select(`.node-g[data-id="${nd.id}"]`);
+        if (!ng2.empty()) onNodeClick(nd);
+      }
+    });
+  });
+}
+
+// ─── SEARCH LIST ─────────────────────────────────────────────────────────────
+function updateList(nodes) {
+  const sl = document.getElementById("slist");
+  const sorted = [...nodes].sort((a,b)=>{
+    if(a.t!==b.t) return a.t==="G"?-1:1;
+    return a.label.localeCompare(b.label);
+  });
+  const bc={active:"ba",le_disrupted:"bl",defunct:"bd",unknown:"bu"};
+  const bs={active:"A",le_disrupted:"LE",defunct:"D",unknown:"?"};
+  sl.innerHTML = sorted.map(n=>`
+    <div class="sitem" data-id="${n.id}">
+      <div class="sname">${n.label}<span class="sbadge ${bc[n.s]}">${bs[n.s]}</span></div>
+      <div class="smeta">${n.t==="G"?"Group":"Op"} · ${n.eco} · ${n.yr||"?"}${n.end?"–"+n.end:"–now"}</div>
+    </div>`).join("");
+  sl.querySelectorAll(".sitem").forEach(el=>{
+    el.classList.toggle("sel", ST.selected && el.dataset.id===ST.selected.id);
+    el.addEventListener("click",()=>{
+      const nd=NODES.find(x=>x.id===el.dataset.id);
+      if(nd){
+        const ng2=g.select(`.node-g[data-id="${nd.id}"]`);
+        if(!ng2.empty()) onNodeClick(nd);
+      }
+    });
+  });
+}
+
+// ─── TOOLTIP ─────────────────────────────────────────────────────────────────
+function showTip(ev,n){
+  document.getElementById("tn").textContent=n.label;
+  document.getElementById("tm").textContent=`${n.t==="G"?"Group":"Operation"} · ${n.eco} · ${n.yr||"?"}${n.end?"–"+n.end:"–now"} · ${n.s.replace("_"," ")}`;
+  const t=document.getElementById("tip"); t.style.display="block"; moveTip(ev);
+}
+function moveTip(ev){const t=document.getElementById("tip");t.style.left=(ev.clientX+12)+"px";t.style.top=(ev.clientY-32)+"px";}
+function hideTip(){document.getElementById("tip").style.display="none";}
+
+// ─── CONTROLS ────────────────────────────────────────────────────────────────
+document.getElementById("q").addEventListener("input",e=>{ST.q=e.target.value.trim();render();});
+document.getElementById("ys").addEventListener("input",e=>{
+  ST.ys=+e.target.value; if(ST.ys>ST.ye){ST.ye=ST.ys;document.getElementById("ye").value=ST.ys;}
+  document.getElementById("ysv").textContent=ST.ys; render();
+});
+document.getElementById("ye").addEventListener("input",e=>{
+  ST.ye=+e.target.value; if(ST.ye<ST.ys){ST.ys=ST.ye;document.getElementById("ys").value=ST.ye;}
+  document.getElementById("yev").textContent=ST.ye; render();
+});
+document.querySelectorAll(".sf").forEach(cb=>cb.addEventListener("change",()=>{
+  ST.sf=new Set([...document.querySelectorAll(".sf:checked")].map(c=>c.value)); render();
+}));
+document.querySelectorAll(".ef").forEach(cb=>cb.addEventListener("change",()=>{
+  ST.ef=new Set([...document.querySelectorAll(".ef:checked")].map(c=>c.value)); render();
+}));
+document.getElementById("eco").addEventListener("change",e=>{ST.eco=e.target.value;render();});
+
+document.getElementById("btn-trace").addEventListener("click",()=>{
+  ST.traceMode=!ST.traceMode;
+  document.getElementById("btn-trace").classList.toggle("on",ST.traceMode);
+  document.getElementById("tbanner").style.display=ST.traceMode?"block":"none";
+  if(ST.traceMode && ST.selected) applyHighlight();
+  else if(!ST.traceMode) applyHighlight();
+});
+document.getElementById("btn-groups-only").addEventListener("click",()=>{
+  ST.groupsOnly=!ST.groupsOnly;
+  document.getElementById("btn-groups-only").classList.toggle("on",ST.groupsOnly);
+  render();
+});
+document.getElementById("btn-fit").addEventListener("click",()=>{
+  const vis=sortNodes(filterNodes());
+  const totalW=60+vis.length*NODE_SP+60;
+  fitView(vis,totalW);
+});
+document.getElementById("btn-reset").addEventListener("click",()=>{
+  ST.q="";ST.ys=2014;ST.ye=2026;ST.eco="";ST.groupsOnly=false;
+  ST.sf=new Set(["active","le_disrupted","defunct","unknown"]);
+  ST.ef=new Set(["rebrand","derived","variant","code_reuse","relationship","unconfirmed"]);
+  document.getElementById("q").value="";
+  document.getElementById("ys").value=2014;document.getElementById("ysv").textContent=2014;
+  document.getElementById("ye").value=2026;document.getElementById("yev").textContent=2026;
+  document.getElementById("eco").value="";
+  document.getElementById("btn-groups-only").classList.remove("on");
+  document.querySelectorAll(".sf,.ef").forEach(cb=>cb.checked=true);
+  render();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    ST.traceMode=false;
+    document.getElementById("btn-trace").classList.remove("on");
+    document.getElementById("tbanner").style.display="none";
+    applyHighlight();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
