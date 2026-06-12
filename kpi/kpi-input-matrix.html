@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPI Input Matrix | Registry Editor</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #070b16; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #c0cfe0; padding-bottom: 120px; }
+#header { padding: 14px 28px 10px; border-bottom: 1px solid #1a2a44; }
+#header h1 { font-size: 15px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #5a9acc; }
+#header .sub { font-size: 11px; color: #5e7a98; margin-top: 4px; line-height: 1.6; max-width: 900px; }
+.section { margin: 24px 28px 0; }
+.section h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #5a9acc; border-bottom: 1px solid #1a2a44; padding-bottom: 6px; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { text-align: left; padding: 6px 8px; color: #8fb4d4; font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #1a2a44; background: #0a1322; }
+td { padding: 6px 8px; border-bottom: 1px solid #101c30; vertical-align: top; }
+input, select, textarea { background: #0c1524; border: 1px solid #1f3050; color: #dce8f4; border-radius: 4px; padding: 5px 7px; font-size: 11px; font-family: inherit; width: 100%; }
+textarea { min-height: 44px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #5a9acc; }
+.kpi-id { color: #5a9acc; font-weight: 700; white-space: nowrap; }
+.muted { color: #5e7a98; font-size: 10px; line-height: 1.4; }
+.changed { border-color: #d8b86a !important; background: #16213a; }
+#savebar { position: fixed; bottom: 0; left: 0; right: 0; background: #0a1322; border-top: 1px solid #1a2a44; padding: 12px 28px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+button { background: #1d4f7c; border: 1px solid #5a9acc; color: #dce8f4; padding: 8px 18px; border-radius: 4px; font-size: 12px; letter-spacing: 1px; cursor: pointer; font-family: inherit; }
+button:hover { background: #2a639a; }
+#changelog { flex: 1; min-width: 280px; }
+#status { font-size: 11px; color: #6fd398; }
+.warn { color: #d8b86a; }
+.instructions { background: #0c1524; border: 1px solid #1a2a44; border-left: 3px solid #5a9acc; border-radius: 4px; padding: 12px 16px; font-size: 11px; line-height: 1.7; margin: 18px 28px 0; max-width: 980px; }
+.scroll { max-height: 480px; overflow-y: auto; border: 1px solid #1a2a44; border-radius: 6px; }
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>KPI Input Matrix</h1>
+  <div class="sub">This page edits the canonical registry. Change values below, write one line in the change log describing what you updated, then press <b>Download updated registry</b>. Replace <b>data/registry.js</b> in the repo with the downloaded file. The tracker and every other registry-fed product will pick the changes up automatically.</div>
+</div>
+
+<div class="instructions" id="loadinfo"></div>
+
+<div class="section">
+  <h2>1. Quarterly KPI Entry</h2>
+  <div class="muted" style="margin-bottom:8px">Select the reporting period, then fill values for the KPIs you have data for. Leave a field untouched to keep its current value. Edited fields turn amber.</div>
+  <div style="margin-bottom:10px">Period:
+    <select id="period" style="width:140px">
+      <option>2026Q2</option><option>2026Q3</option><option>2026Q4</option><option>2026Q1</option>
+    </select>
+  </div>
+  <div class="scroll"><table id="kpi-edit"></table></div>
+</div>
+
+<div class="section">
+  <h2>2. Group Pressure Updates</h2>
+  <div class="scroll"><table id="group-edit"></table></div>
+</div>
+
+<div class="section">
+  <h2>3. Node Status Updates</h2>
+  <div class="scroll"><table id="node-edit"></table></div>
+</div>
+
+<div class="section">
+  <h2>4. Add Leak Site Month</h2>
+  <table style="max-width:900px">
+    <tr><th>Month (e.g. Jun 2026)</th><th>Victims</th><th>Note</th><th>Source</th></tr>
+    <tr><td><input id="lm-month" placeholder="Jun 2026"></td><td><input id="lm-victims" type="number" placeholder="0"></td>
+        <td><input id="lm-note"></td><td><input id="lm-source" value="Breachsense monthly/annual reports"></td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>5. Add WAIS Arrest Event (strict track)</h2>
+  <table style="max-width:1100px">
+    <tr><th>Op ID</th><th>Date</th><th>Actor / Handle</th><th>Node Crit. (1-3)</th><th>Coop (1-3/PENDING)</th><th>Trust (1-3)</th><th>Reconst. (1-3)</th><th>Coord Bonus</th></tr>
+    <tr><td><input id="w-id" placeholder="e.g. LEAKBASE-A1"></td><td><input id="w-date" placeholder="Mar 2026"></td><td><input id="w-actor"></td>
+        <td><select id="w-nc"><option></option><option>1</option><option>2</option><option>3</option></select></td>
+        <td><select id="w-co"><option></option><option>1</option><option>2</option><option>3</option><option>PENDING</option></select></td>
+        <td><select id="w-tc"><option></option><option>1</option><option>2</option><option>3</option></select></td>
+        <td><select id="w-ri"><option></option><option>1</option><option>2</option><option>3</option></select></td>
+        <td><select id="w-bonus"><option>No</option><option>Yes</option></select></td></tr>
+    <tr><th colspan="3">Node / Role</th><th>Dual-log A-1?</th><th>Confidence</th><th colspan="3">Scoring Note</th></tr>
+    <tr><td colspan="3"><input id="w-role" placeholder="e.g. RaaS admin (Node 06)"></td>
+        <td><select id="w-a1"><option>No</option><option>Yes</option></select></td>
+        <td><select id="w-conf"><option>CONFIRMED</option><option>CREDIBLE</option><option>INDICATIVE</option></select></td>
+        <td colspan="3"><input id="w-note" placeholder="Anchor facts and key judgments"></td></tr>
+  </table>
+  <div class="muted" style="margin-top:6px">Eligibility rule (Doc 14): function test, Russia/CIS nexus test, liberty test; window Jan 2022 onward. Score within 30 days of arrest. Use PENDING for Cooperation Output if debrief results are not yet known. Base and final scores compute automatically on download. Russian domestic arrests: set Dual-log A-1 to Yes.</div>
+</div>
+
+<div id="savebar">
+  <input id="changelog" placeholder="REQUIRED: one line describing this update (e.g. 'Q2 2026 KPI values entered; Qilin status reviewed')">
+  <button id="download">Download updated registry</button>
+  <span id="status"></span>
+</div>
+
+<script src="data/registry.js"></script>
+<script>
+const R = window.EDP_REGISTRY;
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+document.getElementById("loadinfo").innerHTML =
+  `Loaded registry <b>v${esc(R.meta.registry_version)}</b>, generated <b>${esc(R.meta.generated)}</b>. ` +
+  `Last change: ${esc(R.meta.changelog[R.meta.changelog.length-1].date)}: ${esc(R.meta.changelog[R.meta.changelog.length-1].change)}`;
+
+const mark = el => el.classList.add("changed");
+
+// 1. KPI edit table
+const kpiTable = document.getElementById("kpi-edit");
+function renderKpis(){
+  const period = document.getElementById("period").value;
+  kpiTable.innerHTML = `<tr><th>ID</th><th style="min-width:200px">KPI</th><th style="min-width:280px">Value for ${period}</th><th>Trend</th><th>Confidence</th></tr>` +
+   R.kpis.map((k,i)=>`<tr>
+     <td class="kpi-id">${esc(k.id)}</td>
+     <td>${esc(k.name)}<div class="muted">Q1 2026: ${esc((k.periods["2026Q1"]||"").slice(0,90))}</div></td>
+     <td><textarea data-kpi="${i}" data-field="value">${esc(k.periods[period]||"")}</textarea></td>
+     <td><select data-kpi="${i}" data-field="trend">
+       ${["","Improving","Worsening","No Change","Mixed","Insufficient Data","Improving (QoQ); Worsening (YoY)","Reversing (consolidation)"].map(o=>`<option${o===k.trend?" selected":""}>${o}</option>`).join("")}
+     </select></td>
+     <td><select data-kpi="${i}" data-field="confidence">
+       ${["CONFIRMED","CREDIBLE","INDICATIVE"].map(o=>`<option${k.confidence.startsWith(o)?" selected":""}>${o}</option>`).join("")}
+     </select></td></tr>`).join("");
+}
+renderKpis();
+document.getElementById("period").addEventListener("change", renderKpis);
+kpiTable.addEventListener("input", e => mark(e.target));
+
+// 2. Groups
+document.getElementById("group-edit").innerHTML =
+  `<tr><th>Group</th><th>Status</th><th>Capacity vs Baseline</th><th>Financial Rails</th><th>Protection Layer</th><th>Reconst. Risk</th><th>Strife Count</th><th>Next Review</th></tr>` +
+  R.groups.map((g,i)=>`<tr><td><b>${esc(g.name)}</b></td>
+   <td><select data-g="${i}" data-field="status">${["Fully Operational","Degraded","Significantly Degraded","Dissolved","Unknown"].map(o=>`<option${o===g.status?" selected":""}>${o}</option>`).join("")}</select></td>
+   <td><input data-g="${i}" data-field="op_capacity" value="${esc(g.op_capacity)}"></td>
+   <td><select data-g="${i}" data-field="financial_rails">${["Intact","Partially Disrupted","Collapsed","Unknown"].map(o=>`<option${o===g.financial_rails?" selected":""}>${o}</option>`).join("")}</select></td>
+   <td><input data-g="${i}" data-field="protection_layer" value="${esc(g.protection_layer)}"></td>
+   <td><select data-g="${i}" data-field="reconstitution_risk">${["Low","Medium","High","N/A"].map(o=>`<option${o===g.reconstitution_risk?" selected":""}>${o}</option>`).join("")}</select></td>
+   <td><input data-g="${i}" data-field="strife_events" value="${esc(g.strife_events)}" style="width:60px"></td>
+   <td><input data-g="${i}" data-field="next_review" value="${esc(g.next_review)}" style="width:90px"></td></tr>`).join("");
+document.getElementById("group-edit").addEventListener("input", e => mark(e.target));
+
+// 3. Nodes
+document.getElementById("node-edit").innerHTML =
+  `<tr><th>Node</th><th style="min-width:340px">Current Status Summary</th><th>Confidence</th><th>Last Updated</th></tr>` +
+  R.nodes.map((n,i)=>`<tr><td class="kpi-id">${esc(n.id)}<div class="muted">${esc(n.name)}</div></td>
+   <td><textarea data-n="${i}" data-field="status_summary">${esc(n.status_summary)}</textarea></td>
+   <td><select data-n="${i}" data-field="confidence">${["CONFIRMED","CREDIBLE","INDICATIVE"].map(o=>`<option${n.confidence.startsWith(o)?" selected":""}>${o}</option>`).join("")}</select></td>
+   <td><input data-n="${i}" data-field="last_updated" value="${esc(n.last_updated)}" style="width:100px"></td></tr>`).join("");
+document.getElementById("node-edit").addEventListener("input", e => mark(e.target));
+
+// Download
+document.getElementById("download").addEventListener("click", () => {
+  const log = document.getElementById("changelog").value.trim();
+  const status = document.getElementById("status");
+  if (!log) { status.textContent = "Change log line is required before download."; status.className = "warn"; return; }
+
+  const period = document.getElementById("period").value;
+  kpiTable.querySelectorAll("[data-kpi]").forEach(el => {
+    const k = R.kpis[+el.dataset.kpi];
+    if (el.dataset.field === "value") { if (el.value.trim() !== (k.periods[period]||"")) k.periods[period] = el.value.trim(); }
+    else k[el.dataset.field] = el.value;
+  });
+  document.querySelectorAll("[data-g]").forEach(el => { R.groups[+el.dataset.g][el.dataset.field] = el.value; });
+  document.querySelectorAll("[data-n]").forEach(el => { R.nodes[+el.dataset.n][el.dataset.field] = el.value; });
+
+  const lm = document.getElementById("lm-month").value.trim();
+  if (lm) R.leak_site_monthly.push({ month: lm, victims: +document.getElementById("lm-victims").value || 0,
+    note: document.getElementById("lm-note").value.trim(), source: document.getElementById("lm-source").value.trim() });
+
+  const wid = document.getElementById("w-id").value.trim();
+  if (wid) {
+    const nc = document.getElementById("w-nc").value, co = document.getElementById("w-co").value,
+          tc = document.getElementById("w-tc").value, ri = document.getElementById("w-ri").value,
+          bonus = document.getElementById("w-bonus").value;
+    let base = "", fin = "", cat = "PENDING";
+    if (nc && tc && ri && co && co !== "PENDING") {
+      base = (+nc)+(+co)+(+tc)+(+ri); fin = bonus === "Yes" ? base+2 : base;
+      cat = fin >= 10 ? "HIGH ECOSYSTEM IMPACT" : fin >= 7 ? "MODERATE IMPACT" : "LIMITED IMPACT";
+    }
+    R.wais_events.push({ op_id: wid, date: document.getElementById("w-date").value.trim(),
+      actor: document.getElementById("w-actor").value.trim(), node_criticality: nc, cooperation_output: co,
+      trust_cascade: tc, reconstitution_impact: ri, base: String(base), coord_bonus: bonus,
+      final: String(fin), category: cat,
+      node_role: document.getElementById("w-role").value.trim(),
+      dual_log_a1: document.getElementById("w-a1").value,
+      confidence: document.getElementById("w-conf").value,
+      note: document.getElementById("w-note").value.trim(), track: "strict" });
+    if (R.wais_population) R.wais_population.n += 1;
+  }
+
+  const today = new Date().toISOString().slice(0,10);
+  R.meta.changelog.push({ date: today, change: log });
+  R.meta.generated = today;
+  R.meta.registry_version = (parseFloat(R.meta.registry_version) + 0.1).toFixed(1);
+
+  const blob = new Blob(["window.EDP_REGISTRY = " + JSON.stringify(R, null, 1) + ";\n"], { type: "text/javascript" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "registry.js"; a.click();
+  status.className = ""; status.textContent =
+    `Downloaded registry v${R.meta.registry_version}. Replace data/registry.js in the repo with this file.`;
+});
+</script>
+</body>
+</html>
