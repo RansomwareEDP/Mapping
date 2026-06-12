@@ -2,1017 +2,243 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KPI Measurement Tool — Ransomware Ecosystem Disruption</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPI Tracker | Ransomware Ecosystem Disruption Framework</title>
 <style>
-:root {
-  --bg:#0d1117; --surface:#161b22; --surface2:#1e2530; --surface3:#252d3a;
-  --border:#30363d; --borderL:#3d4450;
-  --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
-  --confirmed:#3fb950; --conf-bg:rgba(63,185,80,.10); --conf-bd:rgba(63,185,80,.30);
-  --credible:#d29922;  --cred-bg:rgba(210,153,34,.10); --cred-bd:rgba(210,153,34,.30);
-  --inference:#f0883e; --inf-bg:rgba(240,136,62,.10);  --inf-bd:rgba(240,136,62,.30);
-  --green:#3fb950; --green-bg:rgba(63,185,80,.10); --green-bd:rgba(63,185,80,.28);
-  --amber:#d29922; --amber-bg:rgba(210,153,34,.10); --amber-bd:rgba(210,153,34,.28);
-  --red:#f85149;   --red-bg:rgba(248,81,73,.10);   --red-bd:rgba(248,81,73,.28);
-  --grey:#6e7681;  --grey-bg:rgba(110,118,129,.10); --grey-bd:rgba(110,118,129,.20);
-  --a:#58a6ff; --a-bg:rgba(88,166,255,.08); --a-bd:rgba(88,166,255,.22);
-  --b:#bc8cff; --b-bg:rgba(188,140,255,.08);--b-bd:rgba(188,140,255,.22);
-  --c:#3fb950; --c-bg:rgba(63,185,80,.08);  --c-bd:rgba(63,185,80,.22);
-  --chart-height:180px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
-
-/* TOPBAR */
-#topbar{position:fixed;top:0;left:0;right:0;height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:200;}
-.tb-logo{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
-.tb-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;}
-.tb-title{font-size:12px;font-weight:600;color:var(--text);}
-.tb-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
-.btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;border:1px solid;cursor:pointer;font-family:inherit;transition:all .12s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
-.btn-ghost{background:transparent;border-color:var(--border);color:var(--muted);}
-.btn-ghost:hover{border-color:var(--borderL);color:var(--text);}
-.btn-primary{background:var(--b);border-color:var(--b);color:#0d1117;}
-.btn-primary:hover{opacity:.85;}
-
-/* THEME BAR */
-#theme-sw{position:fixed;top:52px;left:0;right:0;height:48px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;z-index:190;}
-.theme-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:12px;font-weight:600;transition:all .15s;border-bottom:3px solid transparent;padding:0 12px;}
-.theme-btn+.theme-btn{border-left:1px solid var(--border);}
-.theme-btn:hover{background:var(--surface3);color:var(--text);}
-.theme-btn.act-a{color:var(--a);background:rgba(88,166,255,.06);border-bottom-color:var(--a);}
-.theme-btn.act-b{color:var(--b);background:rgba(188,140,255,.06);border-bottom-color:var(--b);}
-.theme-btn.act-c{color:var(--c);background:rgba(63,185,80,.06);border-bottom-color:var(--c);}
-.theme-btn.act-overview{color:var(--muted);background:var(--surface3);border-bottom-color:var(--borderL);}
-.tsd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.tsd-green{background:var(--green);} .tsd-amber{background:var(--amber);} .tsd-red{background:var(--red);} .tsd-grey{background:var(--grey);}
-
-/* LAYOUT */
-#main{margin-top:100px;max-width:1240px;margin-left:auto;margin-right:auto;padding:20px 18px 80px;}
-
-/* QUARTER TIMELINE */
-#timeline-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.tl-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;}
-.tl-quarters{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
-.tl-q{font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:var(--surface2);color:var(--muted);transition:all .15s;white-space:nowrap;}
-.tl-q:hover{border-color:var(--borderL);color:var(--text);}
-.tl-q.active{background:var(--b-bg);border-color:var(--b-bd);color:var(--b);}
-.tl-q.has-data{border-color:var(--border);color:var(--text);}
-.tl-q.no-data{opacity:.4;cursor:default;}
-.tl-right{display:flex;gap:8px;align-items:center;flex-shrink:0;}
-
-/* ECO STATUS STRIP */
-#eco-strip{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 20px;margin-bottom:18px;}
-.es-block{display:flex;flex-direction:column;gap:3px;}
-.es-qlabel{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
-.es-qname{font-size:16px;font-weight:800;color:var(--text);}
-.es-status-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.es-badge{font-size:13px;font-weight:800;letter-spacing:.06em;padding:5px 18px;border-radius:20px;border:1px solid;}
-.es-badge.green{color:var(--green);background:var(--green-bg);border-color:var(--green-bd);}
-.es-badge.amber{color:var(--amber);background:var(--amber-bg);border-color:var(--amber-bd);}
-.es-badge.red{color:var(--red);background:var(--red-bg);border-color:var(--red-bd);}
-.es-badge.grey{color:var(--dim);background:var(--grey-bg);border-color:var(--grey-bd);}
-.es-sublabel{font-size:10px;color:var(--dim);}
-.es-kpi-dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-.es-dot-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
-.es-dot{width:8px;height:8px;border-radius:50%;}
-
-/* PANELS */
-.panel{display:none;}
-.panel.active{display:block;}
-
-/* OVERVIEW PANEL */
-#panel-overview .overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
-.ov-theme-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
-.ov-theme-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
-.ov-kpi-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
-.ov-kpi-row:last-child{border-bottom:none;}
-.ov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.ov-id{font-size:10.5px;font-weight:700;color:var(--muted);width:34px;flex-shrink:0;}
-.ov-name{font-size:11.5px;color:var(--muted);flex:1;}
-.ov-trend{font-size:12px;font-weight:700;flex-shrink:0;}
-
-/* LONGITUDINAL CHART SECTION */
-.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;}
-.chart-section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.chart-section-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:1;}
-.chart-section-sub{font-size:10.5px;color:var(--dim);}
-.charts-row{display:grid;gap:14px;}
-.charts-row.cols2{grid-template-columns:1fr 1fr;}
-.charts-row.cols3{grid-template-columns:1fr 1fr 1fr;}
-.chart-wrap{position:relative;}
-.chart-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
-canvas.sparkline{width:100%;height:var(--chart-height);display:block;}
-
-/* KPI DETAIL PANELS */
-.kpi-grid{display:flex;flex-direction:column;gap:14px;}
-.kpi-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--grey);border-radius:10px;overflow:hidden;}
-.kpi-card.s-green{border-left-color:var(--green);}
-.kpi-card.s-amber{border-left-color:var(--amber);}
-.kpi-card.s-red{border-left-color:var(--red);}
-.kc-head{display:flex;align-items:center;gap:10px;padding:13px 16px 11px;border-bottom:1px solid var(--border);}
-.kc-id{font-size:10px;font-weight:700;letter-spacing:.09em;padding:2px 8px;border-radius:3px;flex-shrink:0;}
-.id-a{color:var(--a);background:var(--a-bg);border:1px solid var(--a-bd);}
-.id-b{color:var(--b);background:var(--b-bg);border:1px solid var(--b-bd);}
-.id-c{color:var(--c);background:var(--c-bg);border:1px solid var(--c-bd);}
-.kc-name{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
-.kc-badges{display:flex;gap:6px;align-items:center;flex-shrink:0;}
-.badge{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid;white-space:nowrap;}
-.b-conf{color:var(--confirmed);background:var(--conf-bg);border-color:var(--conf-bd);}
-.b-cred{color:var(--credible);background:var(--cred-bg);border-color:var(--cred-bd);}
-.b-inf{color:var(--inference);background:var(--inf-bg);border-color:var(--inf-bd);}
-.b-dim{color:var(--dim);background:var(--surface3);border-color:var(--border);}
-.pip{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.pip-green{background:var(--green);box-shadow:0 0 5px rgba(63,185,80,.4);}
-.pip-amber{background:var(--amber);box-shadow:0 0 5px rgba(210,153,34,.4);}
-.pip-red{background:var(--red);box-shadow:0 0 5px rgba(248,81,73,.4);}
-.pip-grey{background:var(--grey);}
-
-.kc-body{display:grid;grid-template-columns:1fr 220px;gap:0;}
-.kc-main{padding:14px 16px;border-right:1px solid var(--border);}
-.kc-spark{padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
-.spark-label{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
-.spark-canvas-wrap{position:relative;height:80px;}
-canvas.mini-spark{width:100%;height:100%;display:block;}
-
-/* status note */
-.sn{padding:10px 13px;border-radius:6px;font-size:12.5px;color:var(--muted);line-height:1.55;border:1px solid var(--border);background:var(--surface2);margin-top:10px;}
-.sn.green{border-color:var(--green-bd);background:var(--green-bg);color:var(--text);}
-.sn.amber{border-color:var(--amber-bd);background:var(--amber-bg);color:var(--text);}
-.sn.red{border-color:var(--red-bd);background:var(--red-bg);color:var(--text);}
-.sn-lbl{display:block;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:3px;}
-.sn.green .sn-lbl{color:var(--green);}
-.sn.amber .sn-lbl{color:var(--amber);}
-.sn.red .sn-lbl{color:var(--red);}
-.sn:not(.green):not(.amber):not(.red) .sn-lbl{color:var(--dim);}
-
-/* data table */
-.data-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;}
-.data-table th{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:left;padding:4px 8px 4px 0;border-bottom:1px solid var(--border);}
-.data-table td{padding:5px 8px 5px 0;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;}
-.data-table td:first-child{color:var(--text);font-weight:600;}
-.data-table tr:last-child td{border-bottom:none;}
-.td-green{color:var(--green) !important;}
-.td-amber{color:var(--amber) !important;}
-.td-red{color:var(--red) !important;}
-.td-dim{color:var(--dim) !important;}
-.trend-up{color:var(--green);font-weight:700;}
-.trend-dn{color:var(--red);font-weight:700;}
-.trend-fl{color:var(--amber);font-weight:700;}
-
-/* source tag */
-.src-tag{display:inline-block;font-size:10px;color:var(--dim);background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:1px 6px;margin-top:6px;}
-
-/* wais events */
-.wais-list{display:flex;flex-direction:column;gap:4px;margin-top:6px;}
-.wais-row{display:flex;align-items:center;gap:10px;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;}
-.wais-name{flex:1;font-size:12px;}
-.wais-score{font-size:16px;font-weight:800;width:32px;text-align:center;}
-.ws-high{color:var(--green);} .ws-mod{color:var(--amber);} .ws-low{color:var(--red);} .ws-pend{color:var(--dim);font-size:10px;}
-
-/* report panel */
-#report-area{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:18px;}
-.report-head{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
-#report-out{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;font-size:11.5px;color:var(--muted);line-height:1.65;white-space:pre-wrap;font-family:'SF Mono','Fira Code','Consolas',monospace;max-height:420px;overflow-y:auto;display:none;}
-#report-out.vis{display:block;}
-
-/* loading / error */
-#loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:500;}
-.ld-spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--b);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.ld-text{font-size:12px;color:var(--dim);}
-#loading.done{display:none;}
-
-/* no-data notice */
-.no-data-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px;text-align:center;color:var(--dim);font-size:13px;}
-.no-data-card strong{display:block;font-size:15px;color:var(--muted);margin-bottom:6px;}
-
-/* section label */
-.sec-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
-
-/* unpopulated strip */
-.unpop-strip{font-size:11.5px;color:var(--dim);font-style:italic;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;}
-
-/* copy button */
-.copy-btn{margin-top:8px;padding:7px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s;width:100%;text-align:center;display:none;}
-.copy-btn.vis{display:block;}
-.copy-btn:hover{border-color:var(--borderL);color:var(--text);}
-.copy-btn.copied{color:var(--green);border-color:var(--green-bd);}
-
-/* generate btn */
-.gen-btn{display:block;width:100%;padding:9px;background:var(--green);border:none;border-radius:6px;color:#0d1117;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;transition:opacity .12s;}
-.gen-btn:hover{opacity:.85;}
-
-/* gap indicators */
-.gap-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.gap-chip{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:3px;background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red);}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #070b16; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #c0cfe0; padding-bottom: 60px; }
+a { color: #5a9acc; }
+#header { padding: 14px 28px 10px; border-bottom: 1px solid #1a2a44; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 10px; }
+#header h1 { font-size: 15px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #5a9acc; }
+#header .sub { font-size: 11px; color: #5e7a98; margin-top: 3px; }
+#header .meta { font-size: 10.5px; color: #4e6e8e; text-align: right; line-height: 1.7; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+.section { margin: 26px 28px 0; }
+.section h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #5a9acc; border-bottom: 1px solid #1a2a44; padding-bottom: 6px; margin-bottom: 12px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.card { background: #0c1524; border: 1px solid #1a2a44; border-radius: 6px; padding: 14px 16px; }
+.card h3 { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8fb4d4; margin-bottom: 8px; }
+.card .big { font-size: 22px; font-weight: 700; color: #dce8f4; margin-bottom: 4px; }
+.card .small { font-size: 10.5px; color: #5e7a98; line-height: 1.5; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { text-align: left; padding: 6px 8px; color: #8fb4d4; font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #1a2a44; background: #0a1322; position: sticky; top: 0; }
+td { padding: 7px 8px; border-bottom: 1px solid #101c30; vertical-align: top; line-height: 1.45; }
+tr:hover td { background: rgba(90,154,204,0.05); }
+.theme-row td { background: #0e1a2e; color: #9dc1de; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 10px; }
+.chip { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 9px; letter-spacing: 0.5px; font-weight: 600; white-space: nowrap; }
+.c-CONFIRMED { background: rgba(60,160,90,0.18); color: #6fd398; border: 1px solid rgba(60,160,90,0.4); }
+.c-CREDIBLE { background: rgba(90,154,204,0.15); color: #7db4dc; border: 1px solid rgba(90,154,204,0.4); }
+.c-INDICATIVE { background: rgba(200,160,60,0.15); color: #d8b86a; border: 1px solid rgba(200,160,60,0.4); }
+.t-up { color: #6fd398; } .t-down { color: #e08585; } .t-mixed { color: #d8b86a; } .t-na { color: #5e7a98; }
+.muted { color: #5e7a98; font-size: 10px; }
+#chart-wrap { background: #0c1524; border: 1px solid #1a2a44; border-radius: 6px; padding: 16px; }
+.legend { font-size: 10px; color: #5e7a98; margin-top: 8px; }
+.kpi-id { color: #5a9acc; font-weight: 700; white-space: nowrap; }
+.scroll { max-height: 520px; overflow-y: auto; border: 1px solid #1a2a44; border-radius: 6px; }
+details summary { cursor: pointer; font-size: 11px; color: #8fb4d4; padding: 6px 0; }
+.s-dissolved { color: #e08585; } .s-degraded { color: #d8b86a; } .s-operational { color: #6fd398; }
+.footer-note { margin: 34px 28px 0; font-size: 10px; color: #41587a; border-top: 1px solid #101c30; padding-top: 10px; line-height: 1.6; }
 </style>
 </head>
 <body>
-
-<div id="loading">
-  <div class="ld-spinner"></div>
-  <div class="ld-text">Loading KPI data…</div>
+<div id="header">
+  <div>
+    <h1>Ransomware Ecosystem Disruption Framework</h1>
+    <div class="sub">KPI Tracker &amp; Measurement Dashboard. Rendered live from the canonical registry. No values are typed into this page.</div>
+  </div>
+  <div class="meta" id="meta"></div>
 </div>
 
-<!-- TOPBAR -->
-<div id="topbar">
-  <a href="../" class="btn btn-ghost" style="padding:4px 10px;font-size:11px;">← Repository</a>
-  <div class="tb-sep"></div>
-  <div class="tb-logo">Ransomware EDP</div>
-  <div class="tb-sep"></div>
-  <div class="tb-title">KPI Measurement Tool — v2.0</div>
-  <div class="tb-right">
-    <button class="btn btn-ghost" id="btn-report" onclick="showReport()">Generate Report</button>
-  </div>
+<div class="section">
+  <h2>Theme Summary</h2>
+  <div class="cards" id="theme-cards"></div>
 </div>
 
-<!-- THEME BAR -->
-<div id="theme-sw">
-  <button class="theme-btn act-overview" id="btn-overview" onclick="switchPanel('overview')">
-    <span>📊</span> Overview
-    <div class="tsd tsd-grey" id="ts-dot-ov"></div>
-  </button>
-  <button class="theme-btn" id="btn-a" onclick="switchPanel('a')">
-    <span>🏛️</span> Theme A — Russian Domestic
-    <div class="tsd tsd-grey" id="ts-dot-a"></div>
-  </button>
-  <button class="theme-btn" id="btn-b" onclick="switchPanel('b')">
-    <span>⚖️</span> Theme B — LE &amp; Strife
-    <div class="tsd tsd-grey" id="ts-dot-b"></div>
-  </button>
-  <button class="theme-btn" id="btn-c" onclick="switchPanel('c')">
-    <span>💰</span> Theme C — Economics
-    <div class="tsd tsd-grey" id="ts-dot-c"></div>
-  </button>
+<div class="section">
+  <h2>Macro KPI Dashboard</h2>
+  <div class="scroll"><table id="kpi-table"></table></div>
+  <div class="legend">Confidence: CONFIRMED = primary source or multiple independent trackers. CREDIBLE = reputable single source. INDICATIVE = estimate or analyst inference. Baseline column holds pre-2026 reference data.</div>
 </div>
 
-<!-- MAIN -->
-<div id="main">
+<div class="section">
+  <h2>Leak Site Post Volume (Signal 1, monthly)</h2>
+  <div id="chart-wrap"><svg id="chart" width="100%" height="240"></svg>
+  <div class="legend" id="chart-legend"></div></div>
+</div>
 
-  <!-- TIMELINE -->
-  <div id="timeline-bar">
-    <div class="tl-label">Quarter</div>
-    <div class="tl-quarters" id="tl-quarters"></div>
-    <div class="tl-right">
-      <span style="font-size:11px;color:var(--dim);" id="compare-lbl"></span>
-    </div>
-  </div>
+<div class="section">
+  <h2>Quarterly History (Q1 2024 to present)</h2>
+  <div class="scroll"><table id="history-table"></table></div>
+  <div class="legend" id="history-note"></div>
+</div>
 
-  <!-- ECO STRIP -->
-  <div id="eco-strip">
-    <div class="es-block">
-      <div class="es-qlabel">Assessment Period</div>
-      <div class="es-qname" id="eco-qname">—</div>
-    </div>
-    <div class="es-kpi-dots" id="eco-dots"></div>
-    <div class="es-status-wrap">
-      <div class="es-badge grey" id="eco-badge">Incomplete</div>
-      <div class="es-sublabel">Ecosystem Status</div>
-    </div>
-  </div>
+<div class="section">
+  <h2>Group Pressure</h2>
+  <div class="scroll"><table id="group-table"></table></div>
+</div>
 
-  <!-- PANELS -->
-  <div id="panel-overview" class="panel active">
-    <div class="overview-grid" id="overview-grid"></div>
-    <div id="trend-charts"></div>
-  </div>
+<div class="section">
+  <h2>Node Pressure (Meso Layer)</h2>
+  <div class="scroll"><table id="node-table"></table></div>
+</div>
 
-  <div id="panel-a" class="panel">
-    <div class="kpi-grid" id="kpi-a"></div>
-  </div>
-  <div id="panel-b" class="panel">
-    <div class="kpi-grid" id="kpi-b"></div>
-  </div>
-  <div id="panel-c" class="panel">
-    <div class="kpi-grid" id="kpi-c"></div>
-  </div>
+<div class="section">
+  <h2>WAIS: Arrest Impact Scoring</h2>
+  <div class="cards" style="margin-bottom:12px"><div class="card" id="wais-validation"></div><div class="card" id="wais-population"></div></div>
+  <div class="scroll"><table id="wais-table"></table></div>
+  <div class="legend" id="wais-exclusions"></div>
+  <div style="height:14px"></div>
+  <details><summary>WAIS-D back-test events (disruption variant, Doc 13)</summary>
+  <table id="waisd-table"></table></details>
+</div>
 
-  <!-- REPORT AREA -->
-  <div id="report-area" style="display:none;">
-    <div class="report-head">Quarterly Report Output</div>
-    <button class="gen-btn" onclick="buildReport()">Generate Quarterly Report Text</button>
-    <div id="report-out"></div>
-    <button class="copy-btn" id="copy-btn" onclick="copyReport()">Copy to Clipboard</button>
-  </div>
+<div class="section">
+  <h2>Source Register</h2>
+  <details><summary>Show all sourced data points for the current baseline</summary>
+  <div class="scroll"><table id="source-table"></table></div></details>
+</div>
 
-</div><!-- /main -->
+<div class="footer-note" id="footer"></div>
 
+<script src="data/registry.js"></script>
 <script>
-// ── QUARTER REGISTRY ─────────────────────────────────────────────────────────
-// All quarters we attempt to load, in order
-const QUARTERS = [
-  'q1-2024','q2-2024','q3-2024','q4-2024',
-  'q1-2025','q2-2025','q3-2025','q4-2025',
-  'q1-2026'
-];
-const QQ = {}; // loaded data by key
-let activeQ = null;
-let activePanel = 'overview';
+const R = window.EDP_REGISTRY;
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const chip = c => c ? `<span class="chip c-${esc(c.split(" ")[0])}">${esc(c)}</span>` : "";
+function trendClass(t){ t=(t||"").toLowerCase();
+  if(t.startsWith("improv")||t.startsWith("revers")) return "t-up";
+  if(t.startsWith("wors")) return "t-down";
+  if(t.startsWith("mixed")||t.includes("qoq")) return "t-mixed"; return "t-na"; }
 
-function qLabel(k){ const [q,y]=k.split('-'); return q.toUpperCase()+' '+y; }
-function qPrev(k){
-  const idx = QUARTERS.indexOf(k);
-  return idx > 0 ? QUARTERS[idx-1] : null;
-}
+document.getElementById("meta").innerHTML =
+  `Registry v${esc(R.meta.registry_version)} · generated ${esc(R.meta.generated)}<br>` +
+  `Map ${esc(R.meta.map_current)} · Baseline quarter: Q1 2026<br>` +
+  `<span class="badge c-CONFIRMED">WAIS: ${esc(R.wais_validation.status)}</span>`;
 
-// ── DATA LOAD ────────────────────────────────────────────────────────────────
-async function loadAllQuarters(){
-  const promises = QUARTERS.map(q =>
-    fetch('data/'+q+'.json')
-      .then(r => r.ok ? r.json() : null)
-      .catch(() => null)
-      .then(d => { if(d) QQ[q] = d; })
-  );
-  await Promise.all(promises);
-  // find latest populated quarter
-  const loaded = QUARTERS.filter(q => QQ[q]);
-  activeQ = loaded.length ? loaded[loaded.length-1] : null;
-}
+// Theme cards
+const counts = t => R.kpis.filter(k=>k.theme===t);
+const headline = {
+  A: () => { const k = R.kpis.find(k=>k.id==="A-1"); return k ? k.periods["2026Q1"].split(";")[0] : ""; },
+  B: () => "Consolidation reversal: top 10 groups = 71% of Q1 victims",
+  C: () => { const k = R.kpis.find(k=>k.id==="C-2c"); return k ? k.periods["2026Q1"].split(".")[0] : ""; }
+};
+document.getElementById("theme-cards").innerHTML = Object.entries(R.themes).map(([t,name])=>{
+  const ks = counts(t);
+  const known = ks.filter(k=>!/^UNKNOWN/.test(k.periods["2026Q1"])).length;
+  return `<div class="card"><h3>Theme ${t}: ${esc(name)}</h3>
+    <div class="big">${known}/${ks.length} <span style="font-size:11px;color:#5e7a98;font-weight:400">KPIs with data</span></div>
+    <div class="small">${esc(headline[t]())}</div></div>`;
+}).join("");
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async () => {
-  await loadAllQuarters();
-  document.getElementById('loading').classList.add('done');
-  buildTimeline();
-  if(activeQ) render(activeQ);
-});
-
-// ── TIMELINE ─────────────────────────────────────────────────────────────────
-function buildTimeline(){
-  const container = document.getElementById('tl-quarters');
-  container.innerHTML = '';
-  QUARTERS.forEach(q => {
-    const btn = document.createElement('button');
-    const hasData = !!QQ[q];
-    btn.className = 'tl-q' + (hasData ? ' has-data' : ' no-data') + (q === activeQ ? ' active' : '');
-    btn.textContent = qLabel(q);
-    btn.disabled = !hasData;
-    btn.onclick = () => { activeQ = q; render(q); updateTimeline(); };
-    btn.id = 'tl-' + q;
-    container.appendChild(btn);
-  });
-}
-function updateTimeline(){
-  QUARTERS.forEach(q => {
-    const btn = document.getElementById('tl-'+q);
-    if(btn) btn.classList.toggle('active', q === activeQ);
-  });
-  const prev = qPrev(activeQ);
-  const cl = document.getElementById('compare-lbl');
-  if(cl) cl.textContent = prev && QQ[prev] ? 'vs ' + qLabel(prev) : '';
-}
-
-// ── THEME / PANEL SWITCH ─────────────────────────────────────────────────────
-function switchPanel(p){
-  ['overview','a','b','c'].forEach(x => {
-    document.getElementById('panel-'+x).classList.toggle('active', x===p);
-    const b = document.getElementById('btn-'+x);
-    if(b) b.className = 'theme-btn' + (x===p ? ' act-'+p : '');
-  });
-  activePanel = p;
-  document.getElementById('report-area').style.display = p === 'overview' ? 'none' : 'block';
-}
-
-// ── MAIN RENDER ──────────────────────────────────────────────────────────────
-function render(q){
-  const d = QQ[q];
-  if(!d){ return; }
-  document.getElementById('eco-qname').textContent = qLabel(q);
-  updateTimeline();
-  renderEcoStrip(q);
-  renderOverview(q);
-  renderThemeA(q);
-  renderThemeB(q);
-  renderThemeC(q);
-  renderTrendCharts();
-}
-
-// ── ASSESSMENT LOGIC ─────────────────────────────────────────────────────────
-const KPI_STATUS = {}; // {kpi: {status, trend, summary}}
-
-function assessA1(d, prev){
-  const kd = d?.theme_a?.a1;
-  if(!kd || !kd.populated || (kd.elite===null && kd.mid===null && kd.support===null))
-    return {status:'grey',trend:'—',summary:'Not populated.'};
-  const elite=kd.elite||0, mid=kd.mid||0, sup=kd.support||0, total=elite+mid+sup;
-  const pk = prev?.theme_a?.a1;
-  const prevTotal = pk ? (pk.elite||0)+(pk.mid||0)+(pk.support||0) : null;
-  let status,trend,summary;
-  if(elite>0){status='green';trend='↑';summary=`${total} total — ${elite} elite-tier actions. Elite action present.`;}
-  else if(mid>0){
-    if(prevTotal!==null && (mid>(pk.mid||0))){status='green';trend='↑';summary=`${total} total — ${mid} mid-tier (up QoQ). Elite: 0.`;}
-    else{status='amber';trend='→';summary=`${total} total — ${mid} mid-tier, flat/declining. Elite: 0.`;}
-  } else if(sup>0){status='amber';trend='→';summary=`${total} actions — all support-tier. Possible symbolic enforcement.`;}
-  else{status='amber';trend='→';summary='Actions entered — insufficient elite/mid signal.';}
-  return {status,trend,summary};
-}
-function assessA2(d, prev){
-  const kd = d?.theme_a?.a2;
-  if(!kd||!kd.populated) return {status:'grey',trend:'—',summary:'Not populated — L2 pending.'};
-  const avg=kd.avg_lag_days, cases=kd.cases_documented;
-  const pk=prev?.theme_a?.a2; const prevAvg=pk?.avg_lag_days??null;
-  if(avg===null) return {status:'grey',trend:'—',summary:'Populated — enter avg lag.'};
-  let status,trend,summary;
-  if(prevAvg!==null){
-    const delta=avg-prevAvg;
-    if(delta<-5){status='green';trend='↑';summary=`Avg lag ${avg}d (${delta}d vs prev). Channel shortening.`;}
-    else if(delta>5){status='red';trend='↓';summary=`Avg lag ${avg}d (+${delta}d vs prev). Lag increasing.`;}
-    else{status='amber';trend='→';summary=`Avg lag ${avg}d — flat QoQ.`;}
-  } else {status='amber';trend='—';summary=`Avg lag ${avg}d. ${cases||'?'} cases. Add prev quarter for trend.`;}
-  return {status,trend,summary};
-}
-function assessA2b(d, prev){
-  const kd = d?.theme_a?.a2b;
-  if(!kd||!kd.populated) return {status:'grey',trend:'—',summary:'Not populated — L2 pending.'};
-  const ops=kd.operations_logged||0;
-  const ef=kd.effects||{};
-  const effects=(ef.publication||0)+(ef.behavioral||0)+(ef.protection||0)+(ef.enforcement||0);
-  if(ops===0) return {status:'grey',trend:'—',summary:'Toggle enabled — no operations entered.'};
-  if(effects>0 && (ef.enforcement||ef.protection)){
-    return {status:'green',trend:'↑',summary:`${ops} operations. ${effects} downstream effects incl. enforcement/protection change.`};
-  } else if(effects>0){
-    return {status:'amber',trend:'→',summary:`${ops} operations. ${effects} effects — publication/behavioral only.`};
+// KPI table
+let rows = `<tr><th>ID</th><th>KPI</th><th>Conf.</th><th style="min-width:170px">Baseline (pre-2026)</th><th style="min-width:230px">Q1 2026</th><th>Trend</th><th>Maturity</th></tr>`;
+for (const [t,name] of Object.entries(R.themes)) {
+  rows += `<tr class="theme-row"><td colspan="7">Theme ${t}: ${esc(name)}</td></tr>`;
+  for (const k of counts(t)) {
+    rows += `<tr><td class="kpi-id">${esc(k.id)}</td><td>${esc(k.name)}</td><td>${chip(k.confidence)}</td>
+      <td class="muted">${esc(k.baseline_pre2026)}</td><td>${esc(k.periods["2026Q1"])}</td>
+      <td class="${trendClass(k.trend)}">${esc(k.trend||"")}</td><td class="muted">${esc(k.maturity)}</td></tr>`;
   }
-  return {status:'amber',trend:'→',summary:`${ops} operations logged. No downstream effects recorded yet.`};
 }
-function assessA3(d, prev){
-  const kd = d?.theme_a?.a3;
-  if(!kd||!kd.populated||(kd.active===null&&kd.strained===null&&kd.broken===null))
-    return {status:'grey',trend:'—',summary:'Not populated.'};
-  const tr=kd.transitions||{};
-  const tsb=tr.strained_to_broken||0, tas=tr.active_to_strained||0;
-  const str=kd.strained||0, act=kd.active||0;
-  if(tsb>0) return {status:'green',trend:'↑',summary:`${tsb} Strained→Broken transition(s). Krysha showing structural fracture.`};
-  if(tas>0) return {status:'green',trend:'↑',summary:`${tas} Active→Strained transition(s). Protection layer showing stress.`};
-  if(str>0) return {status:'amber',trend:'→',summary:`${str} strained relationship(s). No new transitions this quarter.`};
-  if(act>0) return {status:'amber',trend:'→',summary:`${act} active relationship(s). Protection layer holding.`};
-  return {status:'grey',trend:'—',summary:'Insufficient data.'};
-}
-function assessB1(d, prev){
-  const kd = d?.theme_b?.b1;
-  if(!kd||!kd.populated||!kd.events||kd.events.length===0)
-    return {status:'grey',trend:'—',summary:'No arrest events entered.'};
-  const scored=kd.events.filter(e=>e.score!==null&&!e.pending);
-  const pending=kd.events.filter(e=>e.pending);
-  if(scored.length===0) return {status:'amber',trend:'—',summary:`${pending.length} event(s) PENDING debrief.`};
-  const avg=scored.reduce((a,e)=>a+e.score,0)/scored.length;
-  const pk=prev?.theme_b?.b1; const prevAvg=pk?.avg_wais??null;
-  let status,trend;
-  if(avg>=7){status='green';trend=prevAvg!==null?(avg>prevAvg?'↑':'→'):'↑';}
-  else if(avg>=5){status='amber';trend=prevAvg!==null?(avg>prevAvg?'↑':avg<prevAvg?'↓':'→'):'→';}
-  else{status='red';trend='↓';}
-  return {status,trend,summary:`Avg WAIS ${avg.toFixed(1)} — ${scored.length} scored${pending.length?', '+pending.length+' pending':''}.`};
-}
-function assessB2(d, prev){
-  const kd = d?.theme_b?.b2;
-  if(!kd||!kd.populated) return {status:'grey',trend:'—',summary:'Not populated.'};
-  let sigs=0;
-  if((kd.affiliate_defections||0)>=2) sigs++;
-  if((kd.exit_scams_confirmed||0)>=1) sigs++;
-  if(kd.forum_dispute_volume_pct_change!==null&&kd.forum_dispute_volume_pct_change>10) sigs++;
-  if((kd.new_raas_brands||0)>=2) sigs++;
-  if(kd.recruitment_term_shifts==='yes'||kd.recruitment_term_shifts===true) sigs++;
-  const ev=kd.l2_events||{};
-  const l2=Object.values(ev).reduce((a,v)=>a+(v||0),0);
-  if(sigs>=3&&l2>0) return {status:'green',trend:'↑',summary:`${sigs}/5 proxy metrics elevated + ${l2} L2 events. Multi-signal corroboration.`};
-  if(sigs>=3) return {status:'amber',trend:'→',summary:`${sigs}/5 proxy metrics elevated. L2 event log not populated.`};
-  if(sigs>=1&&l2>0) return {status:'amber',trend:'→',summary:`${sigs}/5 proxy metrics elevated. ${l2} L2 events.`};
-  return {status:'amber',trend:'→',summary:`${sigs}/5 proxy metrics elevated.`};
-}
-function assessC1(d, prev){
-  const kd = d?.theme_c?.c1;
-  if(!kd||!kd.populated||(kd.payment_volume_usd_millions===null&&kd.victim_count===null))
-    return {status:'grey',trend:'—',summary:'Not populated.'};
-  const pay=kd.payment_volume_usd_millions, vic=kd.victim_count;
-  const pk=prev?.theme_c?.c1;
-  if(pk&&pay!==null&&vic!==null&&pk.payment_volume_usd_millions!==null&&pk.victim_count!==null){
-    const payPct=((pay-pk.payment_volume_usd_millions)/pk.payment_volume_usd_millions*100).toFixed(1);
-    const vicPct=((vic-pk.victim_count)/pk.victim_count*100).toFixed(1);
-    if(pay<pk.payment_volume_usd_millions&&vic>=pk.victim_count*0.95)
-      return {status:'green',trend:'↑',summary:`Payments ${payPct}% / Victims ${vicPct>0?'+':''}${vicPct}%. Divergence — business model degrading.`};
-    if(pay>pk.payment_volume_usd_millions)
-      return {status:'red',trend:'↓',summary:`Payments +${payPct}% — ecosystem generating more revenue.`};
-    return {status:'amber',trend:'→',summary:`Payments ${payPct}% / Victims ${vicPct}%. Mixed signal.`};
-  }
-  return {status:'amber',trend:'—',summary:`$${pay}M payments / ${vic} victims. Add prev quarter for divergence.`};
-}
-function assessC2(d, prev){
-  const kd = d?.theme_c?.c2;
-  if(!kd||!kd.populated) return {status:'grey',trend:'—',summary:'Not populated.'};
-  const vals=[kd.healthcare_pct,kd.critical_infra_pct,kd.financial_pct,kd.commercial_pct].filter(v=>v!==null);
-  if(!vals.length) return {status:'grey',trend:'—',summary:'Sector rates not entered.'};
-  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
-  const pk=prev?.theme_c?.c2;
-  if(pk){
-    const pvals=[pk.healthcare_pct,pk.critical_infra_pct,pk.financial_pct,pk.commercial_pct].filter(v=>v!==null);
-    if(pvals.length){
-      const prevAvg=pvals.reduce((a,b)=>a+b,0)/pvals.length;
-      const delta=avg-prevAvg;
-      if(delta<-3) return {status:'green',trend:'↑',summary:`Overall avg ${avg.toFixed(0)}% — down ${Math.abs(delta).toFixed(0)}pts QoQ. All sectors declining.`};
-      if(delta>3) return {status:'red',trend:'↓',summary:`Overall avg ${avg.toFixed(0)}% — up ${delta.toFixed(0)}pts QoQ. Payment rate increasing.`};
-      return {status:'amber',trend:'→',summary:`Overall avg ${avg.toFixed(0)}% — flat QoQ.`};
-    }
-  }
-  return {status:'amber',trend:'—',summary:`Overall avg ${avg.toFixed(0)}%. Add prev quarter for trend.`};
-}
-function assessC3(d, prev){
-  const kd = d?.theme_c?.c3;
-  if(!kd||!kd.populated||(kd.victims_published===null&&kd.avg_days_to_publish===null&&!kd.relaunch_status))
-    return {status:'grey',trend:'—',summary:'Not populated.'};
-  const pk=prev?.theme_c?.c3;
-  let pos=0, neg=0, parts=[];
-  if(kd.victims_published!==null&&pk?.victims_published!==null){
-    if(kd.victims_published<pk.victims_published){pos++;parts.push(`Post vol down — operational tempo decreasing.`);}
-    else if(kd.victims_published>pk.victims_published){neg++;parts.push(`Post vol up — sustained attack activity.`);}
-  }
-  if(kd.avg_days_to_publish!==null&&pk?.avg_days_to_publish!==null){
-    const delta=kd.avg_days_to_publish-pk.avg_days_to_publish;
-    if(delta>0.5){pos++;parts.push(`Time-to-publish extended — group under pressure.`);}
-    else if(delta<-0.5){neg++;parts.push(`Time-to-publish compressed — escalating faster.`);}
-  }
-  if(kd.relaunch_status==='failed'){pos++;parts.push('Relaunch failed / 90+ days.');}
-  else if(kd.relaunch_status==='slow'){pos++;parts.push('Relaunch degraded (31-90d).');}
-  else if(kd.relaunch_status==='fast'){neg++;parts.push('Relaunched within 30 days.');}
-  let status,trend;
-  if(pos>=2){status='green';trend='↑';}
-  else if(neg>=2){status='red';trend='↓';}
-  else{status='amber';trend='→';}
-  return {status,trend,summary:parts.join(' ')||'Signals entered.'};
-}
+document.getElementById("kpi-table").innerHTML = rows;
 
-function runAssessments(q){
-  const d=QQ[q], prev=qPrev(q)?QQ[qPrev(q)]:null;
-  KPI_STATUS['a1']=assessA1(d,prev);
-  KPI_STATUS['a2']=assessA2(d,prev);
-  KPI_STATUS['a2b']=assessA2b(d,prev);
-  KPI_STATUS['a3']=assessA3(d,prev);
-  KPI_STATUS['b1']=assessB1(d,prev);
-  KPI_STATUS['b2']=assessB2(d,prev);
-  KPI_STATUS['c1']=assessC1(d,prev);
-  KPI_STATUS['c2']=assessC2(d,prev);
-  KPI_STATUS['c3']=assessC3(d,prev);
-}
-function ecoOverall(){
-  const statuses=Object.values(KPI_STATUS).map(k=>k.status);
-  const scored=statuses.filter(s=>s!=='grey');
-  if(!scored.length) return {cls:'grey',label:'Incomplete'};
-  const reds=scored.filter(s=>s==='red').length;
-  const ambers=scored.filter(s=>s==='amber').length;
-  const greens=scored.filter(s=>s==='green').length;
-  if(reds>=2||(reds>=1&&greens===0)) return {cls:'red',label:'Adverse'};
-  if(ambers>=scored.length/2||reds>=1) return {cls:'amber',label:'Mixed'};
-  if(greens>=scored.length*.6) return {cls:'green',label:'Positive Movement'};
-  return {cls:'amber',label:'Mixed'};
-}
-
-// ── ECO STRIP ────────────────────────────────────────────────────────────────
-function renderEcoStrip(q){
-  runAssessments(q);
-  const ov=ecoOverall();
-  const badge=document.getElementById('eco-badge');
-  badge.className='es-badge '+ov.cls;
-  badge.textContent=ov.label;
-
-  const dotsEl=document.getElementById('eco-dots');
-  const kpiMeta={
-    a1:{label:'A-1'},a2:{label:'A-2'},a2b:{label:'A-2b'},a3:{label:'A-3'},
-    b1:{label:'B-1'},b2:{label:'B-2'},c1:{label:'C-1'},c2:{label:'C-2'},c3:{label:'C-3'}
-  };
-  dotsEl.innerHTML=Object.entries(kpiMeta).map(([k,m])=>{
-    const st=KPI_STATUS[k]||{status:'grey',trend:'—'};
-    const tclass=st.trend==='↑'?'trend-up':st.trend==='↓'?'trend-dn':st.trend==='→'?'trend-fl':'';
-    return `<div class="es-dot-item">
-      <div class="es-dot tsd-${st.status}"></div>
-      <span>${m.label}</span>
-      <span class="${tclass}" style="font-size:11px;">${st.trend}</span>
-    </div>`;
-  }).join('');
-}
-
-// ── OVERVIEW PANEL ───────────────────────────────────────────────────────────
-function renderOverview(q){
-  const d=QQ[q];
-  const themes=[
-    {id:'a',label:'Theme A — Russian Domestic',kpis:['a1','a2','a2b','a3'],names:{a1:'Domestic Actions',a2:'Referral Lag',a2b:'Seeded Exposure',a3:'Protection Rels.'}},
-    {id:'b',label:'Theme B — LE &amp; Strife',kpis:['b1','b2'],names:{b1:'WAIS',b2:'Strife Indicators'}},
-    {id:'c',label:'Theme C — Economics',kpis:['c1','c2','c3'],names:{c1:'Payment Divergence',c2:'Sector Pay Rate',c3:'Leak Site Signals'}}
-  ];
-  document.getElementById('overview-grid').innerHTML=themes.map(t=>`
-    <div class="ov-theme-card">
-      <div class="ov-theme-label">${t.label}</div>
-      ${t.kpis.map(k=>{
-        const st=KPI_STATUS[k]||{status:'grey',trend:'—'};
-        const tc=st.trend==='↑'?'trend-up':st.trend==='↓'?'trend-dn':st.trend==='→'?'trend-fl':'';
-        return `<div class="ov-kpi-row" style="cursor:pointer;" onclick="switchPanel('${t.id}')">
-          <div class="ov-dot tsd-${st.status}"></div>
-          <div class="ov-id">${k.toUpperCase().replace('A2B','A-2b').replace(/^([ABC])(\d+)$/,'$1-$2')}</div>
-          <div class="ov-name">${t.names[k]}</div>
-          <div class="ov-trend ${tc}">${st.trend}</div>
-        </div>`;
-      }).join('')}
-    </div>
-  `).join('');
-}
-
-// ── TREND CHARTS ─────────────────────────────────────────────────────────────
-function renderTrendCharts(){
-  const loaded=QUARTERS.filter(q=>QQ[q]);
-  if(loaded.length<2){ document.getElementById('trend-charts').innerHTML=''; return; }
-  const labels=loaded.map(qLabel);
-
-  const chartGroups=[
-    {title:'Theme C — Economics',sub:'Payment volume, victim count, and payment rate over time',charts:[
-      {label:'Payment Volume (USD M)',fn:q=>QQ[q]?.theme_c?.c1?.payment_volume_usd_millions??null,color:'#58a6ff'},
-      {label:'Victim Count',fn:q=>QQ[q]?.theme_c?.c1?.victim_count??null,color:'#bc8cff'},
-      {label:'Avg Sector Pay Rate (%)',fn:q=>{
-        const kd=QQ[q]?.theme_c?.c2;
-        if(!kd) return null;
-        const v=[kd.healthcare_pct,kd.critical_infra_pct,kd.financial_pct,kd.commercial_pct].filter(x=>x!==null);
-        return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;
-      },color:'#3fb950'}
-    ]},
-    {title:'Theme B — LE &amp; Strife',sub:'Weighted arrest impact and strife proxy metrics',charts:[
-      {label:'Avg WAIS Score',fn:q=>{
-        const ev=QQ[q]?.theme_b?.b1?.events||[];
-        const sc=ev.filter(e=>e.score!==null&&!e.pending);
-        return sc.length?sc.reduce((a,e)=>a+e.score,0)/sc.length:null;
-      },color:'#d29922'},
-      {label:'New RaaS Brands',fn:q=>QQ[q]?.theme_b?.b2?.new_raas_brands??null,color:'#f0883e'},
-      {label:'Affiliate Defections',fn:q=>QQ[q]?.theme_b?.b2?.affiliate_defections??null,color:'#f85149'}
-    ]},
-    {title:'Theme A — Russian Domestic',sub:'Enforcement actions by tier',charts:[
-      {label:'Elite-Tier Actions',fn:q=>QQ[q]?.theme_a?.a1?.elite??null,color:'#3fb950'},
-      {label:'Mid-Tier Actions',fn:q=>QQ[q]?.theme_a?.a1?.mid??null,color:'#d29922'},
-      {label:'Support-Tier Actions',fn:q=>QQ[q]?.theme_a?.a1?.support??null,color:'#8b949e'}
-    ]}
-  ];
-
-  document.getElementById('trend-charts').innerHTML=chartGroups.map(g=>`
-    <div class="chart-section">
-      <div class="chart-section-head">
-        <div class="chart-section-title">${g.title}</div>
-        <div class="chart-section-sub">${g.sub}</div>
-      </div>
-      <div class="charts-row cols3">
-        ${g.charts.map(c=>`
-          <div class="chart-wrap">
-            <div class="chart-label">${c.label}</div>
-            <canvas class="sparkline" id="chart-${c.label.replace(/\W+/g,'-').toLowerCase()}" height="180"></canvas>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  chartGroups.forEach(g=>g.charts.forEach(c=>{
-    const canvasId='chart-'+c.label.replace(/\W+/g,'-').toLowerCase();
-    const canvas=document.getElementById(canvasId);
-    if(!canvas) return;
-    const data=loaded.map(c.fn);
-    drawSparkline(canvas,labels,data,c.color);
-  }));
-}
-
-function drawSparkline(canvas, labels, data, color){
-  const dpr=window.devicePixelRatio||1;
-  canvas.width=canvas.offsetWidth*dpr;
-  canvas.height=180*dpr;
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const W=canvas.offsetWidth, H=180;
-  const pad={top:20,right:10,bottom:36,left:44};
-  const cW=W-pad.left-pad.right, cH=H-pad.top-pad.bottom;
-
-  const vals=data.filter(v=>v!==null);
-  if(!vals.length){ ctx.fillStyle='rgba(110,118,129,.3)'; ctx.font='11px system-ui'; ctx.fillText('No data',W/2-22,H/2); return; }
-
-  const mn=Math.min(...vals)*0.92, mx=Math.max(...vals)*1.08||1;
-  const toY=v=>pad.top+cH-(v-mn)/(mx-mn)*cH;
-  const toX=(i,total)=>pad.left+i*cW/(total-1);
-  const n=data.length;
-
-  // grid lines
-  ctx.strokeStyle='rgba(48,54,61,.8)'; ctx.lineWidth=1;
-  [0,.5,1].forEach(f=>{
-    const y=pad.top+cH*f;
-    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(pad.left+cW,y); ctx.stroke();
-    ctx.fillStyle='rgba(110,118,129,.7)'; ctx.font=`10px system-ui`;
-    ctx.fillText((mn+(mx-mn)*(1-f)).toFixed(mx>100?0:1),2,y+4);
+// Chart (SVG bars)
+(function(){
+  const data = R.leak_site_monthly, W = document.getElementById("chart-wrap").clientWidth - 40, H = 240, pad = 30;
+  const max = Math.max(...data.map(d=>d.victims));
+  const bw = Math.max(6, Math.floor((W - pad) / data.length) - 3);
+  let svg = "";
+  data.forEach((d,i)=>{
+    const h = Math.round((d.victims/max)*(H-50));
+    const x = pad + i*(bw+3), y = H-25-h;
+    const is2026 = d.month.includes("2026");
+    svg += `<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${is2026 ? "#5a9acc" : "#27405f"}"><title>${esc(d.month)}: ${d.victims}${d.note? " | "+esc(d.note):""}</title></rect>`;
+    if (i%3===0) svg += `<text x="${x}" y="${H-10}" fill="#4e6e8e" font-size="8.5">${esc(d.month.replace(" 20"," '"))}</text>`;
   });
+  svg += `<text x="2" y="14" fill="#4e6e8e" font-size="9">max ${max}</text>`;
+  document.getElementById("chart").innerHTML = svg;
+  const q1 = data.filter(d=>["Jan 2026","Feb 2026","Mar 2026"].includes(d.month)).map(d=>d.victims);
+  document.getElementById("chart-legend").textContent =
+    `Source: ${data[0].source}. Blue bars = 2026. Q1 2026 total: ${q1.reduce((a,b)=>a+b,0)} (avg ${Math.round(q1.reduce((a,b)=>a+b,0)/3)}/month). Hover any bar for the month value and notes.`;
+})();
 
-  // area fill
-  const grad=ctx.createLinearGradient(0,pad.top,0,pad.top+cH);
-  grad.addColorStop(0,color.replace('#','rgba(').replace(/(..)(..)(..)$/,(m,r,g,b)=>`${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)},.25)`));
-  grad.addColorStop(1,'rgba(13,17,23,0)');
-  ctx.fillStyle=grad;
-  ctx.beginPath();
-  let first=true;
-  data.forEach((v,i)=>{
-    if(v===null) return;
-    const x=toX(i,n), y=toY(v);
-    if(first){ctx.moveTo(x,y); first=false;} else ctx.lineTo(x,y);
-  });
-  // close area
-  const lastIdx=data.map((v,i)=>v!==null?i:-1).filter(i=>i>=0).pop();
-  const firstIdx=data.map((v,i)=>v!==null?i:-1).filter(i=>i>=0)[0];
-  if(lastIdx!==undefined) ctx.lineTo(toX(lastIdx,n),pad.top+cH);
-  if(firstIdx!==undefined) ctx.lineTo(toX(firstIdx,n),pad.top+cH);
-  ctx.closePath(); ctx.fill();
-
-  // line
-  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round';
-  ctx.beginPath(); first=true;
-  data.forEach((v,i)=>{
-    if(v===null) return;
-    const x=toX(i,n), y=toY(v);
-    if(first){ctx.moveTo(x,y); first=false;} else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-
-  // dots + labels
-  data.forEach((v,i)=>{
-    if(v===null) return;
-    const x=toX(i,n), y=toY(v);
-    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
-    // x label
-    ctx.fillStyle='rgba(110,118,129,.8)'; ctx.font=`9px system-ui`;
-    ctx.textAlign='center'; ctx.fillText(labels[i],x,H-6);
-    // active quarter highlight
-    if(QUARTERS[i]===activeQ){
-      ctx.strokeStyle=color; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-      ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+cH); ctx.stroke();
-      ctx.setLineDash([]);
-    }
-  });
-  ctx.textAlign='left';
+// Quarterly history
+if (R.historical_quarters) {
+  const hq = R.historical_quarters.quarters;
+  const fm = v => (v===null||v===undefined||v==="") ? "<span class='t-na'>n/a</span>" : esc(v);
+  const money = v => (v===null||v===undefined) ? "<span class='t-na'>n/a</span>" : "$" + Number(v).toLocaleString();
+  document.getElementById("history-table").innerHTML =
+    `<tr><th>Quarter</th><th>Victims (leak sites)</th><th>Payments $M (est.)</th><th>Pay rate %</th><th>Median payment</th><th title="Curated count: new RaaS brands reaching operational significance in the mapped Russia/CIS ecosystem. Narrower by design than vendor new-group censuses. See note below.">New brands (curated)</th><th>Exit scams</th><th>Defections</th><th>RU domestic</th><th>Takedowns / relaunch</th><th>Sample: cases / median</th><th style="min-width:240px">Notable events</th></tr>` +
+    hq.map(q=>`<tr><td class="kpi-id">${esc(q.quarter)}</td>
+     <td><b>${fm(q.victims)}</b><div class="muted">${esc(q.victims_source||"")}</div></td>
+     <td>${fm(q.payments_est_musd)}<div class="muted">${esc((q.payments_note||"").slice(0,60))}</div></td>
+     <td>${fm(q.payment_rate_pct)}</td>
+     <td>${money(q.median_payment_usd)}</td>
+     <td>${fm(q.strife && q.strife.new_brands)}</td>
+     <td>${fm(q.strife && q.strife.exit_scams)}</td>
+     <td>${fm(q.strife && q.strife.defections)}</td>
+     <td class="${q.ru_domestic_actions ? "t-up" : "t-na"}">${fm(q.ru_domestic_actions)}</td>
+     <td>${fm(q.takedowns)}<div class="muted">${esc(q.relaunch_status||"")}</div></td>
+     <td>${q.curated_sample ? esc(q.curated_sample.cases) + " / $" + Number(q.curated_sample.median_paid_usd).toLocaleString() : "<span class='t-na'>n/a</span>"}</td>
+     <td class="muted">${esc(q.notable_events||"")}</td></tr>`).join("");
+  document.getElementById("history-note").textContent = R.historical_quarters.note;
 }
 
-// ── THEME A RENDER ───────────────────────────────────────────────────────────
-function renderThemeA(q){
-  const d=QQ[q], prev=qPrev(q)?QQ[qPrev(q)]:null;
-  const container=document.getElementById('kpi-a');
+// Groups
+function statusClass(s){ s=(s||"").toLowerCase();
+  if(s.includes("dissolv")) return "s-dissolved";
+  if(s.includes("degraded")) return "s-degraded";
+  if(s.includes("operational")) return "s-operational"; return ""; }
+document.getElementById("group-table").innerHTML =
+  `<tr><th>Group</th><th>Status</th><th>First Action</th><th>Capacity vs Baseline</th><th>Financial Rails</th><th>Protection Layer</th><th>Reconst. Risk</th><th>Last WAIS</th><th>Strife</th><th>Next Review</th></tr>` +
+  R.groups.map(g=>`<tr><td><b>${esc(g.name)}</b></td><td class="${statusClass(g.status)}">${esc(g.status)}</td>
+   <td class="muted">${esc(g.date_first_action)}</td><td>${esc(g.op_capacity)}</td><td>${esc(g.financial_rails)}</td>
+   <td>${esc(g.protection_layer)}</td><td>${esc(g.reconstitution_risk)}</td><td>${esc(g.last_wais)}</td>
+   <td>${esc(g.strife_events)}</td><td class="muted">${esc(g.next_review)}</td></tr>`).join("");
 
-  // A-1
-  const a1=d?.theme_a?.a1||{};
-  const st1=KPI_STATUS['a1'];
-  let a1html=`<div class="sec-label">Actions by Tier — Current Quarter</div>`;
-  a1html+=`<table class="data-table"><tr><th>Tier</th><th>Current</th><th>Previous</th><th>Change</th></tr>`;
-  [['Elite',a1.elite,prev?.theme_a?.a1?.elite],['Mid',a1.mid,prev?.theme_a?.a1?.mid],['Support',a1.support,prev?.theme_a?.a1?.support]].forEach(([tier,cur,prv])=>{
-    const chg=cur!==null&&prv!==null?cur-prv:null;
-    const chgCls=chg===null?'td-dim':chg>0?'td-green':chg<0?'td-red':'';
-    a1html+=`<tr><td>${tier}</td><td>${cur??'—'}</td><td>${prv??'—'}</td><td class="${chgCls}">${chg===null?'—':chg>0?'+'+chg:chg}</td></tr>`;
-  });
-  a1html+=`</table>`;
-  if(a1.notes) a1html+=`<div class="sn" style="margin-top:8px;"><span class="sn-lbl">Notes</span>${a1.notes}</div>`;
+// Nodes
+document.getElementById("node-table").innerHTML =
+  `<tr><th>Node</th><th>Name</th><th>Priority</th><th style="min-width:280px">Current Status</th><th>Owner</th><th>Level</th><th>Conf.</th><th>Updated</th></tr>` +
+  R.nodes.map(n=>`<tr><td class="kpi-id">${esc(n.id)}</td><td>${esc(n.name)}</td><td>${esc(n.priority)}</td>
+   <td>${esc(n.status_summary)}</td><td class="muted">${esc(n.owner)}</td><td class="muted">${esc(n.level)}</td>
+   <td>${chip(n.confidence)}</td><td class="muted">${esc(n.last_updated)}</td></tr>`).join("");
 
-  // A-2
-  const a2=d?.theme_a?.a2||{};
-  const st2=KPI_STATUS['a2'];
-  let a2html=a2.populated
-    ?`<table class="data-table"><tr><th>Metric</th><th>Value</th></tr><tr><td>Cases documented</td><td>${a2.cases_documented??'—'}</td></tr><tr><td>Avg lag</td><td>${a2.avg_lag_days!==null?a2.avg_lag_days+' days':'—'}</td></tr></table>${a2.notes?`<div class="sn" style="margin-top:8px;"><span class="sn-lbl">Notes</span>${a2.notes}</div>`:''}`
-    :`<div class="unpop-strip">Not populated — L2 micro-layer operation log required.</div>`;
-
-  // A-2b
-  const a2b=d?.theme_a?.a2b||{};
-  const st2b=KPI_STATUS['a2b'];
-  let a2bhtml=a2b.populated
-    ?`<table class="data-table"><tr><th>Metric</th><th>Value</th></tr><tr><td>Operations logged</td><td>${a2b.operations_logged??'—'}</td></tr><tr><td>Avg days to effect</td><td>${a2b.avg_days_to_effect!==null?a2b.avg_days_to_effect+' days':'—'}</td></tr></table>
-    <div class="sec-label" style="margin-top:10px;">Downstream Effects</div>
-    <table class="data-table"><tr><th>Type</th><th>Count</th></tr>
-    ${['publication','behavioral','protection','enforcement'].map(t=>`<tr><td>${t.charAt(0).toUpperCase()+t.slice(1)}</td><td>${a2b.effects?.[t]??'—'}</td></tr>`).join('')}
-    </table>`
-    :`<div class="unpop-strip">Not populated — L2 seeded exposure log required.</div>`;
-
-  // A-3
-  const a3=d?.theme_a?.a3||{};
-  const st3=KPI_STATUS['a3'];
-  let a3html=`<div class="sec-label">Protection Relationship Snapshot</div>
-    <table class="data-table"><tr><th>Status</th><th>Count</th></tr>
-    ${['active','strained','broken','unknown'].map(s=>`<tr><td>${s.charAt(0).toUpperCase()+s.slice(1)}</td><td>${a3[s]??'—'}</td></tr>`).join('')}
-    </table>
-    <div class="sec-label" style="margin-top:10px;">Transitions This Quarter</div>
-    <table class="data-table"><tr><th>Transition</th><th>Count</th></tr>
-    <tr><td>Active → Strained</td><td>${a3.transitions?.active_to_strained??'—'}</td></tr>
-    <tr><td>Strained → Broken</td><td>${a3.transitions?.strained_to_broken??'—'}</td></tr>
-    </table>`;
-  if(a3.notes) a3html+=`<div class="sn" style="margin-top:8px;"><span class="sn-lbl">Notes</span>${a3.notes}</div>`;
-
-  container.innerHTML=[
-    kpiCard('a','A-1','Russian Domestic Actions','b-cred','Credible','b-dim','L1/L2','a1',a1html,st1),
-    kpiCard('a','A-2','Referral Lag: Referral to Observable Russian Action','b-cred','Credible','b-dim','L2','a2',a2html,st2),
-    kpiCard('a','A-2b','Seeded Exposure Lag','b-inf','Cred/Inf','b-dim','L2','a2b',a2bhtml,st2b),
-    kpiCard('a','A-3','Protection Relationship Status Inventory','b-inf','Inference','b-dim','L2','a3',a3html,st3)
-  ].join('');
+// WAIS
+document.getElementById("wais-validation").innerHTML =
+  `<h3>Validation Status</h3><div class="big">${esc(R.wais_validation.status)}</div>
+   <div class="small">${esc(R.wais_validation.detail)} (${esc(R.wais_validation.date)})</div>`;
+if (R.wais_population) {
+  document.getElementById("wais-population").innerHTML =
+    `<h3>Scored Population</h3><div class="big">n = ${R.wais_population.n} <span style="font-size:11px;color:#5e7a98;font-weight:400">(${esc(R.wais_population.distribution)})</span></div>
+     <div class="small">${esc(R.wais_population.rule)}</div>`;
+  document.getElementById("wais-exclusions").textContent = "Exclusions register: " + R.wais_population.exclusions;
 }
+function catClass(c){ c=(c||"").toUpperCase();
+  if(c.startsWith("HIGH")) return "t-down"; if(c.startsWith("MODERATE")) return "t-mixed";
+  if(c.startsWith("PENDING")) return "t-na"; return ""; }
+document.getElementById("wais-table").innerHTML =
+  `<tr><th>Op ID</th><th>Date</th><th style="min-width:200px">Actor</th><th>Node / Role</th><th>NC</th><th>Coop</th><th>TC</th><th>RI</th><th>Bonus</th><th>Final</th><th>Category</th><th>A-1</th><th>Conf.</th><th style="min-width:240px">Scoring Note</th></tr>` +
+  R.wais_events.map(w=>`<tr><td class="kpi-id">${esc(w.op_id)}</td><td class="muted">${esc(w.date)}</td><td>${esc(w.actor)}</td>
+   <td class="muted">${esc(w.node_role||"")}</td>
+   <td>${esc(w.node_criticality)}</td><td>${esc(w.cooperation_output)}</td><td>${esc(w.trust_cascade)}</td><td>${esc(w.reconstitution_impact)}</td>
+   <td>${esc(w.coord_bonus)}</td><td><b>${esc(w.final)}</b></td><td class="${catClass(w.category)}">${esc(w.category)}</td>
+   <td>${w.dual_log_a1==="Yes" ? "✓" : ""}</td><td>${chip(w.confidence)}</td><td class="muted">${esc(w.note||"")}</td></tr>`).join("");
+document.getElementById("waisd-table").innerHTML =
+  `<tr><th>Event</th><th>Date</th><th>NC</th><th>IY</th><th>TC</th><th>Ex-ante (3-9)</th><th>Outcome RI</th><th style="min-width:260px">Outcome</th></tr>` +
+  R.waisd_events.map(w=>`<tr><td><b>${esc(w.event)}</b></td><td class="muted">${esc(w.date)}</td>
+   <td>${w.nc}</td><td>${w.iy}</td><td>${w.tc}</td><td><b>${w.ex_ante}</b></td><td><b>${w.outcome_ri}</b></td><td>${esc(w.outcome)}</td></tr>`).join("");
 
-// ── THEME B RENDER ───────────────────────────────────────────────────────────
-function renderThemeB(q){
-  const d=QQ[q], prev=qPrev(q)?QQ[qPrev(q)]:null;
-  const container=document.getElementById('kpi-b');
+// Sources
+document.getElementById("source-table").innerHTML =
+  `<tr><th>Data Point</th><th>Value Used</th><th>Source</th><th>Date</th><th>Conf.</th></tr>` +
+  R.sources.map(s=>`<tr><td>${esc(s.item)}</td><td>${esc(s.value)}</td>
+   <td>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.source)}</a>` : esc(s.source)}</td>
+   <td class="muted">${esc(s.date)}</td><td>${chip(s.confidence)}</td></tr>`).join("");
 
-  const b1=d?.theme_b?.b1||{};
-  const st1=KPI_STATUS['b1'];
-  const events=b1.events||[];
-  let b1html=`<div class="sec-label">Arrest Events — WAIS Scoring</div>`;
-  if(events.length){
-    b1html+=`<div class="wais-list">`;
-    events.forEach(ev=>{
-      const sc=ev.pending?null:ev.score;
-      const scClass=sc===null?'ws-pend':sc>=7?'ws-high':sc>=5?'ws-mod':'ws-low';
-      b1html+=`<div class="wais-row"><span class="wais-name">${ev.name||'[Unnamed]'}</span>${ev.date?`<span style="font-size:10.5px;color:var(--dim);">${ev.date}</span>`:''}<span class="wais-score ${scClass}">${ev.pending?'PEND':sc??'—'}</span></div>`;
-    });
-    b1html+=`</div>`;
-    const scored=events.filter(e=>e.score!==null&&!e.pending);
-    if(scored.length){
-      const avg=scored.reduce((a,e)=>a+e.score,0)/scored.length;
-      const prev1=prev?.theme_b?.b1?.avg_wais;
-      b1html+=`<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;margin-top:10px;">
-        <span style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Avg WAIS</span>
-        <span style="font-size:22px;font-weight:800;color:${avg>=7?'var(--green)':avg>=5?'var(--amber)':'var(--red)'};">${avg.toFixed(1)}</span>
-        ${prev1!==null&&prev1!==undefined?`<span style="font-size:11.5px;color:var(--muted);margin-left:auto;">vs ${prev1.toFixed(1)} prev quarter</span>`:''}
-      </div>`;
-    }
-  } else { b1html+=`<div class="unpop-strip">No arrest events recorded this quarter.</div>`; }
-  if(b1.notes) b1html+=`<div class="sn" style="margin-top:8px;"><span class="sn-lbl">Notes</span>${b1.notes}</div>`;
-
-  const b2=d?.theme_b?.b2||{};
-  const st2=KPI_STATUS['b2'];
-  let b2html=`<div class="sec-label">Layer 1 — Proxy Metrics</div>
-    <table class="data-table"><tr><th>Metric</th><th>Value</th></tr>
-    <tr><td>Affiliate defections</td><td>${b2.affiliate_defections??'—'}</td></tr>
-    <tr><td>Exit scams confirmed</td><td>${b2.exit_scams_confirmed??'—'}</td></tr>
-    <tr><td>Forum dispute vol (% change QoQ)</td><td>${b2.forum_dispute_volume_pct_change!==null?b2.forum_dispute_volume_pct_change+'%':'—'}</td></tr>
-    <tr><td>New RaaS brands</td><td>${b2.new_raas_brands??'—'}</td></tr>
-    <tr><td>Recruitment term shifts</td><td>${b2.recruitment_term_shifts??'—'}</td></tr>
-    </table>
-    <div class="sec-label" style="margin-top:10px;">Layer 2 — Event Log</div>
-    <table class="data-table"><tr><th>Event Type</th><th>Count</th></tr>
-    ${Object.entries(b2.l2_events||{}).map(([k,v])=>`<tr><td>${k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</td><td>${v??'—'}</td></tr>`).join('')}
-    </table>`;
-  if(b2.notes) b2html+=`<div class="sn" style="margin-top:8px;"><span class="sn-lbl">Notes</span>${b2.notes}</div>`;
-
-  container.innerHTML=[
-    kpiCard('b','B-1','Weighted Arrest Impact Score (WAIS)','b-conf','Confirmed','b-dim','L1/L2','b1',b1html,st1),
-    kpiCard('b','B-2','FSB/RIS Internal Strife Indicators','b-inf','Inference','b-dim','L1/L2','b2',b2html,st2)
-  ].join('');
-}
-
-// ── THEME C RENDER ───────────────────────────────────────────────────────────
-function renderThemeC(q){
-  const d=QQ[q], prev=qPrev(q)?QQ[qPrev(q)]:null;
-  const container=document.getElementById('kpi-c');
-
-  const c1=d?.theme_c?.c1||{};
-  const st1=KPI_STATUS['c1'];
-  const pc1=prev?.theme_c?.c1;
-  let c1html=`<table class="data-table"><tr><th>Metric</th><th>Current</th><th>Previous</th><th>Change</th></tr>`;
-  const c1rows=[['Payment Volume (USD M)',c1.payment_volume_usd_millions,pc1?.payment_volume_usd_millions],['Victim Count',c1.victim_count,pc1?.victim_count]];
-  c1rows.forEach(([label,cur,prv])=>{
-    let chg='—', chgCls='';
-    if(cur!==null&&cur!==undefined&&prv!==null&&prv!==undefined){
-      const pct=((cur-prv)/prv*100).toFixed(1);
-      chg=(pct>0?'+':'')+pct+'%';
-      chgCls=label.includes('Payment')?(pct<0?'td-green':'td-red'):(pct>0?'td-amber':'td-green');
-    }
-    c1html+=`<tr><td>${label}</td><td>${cur??'—'}</td><td>${prv??'—'}</td><td class="${chgCls}">${chg}</td></tr>`;
-  });
-  c1html+=`</table>`;
-  if(c1.crypto_price_note) c1html+=`<span class="src-tag">Crypto note: ${c1.crypto_price_note}</span>`;
-  if(c1.source) c1html+=`<span class="src-tag">Source: ${c1.source}</span>`;
-  if(c1.notes) c1html+=`<div class="sn" style="margin-top:8px;"><span class="sn-lbl">Notes</span>${c1.notes}</div>`;
-
-  const c2=d?.theme_c?.c2||{};
-  const st2=KPI_STATUS['c2'];
-  const pc2=prev?.theme_c?.c2;
-  let c2html=`<table class="data-table"><tr><th>Sector</th><th>Current %</th><th>Previous %</th><th>Change</th></tr>`;
-  [['Healthcare','healthcare_pct'],['Critical Infra','critical_infra_pct'],['Financial','financial_pct'],['Commercial','commercial_pct']].forEach(([lbl,key])=>{
-    const cur=c2[key], prv=pc2?.[key];
-    const chg=cur!==null&&cur!==undefined&&prv!==null&&prv!==undefined?((cur-prv).toFixed(0)>0?'+':'')+((cur-prv).toFixed(0))+'pts':'—';
-    const chgCls=chg==='—'?'':(parseFloat(chg)<0?'td-green':'td-red');
-    c2html+=`<tr><td>${lbl}</td><td>${cur??'—'}${cur!==null&&cur!==undefined?'%':''}</td><td>${prv??'—'}${prv!==null&&prv!==undefined?'%':''}</td><td class="${chgCls}">${chg}</td></tr>`;
-  });
-  c2html+=`</table>`;
-  if(c2.source) c2html+=`<span class="src-tag">Source: ${c2.source}</span>`;
-
-  const c3=d?.theme_c?.c3||{};
-  const st3=KPI_STATUS['c3'];
-  const pc3=prev?.theme_c?.c3;
-  const rlMap={fast:'Relaunched <30 days',slow:'31-90 days (degraded)',failed:'Failed / 90+ days',na:'No takedowns',null:'—'};
-  let c3html=`<div class="sec-label">Signal 1 — Post Volume</div>
-    <table class="data-table"><tr><th>Metric</th><th>Current</th><th>Previous</th></tr>
-    <tr><td>Victims published</td><td>${c3.victims_published??'—'}</td><td>${pc3?.victims_published??'—'}</td></tr>
-    </table>
-    <div class="sec-label" style="margin-top:10px;">Signal 2 — Time to Publish</div>
-    <table class="data-table"><tr><th>Metric</th><th>Current</th><th>Previous</th></tr>
-    <tr><td>Avg days to publish</td><td>${c3.avg_days_to_publish??'—'}</td><td>${pc3?.avg_days_to_publish??'—'}</td></tr>
-    </table>
-    <div class="sec-label" style="margin-top:10px;">Signal 3 — Takedown / Relaunch</div>
-    <table class="data-table"><tr><th>Metric</th><th>Value</th></tr>
-    <tr><td>Takedowns this quarter</td><td>${c3.takedowns_this_quarter??'—'}</td></tr>
-    <tr><td>Relaunch status</td><td>${rlMap[c3.relaunch_status]||'—'}</td></tr>
-    </table>`;
-  if(c3.source) c3html+=`<span class="src-tag">Source: ${c3.source}</span>`;
-
-  container.innerHTML=[
-    kpiCard('c','C-1','Ransom Payment Volume vs. Victim Count — Divergence Metric','b-cred','Credible','b-dim','L1','c1',c1html,st1),
-    kpiCard('c','C-2','Victim Payment Rate by Sector','b-cred','Credible','b-dim','L1','c2',c2html,st2),
-    kpiCard('c','C-3','Leak Site Three-Signal Composite','b-conf','Confirmed','b-dim','L1','c3',c3html,st3)
-  ].join('');
-}
-
-// ── KPI CARD BUILDER ─────────────────────────────────────────────────────────
-function kpiCard(theme,id,name,reliClass,reliLabel,layerClass,layerLabel,kpiKey,body,st){
-  const pipClass=`pip-${st.status}`;
-  const cardClass=`kpi-card${st.status!=='grey'?' s-'+st.status:''}`;
-  const snClass=st.status==='grey'?'':st.status;
-  const snContent=st.summary?`<div class="sn ${snClass}" style="margin-bottom:10px;"><span class="sn-lbl">Status ${st.trend&&st.trend!=='—'?st.trend:''}</span>${st.summary}</div>`:'';
-  return `<div class="${cardClass}">
-    <div class="kc-head">
-      <div class="kc-id id-${theme}">${id}</div>
-      <div class="kc-name">${name}</div>
-      <div class="kc-badges">
-        <span class="badge ${reliClass}">${reliLabel}</span>
-        <span class="badge ${layerClass}">${layerLabel}</span>
-        <div class="pip ${pipClass}"></div>
-      </div>
-    </div>
-    <div style="padding:14px 16px;">
-      ${snContent}
-      ${body}
-    </div>
-  </div>`;
-}
-
-// ── REPORT GENERATION ────────────────────────────────────────────────────────
-function showReport(){
-  const ra=document.getElementById('report-area');
-  ra.style.display='block';
-  ra.scrollIntoView({behavior:'smooth'});
-}
-function buildReport(){
-  if(!activeQ){return;}
-  const q=qLabel(activeQ);
-  const prev=qPrev(activeQ)?qLabel(qPrev(activeQ)):'N/A';
-  const overall=ecoOverall();
-  const note=QQ[activeQ]?.analyst_note||'';
-  const now=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  const statusWord={green:'POSITIVE',amber:'MIXED',red:'ADVERSE',grey:'UNPOPULATED'};
-  const kpiMeta={
-    a1:'A-1 | Russian Domestic Actions [CREDIBLE / L1+L2]',
-    a2:'A-2 | Referral Lag [CREDIBLE / L2]',
-    a2b:'A-2b | Seeded Exposure Lag [CRED/INF / L2]',
-    a3:'A-3 | Protection Relationship Inventory [INFERENCE / L2]',
-    b1:'B-1 | Weighted Arrest Impact Score — WAIS [CONFIRMED / L1+L2]',
-    b2:'B-2 | FSB/RIS Strife Indicators [INFERENCE / L1+L2]',
-    c1:'C-1 | Payment Volume vs. Victim Count [CREDIBLE / L1]',
-    c2:'C-2 | Victim Payment Rate by Sector [CREDIBLE / L1]',
-    c3:'C-3 | Leak Site Three-Signal Composite [CONFIRMED / L1]'
-  };
-  let out=`QUARTERLY KPI REVIEW — ${q}\nGenerated: ${now}\n${'═'.repeat(56)}\n\n`;
-  out+=`ECOSYSTEM ASSESSMENT: ${overall.label.toUpperCase()}\nComparing to: ${prev}\n`;
-  if(note) out+=`\nAnalyst Note: ${note}\n`;
-  out+=`\n${'─'.repeat(56)}\nTHEME A — RUSSIAN DOMESTIC ENFORCEMENT\n${'─'.repeat(56)}\n\n`;
-  ['a1','a2','a2b','a3'].forEach(k=>{
-    const st=KPI_STATUS[k];
-    if(!st) return;
-    out+=`${kpiMeta[k]}\nStatus: ${statusWord[st.status]||st.status.toUpperCase()}${st.trend&&st.trend!=='—'?'  Trend: '+st.trend:''}\nFinding: ${st.summary}\n\n`;
-  });
-  out+=`${'─'.repeat(56)}\nTHEME B — LE ACTIONS AND INTERNAL STRIFE\n${'─'.repeat(56)}\n\n`;
-  ['b1','b2'].forEach(k=>{
-    const st=KPI_STATUS[k]; if(!st) return;
-    out+=`${kpiMeta[k]}\nStatus: ${statusWord[st.status]||st.status.toUpperCase()}${st.trend&&st.trend!=='—'?'  Trend: '+st.trend:''}\nFinding: ${st.summary}\n\n`;
-  });
-  // WAIS event log
-  const ev=QQ[activeQ]?.theme_b?.b1?.events||[];
-  if(ev.length){
-    out+=`WAIS Event Log:\n`;
-    ev.forEach(e=>out+=`  ${e.name||'[Unnamed]'}${e.date?' ('+e.date+')':''}: ${e.pending?'PENDING':e.score??'—'}\n`);
-    out+='\n';
-  }
-  out+=`${'─'.repeat(56)}\nTHEME C — ECOSYSTEM ECONOMICS\n${'─'.repeat(56)}\n\n`;
-  ['c1','c2','c3'].forEach(k=>{
-    const st=KPI_STATUS[k]; if(!st) return;
-    out+=`${kpiMeta[k]}\nStatus: ${statusWord[st.status]||st.status.toUpperCase()}${st.trend&&st.trend!=='—'?'  Trend: '+st.trend:''}\nFinding: ${st.summary}\n\n`;
-  });
-  const gaps=Object.entries(KPI_STATUS).filter(([,v])=>v.status==='grey').map(([k])=>k.toUpperCase().replace('A2B','A-2b').replace(/^([ABC])(\d+)$/,'$1-$2'));
-  if(gaps.length){
-    out+=`${'─'.repeat(56)}\nOWNERSHIP GAPS\n${'─'.repeat(56)}\n`;
-    out+=`Unpopulated KPIs: ${gaps.join(', ')}\n\n`;
-  }
-  out+=`${'─'.repeat(56)}\nKPI Framework v2 — Ransomware EDP — ${q}`;
-  const el=document.getElementById('report-out');
-  el.textContent=out; el.classList.add('vis');
-  const cb=document.getElementById('copy-btn'); cb.classList.add('vis');
-}
-function copyReport(){
-  navigator.clipboard.writeText(document.getElementById('report-out').textContent).then(()=>{
-    const cb=document.getElementById('copy-btn');
-    cb.textContent='Copied!'; cb.classList.add('copied');
-    setTimeout(()=>{cb.textContent='Copy to Clipboard';cb.classList.remove('copied');},2500);
-  });
-}
+document.getElementById("footer").innerHTML =
+  `Every value on this page is rendered from <b>data/registry.js</b> (registry v${esc(R.meta.registry_version)}, ${esc(R.meta.generated)}). ` +
+  `To update the dashboard, update the registry via the <a href="kpi-input-matrix.html">input matrix</a> and replace that one file. ` +
+  `Changelog: ${R.meta.changelog.map(c=>esc(c.date)+" "+esc(c.change)).join(" · ")}`;
 </script>
 </body>
 </html>
