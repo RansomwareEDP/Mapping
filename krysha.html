@@ -391,6 +391,7 @@ select:focus{border-color:var(--accent)}
   <div style="display:flex;gap:10px;align-items:center" class="title-help">
     <button class="btn primary" id="title-help">▸ New here? How to play</button>
     <button class="btn ghost" id="title-codex">Codex</button>
+    <button class="btn ghost hidden" id="title-feedback">Feedback</button>
   </div>
   <button class="btn primary" id="title-resume" style="display:none;margin-top:12px"></button>
   <div class="section-label">Free play</div>
@@ -415,6 +416,7 @@ select:focus{border-color:var(--accent)}
       <button class="btn ghost" id="after-action" title="End the campaign and see your grade">After-Action ▸</button>
       <button class="btn ghost" id="analyst-toggle" title="Reveal the analyst layer: source confidence, analyst notes, caveats">Analyst</button>
       <button class="btn ghost" id="codex-open" title="Glossary &amp; reference">Codex</button>
+      <button class="btn ghost hidden" id="feedback-btn" title="Send beta feedback">Feedback</button>
       <button class="help-btn" id="help-open" title="How to play">?</button>
       <button class="btn ghost" id="quit">Exit</button>
     </div>
@@ -1725,6 +1727,17 @@ function boot(pack){
   document.getElementById('after-action').onclick=()=>{ if(!S.ended) endCampaign("manual"); else showAfterAction(); };
   document.getElementById('analyst-toggle').onclick=toggleAnalyst;
   document.getElementById('codex-open').onclick=openCodex;
+  // feedback button(s): only appear if a target (e.g. a Google Form link) is set in the pack
+  (function(){
+    const fb=cfg('feedback');
+    if(!fb || !fb.target) return;
+    ['feedback-btn','title-feedback'].forEach(id=>{
+      const b=document.getElementById(id); if(!b) return;
+      b.textContent=fb.label||'Feedback';
+      b.classList.remove('hidden');
+      b.onclick=()=>window.open(fb.target,'_blank','noopener');
+    });
+  })();
   // mobile bottom tabs (board / actions / intel)
   document.body.classList.add('mt-board');
   document.querySelectorAll('.mobile-tabs button').forEach(b=>b.onclick=()=>{
