@@ -1,0 +1,1931 @@
+{
+  "pack_meta": {
+    "schema_version": "1.0",
+    "author": "Reno",
+    "content_version": "2026-Q2-r3",
+    "generated": "2026-06-12",
+    "source_corpus": "Ransomware Ecosystem Disruption Framework (vetted)",
+    "source_documents": [
+      "03 Ransomware_Ecosystem_DependencyMap_Refined_v1",
+      "02 Ransomware_Ecosystem_Disruption_Playbook_v1",
+      "08 ransomware_kpi_framework_v1",
+      "12 Ransomware_Framework_Case_Studies_v1",
+      "13 WAIS_BackTest_v1",
+      "19 Governance_ChangeLog_Coordination_v1",
+      "18 DecisionMaker_Cards_Tabletop_v1",
+      "17 Theory_of_Victory_v1",
+      "16 Structured_Analytic_Techniques_v1",
+      "15 Adversary_CounterAdaptation_v1",
+      "14 WAIS_Arrest_Backlog_v1",
+      "CIS_Jurisdiction_Tolerance_Model_v1",
+      "04 RU_GOV_Protection_Framework_v1",
+      "01 Ransomware_Framework_Glossary_v1",
+      "ransomware-ecosystem-v2.5.html (board layout + 2026 intel timeline)"
+    ],
+    "changelog": "r3 (2026-06-13): added Operation Phobos Aetor scenario (the framework's only coordinated WAIS-HIGH success, from Docs 13/14/15); corrected the WAIS honesty note to reflect the one HIGH on record; added Docs 14-19 to source_documents. Additive; schema_version unchanged. r2 (2026-06-12): lifted the 9-layer board layout and the canonical-node mapping from the v2.5 map, and lifted the 2026 monthly intel timeline into intel_feed plus two current-ops candidate scenarios. Additive only; schema_version unchanged.",
+    "note": "This file is DATA ONLY. Game logic reads it; it never contains game logic. Regenerate this file (and bump content_version) when the corpus or websites update. The engine must not be edited to ingest a new pack as long as schema_version is unchanged.",
+    "confidence_legend": {
+      "CONFIRMED": "Hard data, traceable source, reproducible methodology.",
+      "CREDIBLE": "Corroborated reporting, reasonable inference, multiple source types.",
+      "ANALYST_INFERENCE": "Single-source or proxy measure, directional only."
+    }
+  },
+  "config": {
+    "note": "Tunable game parameters and engine bindings. The engine reads these and never hard-codes the numbers; it falls back to internal defaults only if a key is absent, so an older pack still loads. Regenerate alongside the rest of the pack.",
+    "default_ap_per_turn": 4,
+    "default_max_turns": 8,
+    "turn_unit": "quarter",
+    "backfire_probability": {
+      "LOW": 0.05,
+      "LOW-MEDIUM": 0.15,
+      "MEDIUM": 0.3,
+      "HIGH": 0.6
+    },
+    "pressure_degrade_threshold": 3,
+    "tier_size": {
+      "CRITICAL": 34,
+      "HIGH": 26,
+      "MEDIUM": 19
+    },
+    "vector_color_hex": {
+      "gold": "#e0b040",
+      "cyan": "#29d3e0",
+      "amber": "#e0960a",
+      "violet": "#a855f7",
+      "red": "#ef4444"
+    },
+    "adaptation": {
+      "note": "Phase-3 tuning for the adaptation engine. All thresholds/timers live here; the engine reads them and resolves the rules in the order given by adaptation_rules[].precedence. Numbers are game-balance facts and belong in the pack.",
+      "dimensions": [
+        "identity",
+        "trust",
+        "financial",
+        "infrastructure"
+      ],
+      "high_threshold": 3,
+      "default_sandbox_structure": "open_franchise",
+      "reconstitution": {
+        "rebrand_turns": 2,
+        "infra_only_cap_turns": 3,
+        "financial_delay_per_point": 1,
+        "trust_paired_bonus_turns": 2,
+        "max_turns": 8
+      },
+      "protection": {
+        "harden_reconstitution_factor": 0.5,
+        "sever_threshold": 3,
+        "severed_reconstitution_factor": 2.0
+      },
+      "macro_two_of_three": {
+        "trust_cascade_point": 3,
+        "financial_coordinated_point": 3,
+        "needed": 2
+      }
+    },
+    "scoring_model": {
+      "note": "Phase-4 numeric mapping of game-state signals to the three KPI themes, the WAIS dimensions, and the composite grade. The descriptive theme/grade/WAIS text lives in the top-level 'scoring' block; these are the tunable weights the engine reads.",
+      "theme_a_weights": {
+        "severed": 50,
+        "hardened": -20,
+        "sever_point": 10,
+        "domestic_action": 15
+      },
+      "theme_b_weights": {
+        "trust_point": 12,
+        "brand_dead": 40,
+        "degraded": 20,
+        "wais_point": 4,
+        "substitution_penalty": -10
+      },
+      "theme_c_weights": {
+        "financial_point": 12,
+        "infra_point": 5,
+        "macro": 30
+      },
+      "wais": {
+        "criticality": {
+          "closed_hierarchy": 3,
+          "default": 2
+        },
+        "cooperation": {
+          "SEVERED": 3,
+          "INTACT": 2,
+          "HARDENED": 1
+        },
+        "trust_cascade": {
+          "high_at": 3,
+          "some_at": 1
+        },
+        "reconstitution": {
+          "BRAND_DEAD": 3,
+          "DEGRADED": 2,
+          "default": 1
+        },
+        "coordination_bonus": 2
+      },
+      "grade_letters": [
+        "F",
+        "C",
+        "B",
+        "A",
+        "S"
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "n01_otc",
+      "name": "OTC Crypto Brokers",
+      "short": "OTC Brokers",
+      "tier": "CRITICAL",
+      "layer": "financial",
+      "replace_difficulty": "HIGH",
+      "backfire_risk": "LOW",
+      "plain": "The people who turn a big crypto ransom into actual spendable cash, quietly and at scale.",
+      "what_it_enables": "Large-volume cash-out and laundering coordination; converts ransom proceeds to fiat at scale.",
+      "what_breaks": "Large ransom payments cannot be liquidated; the admin's cut becomes frozen or stranded; operational income collapses.",
+      "disruption_method": "Designation / VASP KYC pressure / correspondent banking exposure.",
+      "analyst_notes": "Most durable pressure vector. Infrastructure rebuilds in days; financial exposure compounds over time. Top-20 OTC node designation is a defined investment priority. Chainalysis/TRM tracing is prerequisite.",
+      "primary_owner": "Treasury / OFAC + FVEY financial partners",
+      "kpi_links": [
+        "M-01",
+        "C-1"
+      ],
+      "jurisdiction_tags": [
+        "kazakhstan",
+        "russia",
+        "armenia",
+        "georgia"
+      ]
+    },
+    {
+      "id": "n02_exchanges",
+      "name": "High-Risk / Non-Compliant Exchanges",
+      "short": "High-Risk Exchanges",
+      "tier": "CRITICAL",
+      "layer": "financial",
+      "replace_difficulty": "HIGH",
+      "backfire_risk": "LOW",
+      "plain": "Crypto exchanges that don't ask questions, used to move mid-size ransom money into the banking system.",
+      "what_it_enables": "Conversion of cryptocurrency ransom payments to fiat; primary cash-out gateway for mid-tier volumes.",
+      "what_breaks": "Funds remain in crypto and cannot enter the financial system; actors forced to higher-friction alternatives.",
+      "disruption_method": "Designation / enhanced due diligence referrals / VASP engagement.",
+      "analyst_notes": "Closely linked to OTC node (n01). Sanctions designation of exchange clusters compounds over time. Track sanctioned wallet activity post-designation as a KPI; continued activity signals a compliance gap.",
+      "primary_owner": "Treasury / OFAC + FVEY financial regulators + blockchain forensics firms",
+      "kpi_links": [
+        "M-02",
+        "C-1"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "kazakhstan",
+        "georgia"
+      ]
+    },
+    {
+      "id": "n03_bph",
+      "name": "Bulletproof Hosting (BPH) Providers",
+      "short": "Bulletproof Hosting",
+      "tier": "CRITICAL",
+      "layer": "infrastructure",
+      "replace_difficulty": "HIGH",
+      "backfire_risk": "LOW-MEDIUM",
+      "plain": "Hosting companies that deliberately ignore abuse complaints, keeping the criminals' servers online.",
+      "what_it_enables": "Durable hosting for C2 servers, affiliate panels, leak sites, and negotiation infrastructure.",
+      "what_breaks": "Operations lose stable infrastructure and are forced into gray-market VPS churn, raising detection risk and cost.",
+      "disruption_method": "ISP/ASN notifications / upstream provider engagement / infrastructure takedown.",
+      "analyst_notes": "Move from BPH brand targeting to provider-of-provider leverage: registrar, nameserver, ASN, CDN dependencies per operator. Document infrastructure fingerprints before takedown for reconstitution tracking.",
+      "primary_owner": "FVEY IC + LE + upstream provider engagement",
+      "kpi_links": [
+        "M-03"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "transnistria",
+        "kazakhstan",
+        "georgia"
+      ]
+    },
+    {
+      "id": "n16_exploit",
+      "name": "Exploit / Vulnerability Brokers",
+      "short": "Exploit Brokers",
+      "tier": "CRITICAL",
+      "layer": "access",
+      "replace_difficulty": "HIGH",
+      "backfire_risk": "LOW-MEDIUM",
+      "plain": "Sellers of zero-day and unpatched-bug exploits that let attackers break into hardened, high-value targets.",
+      "what_it_enables": "Zero-day and N-day exploit acquisition; bypasses the IAB market for targets needing stealth or specific access; enables intrusion against hardened networks.",
+      "what_breaks": "High-value stealth access is eliminated; operators restricted to commodity access; attacks on critical infrastructure and finance get much harder.",
+      "disruption_method": "Coordinated vulnerability disclosure (CVD) reform; scaled bug bounties to exhaust bug classes; OFAC designation of state-adjacent brokers; IC broker attribution.",
+      "analyst_notes": "Disruption logic differs from every other node: primary lever is policy-track (CVD reform, bug bounty scaling), not law enforcement. Sequence policy actions first. No dedicated playbook phase yet exists.",
+      "primary_owner": "CISA + NSA (policy) | OFAC (designation) | FVEY IC (attribution)",
+      "kpi_links": [],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n04_iab",
+      "name": "Initial Access Broker (IAB) Markets",
+      "short": "IAB Markets",
+      "tier": "HIGH",
+      "layer": "access",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "Brokers who sell ready-made break-ins (stolen logins, VPN access) to ransomware crews so they skip the hacking step.",
+      "what_it_enables": "Sale of pre-compromised corporate footholds (RDP, VPN, domain admin) to ransomware affiliates.",
+      "what_breaks": "Victim supply to affiliates shrinks; affiliates must run their own intrusions (slower, riskier); operational tempo declines.",
+      "disruption_method": "Undercover market operations / infiltration / takedown / broker arrests.",
+      "analyst_notes": "Low-backfire-risk; these actors are not typically state-protected. Rising IAB prices compress affiliate margins. Track new IAB listings per month as an ecosystem-health KPI.",
+      "primary_owner": "FVEY LE + private sector threat intel (Intel 471, Flashpoint)",
+      "kpi_links": [
+        "M-04"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "ukraine_legacy",
+        "global"
+      ]
+    },
+    {
+      "id": "n05_loaders",
+      "name": "Botnet / Loader Ecosystems",
+      "short": "Botnet / Loaders",
+      "tier": "HIGH",
+      "layer": "delivery",
+      "replace_difficulty": "HIGH",
+      "backfire_risk": "LOW-MEDIUM",
+      "plain": "Mass-infection networks that deliver ransomware to huge numbers of already-compromised computers.",
+      "what_it_enables": "Mass malware delivery; loaders distribute ransomware payloads at scale to pre-compromised hosts.",
+      "what_breaks": "Payload distribution slows dramatically; campaigns require resource-intensive manual intrusion per victim.",
+      "disruption_method": "Infrastructure takedown / sinkholing / C2 disruption.",
+      "analyst_notes": "Sinkholing yields intelligence on victims and TTPs at the same time as disruption. QakBot / Operation Duck Hunt is the reference model. High intelligence yield before takedown.",
+      "primary_owner": "FVEY IC + LE (FBI, NCA, Europol)",
+      "kpi_links": [
+        "M-05"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n06_leaksite",
+      "name": "Leak-Site Hosting Stack",
+      "short": "Leak Sites",
+      "tier": "HIGH",
+      "layer": "infrastructure",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "The 'name and shame' websites where gangs publish stolen data to scare victims into paying.",
+      "what_it_enables": "Publication of stolen victim data to pressure payment; the core extortion-leverage mechanism for modern ransomware.",
+      "what_breaks": "Extortion leverage collapses without a credible publication threat; the double-extortion model degrades.",
+      "disruption_method": "Takedown / trust destruction / decryptor release (undermines payment incentive).",
+      "analyst_notes": "Takedown both disrupts operations and signals to victims that payment may be unnecessary. Combine with decryptor release where possible (Operation Cronos model). Monitor reconstitution as a resilience signal.",
+      "primary_owner": "FVEY LE + IC (attribution); upstream hosting providers (takedown)",
+      "kpi_links": [
+        "C-3",
+        "M-06"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "transnistria",
+        "global"
+      ]
+    },
+    {
+      "id": "n07_trust",
+      "name": "Underground Forum Trust Infrastructure",
+      "short": "Trust Infrastructure",
+      "tier": "HIGH",
+      "layer": "human",
+      "replace_difficulty": "HIGH",
+      "backfire_risk": "LOW",
+      "plain": "The escrow agents, arbitrators and forum admins whose reputations make criminal deals possible. The 'glue' of the market.",
+      "what_it_enables": "Escrow, arbitration, reputation systems, and forum administration that let the criminal market function.",
+      "what_breaks": "Market trust collapses; transaction costs rise; affiliate recruitment becomes unreliable; criminal commerce slows.",
+      "disruption_method": "Trust-node disruption / reputation attacks / forum seizure / infiltration.",
+      "analyst_notes": "Non-technical nodes are ecosystem-critical and low-backfire-risk. A 'top 10 trust nodes' target list is a defined investment priority. Trust damage is the variable that decided the Conti and Black Basta outcomes.",
+      "primary_owner": "FVEY LE + private sector underground monitoring",
+      "kpi_links": [
+        "M-07",
+        "M-11",
+        "B-2a"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n08_mixers",
+      "name": "Mixing / Obfuscation Services",
+      "short": "Mixers",
+      "tier": "HIGH",
+      "layer": "financial",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "Services that scramble crypto transactions so investigators can't follow the money.",
+      "what_it_enables": "Transaction laundering and tracing disruption; lets actors obscure ransom flows before cash-out.",
+      "what_breaks": "Blockchain tracing becomes far easier; actors are forced to expose funds to enhanced due diligence at exchanges.",
+      "disruption_method": "Designation / tracing / exchange-level flagging.",
+      "analyst_notes": "Multiple alternatives exist; designating one pushes flow to the next, but each shift raises friction and tracing cost. Coordinate with exchange KYC pressure for a compounding effect.",
+      "primary_owner": "OFAC + blockchain forensics firms",
+      "kpi_links": [
+        "M-08",
+        "C-1"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n09_mules",
+      "name": "Mule / Money Laundering Networks",
+      "short": "Mule Networks",
+      "tier": "HIGH",
+      "layer": "financial",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW-MEDIUM",
+      "plain": "The networks of people and shell companies that move cashed-out money around so it looks clean.",
+      "what_it_enables": "Fiat movement post-cash-out; layering and integration of proceeds; front-company operation.",
+      "what_breaks": "Proceeds cannot enter the financial system cleanly; actors accumulate crypto they cannot spend; costs rise.",
+      "disruption_method": "Mule arrests / recruitment disruption / front-company exposure / FNS referrals.",
+      "analyst_notes": "FNS lifestyle-inconsistency referrals (unexplained wealth vs declared income) are domestic-law-framed and lower backfire risk than cyber charges. Sustained pressure required, not a single action.",
+      "primary_owner": "FVEY LE FOs + FNS referral channel + Rosfinmonitoring pipeline",
+      "kpi_links": [
+        "M-09A",
+        "M-09B"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "kazakhstan",
+        "armenia",
+        "moldova"
+      ]
+    },
+    {
+      "id": "n10_stealers",
+      "name": "Credential / Stealer-Log Markets",
+      "short": "Stealer Markets",
+      "tier": "MEDIUM",
+      "layer": "supply",
+      "replace_difficulty": "LOW-MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "Markets selling bulk stolen passwords harvested by infostealer malware. Raw material for break-ins.",
+      "what_it_enables": "Bulk stolen credentials used for initial access and lateral movement; feeds the IAB pipeline.",
+      "what_breaks": "Credential-reuse attacks decline; access costs rise for affiliates; IAB supply quality degrades.",
+      "disruption_method": "Market takedown / bulk credential invalidation / vendor engagement.",
+      "analyst_notes": "Lower standalone impact than IAB markets but feeds them. Most effective when combined with IAB disruption. Victim-notification programs reduce attacker value of seized credential sets.",
+      "primary_owner": "FVEY LE + private sector",
+      "kpi_links": [
+        "M-10"
+      ],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n11_crypters",
+      "name": "Crypter / Packer Services",
+      "short": "Crypters",
+      "tier": "MEDIUM",
+      "layer": "supply",
+      "replace_difficulty": "LOW",
+      "backfire_risk": "LOW",
+      "plain": "Services that disguise malware so antivirus can't spot it.",
+      "what_it_enables": "Malware obfuscation to evade AV/EDR; extends the operational lifespan of payloads.",
+      "what_breaks": "Detection rates rise; campaigns burn faster; actors must invest more in payload maintenance.",
+      "disruption_method": "Signature development / provider disruption / malware analysis.",
+      "analyst_notes": "Commoditized; disrupting one provider causes rapid substitution. Best addressed through private-sector detection investment rather than LE action. Detection arms race favors defenders when endpoint coverage is high.",
+      "primary_owner": "Private sector (AV/EDR vendors); LE for high-volume providers",
+      "kpi_links": [],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n12_vps",
+      "name": "Gray-Market VPS / Reseller Networks",
+      "short": "Gray-Market VPS",
+      "tier": "MEDIUM",
+      "layer": "infrastructure",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "Cheap, loosely-policed server rentals used to quickly rebuild after a takedown.",
+      "what_it_enables": "Rapid redeployment and infrastructure churn after takedowns; fills the gap between BPH and legitimate hosting.",
+      "what_breaks": "Recovery time after takedowns increases; actors face higher friction spinning up replacements.",
+      "disruption_method": "Abuse notifications / registrar engagement / ISP upstream pressure.",
+      "analyst_notes": "Most effective as part of sustained infrastructure pressure alongside BPH targeting. Alone, impact is temporary. Key lever: upstream transit provider engagement.",
+      "primary_owner": "Private sector (abuse reporting) + LE",
+      "kpi_links": [],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n13_dns",
+      "name": "Domain Reseller / DNS Ecosystems",
+      "short": "Domain / DNS",
+      "tier": "MEDIUM",
+      "layer": "infrastructure",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "The domain-name churn machine that lets gangs swap web addresses faster than they can be seized.",
+      "what_it_enables": "Domain churn, phishing infrastructure, fast-flux hosting; rapid replacement of seized domains.",
+      "what_breaks": "Campaign infrastructure becomes easier to trace and seize; phishing and C2 rotation slows.",
+      "disruption_method": "Registrar disruption / fast-flux tracking / DNS provider pressure.",
+      "analyst_notes": "Domain churn is fast but leaves registration patterns; clustering analysis produces predictive attribution. Most effective combined with BPH/VPS pressure.",
+      "primary_owner": "Private sector (registrar engagement) + LE",
+      "kpi_links": [],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n14_exfil",
+      "name": "Data Exfiltration Staging Infrastructure",
+      "short": "Exfil Staging",
+      "tier": "MEDIUM",
+      "layer": "infrastructure",
+      "replace_difficulty": "MEDIUM",
+      "backfire_risk": "LOW",
+      "plain": "Temporary storage where stolen data sits before it is used for extortion.",
+      "what_it_enables": "Temporary storage for stolen data before extortion; enables the double-extortion model.",
+      "what_breaks": "Leak-site extortion slows or fails; actors must hold victim access longer, raising detection risk.",
+      "disruption_method": "Seizure / monitoring / victim cooperation.",
+      "analyst_notes": "Monitoring staging before seizure has high intelligence value: reveals victim list, data held, and negotiation timeline. Victim cooperation is prerequisite and under-reported.",
+      "primary_owner": "LE FOs (cooperating victims) + IC",
+      "kpi_links": [],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    },
+    {
+      "id": "n15_proxy",
+      "name": "Operational Proxy / Anonymization Services",
+      "short": "Proxy / Anonymization",
+      "tier": "MEDIUM",
+      "flag": "REASSESSMENT — tier under review (June 2026, post-Operation Saffron)",
+      "layer": "infrastructure",
+      "replace_difficulty": "LOW",
+      "backfire_risk": "LOW",
+      "plain": "VPNs and proxies that hide where the operators and their servers really are.",
+      "what_it_enables": "Conceals true server location and operator origin; degrades infrastructure attribution.",
+      "what_breaks": "Attribution becomes easier; operator OPSEC degrades.",
+      "disruption_method": "Attribution analysis; targeted disruption for high-value operators.",
+      "analyst_notes": "Reassessment flag (June 2026): Operation Saffron (May 2026) found one criminal-dedicated VPN serving 25+ ransomware groups across 33 servers in 27 countries. Criminal-dedicated anonymization is more concentrated, and more disruptable, than the original MEDIUM rating assumes. Tier under review.",
+      "primary_owner": "IC + LE (attribution, not disruption)",
+      "kpi_links": [],
+      "jurisdiction_tags": [
+        "russia",
+        "global"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "n10_stealers",
+      "to": "n04_iab",
+      "weight": 0.6,
+      "label": "stealer logs feed access brokers",
+      "type": "supply"
+    },
+    {
+      "from": "n16_exploit",
+      "to": "n04_iab",
+      "weight": 0.4,
+      "label": "exploits provide stealth access that bypasses IAB",
+      "type": "supply_alt"
+    },
+    {
+      "from": "n04_iab",
+      "to": "raas",
+      "weight": 0.8,
+      "label": "access sold to ransomware crews",
+      "type": "access"
+    },
+    {
+      "from": "n05_loaders",
+      "to": "raas",
+      "weight": 0.7,
+      "label": "loaders deliver the payload at scale",
+      "type": "delivery"
+    },
+    {
+      "from": "n11_crypters",
+      "to": "n05_loaders",
+      "weight": 0.4,
+      "label": "crypters keep payloads undetected",
+      "type": "supply"
+    },
+    {
+      "from": "n03_bph",
+      "to": "n06_leaksite",
+      "weight": 0.8,
+      "label": "BPH hosts the leak sites",
+      "type": "infrastructure"
+    },
+    {
+      "from": "n03_bph",
+      "to": "raas",
+      "weight": 0.7,
+      "label": "BPH hosts C2 and affiliate panels",
+      "type": "infrastructure"
+    },
+    {
+      "from": "n12_vps",
+      "to": "n03_bph",
+      "weight": 0.5,
+      "label": "gray-market VPS backstops BPH churn",
+      "type": "infrastructure"
+    },
+    {
+      "from": "n13_dns",
+      "to": "n06_leaksite",
+      "weight": 0.4,
+      "label": "domain churn keeps leak sites reachable",
+      "type": "infrastructure"
+    },
+    {
+      "from": "n15_proxy",
+      "to": "n03_bph",
+      "weight": 0.3,
+      "label": "proxies hide operator origin",
+      "type": "infrastructure"
+    },
+    {
+      "from": "n14_exfil",
+      "to": "n06_leaksite",
+      "weight": 0.5,
+      "label": "staged data feeds the extortion threat",
+      "type": "operational"
+    },
+    {
+      "from": "n06_leaksite",
+      "to": "raas",
+      "weight": 0.6,
+      "label": "leak sites are the extortion leverage",
+      "type": "operational"
+    },
+    {
+      "from": "n07_trust",
+      "to": "n04_iab",
+      "weight": 0.6,
+      "label": "escrow/reputation enables access deals",
+      "type": "trust"
+    },
+    {
+      "from": "n07_trust",
+      "to": "raas",
+      "weight": 0.7,
+      "label": "trust infrastructure enables affiliate recruitment",
+      "type": "trust"
+    },
+    {
+      "from": "raas",
+      "to": "n08_mixers",
+      "weight": 0.7,
+      "label": "proceeds pushed through mixers",
+      "type": "financial"
+    },
+    {
+      "from": "n08_mixers",
+      "to": "n02_exchanges",
+      "weight": 0.6,
+      "label": "obscured funds reach exchanges",
+      "type": "financial"
+    },
+    {
+      "from": "n08_mixers",
+      "to": "n01_otc",
+      "weight": 0.6,
+      "label": "obscured funds reach OTC brokers",
+      "type": "financial"
+    },
+    {
+      "from": "n02_exchanges",
+      "to": "n09_mules",
+      "weight": 0.5,
+      "label": "fiat handed to mule networks",
+      "type": "financial"
+    },
+    {
+      "from": "n01_otc",
+      "to": "n09_mules",
+      "weight": 0.6,
+      "label": "large cash-out integrated via mules",
+      "type": "financial"
+    },
+    {
+      "from": "protection",
+      "to": "raas",
+      "weight": 0.9,
+      "label": "state protection (krysha) shields the operators",
+      "type": "protection"
+    }
+  ],
+  "special_nodes": {
+    "raas": {
+      "id": "raas",
+      "name": "RaaS Brand / Affiliate Operation",
+      "note": "The player does not disrupt the RaaS brand directly with most actions; it is the hub that all enabling nodes feed. Its survival is governed by the adaptation engine (rebrand, reconstitution, trust). This is where brand-death vs reconstitution is decided.",
+      "structure_types": {
+        "closed_hierarchy": "Employed operators, central control (Conti, Black Basta). BRITTLE to trust/identity exposure: brand death likely.",
+        "open_franchise": "Large affiliate roster, low trust requirement (LockBit). RESILIENT to trust shocks: survives at degraded capacity."
+      }
+    },
+    "protection": {
+      "id": "protection",
+      "name": "Protection Layer (FSB/RIS krysha)",
+      "note": "Load-bearing but mostly invisible. Disrupting an operator whose protection is intact produces reconstitution. Disrupting protection first, or simultaneously, produces degradation. Most actions against this node carry HIGH backfire risk unless domestic framing is pre-positioned."
+    }
+  },
+  "vectors": [
+    {
+      "id": "financial",
+      "name": "Financial Pressure",
+      "color_role": "gold",
+      "blurb": "Choke the money: sanctions, exchange KYC, OTC designation, mixer designation. Lowest backfire risk, slowest to bite, compounds over time."
+    },
+    {
+      "id": "infrastructure",
+      "name": "Infrastructure Pressure",
+      "color_role": "cyan",
+      "blurb": "Take down the servers: BPH upstream engagement, ASN notifications, takedowns, domain seizure. Fast but reconstitutes fast unless paired."
+    },
+    {
+      "id": "legal",
+      "name": "Legal & Non-Cyber Charges",
+      "color_role": "amber",
+      "blurb": "Arrests, indictments, third-country arrests, tax/Article-210 framing. Powerful but extradition-first / public-attribution-first hardens protection."
+    },
+    {
+      "id": "underground",
+      "name": "Underground Social",
+      "color_role": "violet",
+      "blurb": "Break the trust: infiltrate forums, disrupt escrow/arbitrators, seed reputation attacks. High impact on closed groups, low backfire risk."
+    },
+    {
+      "id": "protection_layer",
+      "name": "Protection-Layer Disruption",
+      "color_role": "red",
+      "blurb": "Make the protector a liability: officer financial exposure, FNS referrals, investigative-journalism pipeline, manufactured FSB factional contradiction. The deepest lever; mishandled, it backfires hardest."
+    }
+  ],
+  "actions": [
+    {
+      "id": "a_otc_designation",
+      "name": "Designate OTC Broker Cluster",
+      "vector": "financial",
+      "targets": [
+        "n01_otc"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 2,
+      "lag_rationale": "A Treasury designation moves through interagency review and on-chain attribution before it formalizes — and the financial squeeze compounds over quarters rather than landing at once.",
+      "backfire_risk": "LOW",
+      "prereq": "Chainalysis/TRM tracing complete",
+      "effect": "Strands large cash-out; compounds each turn it stays in place. Pushes flow to exchanges/mixers (watch substitution).",
+      "adaptation": {
+        "dimensions": {
+          "financial": 2
+        }
+      },
+      "teaching_point": "Financial designation is the most durable vector: infrastructure rebuilds in days, financial exposure compounds.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_exchange_kyc",
+      "name": "VASP KYC / Enhanced Due Diligence Push",
+      "vector": "financial",
+      "targets": [
+        "n02_exchanges"
+      ],
+      "ap_cost": 1,
+      "lag_turns": 1,
+      "lag_rationale": "A VASP/KYC referral lands within a quarter once the exchange cluster is identified — regulatory engagement, not a court process.",
+      "backfire_risk": "LOW",
+      "effect": "Narrows compliant cash-out gateways; raises friction. Strongest when paired with mixer designation.",
+      "adaptation": {
+        "dimensions": {
+          "financial": 1
+        }
+      },
+      "teaching_point": "Each designation raises actor cost even when an alternative exists.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_mixer_designation",
+      "name": "Designate Mixing Service",
+      "vector": "financial",
+      "targets": [
+        "n08_mixers"
+      ],
+      "ap_cost": 1,
+      "lag_turns": 1,
+      "lag_rationale": "Designating a known mixer is faster than building an OTC case: roughly a quarter to formalize and start forcing funds onto higher-friction rails.",
+      "backfire_risk": "LOW",
+      "effect": "Forces funds onto higher-friction rails and makes tracing easier. Compounds with exchange + OTC pressure.",
+      "adaptation": {
+        "dimensions": {
+          "financial": 1
+        }
+      },
+      "teaching_point": "Coordinate mixer designations with exchange KYC pressure for a compounding effect.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_bph_upstream",
+      "name": "Upstream Provider Engagement (BPH)",
+      "vector": "infrastructure",
+      "targets": [
+        "n03_bph"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 1,
+      "lag_rationale": "Once the provider-of-provider (registrar/ASN/CDN) is mapped, upstream engagement degrades hosting within a quarter.",
+      "backfire_risk": "LOW",
+      "effect": "Degrades durable hosting; forces operators into gray-market VPS churn (higher detection risk). Reconstitutes unless VPS/DNS also pressured.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 2
+        }
+      },
+      "teaching_point": "Target the provider-of-provider (registrar, ASN, CDN), not the BPH brand.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_leaksite_takedown",
+      "name": "Leak-Site Seizure",
+      "vector": "infrastructure",
+      "targets": [
+        "n06_leaksite"
+      ],
+      "ap_cost": 1,
+      "lag_turns": 0,
+      "lag_rationale": "A seizure executes the moment it runs — instant, but just as instantly reversible.",
+      "backfire_risk": "LOW",
+      "effect": "Removes extortion leverage temporarily. Big visible win, fast relaunch (days) unless financial rails pressured simultaneously.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 1
+        }
+      },
+      "teaching_point": "Infrastructure seizure alone never delayed reconstitution past 90 days in the historical sample.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_leaksite_decryptor",
+      "name": "Seize Site + Release Decryptor (Cronos model)",
+      "vector": "infrastructure",
+      "targets": [
+        "n06_leaksite",
+        "n07_trust"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 0,
+      "lag_rationale": "Seizure and decryptor release happen together and immediately; the trust damage is baked into the same action.",
+      "backfire_risk": "LOW",
+      "effect": "Seizes the site AND undermines the payment incentive AND damages affiliate trust. A combined-effect move.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 1,
+          "trust": 2
+        }
+      },
+      "teaching_point": "Reusing the seized site for operational messaging (publishing affiliate data, keys) is a deliberate trust-cascade step, not an afterthought.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_loader_sinkhole",
+      "name": "Sinkhole Loader Botnet (Duck Hunt model)",
+      "vector": "infrastructure",
+      "targets": [
+        "n05_loaders"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 1,
+      "lag_rationale": "Standing up the sinkhole, redirecting C2, and pairing victim notification takes about a quarter to execute cleanly.",
+      "backfire_risk": "LOW-MEDIUM",
+      "effect": "Severs mass delivery; produces victim intelligence. Partial reconstitution in ~6 months unless BPH degraded in parallel.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 2
+        }
+      },
+      "teaching_point": "Sinkhole + victim notification + removal tool is the correct package. Watch IAB prices spike at 30-60 days as confirmation.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_iab_infiltration",
+      "name": "Infiltrate / Take Down IAB Market",
+      "vector": "underground",
+      "targets": [
+        "n04_iab"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 1,
+      "lag_rationale": "An undercover market operation needs a quarter to establish access before the takedown can land.",
+      "backfire_risk": "LOW",
+      "effect": "Shrinks victim supply pipeline; raises access prices; compresses affiliate margins.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 1,
+          "trust": 1
+        }
+      },
+      "teaching_point": "Most effective when combined with stealer-market disruption that feeds the IAB pipeline.",
+      "confidence": "CREDIBLE"
+    },
+    {
+      "id": "a_stealer_takedown",
+      "name": "Stealer-Log Market Takedown",
+      "vector": "underground",
+      "targets": [
+        "n10_stealers"
+      ],
+      "ap_cost": 1,
+      "lag_turns": 1,
+      "lag_rationale": "Market takedown plus bulk credential invalidation executes within a quarter.",
+      "backfire_risk": "LOW",
+      "effect": "Degrades raw credential supply. Quickly absorbed alone; pairs with IAB disruption.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 1
+        }
+      },
+      "teaching_point": "Lower standalone impact but it feeds the access market. Combine, do not isolate.",
+      "confidence": "ANALYST_INFERENCE"
+    },
+    {
+      "id": "a_trust_node",
+      "name": "Disrupt Escrow / Arbitrator (Trust Node)",
+      "vector": "underground",
+      "targets": [
+        "n07_trust"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 1,
+      "lag_rationale": "Reputation and escrow disruption propagates through the forum's social fabric within a quarter once the node is compromised.",
+      "backfire_risk": "LOW",
+      "effect": "Degrades market function independent of any technical action; raises transaction costs ecosystem-wide. Devastating to closed groups.",
+      "adaptation": {
+        "dimensions": {
+          "trust": 3,
+          "identity": 1
+        }
+      },
+      "teaching_point": "Trust infrastructure is person-dependent and non-transferable. This is the variable that decided Conti and Black Basta.",
+      "confidence": "CREDIBLE"
+    },
+    {
+      "id": "a_third_country_arrest",
+      "name": "Third-Country Arrest (travel window)",
+      "vector": "legal",
+      "targets": [
+        "raas"
+      ],
+      "ap_cost": 3,
+      "lag_turns": 1,
+      "lag_rationale": "The slow part — the sealed indictment — is pre-positioned; the arrest then executes in the quarter the actor travels to a cooperating jurisdiction.",
+      "backfire_risk": "MEDIUM",
+      "prereq": "Sealed indictment pre-positioned; actor must travel to a viable jurisdiction",
+      "requires_jurisdiction_capability": "arrest_available",
+      "effect": "Removes a specific operator. WAIS-scored. High value if it yields cooperation; substitutable operators reconstitute.",
+      "adaptation": {
+        "dimensions": {
+          "identity": 2
+        },
+        "removes_operator": true
+      },
+      "teaching_point": "Pursue third-country arrests instead of extradition requests. Extradition-first triggers defensive nationalism and hardens protection.",
+      "confidence": "CONFIRMED"
+    },
+    {
+      "id": "a_indictment_public",
+      "name": "Public Indictment / Attribution",
+      "vector": "legal",
+      "targets": [
+        "raas"
+      ],
+      "ap_cost": 1,
+      "lag_turns": 0,
+      "lag_rationale": "An attribution/indictment is published immediately — and its effect (deterrent, or more often protection hardening) is felt at once.",
+      "backfire_risk": "HIGH",
+      "effect": "Visible deterrent, BUT can convert the actor from criminal liability into a protected state asset if not already isolated.",
+      "adaptation": {
+        "dimensions": {
+          "identity": 1
+        },
+        "loud": true
+      },
+      "teaching_point": "Public attribution hardens protection. Delay until the actor is already isolated from the state. A deliberate trap action in the game.",
+      "confidence": "CREDIBLE"
+    },
+    {
+      "id": "a_fns_referral",
+      "name": "FNS Lifestyle-Inconsistency Referral",
+      "vector": "legal",
+      "targets": [
+        "n09_mules",
+        "protection"
+      ],
+      "ap_cost": 1,
+      "lag_turns": 2,
+      "lag_rationale": "A lifestyle-inconsistency referral must build a documented paper trail and move through Russian tax machinery before it bites — a domestic process measured in quarters.",
+      "backfire_risk": "LOW",
+      "effect": "Domestic-framed tax exposure; no foreign fingerprint. Builds a paper trail an officer cannot ignore. Slow burn.",
+      "adaptation": {
+        "dimensions": {
+          "financial": 1,
+          "identity": 1
+        },
+        "severs_protection": 1
+      },
+      "teaching_point": "Domestic framing (tax, undeclared income) routed through Russian institutions produces less blowback than foreign-facing confrontation.",
+      "confidence": "CREDIBLE"
+    },
+    {
+      "id": "a_mule_disruption",
+      "name": "Mule Recruitment / Front-Company Disruption",
+      "vector": "legal",
+      "targets": [
+        "n09_mules"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 1,
+      "lag_rationale": "Interrupting recruitment and front-company scaling takes a quarter of sustained law-enforcement pressure, not a single raid.",
+      "backfire_risk": "LOW-MEDIUM",
+      "effect": "Raises laundering cost; slows scaling. Requires sustained pressure, not a single action.",
+      "adaptation": {
+        "dimensions": {
+          "financial": 1
+        }
+      },
+      "teaching_point": "Mule recruiters operate continuously; one-off disruption is absorbed.",
+      "confidence": "CREDIBLE"
+    },
+    {
+      "id": "a_officer_exposure",
+      "name": "Officer Financial Exposure Operation",
+      "vector": "protection_layer",
+      "targets": [
+        "protection"
+      ],
+      "ap_cost": 3,
+      "lag_turns": 3,
+      "lag_rationale": "The longest lever: build the anomalous-outflow financial case, route it domestically with no foreign fingerprint, then wait for a rival FSB faction to decide the exposed officer is a liability worth moving against — a calculus you cannot rush.",
+      "backfire_risk": "MEDIUM",
+      "prereq": "Anomalous outflow analysis identifying protection-payment candidates",
+      "effect": "Surfaces an officer's krysha payments domestically. Can shift one officer's calculus or trigger FSB factional action. Severs protection -> unlocks brand-death outcomes on disruption.",
+      "adaptation": {
+        "dimensions": {
+          "identity": 1
+        },
+        "severs_protection": 2
+      },
+      "teaching_point": "You are not asking the FSB to cooperate as an institution; you are making one officer a liability to competing factions.",
+      "confidence": "ANALYST_INFERENCE"
+    },
+    {
+      "id": "a_journalism_pipeline",
+      "name": "Investigative-Journalism Pipeline",
+      "vector": "protection_layer",
+      "targets": [
+        "protection",
+        "n07_trust"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 2,
+      "lag_rationale": "Investigative outlets need months to verify a package that withstands scrutiny and carries no USG fingerprints before it can be published.",
+      "backfire_risk": "MEDIUM",
+      "effect": "Domestic-scandal framing via OCCRP/iStories/Meduza without an official foreign fingerprint. Amplifies domestic embarrassment.",
+      "adaptation": {
+        "dimensions": {
+          "trust": 1,
+          "identity": 1
+        },
+        "severs_protection": 1
+      },
+      "teaching_point": "Lower backfire than official attribution, but the package must withstand scrutiny and carry no USG fingerprints.",
+      "confidence": "CREDIBLE"
+    },
+    {
+      "id": "a_cvd_reform",
+      "name": "Coordinated Vulnerability Disclosure (CVD) Reform",
+      "vector": "financial",
+      "targets": [
+        "n16_exploit"
+      ],
+      "ap_cost": 2,
+      "lag_turns": 3,
+      "lag_rationale": "Policy-track and slow: coordinated disclosure reform and bug-bounty scaling only shrink the unpatched window after vendors and researchers respond across many months.",
+      "backfire_risk": "LOW",
+      "effect": "Policy-track: shrinks unpatched windows and exhausts bug classes before the criminal market acquires them. No backfire risk.",
+      "adaptation": {
+        "dimensions": {
+          "infrastructure": 1
+        }
+      },
+      "teaching_point": "The exploit-broker node is disrupted by policy, not law enforcement. Sequence policy actions first.",
+      "confidence": "CREDIBLE"
+    }
+  ],
+  "adaptation_rules": {
+    "summary": "These rules are the teaching engine. They encode the WAIS back-test findings so players learn the structural lesson by playing.",
+    "rules": [
+      {
+        "id": "rebrand",
+        "precedence": 3,
+        "trigger": "A RaaS brand is hit by infrastructure or single-arrest pressure while trust and protection remain intact.",
+        "effect": "Brand rebrands or relaunches within 1-2 turns at reduced capacity, then recovers. Capacity is preserved and redistributed.",
+        "case_basis": "LockBit relaunched in 5 days; 40% volume at 30d, 65-70% at 90d. BlackCat regained leak site in 48-72h.",
+        "teaching_point": "Hitting the brand alone produces a leadership transition, not degradation."
+      },
+      {
+        "id": "identity_kills_brands",
+        "precedence": 2,
+        "trigger": "Intelligence Yield HIGH (identity/personnel exposure) AND target is a closed hierarchy.",
+        "effect": "Brand death likely. No reconstitution under the same name. Capacity disperses to successors at a fraction of prior scale.",
+        "case_basis": "Conti (2022) and Black Basta (2025): both ex-ante 9/9, both brand-dead.",
+        "teaching_point": "Leaks destroy the trust infrastructure closed groups need to rebuild."
+      },
+      {
+        "id": "infra_alone_fails",
+        "precedence": 3,
+        "trigger": "Infrastructure seizure WITHOUT personnel exposure or financial-rail pressure.",
+        "effect": "Reconstitution within 90 days, every time in the historical sample.",
+        "case_basis": "QakBot and BlackCat both reconstituted quickly or partially.",
+        "teaching_point": "Seizing servers without exposing people never delayed reconstitution past 90 days."
+      },
+      {
+        "id": "trust_needs_pairing",
+        "precedence": 3,
+        "trigger": "Trust cascade applied alone, without financial-rail pressure or personnel exposure.",
+        "effect": "Relaunch still fast. Trust damage converts to reconstitution delay ONLY when paired.",
+        "case_basis": "LockBit scored Trust Cascade 3 and still relaunched in 5 days.",
+        "teaching_point": "Coordination requirement: financial/identity pressure must accompany trust shocks."
+      },
+      {
+        "id": "franchises_bend_hierarchies_break",
+        "precedence": 2,
+        "trigger": "Same exposure applied to open-franchise vs closed-hierarchy structure.",
+        "effect": "Franchise survives at degraded capacity; closed hierarchy dies.",
+        "case_basis": "LockBit survived administrator unmasking; Conti/Black Basta did not survive equivalent exposure.",
+        "teaching_point": "Structure type is a covariate. Read the target before you act."
+      },
+      {
+        "id": "substitution",
+        "precedence": 4,
+        "trigger": "A node is disrupted without pre-positioned pressure on its identified successor.",
+        "effect": "Successor steps in cleanly; reconstitution accelerates. (e.g., RansomHub absorbed LockBit affiliates.)",
+        "case_basis": "RansomHub emerged as primary beneficiary post-Cronos.",
+        "teaching_point": "Map the successor first; pressure the successor simultaneously with or before the primary."
+      },
+      {
+        "id": "protection_reflex",
+        "precedence": 1,
+        "trigger": "Public attribution or extradition request against an actor still inside state protection.",
+        "effect": "Protection HARDENS; the actor becomes a soft-state asset; future disruption against it is less effective.",
+        "case_basis": "RU_GOV protection framework, Section 8 engagement triggers.",
+        "teaching_point": "Sequence matters. Isolate from protection before going loud."
+      },
+      {
+        "id": "macro_needs_two_of_three",
+        "precedence": 5,
+        "trigger": "Player attempts a macro-level (ecosystem health) win.",
+        "effect": "Macro health only moves when at least TWO of: broad trust cascade (3/3), brand dissolution (reconstitution 3/3), coordinated financial-rail pressure are simultaneously present.",
+        "case_basis": "No case in the review produced sustained macro payment-volume reduction from a single operation alone.",
+        "teaching_point": "Compounding pressure across multiple nodes and timeframes is the necessary condition for macro movement."
+      }
+    ]
+  },
+  "scoring": {
+    "ecosystem_health_index": {
+      "note": "Lower is better for the player (more degraded ecosystem). Built from the three KPI themes. Displayed as three dials plus a composite grade.",
+      "components": [
+        {
+          "id": "theme_a",
+          "name": "Domestic Enforcement Pressure",
+          "direction": "higher_is_better_for_player",
+          "drivers": [
+            "protection-layer severance",
+            "FNS referrals landing",
+            "officer liability triggered"
+          ],
+          "kpi": "A-1, A-3"
+        },
+        {
+          "id": "theme_b",
+          "name": "FSB/RIS Strife",
+          "direction": "higher_is_better_for_player",
+          "drivers": [
+            "trust cascades",
+            "affiliate defections",
+            "exit scams",
+            "WAIS impact"
+          ],
+          "kpi": "B-1, B-2"
+        },
+        {
+          "id": "theme_c",
+          "name": "Ecosystem Economics",
+          "direction": "lower_volume_is_better_for_player",
+          "drivers": [
+            "financial-rail pressure",
+            "payment-rate decline",
+            "leak-site volume decline"
+          ],
+          "kpi": "C-1, C-2, C-3"
+        }
+      ]
+    },
+    "wais": {
+      "note": "Scores arrest actions. Sum of four dimensions, range 4-12.",
+      "dimensions": [
+        "Node Criticality (1-3)",
+        "Cooperation Output (1-3, may be PENDING)",
+        "Trust Cascade Effect (1-3)",
+        "Reconstitution Impact (1-3)"
+      ],
+      "bands": {
+        "10-12": "HIGH ecosystem impact",
+        "7-9": "MODERATE",
+        "4-6": "LIMITED"
+      },
+      "coordination_bonus": "+2 to the highest single WAIS in a multi-arrest coordinated operation.",
+      "honesty_note": "Across 21 scored arrests in 4.5 years there is exactly one HIGH: Operation Phobos Aetor (Feb 2025), and only via the coordination of arrests + infrastructure seizure + brand death. No SINGLE arrest has ever reached HIGH — even a high-criticality admin arrest (Ptitsyn) scored only MODERATE. The cleanest statement of both the impunity problem and the coordination requirement: keep HIGH genuinely hard, reachable only by coordinated multi-node pressure."
+    },
+    "grades": [
+      "F: brand churn only",
+      "C: localized disruption",
+      "B: degraded survival imposed",
+      "A: brand dissolution",
+      "S: sustained macro degradation (the two-of-three condition met and held)"
+    ]
+  },
+  "jurisdictions": [
+    {
+      "id": "russia",
+      "name": "Russia",
+      "posture": "ACTIVE PROTECTION (state core)",
+      "enforcement": "None bilateral",
+      "leverage": "Domestic-framed referrals only (FNS, Rosfinmonitoring, CBR)",
+      "arrest_available": false,
+      "note": "Arrests off the table. Only domestic-framing and protection-layer levers work, and only carefully."
+    },
+    {
+      "id": "belarus",
+      "name": "Belarus",
+      "posture": "ACTIVE PROTECTION",
+      "enforcement": "None (KGB)",
+      "leverage": "Sanctions only",
+      "arrest_available": false,
+      "note": "Treat as Russian territory. No bilateral channel."
+    },
+    {
+      "id": "transnistria",
+      "name": "Transnistria",
+      "posture": "OUT OF JURISDICTION",
+      "enforcement": "None",
+      "leverage": "None via Moldova",
+      "arrest_available": false,
+      "note": "Russian-controlled. Infrastructure here is shielded from Moldovan action."
+    },
+    {
+      "id": "kazakhstan",
+      "name": "Kazakhstan",
+      "posture": "SELECTIVE ENFORCEMENT",
+      "enforcement": "Moderate (KNB)",
+      "leverage": "FATF / OFAC / AKF FIU channel",
+      "arrest_available": true,
+      "note": "Highest-value non-Russia opportunity. REvil 2022 precedent. Frame as AML, not geopolitics. Will NOT act against FSB-protected actors."
+    },
+    {
+      "id": "ukraine",
+      "name": "Ukraine",
+      "posture": "FUNCTIONAL COOPERATION",
+      "enforcement": "High (SBU)",
+      "leverage": "Direct LE + intelligence sharing",
+      "arrest_available": true,
+      "note": "Active partner post-2022. Primary value is attribution intelligence on Russian actors."
+    },
+    {
+      "id": "georgia",
+      "name": "Georgia",
+      "posture": "COOPERATIVE / LIMITED",
+      "enforcement": "Low-Moderate",
+      "leverage": "EU accession (weakened 2024) + FIU channel",
+      "arrest_available": true,
+      "note": "Limited ecosystem presence. Financial transit (USD correspondent) is the main exposure. 2024 political shift adds uncertainty."
+    },
+    {
+      "id": "armenia",
+      "name": "Armenia",
+      "posture": "SHIFTING / AMBIVALENT (toward West)",
+      "enforcement": "Low",
+      "leverage": "FinCEN-to-FIU; EU alignment window",
+      "arrest_available": true,
+      "note": "Post-2023 realignment opened a time-limited window. Banking SWIFT transit is the concern. Prioritize before the window closes."
+    },
+    {
+      "id": "moldova",
+      "name": "Moldova",
+      "posture": "COOPERATIVE / LIMITED",
+      "enforcement": "Low",
+      "leverage": "EU accession + Europol JITs",
+      "arrest_available": true,
+      "note": "Cooperative but capacity-limited. Carve out Transnistria explicitly."
+    }
+  ],
+  "events": [
+    {
+      "id": "ev_rebrand",
+      "trigger": "rebrand rule fires",
+      "text": "{brand} goes dark... and resurfaces 5 days later under a fresh skin. The affiliates barely noticed. You moved a logo, not a needle.",
+      "tone": "setback"
+    },
+    {
+      "id": "ev_brand_death",
+      "trigger": "identity_kills_brands rule fires",
+      "text": "The leak hits the forums at 3am. By morning nobody will escrow with {brand}'s people. The brand is finished, and it took the trust network down with it.",
+      "tone": "triumph"
+    },
+    {
+      "id": "ev_infra_relaunch",
+      "trigger": "infra_alone_fails rule fires",
+      "text": "Servers seized. Champagne in the press release. 72 hours later the leak site is back on a new ASN. You bought a weekend.",
+      "tone": "setback"
+    },
+    {
+      "id": "ev_protection_harden",
+      "trigger": "protection_reflex rule fires",
+      "text": "You named him publicly. Moscow heard 'our asset' and closed ranks. The krysha just got thicker. That door is now welded shut.",
+      "tone": "blunder"
+    },
+    {
+      "id": "ev_officer_flip",
+      "trigger": "officer_exposure lands",
+      "text": "An iStories byline drops the property records. A competing FSB directorate smells blood. The protection relationship just became a liability nobody wants to own.",
+      "tone": "triumph"
+    },
+    {
+      "id": "ev_iab_spike",
+      "trigger": "loader sinkhole at 30-60 days",
+      "text": "IAB asking prices jump 40% on XSS overnight. That spike is your receipt: the disruption cost them real access.",
+      "tone": "confirm"
+    },
+    {
+      "id": "ev_substitution",
+      "trigger": "substitution rule fires",
+      "text": "You took down the primary. The successor you never mapped stepped in clean. Congratulations, you ran their succession plan for them.",
+      "tone": "blunder"
+    },
+    {
+      "id": "ev_macro_move",
+      "trigger": "macro_needs_two_of_three satisfied",
+      "text": "For the first time, the quarterly Chainalysis line bends down and stays down. Victim counts hold but the money is drying up. This is what degradation actually looks like.",
+      "tone": "triumph"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sc_cronos",
+      "name": "Operation Cronos",
+      "real_date": "February 2024",
+      "target": "LockBit",
+      "structure": "open_franchise",
+      "difficulty": 3,
+      "starting_state": "Dominant franchise, 25-30% of ecosystem attack volume, 100+ affiliates, partial protection layer, financial rails untouched.",
+      "history_outcome": "Relaunched in 5 days; 40% volume at 30d, 65-70% at 90d. Degraded survival, returned to top tier by Q1 2026 (LockBit 5.0).",
+      "beat_history_win": "Impose brand dissolution OR keep relaunch below 30% at 90 days. Requires pairing the seizure with financial-rail pressure and successor pre-positioning (RansomHub).",
+      "lesson": "The real operation seized infrastructure and arrested affiliates but left the money intact. Fast relaunch was the predictable result. Can you do better by hitting OTC/mixers at the same time?",
+      "real_actions_taken": [
+        "a_leaksite_decryptor",
+        "a_third_country_arrest"
+      ],
+      "missed_levers": [
+        "a_otc_designation",
+        "a_mixer_designation",
+        "successor pre-positioning on RansomHub"
+      ],
+      "win": {
+        "any": [
+          {
+            "outcome": [
+              "BRAND_DEAD"
+            ]
+          },
+          {
+            "grade": [
+              "A",
+              "S"
+            ]
+          }
+        ]
+      },
+      "start": {
+        "feed": "You inherit Operation Cronos mid-stride: servers seized, affiliates spooked — but LockBit's financial rails are wholly untouched. History says it relaunches in 5 days. Change that.",
+        "nodes": {
+          "n06_leaksite": "PRESSURED"
+        }
+      }
+    },
+    {
+      "id": "sc_duckhunt",
+      "name": "Operation Duck Hunt",
+      "real_date": "August 2023",
+      "target": "QakBot",
+      "structure": "loader_service",
+      "difficulty": 2,
+      "starting_state": "700,000 infected hosts, 15+ years of infrastructure, supplies Black Basta/Royal and others, no confirmed state protection.",
+      "history_outcome": "Full disruption at sinkhole; rebuild detected 31-90d; 30-40% of prior volume by 90-180d. Never restored to prior scale. Leader indicted May 2025, at large in Moscow.",
+      "beat_history_win": "Prevent reconstitution past 30-40% by degrading BPH in parallel with the sinkhole.",
+      "lesson": "The reference model: sinkhole + victim notification + removal tool. It worked, but hosting was not simultaneously degraded, so QakBot partly rebuilt. Add BPH pressure.",
+      "real_actions_taken": [
+        "a_loader_sinkhole"
+      ],
+      "missed_levers": [
+        "a_bph_upstream"
+      ],
+      "win": {
+        "any": [
+          {
+            "outcome": [
+              "DEGRADED",
+              "BRAND_DEAD"
+            ]
+          },
+          {
+            "grade": [
+              "B",
+              "A",
+              "S"
+            ]
+          }
+        ]
+      },
+      "start": {
+        "feed": "QakBot's botnet is sinkholed and bleeding victims — but bulletproof hosting is intact, so it can rebuild. Degrade the hosting in parallel.",
+        "nodes": {
+          "n05_loaders": "PRESSURED",
+          "n03_bph": "NORMAL"
+        }
+      }
+    },
+    {
+      "id": "sc_conti",
+      "name": "The Conti Leak",
+      "real_date": "February 2022",
+      "target": "Conti",
+      "structure": "closed_hierarchy",
+      "difficulty": 4,
+      "starting_state": "20-25% of ecosystem revenue, ~100 employed personnel, active krysha, closed hierarchy. Highest replacement difficulty in the ecosystem.",
+      "history_outcome": "Internal leak (60,000+ messages) triggered by a political statement, not a Western action. Brand dissolved within 90 days; 5+ successor brands; never reconstituted.",
+      "beat_history_win": "This is the calibration ceiling. The win condition is to REPRODUCE the maximum-strife outcome deliberately, using identity exposure + trust-node disruption against the closed hierarchy, instead of relying on an accident of politics.",
+      "lesson": "Conti did not fall because capacity was destroyed; it fell because trust was destroyed. Personnel dispersed because no one trusted anyone enough to rebuild under the name. Trust infrastructure (Node 07) is the critical variable.",
+      "real_actions_taken": [
+        "external political trigger"
+      ],
+      "missed_levers": [
+        "deliberate trust-node + identity exposure replication"
+      ],
+      "win": {
+        "outcome": [
+          "BRAND_DEAD"
+        ]
+      },
+      "start": {
+        "feed": "Conti: a closed hierarchy with active krysha. You can't arrest your way in — but you can make its own people stop trusting each other. Reproduce the leak's effect on purpose.",
+        "nodes": {}
+      }
+    },
+    {
+      "id": "sc_blackcat",
+      "name": "BlackCat / ALPHV",
+      "real_date": "December 2023 - March 2024",
+      "target": "BlackCat",
+      "structure": "open_franchise",
+      "difficulty": 3,
+      "starting_state": "Sophisticated Rust-based RaaS, triple extortion, leak site on resilient hosting, intact financial rails.",
+      "history_outcome": "DOJ seized leak site Dec 2023; BlackCat regained it in 48-72h. After the ~$22M Change Healthcare payment, admins exit-scammed their own affiliates (Mar 2024). Brand died by exit scam, NOT by the LE action.",
+      "beat_history_win": "Force brand death through deliberate pressure rather than waiting for a self-inflicted exit scam. Combine financial-rail pressure with trust disruption so reconstitution cost exceeds the payout.",
+      "lesson": "Two events compounded: LE pressure created instability, the exit scam destroyed remaining trust. The compounding effect is what the framework is designed to produce on purpose.",
+      "real_actions_taken": [
+        "a_leaksite_takedown"
+      ],
+      "missed_levers": [
+        "a_otc_designation",
+        "a_trust_node"
+      ],
+      "win": {
+        "any": [
+          {
+            "outcome": [
+              "DEGRADED",
+              "BRAND_DEAD"
+            ]
+          },
+          {
+            "grade": [
+              "S"
+            ]
+          }
+        ]
+      },
+      "start": {
+        "feed": "BlackCat/ALPHV: resilient hosting, intact financial rails, a record payout in hand. History waited for a self-inflicted exit scam. Force the collapse deliberately instead.",
+        "nodes": {
+          "n06_leaksite": "PRESSURED"
+        }
+      }
+    },
+    {
+      "id": "sc_blackbasta",
+      "name": "The Black Basta Leaks",
+      "real_date": "February 2025",
+      "target": "Black Basta",
+      "structure": "closed_hierarchy",
+      "difficulty": 4,
+      "starting_state": "Post-Conti successor, Conti lineage personnel, closed hierarchy, high OPSEC, pre-existing financial disputes visible internally.",
+      "history_outcome": "Internal chat-log leak (Feb 2025). Last victim Jan 2025, inactive by Mar 2025. Members migrated to Cactus (no new brand). Leader Oleg Nefedov (Tramp) on EU Most Wanted + Interpol Red Notice Jan 2026.",
+      "beat_history_win": "Detect the pre-existing financial strife early (recruitment-term shifts, affiliate compensation complaints) and apply trust + financial pressure to trigger collapse before the accidental leak does it for you.",
+      "lesson": "When internal disputes are about money, the group is already under pressure. Monitoring affiliate compensation complaints gives early warning before a leak event.",
+      "real_actions_taken": [
+        "external internal leak"
+      ],
+      "missed_levers": [
+        "early trust-node disruption",
+        "a_fns_referral"
+      ],
+      "win": {
+        "outcome": [
+          "BRAND_DEAD"
+        ]
+      },
+      "start": {
+        "feed": "Black Basta is already wobbling — affiliate compensation disputes are visible internally. The strife is your early-warning. Apply trust + financial pressure before the accidental leak does it for you.",
+        "hub": {
+          "dims": {
+            "trust": 1
+          }
+        },
+        "nodes": {}
+      }
+    },
+    {
+      "id": "sc_phobos",
+      "name": "Operation Phobos Aetor",
+      "real_date": "February 2025",
+      "target": "8Base / Phobos",
+      "structure": "closed_hierarchy",
+      "difficulty": 5,
+      "starting_state": "Long-running Phobos RaaS run through a central administrator. Admin Evgenii Ptitsyn is already in custody (arrested South Korea 2024, extradited) — but the brand kept operating under others, financial rails intact, 8Base leak site live.",
+      "history_outcome": "Operation Phobos Aetor (Feb 2025): four arrests, the 8Base leak site, and 27 servers seized in a SINGLE coordinated action, followed by brand death. The only WAIS HIGH in 4.5 years (1 HIGH out of 21 scored arrests) and the only durable brand death — the strongest quantified proof of the coordination thesis.",
+      "beat_history_win": "Reproduce the only WAIS HIGH on record. Sequential single-node pressure gets routed around. You must coordinate identity/trust exposure, severed protection and infrastructure so that an arrest lands on a brand already dying — scoring the HIGH band (10-12).",
+      "lesson": "The proof-of-concept. Ptitsyn's arrest alone — a high-criticality admin — scored only MODERATE, and Phobos/8Base continued under others. It took simultaneous arrests + infrastructure seizure + brand death to reach HIGH and kill it for good. Coordination is not a bonus; it is the only thing on record that has ever worked.",
+      "real_actions_taken": [
+        "a_officer_exposure",
+        "a_trust_node",
+        "a_third_country_arrest",
+        "a_leaksite_takedown"
+      ],
+      "missed_levers": [],
+      "win": {
+        "wais_high": true
+      },
+      "start": {
+        "feed": "Phobos's admin Ptitsyn is already in custody — yet the brand operates on under new hands, rails intact. His arrest alone scored only MODERATE. To kill it for good and reach HIGH, coordinate everything and time the arrest for last.",
+        "hub": {
+          "dims": {
+            "identity": 1
+          }
+        }
+      }
+    }
+  ],
+  "board_layout": {
+    "note": "Lifted from the v2.5 map. A proven left-to-right pipeline layout for the board: funds and access flow downstream through 9 layers. Each canonical node is assigned a layer. The state-actor layer maps to the game's Protection Layer. Claude Code should use this for initial node placement instead of positioning from scratch.",
+    "layers": [
+      {
+        "id": 0,
+        "name": "Infrastructure",
+        "color": "#4a90d9",
+        "blurb": "Abuse-tolerant hosting and forums; the durable substrate everything else sits on."
+      },
+      {
+        "id": 1,
+        "name": "Enablement",
+        "color": "#6eb84a",
+        "blurb": "Force-multiplier support: crypters, callers, CaaS."
+      },
+      {
+        "id": 2,
+        "name": "Access Generation",
+        "color": "#e0960a",
+        "blurb": "Raw intrusion supply: loaders, stealers, exploit brokers."
+      },
+      {
+        "id": 3,
+        "name": "Access Markets",
+        "color": "#e06030",
+        "blurb": "Where footholds are priced and sold: IAB markets."
+      },
+      {
+        "id": 4,
+        "name": "Core Operations",
+        "color": "#cc2a18",
+        "blurb": "The RaaS brands and affiliates that run the campaigns."
+      },
+      {
+        "id": 5,
+        "name": "Extortion / Pressure",
+        "color": "#8840c8",
+        "blurb": "Leak sites, data markets, negotiation: turning compromise into payment pressure."
+      },
+      {
+        "id": 6,
+        "name": "Financial Obfuscation",
+        "color": "#28a898",
+        "blurb": "Mixers and bridges that hide the money before cash-out."
+      },
+      {
+        "id": 7,
+        "name": "Cash-Out",
+        "color": "#d8a32a",
+        "blurb": "OTC brokers and high-risk exchanges turning crypto into value."
+      },
+      {
+        "id": 8,
+        "name": "Fiat Integration",
+        "color": "#b5638f",
+        "blurb": "Mules and fronts absorbing proceeds into the real economy."
+      },
+      {
+        "id": "state",
+        "name": "Protection / State Layer",
+        "color": "#9a3030",
+        "blurb": "FSB, MVD, Rosfinmonitoring, CBR, GRU, FNS and others. Mostly hidden; maps to the game's Protection Layer."
+      }
+    ],
+    "node_layer_map": {
+      "n03_bph": 0,
+      "n07_trust": 0,
+      "n11_crypters": 1,
+      "n05_loaders": 2,
+      "n10_stealers": 2,
+      "n16_exploit": 2,
+      "n04_iab": 3,
+      "raas": 4,
+      "n06_leaksite": 5,
+      "n14_exfil": 5,
+      "n08_mixers": 6,
+      "n01_otc": 7,
+      "n02_exchanges": 7,
+      "n09_mules": 8,
+      "n12_vps": 0,
+      "n13_dns": 0,
+      "n15_proxy": 0,
+      "protection": "state"
+    },
+    "v25_node_crosswalk": {
+      "note": "How the richer 28-node v2.5 map collapses onto the 16 canonical dependency-map nodes. Useful when importing future v2.5 updates. v2.5 splits some canonical nodes (exchanges into cex/ruexch/exchl; node 06 into leaksite/datamkt; node 08 into mixers/bridge; node 09 into mules/bankacct) and adds non-numbered nodes (callers, negotiation, affiliate) and the full state-actor layer.",
+      "bph": "n03_bph",
+      "forums": "n07_trust",
+      "crypters": "n11_crypters",
+      "callers": "(enablement, no canonical node)",
+      "loaders": "n05_loaders",
+      "stealers": "n10_stealers",
+      "exploits": "n16_exploit",
+      "iab": "n04_iab",
+      "raas": "raas",
+      "affiliate": "raas (affiliate sub-role)",
+      "datamkt": "n06_leaksite (data-market facet)",
+      "leaksite": "n06_leaksite",
+      "negot": "(extortion, no canonical node)",
+      "bridge": "n08_mixers (cross-chain facet)",
+      "mixers": "n08_mixers",
+      "otc": "n01_otc",
+      "cex": "n02_exchanges",
+      "ruexch": "n02_exchanges",
+      "exchl": "n02_exchanges",
+      "mules": "n09_mules",
+      "bankacct": "n09_mules (banking facet)",
+      "state_layer": [
+        "fsb",
+        "mvd",
+        "rosfin",
+        "cbr",
+        "gru",
+        "svr",
+        "genpros",
+        "fns"
+      ]
+    }
+  },
+  "intel_feed": {
+    "note": "Real, dated ecosystem events lifted from the v2.5 map's 2026 monthly timeline (current through May 2026, more recent than the vetted docs). Three uses in the game: (1) flavor for the live event feed, (2) a sandbox starting-state that reflects the actual current board, (3) seed material for new current-ops scenarios. status values: DISRUPTED, DEGRADED, RECONSTITUTING, NOTABLE. Each carries a confidence label. Tagged to canonical nodes.",
+    "as_of": "2026-05-31",
+    "events": [
+      {
+        "month": "2026-03",
+        "status": "DEGRADED",
+        "node": "n03_bph",
+        "conf": "CONFIRMED",
+        "headline": "Media Land / Aeza / Hypercore sanctions chain active",
+        "detail": "OFAC/UK/Australia sanctioned Media Land LLC (Nov 2025) for supporting LockBit, BlackSuit, Play. Aeza Group rebranded as UK-front Hypercore to evade sanctions. Financial isolation without concurrent ISP depeering allowed continued operation."
+      },
+      {
+        "month": "2026-05",
+        "status": "DISRUPTED",
+        "node": "n03_bph",
+        "conf": "CONFIRMED",
+        "headline": "Operation Saffron + Stark Industries FIOD: dual BPH takedown",
+        "detail": "Operation Saffron (May 19-20, 18 countries): First VPN dismantled, 33 servers across 27 countries, 506 users across 25 ransomware groups, 12+ years of anonymization removed. Stark/WorkTitans (Dutch FIOD): 800+ servers seized, 2 arrests charged under Dutch sanctions law (a novel theory enabling prosecution of EU hosts without proving cybercrime). Confirms the Node 15 proxy reassessment: criminal anonymization is concentrated and disruptable."
+      },
+      {
+        "month": "2026-03",
+        "status": "DISRUPTED",
+        "node": "n07_trust",
+        "conf": "CONFIRMED",
+        "headline": "RAMP forum seized (FBI, Jan 28 2026)",
+        "detail": "FBI seized RAMP, the only forum where RaaS affiliate recruitment was openly permitted (hosted LockBit, ALPHV, Conti, DragonForce, Qilin, RansomHub). 340K IP records leaked. Migration to closed T1erOne and Rehub."
+      },
+      {
+        "month": "2026-03",
+        "status": "DISRUPTED",
+        "node": "n07_trust",
+        "conf": "CONFIRMED",
+        "headline": "Operation Leak: LeakBase dismantled (FBI/Europol, Mar 3-4)",
+        "detail": "14-country operation: 142K members, hundreds of millions of credentials seized, 13 arrests. Full database in FBI custody."
+      },
+      {
+        "month": "2026-05",
+        "status": "RECONSTITUTING",
+        "node": "n07_trust",
+        "conf": "CONFIRMED",
+        "headline": "RAMP dark 120+ days: anomalous non-reconstitution",
+        "detail": "RAMP still dark at 120+ days vs a typical 60-90 day window, the longest absence since 2021. Either LE infiltration is deterring relaunch, or coordination moved permanently to private invite-only channels (worse for visibility). DarkForums grew 600% absorbing premium IAB listings. 180-day status due July 28 2026."
+      },
+      {
+        "month": "2026-05",
+        "status": "NOTABLE",
+        "node": "n10_stealers",
+        "conf": "CREDIBLE",
+        "headline": "Lumma reconstituted; Remus successor; C2 on Russian-hosted Selectel",
+        "detail": "Lumma fully reconstituted after its May 2025 takedown; Remus stealer active as successor using EtherHiding C2. Lumma C2 now permanently on Russian-hosted Selectel. 18.7M stealer logs Jan-May 2026; 54% of ransomware victims had credentials in stealer markets pre-attack."
+      },
+      {
+        "month": "2026-05",
+        "status": "NOTABLE",
+        "node": "n16_exploit",
+        "conf": "CONFIRMED",
+        "headline": "Cisco zero-days (CVSS 10.0); 70-day exploitation gap",
+        "detail": "Interlock zero-day CVE-2026-20131 (Cisco FMC) and CVE-2026-20182 (Cisco SD-WAN), both CVSS 10.0, a 70-day exploitation gap. Oracle EBS zero-day listed on RAMP. Illustrates the unpatched-window lever the CVD-reform action targets."
+      },
+      {
+        "month": "2026-04",
+        "status": "NOTABLE",
+        "node": "n04_iab",
+        "conf": "CREDIBLE",
+        "headline": "IAB market fragmented post-RAMP; median price $1,295",
+        "detail": "Russian IAB Aleksei Volkov sentenced 81 months (SDNY). Access market fragmented after the RAMP seizure; median listing price $1,295."
+      },
+      {
+        "month": "2026-05",
+        "status": "NOTABLE",
+        "node": "raas",
+        "conf": "CREDIBLE",
+        "headline": "Q1 2026: 2,638 victim posts (+22% YoY); Vect mass launch; Gentlemen admin exposed",
+        "detail": "Qilin #1, DragonForce cartel, encryption-free extortion surge. The Gentlemen admin identity and 8 affiliate TOX IDs exposed; LockBit 5.0 +106%; May volume -9.4% MoM. Vect RaaS distributed 300K+ affiliate keys via BreachForums. Record 91 active leak sites in Q1 (vs ~50 mid-2024)."
+      },
+      {
+        "month": "2026-03",
+        "status": "DISRUPTED",
+        "node": "n02_exchanges",
+        "conf": "CONFIRMED",
+        "headline": "UK sanctioned Xinbi marketplace ($19.9B in transactions)",
+        "detail": "UK designated the Xinbi marketplace, $19.9B in lifetime transactions (Mar 26)."
+      },
+      {
+        "month": "2026-04",
+        "status": "DISRUPTED",
+        "node": "n02_exchanges",
+        "conf": "CONFIRMED",
+        "headline": "Grinex (Garantex successor) hacked and suspended",
+        "detail": "Grinex, the Garantex successor, hacked and suspended after $13.7M lost (Apr 15)."
+      },
+      {
+        "month": "2026-04",
+        "status": "DEGRADED",
+        "node": "n02_exchanges",
+        "conf": "CONFIRMED",
+        "headline": "EU 20th sanctions: total ban on Russian crypto platforms",
+        "detail": "EU 20th sanctions package: total ban on Russian crypto platforms plus digital ruble and RUBx stablecoin, effective May 24. A7A5 token linked to $72B illicit flows; ~95% of ransomware proceeds move via USDT stablecoins."
+      },
+      {
+        "month": "2026-05",
+        "status": "NOTABLE",
+        "node": "n08_mixers",
+        "conf": "CREDIBLE",
+        "headline": "OFAC actions on crypto laundering networks",
+        "detail": "OFAC designated 29 Cambodian entities, $701.9M restrained (Apr 23); sanctioned a Sinaloa Cartel fentanyl-to-crypto network (May 20). Stablecoin laundering is displacing classic mixer reliance."
+      }
+    ]
+  },
+  "candidate_scenarios_current": {
+    "note": "Optional current-ops scenarios seeded from the 2026 intel feed, complementing the five historical levels. These are based on still-developing events; outcomes are open, which makes them good prospective-play levels. Promote into the main scenarios array once outcomes resolve.",
+    "scenarios": [
+      {
+        "id": "sc_ramp",
+        "name": "The RAMP Blackout",
+        "real_date": "January-May 2026",
+        "target": "RAMP forum (trust infrastructure)",
+        "structure": "trust_node",
+        "difficulty": 3,
+        "starting_state": "FBI seized RAMP Jan 28 2026, the only forum openly permitting RaaS affiliate recruitment. 340K IP records leaked. T1erOne and Rehub competing to absorb displaced affiliates.",
+        "open_outcome": "As of May 31 2026 RAMP is dark 120+ days vs a normal 60-90 day reconstitution. Either infiltration is deterring relaunch, or coordination went permanently private.",
+        "beat_history_win": "Keep the forum trust layer degraded past 180 days AND prevent a clean successor handoff by pre-positioning pressure on T1erOne/Rehub before they consolidate.",
+        "lesson": "Trust-node disruption is the low-backfire, high-impact lever from Node 07. The danger is not relaunch, it is migration to invite-only channels that erase your visibility.",
+        "intel_refs": [
+          "RAMP forum seized",
+          "RAMP dark 120+ days"
+        ],
+        "win": {
+          "any": [
+            {
+              "macro": true
+            },
+            {
+              "grade": [
+                "B",
+                "A",
+                "S"
+              ]
+            }
+          ]
+        },
+        "start": {
+          "feed": "RAMP is already dark — the FBI seized the only forum that openly permitted RaaS recruitment. The danger now is migration to invite-only channels. Keep the trust layer degraded and deny a clean successor handoff.",
+          "hub": {
+            "dims": {
+              "trust": 2
+            }
+          },
+          "nodes": {
+            "n07_trust": "DISRUPTED"
+          }
+        }
+      },
+      {
+        "id": "sc_saffron",
+        "name": "Operation Saffron",
+        "real_date": "May 2026",
+        "target": "Criminal anonymization + BPH (First VPN, Stark Industries)",
+        "structure": "infrastructure_concentration",
+        "difficulty": 3,
+        "starting_state": "Dual simultaneous action: First VPN (33 servers, 27 countries, 506 users across 25 ransomware groups) and Stark/WorkTitans (800+ servers, 2 arrests under a novel Dutch sanctions-law theory).",
+        "open_outcome": "Historical BPH migration window is 1-7 days. Cross-referencing Stark logs against the First VPN user list was the highest-priority follow-on, with a closing window.",
+        "beat_history_win": "Convert the seizure into durable degradation by chaining the financial vector (sanction the successor hosts) and exploiting the cross-referenced user list before the 1-7 day migration window closes.",
+        "lesson": "Concentrated criminal anonymization is more disruptable than the old MEDIUM rating assumed (the Node 15 reassessment). Novel legal theories (sanctions-law prosecution of hosts) are a new lever worth modeling.",
+        "intel_refs": [
+          "Operation Saffron + Stark Industries FIOD"
+        ],
+        "win": {
+          "any": [
+            {
+              "grade": [
+                "B",
+                "A",
+                "S"
+              ]
+            },
+            {
+              "macro": true
+            }
+          ]
+        },
+        "start": {
+          "feed": "Operation Saffron's opening blow already landed: First VPN dismantled and Stark Industries' 800+ servers seized. The migration window is 1–7 days. Chain the financial vector before it closes.",
+          "hub": {
+            "dims": {
+              "infrastructure": 2
+            }
+          },
+          "nodes": {
+            "n03_bph": "DEGRADED",
+            "n15_proxy": "DEGRADED"
+          }
+        }
+      }
+    ]
+  },
+  "glossary": [
+    {
+      "term": "RaaS",
+      "plain": "Ransomware-as-a-Service. A business model where one crew builds the ransomware and rents it to 'affiliates' who carry out attacks and split the profit.",
+      "analyst": "Two structures matter: closed hierarchy (employed operators) and open franchise (affiliate roster). They fail differently under pressure."
+    },
+    {
+      "term": "Krysha",
+      "plain": "Russian for 'roof'. Slang for the state protection that shields criminals from arrest in exchange for payment or usefulness.",
+      "analyst": "A load-bearing node, not background. Disrupting an actor with intact krysha produces reconstitution. The protection-layer track targets it."
+    },
+    {
+      "term": "IAB",
+      "plain": "Initial Access Broker. Someone who sells ready-made break-ins so ransomware crews can skip the hacking.",
+      "analyst": "Low-backfire target; rising listing prices are an ecosystem-health KPI."
+    },
+    {
+      "term": "BPH",
+      "plain": "Bulletproof Hosting. Server providers that deliberately ignore abuse complaints.",
+      "analyst": "Target the provider-of-provider (registrar, ASN, CDN), not the brand."
+    },
+    {
+      "term": "WAIS",
+      "plain": "A score (4-12) for how much an arrest actually hurt the ecosystem, not just whether it happened.",
+      "analyst": "Four dimensions: Node Criticality, Cooperation Output, Trust Cascade, Reconstitution Impact. No real arrest has ever hit the HIGH band."
+    },
+    {
+      "term": "Trust Cascade",
+      "plain": "When breaking one trusted figure makes the whole criminal market stop trusting each other.",
+      "analyst": "Only converts to reconstitution delay when paired with financial pressure or personnel exposure."
+    },
+    {
+      "term": "Reconstitution",
+      "plain": "How fast a disrupted gang rebuilds.",
+      "analyst": "Scored at 90 and 180 days. Infrastructure-only seizures never delayed it past 90 days in the sample."
+    },
+    {
+      "term": "Mixer",
+      "plain": "A service that scrambles crypto so the money can't be traced.",
+      "analyst": "Designation forces funds onto higher-friction rails; compounds with exchange KYC pressure."
+    },
+    {
+      "term": "OTC Broker",
+      "plain": "Over-the-counter crypto dealer who turns big ransoms into cash quietly.",
+      "analyst": "The most durable pressure vector: financial exposure compounds while infrastructure rebuilds in days."
+    },
+    {
+      "term": "Backfire Risk",
+      "plain": "The chance that an action makes things worse by triggering state protection.",
+      "analyst": "Public attribution and extradition-first requests are the classic high-backfire triggers."
+    },
+    {
+      "term": "Confidence Label",
+      "plain": "How sure we are: CONFIRMED, CREDIBLE, or ANALYST INFERENCE.",
+      "analyst": "Reflects source reliability, not importance. Drives whether a claim can go in a leadership briefing."
+    },
+    {
+      "term": "Substitutability",
+      "plain": "How easily a removed criminal is replaced.",
+      "analyst": "A targeting input, not an afterthought. Map and pressure the successor before hitting the primary."
+    },
+    {
+      "term": "CVD",
+      "plain": "Coordinated Vulnerability Disclosure. Security researchers report a bug to the vendor so it gets patched before it becomes public and exploitable.",
+      "analyst": "As a disruption lever, CVD reform plus scaled bug bounties aims to exhaust whole bug classes before the exploit-broker market can acquire them. It is a policy-track lever (CISA/NSA), not law enforcement, and sequences before designation or attribution."
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach_endgame",
+      "name": "Operation Endgame",
+      "desc": "Land a coordinated strike — three or more actions maturing in a single turn."
+    },
+    {
+      "id": "ach_money",
+      "name": "Follow the Money",
+      "desc": "Force a macro-level economics move (the two-of-three condition)."
+    },
+    {
+      "id": "ach_patient",
+      "name": "Patient Hunter",
+      "desc": "Sever a protection relationship before making any arrest."
+    },
+    {
+      "id": "ach_owngoal",
+      "name": "Own Goal",
+      "desc": "Trigger the protection-reflex trap — harden the krysha by going loud too early."
+    },
+    {
+      "id": "ach_brand_death",
+      "name": "Lights Out",
+      "desc": "Force the death of a closed-hierarchy brand."
+    },
+    {
+      "id": "ach_beat_history",
+      "name": "Better Than History",
+      "desc": "Meet a scenario's win condition and beat the real-world outcome."
+    }
+  ]
+}
