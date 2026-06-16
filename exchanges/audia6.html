@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AudiA6 / Dark2Web: Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* STATUS BADGES */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* HERO MODULE */
+.hero-module {
+  background: linear-gradient(135deg, #1a0a0a 0%, #1c1228 100%);
+  border: 1px solid #4a1515; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-red); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 220px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 60%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+
+/* SECTION HEADERS */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* CONFIDENCE BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* KPI / ATTRIBUTE TABLES */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CONTENT TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* TIMELINE */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* CITATION */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* WALLET ADDRESSES */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* GAP FLAGS */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "\25C6 GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* GALLERY */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+
+/* SOURCES */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* TIER LABELS */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">AudiA6 / Dark2Web</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-disrupted">Disrupted</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Status</span><span class="value" style="color:var(--accent-red)">Disrupted</span></div>
+    <div class="sidebar-meta-row"><span class="label">Takedown date</span><span class="value">June 10, 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">None</span></div>
+    <div class="sidebar-meta-row"><span class="label">Operator location</span><span class="value">Batumi, Georgia</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : OPERATORS ABOVE FOLD -->
+<div class="hero-module">
+  <div class="hero-label">&#9888; Charged Operators in Custody : Hero Module</div>
+  <div class="hero-title">The following individuals are named in the U.S. criminal complaint (Eastern District of Pennsylvania) as senior administrators of AudiA6 and the Dark2Web cybercrime forum. Both were arrested in Batumi, Georgia on June 10, 2026 and are in Georgian custody pending a U.S. extradition request. The charges are accusations; both are presumed innocent unless proven guilty.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Ruslan Igorevich Tkachuk</div>
+      <div class="op-alias">Age 37 : senior administrator</div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Senior member/manager of AudiA6 laundering service and Dark2Web forum</span></div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Ukrainian</span></div>
+      <div class="op-row"><span class="k">Assessed location</span><span class="v">Batumi, Georgia (arrested)</span></div>
+      <div class="op-row"><span class="k">Charges</span><span class="v">Conspiracy to launder monetary instruments; sting money laundering (18 U.S.C. 1956)</span></div>
+      <div class="op-row"><span class="k">Venue</span><span class="v">U.S. District Court, E.D. Pennsylvania</span></div>
+      <div class="op-row"><span class="k">Max sentence</span><span class="v">20 years</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">In Georgian custody; U.S. seeking extradition</span></div>
+      <div class="op-row"><span class="k">Sanctions</span><span class="v">No OFAC/EU/UK designation (June 2026)</span></div>
+      <span class="op-tag op-tag-indicted">Charged</span>
+      <span class="op-tag op-tag-custody">In Custody</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Alexander Vladimirovich Ledenev</div>
+      <div class="op-alias">Age 25 : senior administrator</div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Senior member/manager of AudiA6 laundering service and Dark2Web forum</span></div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian</span></div>
+      <div class="op-row"><span class="k">Assessed location</span><span class="v">Batumi, Georgia (arrested)</span></div>
+      <div class="op-row"><span class="k">Charges</span><span class="v">Conspiracy to launder monetary instruments; sting money laundering (18 U.S.C. 1956)</span></div>
+      <div class="op-row"><span class="k">Venue</span><span class="v">U.S. District Court, E.D. Pennsylvania</span></div>
+      <div class="op-row"><span class="k">Max sentence</span><span class="v">20 years</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">In Georgian custody; U.S. seeking extradition</span></div>
+      <div class="op-row"><span class="k">Sanctions</span><span class="v">No OFAC/EU/UK designation (June 2026)</span></div>
+      <span class="op-tag op-tag-indicted">Charged</span>
+      <span class="op-tag op-tag-custody">In Custody</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ============================================== -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total BTC Processed</div>
+      <div class="kpi-value">10,333 BTC</div>
+      <div class="kpi-sub">~$389.7M historical value, since 2021 (DOJ / Chainalysis)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Direct Illicit Deposits</div>
+      <div class="kpi-value">393.39 BTC</div>
+      <div class="kpi-sub">~$19.2M traced directly from illicit sources (DOJ)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Europol Laundered Estimate</div>
+      <div class="kpi-value">EUR 336M</div>
+      <div class="kpi-sub">For ransomware gangs, 2022 to 2025 (Europol/Eurojust)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">AFP Laundered Estimate</div>
+      <div class="kpi-value">USD 542M</div>
+      <div class="kpi-sub">~AUD 826M, 2022 to 2025 (Australian Federal Police)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">TRM Illicit Exposure</div>
+      <div class="kpi-value">$79M</div>
+      <div class="kpi-sub">Traced illicit counterparty exposure; ~80% ($63M) ransomware (TRM Labs)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">KYC Money-Mule Accounts</div>
+      <div class="kpi-value">6,000+</div>
+      <div class="kpi-sub">Verified accounts using stolen/purchased IDs (Europol / Chainalysis)</div>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <div class="callout-label">Overall Assessment</div>
+    AudiA6 was an industrial-scale cryptocurrency laundering service ("mixer-as-a-service") and de facto illicit exchange that operated as a primary ransomware off-ramp from 2021 until its June 10, 2026 takedown. It was tightly integrated with the Dark2Web cybercrime forum, which the same operators ran as its marketing and customer-acquisition hub. Its core mechanism was industrial identity fraud: it layered criminal deposits through more than 6,000 KYC-verified money-mule accounts at mainstream exchanges, returning "clean" funds within about an hour for a commission. Unlike Garantex or the Cryptex/UAPS cluster, AudiA6's distinguishing structural weakness is that its operators were located in Georgia, a cooperating jurisdiction, not in a Russian safe harbor: this is why the takedown reached the human capital, not just the infrastructure. As of June 2026 there is no OFAC, EU, or UK sanctions designation against AudiA6 or its operators; this was a criminal disruption, not a sanctions action. No successor brand has been identified.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Service type</td><td>Cryptocurrency laundering service / mixer-as-a-service / ransomware off-ramp (de facto illicit exchange and swap desk)</td></tr>
+      <tr><td>Associated platform</td><td>Dark2Web cybercrime forum (same operators); primary advertising venue</td></tr>
+      <tr><td>Aliases / branding</td><td>AudiA6, Audi6, "Audi A6"; Telegram support handle @audia6_obmen</td></tr>
+      <tr><td>Entity registration jurisdiction</td><td>None : unregistered, unlicensed illicit service (no financial license in any jurisdiction)</td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Servers and domains in United States, Iceland, Germany, and France; additional infrastructure administered from Georgia <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Assessed operator location</td><td>Batumi, Georgia (at arrest). Operator nationalities: Ukrainian (Tkachuk) and Russian (Ledenev)</td></tr>
+      <tr><td>Operational period</td><td>Wallets active since 2021; central laundering hub 2022 to 2025 (Europol); disrupted June 10, 2026</td></tr>
+      <tr><td>Commission</td><td>3% to 10% per most reporting; the U.S. criminal complaint references a fee of "up to five percent" <span class="badge badge-credible">Credible</span> (figures differ by source)</td></tr>
+      <tr><td>Domains seized</td><td>Approximately 25 (AudiA6 and Dark2Web, clear web and dark web)</td></tr>
+      <tr><td>Servers seized</td><td>30+ (AFP); "dozens" of servers and domains (Chainalysis)</td></tr>
+      <tr><td>OFAC / EU / UK designation</td><td>None as of June 2026 <span class="badge badge-confirmed">Confirmed</span> (negative evidence): criminal disruption, not a sanctions case</td></tr>
+      <tr><td>State nexus tier</td><td>NONE (no assessed state nexus; ecosystem-level Russian-speaking links only)</td></tr>
+      <tr><td>Status</td><td>Disrupted (June 10, 2026); no confirmed reconstitution</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>Chainalysis and TRM Labs (entity-specific reports); Europol on-chain analysis</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2026/06/2026-06-audia6-ransomware-1500x848.jpg"
+           alt="Chainalysis: global law enforcement dismantles AudiA6 crypto laundering network"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">AudiA6 Takedown Coverage</div>
+        <div class="cap-source">Chainalysis, 2026. Analysis of the international operation against AudiA6.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.justice.gov/d9/styles/banner/public/2026-06/CID%20Splash%20Page%20Design%20FINAL.png?itok=oD1a0wzm"
+           alt="Law enforcement seizure banner for AudiA6 and Dark2Web"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Law Enforcement Seizure Banner</div>
+        <div class="cap-source">U.S. DOJ / Secret Service, June 2026. Replaced the AudiA6 and Dark2Web entry points.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2026/06/darkweb-2.png"
+           alt="Dark2Web main page including promotion of AudiA6 (Wayback Machine)"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Dark2Web Forum Promoting AudiA6</div>
+        <div class="cap-source">Chainalysis (via Internet Archive), 2026. The forum advertised the laundering service.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2026/06/graph-1-1500x1232.png"
+           alt="Chainalysis Reactor graph: AudiA6 connections to high-risk services including Bitzlato and Garantex"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">AudiA6 Counterparty Graph</div>
+        <div class="cap-source">Chainalysis Reactor, 2026. Direct connections to sanctioned exchanges Bitzlato and Garantex.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a2be1e56f8b833baf153f52_4a9e7fee.png"
+           alt="TRM Labs chart: ransomware off-ramp concentration, top five services"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Off-Ramp Concentration</div>
+        <div class="cap-source">TRM Labs, 2026. Top five services absorb 42% to 57% of ransomware off-ramp volume annually.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.europol.europa.eu/cms/sites/default/files/styles/900x/public/images/260611-Ransomware-AudiA6-crypto.jpg?itok=il3BjEPS"
+           alt="Europol: ransomware gangs cut off from EUR 336 million AudiA6 crypto laundering pipeline"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Europol Operation Announcement</div>
+        <div class="cap-source">Europol, June 2026. The service linked to 15+ international cybercrime investigations.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ============================================== -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>No Named Predecessor Exchange : A Forum-Integrated Launderer</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    AudiA6 is not documented as a corporate successor to, or predecessor of, any named earlier mixer or exchange. Its defining heritage feature is integration: the same operators ran both the laundering service (AudiA6) and a cybercrime forum (Dark2Web) that served as its marketplace and contact point. That pairing of a laundering rail with a criminal demand-aggregation forum is the structural logic to track, not a brand-succession chain. Analytically, AudiA6 sits in the same category as the OFAC-designated Cryptex / UAPS / "Taleon" payment apparatus that was seized in 2024; Chainalysis explicitly draws that comparison. This is an ecosystem analogy, not evidence of shared ownership. <span class="badge badge-credible">Credible</span> <span class="cite">[Chainalysis]</span>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2021</div><div class="timeline-text">AudiA6 wallets begin receiving deposits; blockchain analysis dates the service's launch to this year. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[DOJ, Chainalysis]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2022 to 2025</div><div class="timeline-text">AudiA6 operates as a central money-laundering hub for ransomware gangs and cybercriminal networks; Europol estimates EUR 336M processed in this window. Incoming volume peaks in 2023. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Europol, TRM Labs]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Dec 2022 to May 2026</div><div class="timeline-text">U.S. federal agents conduct six undercover transactions in which AudiA6 operators solicit dirty funds and knowingly confirm criminal origin. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM Labs / DOJ complaint]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot blue"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Sept 2025</div><div class="timeline-text">A Ukrainian national linked to AudiA6 is arrested in Poland; forensic examination of his devices identifies the key operators and enables the later Georgia arrests. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Europol]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot blue"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Dec 2025</div><div class="timeline-text">TRM Labs independently identifies "Audi6" as a ransomware off-ramp, tracing ~$7M of LastPass-stolen funds from Wasabi Wallet into the service via demixing, prior to the enforcement action. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM Labs]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">June 2, 2026</div><div class="timeline-text">Prosecutors in the Eastern District of Pennsylvania file a criminal complaint charging Tkachuk and Ledenev with operating AudiA6. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM Labs / DOJ]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div></div>
+      <div class="timeline-content"><div class="timeline-date">June 10 to 11, 2026</div><div class="timeline-text">Coordinated international takedown: two arrests in Georgia, three properties searched, ~25 domains and 30+ servers seized, 80 vehicles/properties seized, EUR 692K frozen and EUR 86K seized, Telegram accounts blocked. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Europol, Eurojust, AFP, DOJ]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Evidentiary Pillars</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Wallet clusters.</strong> Blockchain analysis attributes approximately 10,333 BTC in deposits since 2021 to AudiA6-controlled wallets, with 393.39 BTC traced directly from known darknet markets, ransomware organizations, and cybercrime services. <span class="cite">[DOJ, Chainalysis]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Same-operator forum integration.</strong> U.S. and EU authorities state the AudiA6 administrators also managed Dark2Web; both services were seized together. <span class="cite">[DOJ, Europol, Chainalysis]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Investigative origin.</strong> The September 2025 arrest in Poland of a Ukrainian national linked to AudiA6, and the forensic exploitation of his devices, provided the lead that identified the Georgia-based operators. <span class="cite">[Europol]</span></p>
+  <p><span class="badge badge-credible">Credible</span> <strong>Shared infrastructure.</strong> Approximately 25 domains and 30+ servers were tied to AudiA6 and Dark2Web. Public releases do not link this infrastructure to other named brands; cross-brand overlaps are not documented in open sources. <span class="cite">[Europol, AFP]</span></p>
+
+  <h3>Operator Profiles</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Attribute</th><th>Ruslan Igorevich Tkachuk</th><th>Alexander Vladimirovich Ledenev</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Aliases / handles</strong></td><td>Not publicly disclosed; tied to AudiA6 support presence (e.g., Telegram @audia6_obmen) <span class="badge badge-credible">Credible</span></td><td>Not publicly disclosed</td></tr>
+        <tr><td><strong>Age</strong></td><td>37</td><td>25</td></tr>
+        <tr><td><strong>Nationality</strong></td><td>Ukrainian</td><td>Russian</td></tr>
+        <tr><td><strong>Assessed location</strong></td><td>Batumi, Georgia (residing/arrested)</td><td>Batumi, Georgia (residing/arrested)</td></tr>
+        <tr><td><strong>Role</strong></td><td>Senior member/manager of AudiA6 laundering service and Dark2Web forum</td><td>Senior member/manager of AudiA6 laundering service and Dark2Web forum</td></tr>
+        <tr><td><strong>Charges (E.D. Pa.)</strong></td><td>Conspiracy to launder monetary instruments; sting money laundering (18 U.S.C. 1956)</td><td>Conspiracy to launder monetary instruments; sting money laundering (18 U.S.C. 1956)</td></tr>
+        <tr><td><strong>Max sentence</strong></td><td>20 years</td><td>20 years</td></tr>
+        <tr><td><strong>Sanctions</strong></td><td>No OFAC/EU/UK designation as of June 2026</td><td>No OFAC/EU/UK designation as of June 2026</td></tr>
+        <tr><td><strong>Legal status</strong></td><td>In Georgian custody; U.S. seeking extradition to E.D. Pa.</td><td>In Georgian custody; U.S. seeking extradition to E.D. Pa.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted)">Charges are accusations in a criminal complaint; both defendants are presumed innocent unless and until proven guilty. <span class="cite">[DOJ]</span></p>
+
+  <h3>Disputed / Unresolved Assessments</h3>
+  <div class="gap-flag">A third individual, the Ukrainian national arrested in Poland in September 2025, is described as "linked to AudiA6" but is not publicly named, and his exact role (operator, mule recruiter, affiliate) is not established in open sources.</div>
+  <div class="gap-flag">No successor or predecessor exchange is named. The Cryptex/UAPS comparison is an ecosystem analogy drawn by Chainalysis, not evidence of shared ownership or infrastructure.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ============================================== -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics</h3>
+  <p>AudiA6 accepted criminal cryptocurrency (primarily Bitcoin) from clients, layered it through a large network of accounts at mainstream exchanges, and returned obfuscated or "clean" funds, typically within about an hour. The criminal complaint quotes its advertised offer "to take your dirty crypto and give you my clean one." <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[DOJ, Chainalysis]</span></p>
+  <p>It is best characterized as a mixer-as-a-service plus a closed-book swap/OTC layer: it took custody of user funds, performed internal and external routing, and delivered outputs on demand. Underground advertising on Dark2Web framed it as a "cryptocurrency mixer &amp; exchange" with "best rates, large reserves." <span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span> (forum advert) <span class="cite">[Dark2Web advert / blackbones]</span></p>
+
+  <h3>Commission</h3>
+  <p>Most law enforcement and vendor reporting (Europol, AFP, Chainalysis, BleepingComputer) states a 3% to 10% commission. The U.S. criminal complaint, however, references a fee of "up to five percent of the amount of funds being laundered." Per the volume/figure sourcing rule, both are presented rather than reconciled. <span class="badge badge-credible">Credible</span> <span class="cite">[DOJ; Europol; Chainalysis; AFP]</span></p>
+
+  <h3>KYC / AML Posture : Stated vs Observed</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Dimension</th><th>Stated posture</th><th>Observed behavior (LE / regulator sourced)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Compliance program</strong></td>
+          <td>Marketed as a "professional cryptocurrency mixing service"; emphasized anonymity, speed, and discretion. No KYC/AML program ever claimed.</td>
+          <td>No customer due diligence or transaction monitoring of its own. The service existed to defeat traceability. <span class="badge badge-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>Exchange KYC handling</strong></td>
+          <td>Not applicable (it claimed no compliance obligations).</td>
+          <td>Systematically abused KYC at mainstream exchanges: created/acquired 6,000+ KYC-verified money-mule accounts using stolen or purchased identities, recruited via Russian-speaking intermediaries. <span class="badge badge-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>Counterparty acceptance</strong></td>
+          <td>Open solicitation of criminal clients on Dark2Web.</td>
+          <td>In six undercover transactions (Dec 2022 to May 2026), operators knowingly confirmed criminal origin of funds. When an agent asked whether cocaine-sale proceeds were acceptable, the operator replied: "Everything like that needs to go through a mixer." <span class="badge badge-confirmed">Confirmed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-orange">
+    <div class="callout-label">Primary Analytical Finding : KYC Gap</div>
+    There is no gap between stated and observed compliance because AudiA6 never claimed compliance: its product was the absence of it. The analytically significant behavior is on the demand side: AudiA6 industrialized the exploitation of <em>other</em> exchanges' KYC, fielding 6,000+ verified mule accounts. Per the schema's KYC rule, observed behavior here is sourced from the DOJ criminal complaint and Europol findings, not from the service's own marketing.
+  </div>
+
+  <h3>Fiat Rail Analysis</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> AudiA6's off-ramp ran through mule-controlled accounts at mainstream centralized exchanges; those accounts cashed out to bank accounts and payment systems, indirectly leveraging global fiat rails. <span class="cite">[Europol, Chainalysis]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> Europol published specific domains the operators used to register the fraudulent mule accounts, to help exchanges screen and block them: designli.pictures, deliverly.top, and inboxly.top. <span class="cite">[Europol, Chainalysis]</span></p>
+  <p><span class="badge badge-credible">Credible (negative)</span> No specific bank, correspondent, or named payment-processor relationship is documented in open sources. The fiat connection is mediated entirely through the mule accounts at the (unnamed) exchanges. Granular fiat-rail mapping is an intelligence gap (Section 10). <span class="cite">[Europol, AFP]</span></p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p>AudiA6 held no financial-services license in any jurisdiction. All law enforcement and vendor reporting describes it explicitly as a criminal money-laundering service, not a regulated exchange. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[DOJ, Europol, AFP]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 04 : TECHNICAL INFRASTRUCTURE -->
+<!-- ============================================== -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domains, Hosting, and Servers</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Asset</th><th>Detail</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Domains seized</td><td>~25 domains across AudiA6 and Dark2Web (clear web and dark web); individual FQDNs not enumerated in public releases</td><td>Europol / Eurojust / AFP</td></tr>
+        <tr><td>Servers seized</td><td>30+ servers (AFP); "dozens" of servers and domains (Chainalysis)</td><td>AFP, Chainalysis</td></tr>
+        <tr><td>Hosting jurisdictions</td><td>United States, Iceland, Germany, France (servers/domains targeted); additional administration from Georgia</td><td>DOJ</td></tr>
+        <tr><td>Mule-registration domains</td><td>designli.pictures, deliverly.top, inboxly.top (used to register fraudulent exchange accounts)</td><td>Europol / Chainalysis</td></tr>
+        <tr><td>Telegram</td><td>Support/contact handle @audia6_obmen; network Telegram accounts blocked in the takedown</td><td>Forum advert / DOJ / Europol</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Architecture and Wallet Management</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Cybercriminals transferred stolen cryptocurrency into unhosted wallets managed by AudiA6; the network then layered funds through thousands of fraudulent exchange accounts (6,000+ KYC-verified mules) before returning obfuscated funds to clients within an estimated one-hour window. Chainalysis labels the model "mixer-as-a-service"; Europol calls it "industrial-scale." <span class="cite">[Chainalysis, Europol]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> The laundering was traceable despite the obfuscation: in the LastPass case, TRM identified peeling chains and post-mix clusters feeding AudiA6 deposit wallets after CoinJoin mixing through Wasabi. <span class="cite">[TRM Labs]</span></p>
+  <div class="gap-flag">Public sources do not detail node operations (e.g., whether AudiA6 ran its own full nodes), hot/cold wallet segregation, or hosting providers/CDNs behind the seized domains and servers.</div>
+
+  <h3>Resilience After Disruption</h3>
+  <p>The June 2026 operation was a first-wave disruption: arrests, domain and server seizures, Telegram blocking, and asset freezes. As of the material reviewed, no successor service publicly claims to be AudiA6 reborn. <span class="badge badge-credible">Credible</span> <span class="cite">[Chainalysis, TRM Labs]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ============================================== -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Transaction Volume : By Source and Methodology</h3>
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Per the volume sourcing rule, figures from different authorities and vendors are presented separately with methodology, not averaged or collapsed. These measure different things (total throughput vs. directly-traced illicit vs. estimated laundered).</p>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Figure</th><th>Scope / methodology</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>10,333 BTC (~$389.7M)</td><td>Total deposits to AudiA6 wallets since 2021; value at time of transactions (blockchain analysis)</td><td>DOJ / Chainalysis</td></tr>
+        <tr><td>393.39 BTC (~$19.2M)</td><td>Funds received directly from known darknet markets, ransomware orgs, cybercrime services, and other illicit sources</td><td>DOJ</td></tr>
+        <tr><td>EUR 336M</td><td>Estimated criminal crypto laundered for ransomware gangs, 2022 to 2025</td><td>Europol / Eurojust</td></tr>
+        <tr><td>USD 542M (~AUD 826M)</td><td>Broader laundered total, 2022 to 2025</td><td>Australian Federal Police</td></tr>
+        <tr><td>$79M total (~$63M ransomware, ~80%)</td><td>Traced illicit counterparty exposure; remainder is sanctions exposure, cybercrime services, darknet markets</td><td>TRM Labs</td></tr>
+        <tr><td>$16M+</td><td>Value explicitly tied to ransomware and stolen funds</td><td>Chainalysis</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Three-Phase On-Chain Flow</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Receipt &rarr; Layering &rarr; Extraction</div>
+    <strong>Receipt:</strong> Criminal proceeds enter from ransomware operators (20 distinct groups identified by TRM), darknet markets, cybercrime services and forums, and theft crews (LastPass 2022, Swissborg hack). Deposits land in unhosted wallets managed by AudiA6.<br>
+    <strong>Layering:</strong> Funds are spread across service wallets and 6,000+ KYC-verified mule accounts at centralized exchanges, appearing as ordinary customer activity. In sophisticated cases (LastPass), funds are first CoinJoin-mixed via Wasabi, then routed into AudiA6; the typology is rapid bursts of inbound transfers from unhosted wallets that are immediately withdrawn or swapped.<br>
+    <strong>Extraction:</strong> Mule accounts cash out to fiat via the exchanges' bank/payment rails. AudiA6 also maintained direct transactional connections to sanctioned Russian exchanges Bitzlato and Garantex as cash-out vectors. <span class="cite">[Chainalysis, TRM Labs, Europol]</span>
+  </div>
+
+  <h3>Ransomware Inflows by Group (TRM on-chain)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Group</th><th>Funds sent to AudiA6</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>ALPHV / BlackCat</td><td>$9.1M</td><td>Largest sender; tied to Feb 2024 Change Healthcare attack</td></tr>
+        <tr><td>Qilin (Agenda)</td><td>$7.1M</td><td>RaaS; shared affiliate infrastructure with other strains</td></tr>
+        <tr><td>LockBit</td><td>$4.4M</td><td>Infrastructure disrupted Feb 2024</td></tr>
+        <tr><td>Chaos / BlackSuit</td><td>$3.65M</td><td>Consistent sender over time</td></tr>
+        <tr><td>RansomHub</td><td>$975.9K</td><td>Consistent sender</td></tr>
+        <tr><td>Akira</td><td>$386.2K</td><td>Consistent sender</td></tr>
+        <tr><td>The Gentlemen</td><td>$99.6K</td><td>Consistent sender</td></tr>
+        <tr><td>Exploit, Verified (forums)</td><td>Not individually quantified</td><td>Established cybercrime platforms also sent funds</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted)">TRM identified 20 distinct ransomware groups sending funds to AudiA6; the seven above are those with published figures. <span class="cite">[TRM Labs]</span></p>
+
+  <h3>Volume Trajectory and Illicit Share</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> AudiA6's total incoming volume peaked in 2023 and declined through 2024 and 2025. Its illicit share moved the opposite way: under 1% in 2022, rising above 6% in 2024. Declining legitimate use alongside rising criminal use is a recurring signature of a service captured by high-risk clientele. <span class="cite">[TRM Labs]</span></p>
+
+  <h3>Designated Addresses, Seizures, and Risk Ratings</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> No OFAC, EU, or UK sanctions list names AudiA6 wallet addresses as of June 2026; there are no SDN-designated AudiA6 addresses. Frozen/seized in the takedown: EUR 692,000 (~$798K) in cryptocurrency frozen and EUR 86,000 (~$99K) in cryptocurrency seized. <span class="cite">[Europol, Eurojust, AFP]</span></p>
+  <div class="gap-flag">Address-level wallet cluster lists for AudiA6 are not yet public; they likely reside in proprietary TRM/Chainalysis datasets and any future sanctions packages.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ============================================== -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vertical</th><th>Specific actors</th><th>Evidence tier</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ransomware</strong></td><td>20 groups incl. ALPHV/BlackCat, Qilin, LockBit, Chaos/BlackSuit, RansomHub, Akira, The Gentlemen</td><td><span class="badge badge-confirmed">Confirmed</span></td><td>TRM, Chainalysis, Europol, DOJ</td></tr>
+        <tr><td><strong>Darknet markets</strong></td><td>Unnamed DNMs (part of the 393.39 BTC direct illicit inflow)</td><td><span class="badge badge-confirmed">Confirmed</span></td><td>DOJ, Chainalysis</td></tr>
+        <tr><td><strong>Crypto theft / data theft</strong></td><td>LastPass 2022 breach proceeds (~$7M via Wasabi); Swissborg hack</td><td><span class="badge badge-confirmed">Confirmed</span> (LastPass) / <span class="badge badge-credible">Credible</span> (Swissborg)</td><td>TRM Labs</td></tr>
+        <tr><td><strong>Cybercrime forums / services</strong></td><td>Dark2Web (integrated); Exploit, Verified sent funds; Exploit.in escrow exposure</td><td><span class="badge badge-confirmed">Confirmed</span></td><td>Chainalysis, TRM</td></tr>
+        <tr><td><strong>Drug-proceeds laundering</strong></td><td>Cocaine-sale proceeds (undercover solicitation)</td><td><span class="badge badge-credible">Credible</span></td><td>DOJ complaint / TRM</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>High-Profile Criminal Flows</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>LastPass 2022 breach.</strong> TRM traced approximately $7M of a September 2025 wave of LastPass-stolen funds from Wasabi Wallet into AudiA6 using cluster-level demixing, timing/amount alignment, and post-mix wallet intelligence, identifying AudiA6 as a ransomware off-ramp before the enforcement action. <span class="cite">[TRM Labs]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Ransomware concentration.</strong> About 80% of AudiA6's traced illicit counterparty exposure ($63M of $79M) ties directly to ransomware. ALPHV/BlackCat alone sent $9.1M; the group's February 2024 Change Healthcare attack drew a reported $22M ransom. <span class="cite">[TRM Labs]</span></p>
+  <p><span class="badge badge-credible">Credible</span> <strong>Australian ransomware victim.</strong> The AFP states AudiA6 laundered part of a ransom paid by an Australian business in 2024. <span class="cite">[AFP]</span></p>
+  <p><span class="badge badge-credible">Credible</span> <strong>Swissborg hack.</strong> TRM lists the Swissborg hack among the 15+ international investigations connected to AudiA6. <span class="badge badge-single">Single Source</span> <span class="cite">[TRM Labs]</span></p>
+
+  <h3>Geographic Patterns</h3>
+  <p>Operations centered on Georgia (operators arrested there); operator nationalities are Ukrainian and Russian. Money-mule recruitment ran through Russian-speaking intermediaries. Victims are globally distributed, with confirmed cases in the United States (Change Healthcare via BlackCat), Australia (2024 ransom), and the worldwide LastPass victim set. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Europol, AFP, TRM Labs]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ============================================== -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Assessed Tier : NONE</div>
+    The assessed nexus is <strong>NONE</strong>. AudiA6 was not state-run, state-tasked, or state-protected. Its operators were based in Georgia, a cooperating jurisdiction whose authorities arrested them and supported the takedown. The Russian connection is ecosystem-level only: one Russian-national operator, Russian-speaking mule recruiters, and on-chain exposure to sanctioned Russian exchanges (Bitzlato, Garantex). That is materially different from the Garantex (probable cooperation) and Cryptex/UAPS (tolerated safe harbor) cases, where operators sat in Russia beyond reach. Here the host state cooperated, which is the central reason the operators, not just the infrastructure, were captured.
+  </div>
+
+  <h3>Three-Jurisdiction Separation</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Finding</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Entity registration</td><td>None : unregistered, unlicensed illicit service</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Infrastructure hosting</td><td>United States, Iceland, Germany, France (servers/domains); administration from Georgia</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Assessed operator location</td><td>Batumi, Georgia (Ukrainian and Russian nationals)</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Negative Evidence</h3>
+  <p>If a higher tier (tolerated safe harbor, probable cooperation, or direct control) applied, one would expect indicators such as: operators sheltering in a non-cooperating jurisdiction, documented state tasking or protection, selective targeting of state adversaries, or integration into a state sanctions-evasion program. <strong>None of these is present.</strong> The opposite is documented: Georgian authorities arrested the operators, and 11 countries cooperated. The on-chain exposure to Bitzlato and Garantex reflects shared criminal-market plumbing, not state direction. <span class="badge badge-inference">Analyst Inference</span></p>
+  <div class="gap-flag">No evidence of FSB, Rosfinmonitoring, or any state organ directing, tasking, or protecting AudiA6 appears in open sources. The "None" assessment rests on affirmative cooperation by the host state plus the absence of any state-direction indicator.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ============================================== -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+  <h3>June 10 to 11, 2026 Coordinated Action</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Instrument</th><th>Authority / agency</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Criminal complaint</td><td>USAO E.D. Pennsylvania (filed June 2, 2026)</td><td>Tkachuk and Ledenev charged: conspiracy to launder monetary instruments + sting money laundering (18 U.S.C. 1956); max 20 years each</td></tr>
+        <tr><td>Arrests</td><td>Georgian authorities (with international partners)</td><td>Two senior administrators arrested in Batumi, Georgia; held pending extradition</td></tr>
+        <tr><td>Infrastructure seizures</td><td>Multinational (servers/domains in US, Iceland, Germany, France)</td><td>~25 domains and 30+ servers seized; AudiA6 and Dark2Web replaced with seizure banner; Telegram accounts blocked</td></tr>
+        <tr><td>Asset action</td><td>Europol / Eurojust / AFP</td><td>EUR 692K (~$798K) crypto frozen; EUR 86K (~$99K) crypto seized; 80 vehicles and properties seized; 3 properties searched</td></tr>
+        <tr><td>U.S. investigation</td><td>U.S. Secret Service (Cyber Investigative Section; Frankfurt and Oklahoma City) + IRS-CI</td><td>Blockchain and financial-records analysis underpinning the complaint</td></tr>
+        <tr><td>Coordination</td><td>Europol, Eurojust; 11 countries (Australia, Canada, France, Georgia, Germany, Iceland, Japan, Poland, Switzerland, UK, US); DOJ OIA and ICHIP/OPDAT</td><td>Parallel investigations and joint action day</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Charge Detail and Prosecution</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The complaint alleges both defendants are senior members managing both AudiA6 and Dark2Web, and references a Dark2Web advertisement offering to conceal the criminal source of customers' cryptocurrency for a fee. Prosecuted by AUSAs Benjamin D. Traster and Sima Kazmir and SAUSA Richard Lorenz; announced by U.S. Attorney David Metcalf. The Southern District of Ohio provided significant assistance. <span class="cite">[DOJ]</span></p>
+
+  <h3>Investigative Origin</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Europol attributes the breakthrough to the September 2025 arrest in Poland of a Ukrainian national linked to AudiA6; forensic examination of his devices identified the key operators and led to their location and arrest in Georgia. Prior public exposure of AudiA6 came from Intel471 and investigator ZachXBT. <span class="cite">[Europol, BleepingComputer]</span></p>
+
+  <h3>Sanctions and Regulatory Status</h3>
+  <p><span class="badge badge-confirmed">Confirmed (negative)</span> As of June 2026 there is no OFAC SDN, EU Official Journal, or UK FCDO designation naming AudiA6 or its operators, and no FinCEN advisory or Section 311 action. This was a criminal disruption, not a sanctions case, which distinguishes it from the Garantex and Cryptex/PM2BTC actions. <span class="cite">[OFAC recent actions; absence in EU/UK lists]</span></p>
+
+  <h3>Post-Disruption / Post-Sanction Reconstitution</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">Reconstitution Assessment</div>
+    <strong>No confirmed reconstitution as of June 2026.</strong> No successor service publicly claims to be AudiA6 reborn, and no new brand or domain cluster has been credibly linked as a direct successor. <span class="badge badge-credible">Credible</span><br><br>
+    <strong>Operator capacity is degraded, not just displaced.</strong> Because the two named operators are in custody in a cooperating jurisdiction (not at large in a safe harbor), this disruption reached the human capital. The residual risk is client migration: TRM frames the takedown as creating "new disruption opportunities" and expects displaced volume to redistribute toward other high-risk off-ramps and, increasingly, cross-chain bridges (which overtook mixers as the primary ransomware obfuscation layer in 2024). <span class="badge badge-inference">Analyst Inference</span>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ============================================== -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Two-tier model applied to every entry. <strong>Tier 1 : Transaction confidence:</strong> how confident are we that funds transited AudiA6 from/to the entity? <strong>Tier 2 : Facilitation assessment:</strong> a categorical characterization of AudiA6's role (Active facilitation / Structural enablement / Incidental processing). These are independent assessments and are never collapsed. Single-vendor claims are flagged [SINGLE SOURCE].</p>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Relationship type</th>
+          <th>Tier 1: Transaction confidence</th>
+          <th>Tier 2: Facilitation assessment</th>
+          <th>Corroborating / disagreeing / not-published vendors</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Ransomware groups</strong> (ALPHV/BlackCat, Qilin, LockBit, +17 others)</td>
+          <td>Customers / off-ramp</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM wallet-level: BlackCat $9.1M, Qilin $7.1M, LockBit $4.4M; Europol/DOJ confirm ransomware off-ramp role.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Marketed to ransomware actors; rapid-turnaround mule infrastructure built to serve them; undercover solicitation documented.</span></td>
+          <td>Corroborating: TRM, Chainalysis, Europol, DOJ. No vendor disagreement located.</td>
+        </tr>
+        <tr>
+          <td><strong>Dark2Web forum</strong></td>
+          <td>Same-operator platform integration</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">DOJ/Europol/Chainalysis: AudiA6 administrators also managed Dark2Web; both seized together.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Served as the marketplace and customer-acquisition hub embedding the laundering service in the wider ecosystem.</span></td>
+          <td>Corroborating: DOJ, Europol, Eurojust, Chainalysis.</td>
+        </tr>
+        <tr>
+          <td><strong>Exploit.in / Verified</strong> (cybercrime forums)</td>
+          <td>Counterparties and escrow exposure</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Chainalysis: Dark2Web had heavy financial exposure to Exploit.in escrow. TRM: Exploit and Verified sent funds to AudiA6.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Interlocking marketplaces routing criminal demand and proceeds to AudiA6.</span></td>
+          <td>Corroborating: Chainalysis, TRM. Two-vendor.</td>
+        </tr>
+        <tr>
+          <td><strong>Garantex</strong> (OFAC/EU-sanctioned exchange)</td>
+          <td>Downstream cash-out / peer infrastructure</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Chainalysis Reactor: AudiA6 maintained direct transactional connections to Garantex.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Value routed to another sanctioned, low-KYC venue rather than evidence of a joint operation.</span></td>
+          <td>Corroborating: Chainalysis. <span class="badge badge-single">Single Source</span> for AudiA6-specific link; TRM/Elliptic not published on this pairing.</td>
+        </tr>
+        <tr>
+          <td><strong>Bitzlato</strong> (sanctioned/disrupted exchange)</td>
+          <td>Downstream cash-out / peer infrastructure</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Chainalysis: AudiA6 deeply intertwined with sanctioned Russian exchanges including Bitzlato.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Cash-out vector within the same Eastern European cybercrime plumbing.</span></td>
+          <td>Corroborating: Chainalysis. <span class="badge badge-single">Single Source</span>; not separately quantified.</td>
+        </tr>
+        <tr>
+          <td><strong>LastPass theft crew</strong> (Russian-cybercriminal-assessed)</td>
+          <td>Stolen-funds depositor</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM demixing: ~$7M of LastPass-stolen funds traced Wasabi to AudiA6 (cluster-level demixing, timing/amount alignment).</span></td>
+          <td><span class="tier-incidental">Incidental processing</span> / <span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">AudiA6 received post-mix funds as a second-layer launderer; no evidence of bespoke coordination with the thieves.</span></td>
+          <td>Corroborating: TRM. <span class="badge badge-single">Single Source</span> (proprietary demixing).</td>
+        </tr>
+        <tr>
+          <td><strong>Wasabi Wallet</strong> (CoinJoin mixer)</td>
+          <td>Upstream mixer in shared laundering chains</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: Wasabi was the first-layer mixer ahead of AudiA6 in the LastPass flow.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">General-purpose mixer used upstream; no evidence of coordination between Wasabi operators and AudiA6.</span></td>
+          <td>Corroborating: TRM. <span class="badge badge-single">Single Source</span> for the AudiA6 linkage.</td>
+        </tr>
+        <tr>
+          <td><strong>Swissborg hack</strong> (theft incident)</td>
+          <td>Stolen-funds source</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">TRM lists Swissborg among 15+ investigations linked to AudiA6; flow not quantified publicly.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Theft proceeds among the laundered inflows; role characterization pending detail.</span></td>
+          <td>Corroborating: TRM. <span class="badge badge-single">Single Source</span>.</td>
+        </tr>
+        <tr>
+          <td><strong>Mainstream centralized exchanges</strong> (unnamed)</td>
+          <td>Mule-account fiat off-ramp</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Europol/Chainalysis: 6,000+ KYC-verified mule accounts at mainstream exchanges used to layer and cash out.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">The exchanges were exploited via identity fraud, not knowing participants; specific platforms not named.</span></td>
+          <td>Corroborating: Europol, Chainalysis. Specific exchanges not enumerated (gap).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ============================================== -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Pre-takedown, AudiA6 was one of a small number of off-ramps that absorb most ransomware proceeds. TRM data shows the top five services capture 42% to 57% of ransomware off-ramp volume annually (rebounding to 51% in 2025), and AudiA6 was a high-risk node within that concentration: about 80% of its traced illicit exposure was ransomware. Its incoming volume peaked in 2023 and declined thereafter, while its illicit share rose from under 1% (2022) to over 6% (2024). <span class="cite">[TRM Labs]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    This was a high-impact disruption that, unusually, reached both the infrastructure and the operators. Domains, servers, vehicles, properties, and crypto were seized, and the two named administrators are in custody in a cooperating jurisdiction. The key structural difference from Garantex and Cryptex/PM2BTC is jurisdiction of the operators: because Tkachuk and Ledenev were in Georgia rather than Russia, the action degraded the human capital, not just the public-facing rails. The principal residual risk is therefore client migration to other services, not operator-led reconstitution of this specific brand.
+  </div>
+
+  <h3>Reconstitution Status</h3>
+  <p>AudiA6 brand: <strong>No confirmed reconstitution.</strong> Infrastructure seized; no successor identified. <span class="badge badge-credible">Credible</span></p>
+  <p>Operator network: <strong>Degraded.</strong> Two senior administrators in custody pending extradition; one earlier Poland arrest. The unnamed Poland-arrested figure and any remaining affiliates are an open question. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Ecosystem effect: <strong>Displacement expected.</strong> Displaced volume likely shifts to remaining high-risk off-ramps and cross-chain bridges. <span class="badge badge-inference">Analyst Inference</span> <span class="cite">[TRM Labs]</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">The ~25 seized domains and 30+ servers are not mapped to specific hosting providers or CDNs in public releases, limiting detection of any successor infrastructure.</div>
+  <div class="gap-flag">No public enumeration of which mainstream exchanges' KYC systems were exploited via the 6,000+ mule accounts.</div>
+  <div class="gap-flag">Address-level AudiA6 wallet cluster lists are not public; only aggregate figures and select flows have been released.</div>
+  <div class="gap-flag">The identity and role of the Ukrainian national arrested in Poland (Sept 2025) are not public.</div>
+  <div class="gap-flag">Whether any OFAC/EU/UK sanctions follow the criminal action is unknown as of June 2026.</div>
+  <div class="gap-flag">The commission rate is reported inconsistently (3% to 10% vs. the complaint's "up to five percent"); the true fee schedule is not resolved.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- RECENT REPORTING -->
+<!-- ============================================== -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[June 11, 2026]</span> DOJ (E.D. Pa.) announces charges against Tkachuk and Ledenev; Chainalysis and TRM Labs publish entity-specific on-chain analyses; Europol, Eurojust, and the AFP issue takedown statements. <span class="cite">[DOJ, Chainalysis, TRM, Europol, Eurojust, AFP]</span></p>
+  <p><span class="cite">[June 10, 2026]</span> Coordinated international action: two arrests in Georgia, ~25 domains and 30+ servers seized, 80 vehicles/properties seized, EUR 692K frozen and EUR 86K seized, Telegram blocked. <span class="cite">[Europol, AFP, BleepingComputer]</span></p>
+  <p><span class="cite">[June 2, 2026]</span> EDPA criminal complaint filed charging the two operators under 18 U.S.C. 1956. <span class="cite">[TRM Labs / DOJ]</span></p>
+  <p><span class="cite">[Dec 2025]</span> TRM Labs independently identifies AudiA6 as a ransomware off-ramp, tracing ~$7M of LastPass-stolen funds from Wasabi into the service via demixing. <span class="cite">[TRM Labs]</span></p>
+  <p><span class="cite">[Sept 2025]</span> Polish authorities arrest a Ukrainian national linked to AudiA6; device forensics enable the later Georgia arrests. <span class="cite">[Europol]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SOURCES -->
+<!-- ============================================== -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://www.justice.gov/usao-edpa/pr/two-charged-connection-cryptocurrency-money-laundering-service-allegedly-laundered" target="_blank">U.S. DOJ, E.D. Pennsylvania: Two Charged in Connection With Cryptocurrency Money Laundering Service That Allegedly Laundered Over $389 Million : June 11, 2026</a></li>
+    <li><a href="https://www.europol.europa.eu/media-press/newsroom/news/ransomware-gangs-cut-eur-336-million-audia6-crypto-laundering-pipeline" target="_blank">Europol: Ransomware gangs cut off from EUR 336 million 'AudiA6' crypto laundering pipeline : June 2026</a></li>
+    <li><a href="https://www.eurojust.europa.eu/news/cryptocurrency-money-laundering-site-shut-down-thanks-coordinated-investigation" target="_blank">Eurojust: Cryptocurrency money laundering site shut down thanks to coordinated investigation : June 2026</a></li>
+    <li><a href="https://www.afp.gov.au/news-centre/media-release/afp-assists-europol-disruption-542-million-money-laundering-operation" target="_blank">Australian Federal Police: AFP assists Europol disruption of $542 million money laundering operation : June 2026</a></li>
+    <li><a href="https://www.chainalysis.com/blog/law-enforcement-dismantles-audia6-laundering-network-june-2026/" target="_blank">Chainalysis: Global Law Enforcement Dismantles 'AudiA6' Crypto Laundering Network Linked to Ransomware Gangs : June 11, 2026</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/international-operation-dismantles-eur-336-million-ransomware-laundering-pipeline-audia6" target="_blank">TRM Labs: International Operation Dismantles EUR 336 Million Ransomware Laundering Pipeline AudiA6 : June 12, 2026</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/trm-traces-stolen-crypto-from-2022-lastpass-breach-on-chain-indicators-suggest-russian-cybercriminal-involvement" target="_blank">TRM Labs: TRM Traces Stolen Crypto from 2022 LastPass Breach : December 24, 2025</a></li>
+    <li><a href="https://www.bleepingcomputer.com/news/legal/authorities-dismantle-audia6-ransomware-crypto-laundering-service/" target="_blank">BleepingComputer: Authorities dismantle 'AudiA6' ransomware crypto-laundering service : June 11, 2026</a></li>
+    <li><a href="https://www.helpnetsecurity.com/2026/06/12/europol-audia6-crypto-laundering-service-ransomware-groups/" target="_blank">Help Net Security: Authorities dismantle crypto laundering service that moved EUR 336 million for cybercriminals : June 12, 2026</a></li>
+    <li><a href="https://thehackernews.com/2026/06/europol-disrupts-audia6-crypto.html" target="_blank">The Hacker News: Europol Disrupts AudiA6 Crypto Laundering Service Used by Ransomware Gangs : June 2026</a></li>
+    <li><a href="https://www.theblock.co/post/404433/doj-charges-two-389-million-audia6-crypto-laundering-case" target="_blank">The Block: DOJ charges two in $389 million AudiA6 crypto laundering case : June 2026</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/new-disruption-opportunities-in-the-evolving-ransomware-ecosystem" target="_blank">TRM Labs: New Disruption Opportunities in the Evolving Ransomware Ecosystem : April 8, 2026</a></li>
+    <li><a href="https://ofac.treasury.gov/recent-actions" target="_blank">OFAC: Recent Actions (checked for AudiA6/operator designations : none located as of June 2026)</a></li>
+    <li><a href="https://blackbones.net/threads/audia6-cryptocurrency-mixer-exchange.10551/" target="_blank">Dark2Web/underground advert (verified thread): "AudiA6: Cryptocurrency Mixer &amp; Exchange" (marketing copy : single source)</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). All volume figures cited with source and methodology; figures from different vendors and authorities are not averaged. Two-tier connected entity model applied throughout Section 09 (Tier 1 transaction confidence + Tier 2 facilitation assessment). Status: Disrupted (June 10, 2026); no sanctions designation as of June 2026.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
