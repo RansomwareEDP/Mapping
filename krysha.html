@@ -733,7 +733,8 @@ select:focus{border-color:var(--accent)}
       <button data-mode="robust">Stress one plan</button>
       <button data-mode="portfolio" title="Concurrent operations — several ops on one board under a shared budget">Concurrent ops</button>
     </div>
-    <button class="btn ghost" id="pl-guide" style="margin-left:auto">❔ What is this?</button>
+    <button class="btn ghost" id="pl-tour" style="margin-left:auto">▸ Guided tour</button>
+    <button class="btn ghost" id="pl-guide">❔ What is this?</button>
     <button class="btn ghost" id="pl-exit">Exit</button>
   </header>
   <div class="pl-body">
@@ -2060,11 +2061,21 @@ function tutStart(){
   tutWrap();
   try{ localStorage.setItem(HELP_SEEN_KEY,'1'); }catch(_){}
   if(!TUT.rand){ TUT.rand=Math.random; Math.random=function(){ return 0.999; }; }
-  TUT.on=true; TUT.i=0; TUT.steps=tutScript();
+  TUT.on=true; TUT.kind='game'; TUT.i=0; TUT.steps=tutScript();
   startGame({kind:'sandbox', def:{name:'Sandbox'}});
   tutRender();                       // build + show step 1 immediately
-  cancelAnimationFrame(TUT.raf);     // persistent loop keeps the spotlight anchored as the board renders/pans
-  const loop=function(){ if(!TUT.on) return; tutLayout(); TUT.raf=requestAnimationFrame(loop); };
+  tutStartLoop();                    // persistent loop: anchors the spotlight + advances check()-based steps
+}
+// One shared loop for both tutorials. Keeps the spotlight anchored as the UI re-renders, and
+// advances any step that declares a check() predicate the moment it becomes true (used by the
+// Planner tour, whose controls re-render on every click and can't be function-wrapped).
+function tutStartLoop(){
+  cancelAnimationFrame(TUT.raf);
+  const loop=function(){ if(!TUT.on) return;
+    const s=TUT.steps[TUT.i];
+    if(s && typeof s.check==='function'){ var ok=false; try{ ok=s.check(); }catch(_){}
+      if(ok){ tutAdvance(); TUT.raf=requestAnimationFrame(loop); return; } }
+    tutLayout(); TUT.raf=requestAnimationFrame(loop); };
   TUT.raf=requestAnimationFrame(loop);
 }
 function tutCleanup(){
@@ -2072,11 +2083,85 @@ function tutCleanup(){
   if(TUT.rand){ Math.random=TUT.rand; TUT.rand=null; }
   const d=document.getElementById('tut'); if(d) d.classList.remove('on');
 }
-function tutSkip(){ tutCleanup(); startGame({kind:'sandbox', def:{name:'Sandbox'}}); }
-function tutFinish(){ tutCleanup(); startGame({kind:'sandbox', def:{name:'Sandbox'}}); }
+function tutSkip(){ var k=TUT.kind; tutCleanup(); if(k==='game') startGame({kind:'sandbox', def:{name:'Sandbox'}}); }
+function tutFinish(){ var k=TUT.kind; tutCleanup(); if(k==='game') startGame({kind:'sandbox', def:{name:'Sandbox'}}); }
 
-// Launch the interactive tutorial (called from the Door A "Guided walkthrough" card).
+// Launch the game's interactive tutorial (called from the Door A "Guided walkthrough" card).
 function startWalkthrough(){ tutStart(); }
+
+/* ===================== INTERACTIVE TUTORIAL — THE PLANNER =====================
+   The Planner is the more complex surface, so it gets its own guided tour. It reuses the
+   same spotlight engine, but advances by POLLING planner state (PLN.*) via each step's
+   check() — because the planner re-renders its whole DOM on every click and wires handlers
+   with inline closures that can't be function-wrapped. Arc mirrors the game (fail-first
+   contrast): build a naive infra-only Plan A, then a sever+paired Plan B, Evaluate, and see
+   the model rank B above A — the same lesson, proven analytically.                       */
+const PL_TOUR_KEY='krysha_planner_tour_v1';
+function tutPlannerScript(){
+  var sel=function(s){ return function(){ return document.querySelector(s); }; };
+  var planHas=function(i,id){ return function(){ return PLN.plans[i] && PLN.plans[i].steps.some(function(s){return s.actionId===id;}); }; };
+  return [
+  {eyebrow:'The Planner', h:'Decision support, not a forecast.',
+    body:'This is the other side of KRYSHA. You don’t play here — you <b>bring a plan</b>, and the model runs it many times against how the ecosystem actually behaves, then grades how <b>consistent</b> it is. It tells you which course of action holds up. <b>It is not a prediction.</b>',
+    await:'next', cta:'Show me ›', target:null},
+  {eyebrow:'Step 1 · the coalition', h:'Who’s at the table = your capacity.',
+    body:'Your points each quarter come from <b>who joins the coalition</b>, and each partner unlocks its own levers. For this tour, bring everyone in — click <b>✦ All</b>.',
+    check:function(){ var m=pl_coalitionRoster().members,set=pl_coalSet(); return m.length>0&&m.every(function(x){return set.has(x.actor);}); },
+    target:sel('#pl-coal-all')},
+  {eyebrow:'Compare two plans', h:'A dumb plan vs a smart one.',
+    body:'You’re in <b>Compare plans</b> mode. We’ll build two courses of action and let the model rank them — the same lesson the game teaches, proven analytically.',
+    await:'next', cta:'Build Plan A ›', target:sel('#pl-modetabs')},
+  {eyebrow:'Plan A · the obvious move', h:'Just seize infrastructure.',
+    body:'The naive plan: hit the visible infrastructure. On the map, click <b>Leak-Site Hosting Stack</b>.',
+    check:function(){ return PLN.selNode==='n06_leaksite'; },
+    target:sel('.pl-node[data-node="n06_leaksite"]')},
+  {eyebrow:'Plan A · add the lever', h:'Add the seizure.',
+    body:'Click <b>Leak-Site Seizure</b> to add it to Plan A.',
+    check:planHas(0,'a_leaksite_takedown'),
+    target:sel('.pl-chip[data-add="a_leaksite_takedown"]')},
+  {eyebrow:'Plan A done', h:'Infrastructure only.',
+    body:'That’s Plan A — one infrastructure hit, nothing paired. Now a smarter Plan B to compare it against.',
+    await:'next', cta:'Start Plan B ›', target:null},
+  {eyebrow:'Plan B', h:'Add a second plan.',
+    body:'Click <b>＋ plan</b> to start Plan B.',
+    check:function(){ return PLN.plans.length>=2 && PLN.activePlan===1; },
+    target:sel('#pl-add-plan')},
+  {eyebrow:'Plan B · deal with the roof', h:'Target the protection layer.',
+    body:'Plan B goes after the roof first. Click the <b>Protection Layer</b> node on the map.',
+    check:function(){ return PLN.selNode==='protection'; },
+    target:sel('.pl-node[data-node="protection"]')},
+  {eyebrow:'Plan B · sever', h:'Cut the roof loose.',
+    body:'Add <b>Officer Financial Exposure Operation</b> — this severs the protection.',
+    check:planHas(1,'a_officer_exposure'),
+    target:sel('.pl-chip[data-add="a_officer_exposure"]')},
+  {eyebrow:'Plan B · pair it', h:'Add paired pressure.',
+    body:'From the same node, add <b>FNS Lifestyle-Inconsistency Referral</b> — financial pressure that also helps sever the roof. Sever + financial = paired.',
+    check:planHas(1,'a_fns_referral'),
+    target:sel('.pl-chip[data-add="a_fns_referral"]')},
+  {eyebrow:'Judge them', h:'Run the model.',
+    body:'Now let the engine evaluate both plans many times over. Click <b>Evaluate</b>.',
+    check:function(){ return PLN.view==='results'; },
+    target:sel('#pl-run')},
+  {eyebrow:'The verdict', h:'Paired pressure wins.', tone:'win',
+    body:'The model ranks <b>Plan B above Plan A</b>: severing the roof and pairing financial pressure is structurally stronger than an infrastructure-only hit — exactly what the game teaches. The grade is <b>model-consistency, not a forecast</b>, with the reasons cited from the rules.',
+    await:'next', cta:'Got it ›', target:null},
+  {eyebrow:'Over to you', h:'Now bring your own plan.', tone:'win',
+    body:'That’s the Planner. Build a real course of action and stress-test it — <b>compare</b> options, <b>stress one plan</b> across different worlds, or run <b>concurrent ops</b> under a shared budget.',
+    await:'next', cta:'Finish ▸', target:null}
+  ];
+}
+function tutStartPlanner(){
+  try{ localStorage.setItem(PL_TOUR_KEY,'1'); }catch(_){}
+  // clean, known state so each step is meaningfully incomplete at entry
+  PLN.mode='compare'; PLN.plans=[pl_defaultPlan(1)]; PLN.activePlan=0; PLN.selNode=null;
+  PLN.coalition=(pl_coalitionRoster().default||['WESTERN_LE']).slice();
+  PLN.results=null; PLN.view='build';
+  document.querySelectorAll('#pl-modetabs button').forEach(function(b){ b.classList.toggle('active', b.dataset.mode==='compare'); });
+  pl_renderBuilder(); pl_renderResults(); pl_syncView();
+  TUT.on=true; TUT.kind='planner'; TUT.i=0; TUT.steps=tutPlannerScript();
+  tutRender();
+  tutStartLoop();
+}
 
 /* ============================== ZOOM / PAN ============================== */
 function clampK(k){ return Math.max(L.minK||0.05, Math.min(L.maxK||6, k)); }
@@ -2828,6 +2913,7 @@ function openPlanner(){
   if(!PLN.wired){
     document.getElementById('pl-exit').onclick=closePlanner;
     document.getElementById('pl-guide').onclick=pl_showIntro;
+    document.getElementById('pl-tour').onclick=tutStartPlanner;
     document.getElementById('pl-intro').onclick=e=>{ if(e.target.id==='pl-intro') pl_hideIntro(); }; // click backdrop to dismiss
     document.querySelectorAll('#pl-modetabs button').forEach(b=>{ if(b.classList.contains('locked')) return;
       b.onclick=()=>{ PLN.mode=b.dataset.mode; PLN.results=null; PLN.view='build'; PLN.activePlan=0;
@@ -2836,7 +2922,10 @@ function openPlanner(){
     PLN.wired=true;
   }
   pl_renderBuilder(); pl_renderResults(); pl_syncView();
-  try{ if(!localStorage.getItem('krysha_planner_seen')) pl_showIntro(); }catch(e){}
+  // First time opening the Planner: launch the interactive tour. The text explainer stays
+  // available on demand via the "❔ What is this?" button.
+  var plToured=false; try{ plToured=!!localStorage.getItem(PL_TOUR_KEY); }catch(e){}
+  if(!plToured && !TUT.on){ tutStartPlanner(); }
 }
 function closePlanner(){
   document.getElementById('planner').classList.add('hidden');
