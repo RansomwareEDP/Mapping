@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KRYSHA — a ransomware ecosystem disruption simulator</title>
+<title>KRYSHA — ransomware ecosystem disruption planner</title>
 <style>
 /* ============================================================
    ENGINE STYLES — intel-console aesthetic, continuity with the
@@ -41,6 +41,30 @@ button{font-family:var(--sans);cursor:pointer;color:inherit}
 .mode-card p{font-size:12px;color:var(--muted);line-height:1.5}
 .mode-card .open{font-family:var(--mono);font-size:9px;color:var(--warn);letter-spacing:.1em}
 .section-label{width:100%;max-width:920px;margin:22px 0 4px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em}
+/* two-door front */
+#door-select{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:26px}
+.doors{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;max-width:860px}
+.door-card{width:380px;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  padding:24px 24px 20px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:.16s;color:var(--text)}
+.door-card:hover{transform:translateY(-3px)}
+.door-a{border-color:var(--accent)}
+.door-a:hover{box-shadow:0 8px 28px -12px var(--accent)}
+.door-b{border-color:var(--accent2)}
+.door-b:hover{box-shadow:0 8px 28px -12px var(--accent2)}
+.door-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--accent2)}
+.door-a .door-eyebrow{color:var(--accent)}
+.door-card h2{font-size:24px;font-weight:800;margin:2px 0;display:flex;align-items:baseline;gap:10px}
+.door-card h2 .door-tag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.door-card .door-sub{font-size:14px;color:var(--text)}
+.door-card .door-desc{font-size:12.5px;color:var(--muted);line-height:1.55}
+.door-card .door-go{margin-top:6px;font-family:var(--mono);font-size:12px;letter-spacing:.06em}
+.door-a .door-go{color:var(--accent)} .door-b .door-go{color:var(--accent2)}
+#door-game{display:flex;flex-direction:column;align-items:center;width:100%;margin-top:14px}
+.door-back{align-self:flex-start;max-width:920px;width:100%;text-align:left;margin:0 auto 6px}
+.walk-card{border-color:var(--accent)!important;background:linear-gradient(180deg,rgba(46,160,180,.10),var(--panel))}
+.walk-card h3 .diff{background:var(--accent);color:#04212a;border-radius:10px;padding:1px 7px}
+.backtest-note{width:100%;max-width:920px;font-size:12px;color:var(--muted);line-height:1.5;margin:2px 0 10px}
+@media(max-width:820px){.doors{flex-direction:column;align-items:center}.door-card{width:100%;max-width:380px}}
 
 /* ---------- BOARD SHELL ---------- */
 #game{display:none;flex-direction:column;height:100vh}
@@ -280,6 +304,9 @@ select:focus{border-color:var(--accent)}
 
 /* ---------- ONBOARDING / HOW TO PLAY ---------- */
 .help-modal{width:640px;max-width:94vw}
+.wt-dots{display:flex;gap:7px;align-items:center}
+.wt-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:.15s}
+.wt-dot.on{background:var(--accent);transform:scale(1.25)}
 .help-modal .modal-head h2{font-size:20px}
 .help-body{padding:16px 20px}
 .help-body section{margin-bottom:15px}
@@ -362,7 +389,226 @@ select:focus{border-color:var(--accent)}
   .codex-modal{height:86vh}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
   .aar-dials,.aar-cmp{flex-direction:column}
+  .pl-left,.pl-right{padding:12px}
+  .pl-toolbar{gap:8px}
 }
+
+/* ---------- PLANNING MODE ---------- */
+#planner{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg)}
+.pl-head{display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--panel);flex-wrap:wrap}
+.pl-sub{font-size:12px;color:var(--muted)}
+.pl-modetabs{display:flex;gap:4px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:3px}
+.pl-modetabs button{background:transparent;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--muted)}
+.pl-modetabs button.active{background:var(--accent);color:#04212a}
+.pl-modetabs button.locked{opacity:.5;cursor:not-allowed}
+.pl-body{flex:1;display:block;overflow-y:auto;min-height:0}
+.pl-left,.pl-right{width:100%;max-width:1180px;margin:0 auto;padding:18px 24px 64px}
+
+/* click-the-map builder (leader-friendly entry: target a node, pick an action) */
+.pl-toolbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.pl-tool{display:flex;flex-direction:column;gap:4px}
+.pl-tool label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pl-tool select{background:var(--panel2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 8px;font-size:13px;min-width:200px}
+.pl-tool.runs{min-width:200px}
+.pl-tool .pl-runs-row{display:flex;align-items:center;gap:8px}
+.pl-toolbar .pl-run{width:auto;padding:12px 26px}
+.pl-tool-right{margin-left:auto;display:flex;gap:10px;align-items:center;align-self:flex-end}
+/* campaign setup: length + coalition */
+.pl-campaign{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.pl-camp-block{display:flex;flex-direction:column;gap:5px;min-width:230px}
+.pl-camp-block.grow{flex:1}
+.pl-camp-block>label{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pl-coal{display:flex;flex-wrap:wrap;gap:7px}
+.pl-coal-chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--border);border-radius:18px;color:var(--muted);padding:6px 12px;font-size:12px;font-weight:600;opacity:.6}
+.pl-coal-chip.on{opacity:1;border-color:var(--accent);color:var(--text)}
+.pl-coal-chip .cap{font-family:var(--mono);font-size:10px;font-weight:800;color:var(--accent);background:rgba(41,211,224,.12);border-radius:9px;padding:1px 6px}
+.pl-coal-chip:not(.on) .cap{color:var(--muted);background:var(--panel)}
+.pl-coal-chip.all{opacity:1;border-style:dashed;border-color:var(--accent);color:var(--accent);font-weight:700;margin-right:3px}
+.pl-coal-chip.all.on{background:rgba(41,211,224,.12);border-style:solid}
+.pl-campaign2{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.pl-camp-hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.pl-surge-row{display:flex;align-items:center;gap:8px}
+.pl-surge-row select,.pl-surge-amt input{background:var(--panel2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 8px;font-size:13px}
+.pl-surge-amt{font-size:12px;color:var(--muted)}.pl-surge-amt input{width:52px}
+.pl-win-add{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.pl-win-add select{background:var(--panel2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 8px;font-size:12px}
+.pl-win-addbtn{background:var(--panel2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px}
+.pl-win-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.pl-win-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(192,132,252,.1);border:1px solid #c084fc;border-radius:14px;color:#dcc6fb;padding:4px 10px;font-size:11px;font-family:var(--mono)}
+.pl-win-chip .pl-win-x{background:none;border:none;color:inherit;opacity:.7;font-size:12px;line-height:1}
+.pl-capstrip{display:flex;align-items:stretch;gap:4px;flex-wrap:wrap;margin-bottom:14px}
+.pl-capstrip .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);align-self:center;margin-right:4px}
+.pl-capcell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:34px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:3px 5px;font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.2}
+.pl-capcell b{font-size:14px;color:var(--text)}
+.pl-capcell.hot{border-color:#c084fc;background:rgba(192,132,252,.1)}.pl-capcell.hot b{color:#c084fc}
+.pl-capcell .m{font-size:9px}
+.pl-ogachk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text);margin-top:8px;cursor:pointer;font-weight:600}
+.pl-ogachk input{accent-color:var(--accent)}
+.pl-chip.locked{opacity:.45;cursor:not-allowed;border-left-color:var(--muted)}
+.pl-chip .lock{font-size:10px}
+.pl-chip-lockmsg{display:block;font-family:var(--mono);font-size:9px;color:var(--bad);margin-top:3px}
+.pl-land{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.pl-pills{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.pl-pills .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.pl-pill{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--border);border-radius:18px;color:var(--muted);padding:6px 13px;font-size:12px;font-weight:600}
+.pl-pill.active{background:var(--accent);color:#04212a;border-color:var(--accent)}
+.pl-pill .pl-pill-x{font-size:13px;opacity:.7;line-height:1}
+.pl-pill.add{border-style:dashed;color:var(--muted)}
+.pl-maphint{font-size:12px;color:var(--muted);margin:0 0 8px}
+.pl-maplegend{font-size:11px;color:var(--muted);margin:8px 2px 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.pl-maplegend .lg-on{color:var(--accent);font-size:13px}
+.pl-maplegend .lg-off{color:var(--muted);opacity:.45;font-size:13px}
+.pl-map{display:flex;gap:10px;overflow-x:auto;padding:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px}
+.pl-col{display:flex;flex-direction:column;gap:7px;min-width:128px;flex:1}
+.pl-col-h{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;text-align:center;padding-bottom:4px;border-bottom:1px solid var(--border);min-height:24px;display:flex;align-items:center;justify-content:center;line-height:1.15}
+.pl-node{position:relative;text-align:left;background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--lc,#888);border-radius:7px;color:var(--text);padding:9px 10px;font-size:12px;line-height:1.25;transition:transform .08s}
+.pl-node:not(.dim):hover{transform:translateY(-1px);border-color:var(--lc)}
+.pl-node.dim{opacity:.32;cursor:default;border-left-style:dotted}
+.pl-node.sel{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent)}
+.pl-node-nm{display:block;font-weight:600}
+.pl-node-cnt{position:absolute;top:-7px;right:-7px;background:var(--lc,#888);color:#06121c;font-family:var(--mono);font-size:10px;font-weight:800;border-radius:10px;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.pl-chips{margin:14px 0}
+.pl-chips-empty{font-size:13px;color:var(--muted);font-style:italic;padding:14px;border:1px dashed var(--border);border-radius:8px;text-align:center}
+.pl-chips-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:9px}
+.pl-chips-head b{color:var(--text)}
+.pl-turnpick{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.pl-turnpick button{background:var(--panel2);border:none;color:var(--text);width:26px;height:24px;font-size:15px;line-height:1}
+.pl-turnpick b{background:var(--panel);min-width:30px;text-align:center;font-family:var(--mono);color:var(--accent);font-size:13px;line-height:24px}
+.pl-chips-grid{display:flex;flex-wrap:wrap;gap:8px}
+.pl-chip{text-align:left;background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--vc,#888);border-radius:7px;color:var(--text);padding:8px 11px;font-size:12px;max-width:260px;transition:transform .08s}
+.pl-chip:hover{transform:translateY(-1px);border-color:var(--vc)}
+.pl-chip-nm{display:block;font-weight:600}
+.pl-chip-meta{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:1px}
+.pl-chip-legit{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:3px}
+.pl-chip-legit .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.pl-plan-panel{margin-top:8px;border-top:1px solid var(--border);padding-top:14px}
+.pl-plan-rename{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-weight:700;font-size:15px;padding:2px 0;margin-bottom:8px;width:280px;max-width:100%}
+.pl-edit-btn{background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:8px 16px;font-size:13px;margin-bottom:16px}
+.pl-legit-badge{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--border);border-left-width:3px;border-radius:7px;padding:6px 12px;margin-bottom:8px;background:var(--panel2)}
+.pl-legit-badge .lab{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pl-legit-badge .bnd{font-family:var(--mono);font-weight:800;font-size:15px;letter-spacing:.04em}
+.pl-reset{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:7px 12px;font-size:12px;align-self:center}
+.pl-reset:hover{color:var(--bad);border-color:var(--bad)}
+/* per-mode "what am I doing" banner at the top of the build view */
+.pl-explain{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border);border-left:3px solid var(--accent);background:var(--panel);border-radius:9px;padding:13px 16px;margin-bottom:16px}
+.pl-explain .ico{font-size:20px;line-height:1.2}
+.pl-explain .tx{font-size:13px;line-height:1.5;color:var(--muted)}
+.pl-explain .tx b{color:var(--text)}
+.pl-explain .steps{margin-top:5px;color:var(--muted)}
+.pl-explain .steps b{color:var(--accent);font-family:var(--mono)}
+.pl-explain a{color:var(--accent);cursor:pointer;white-space:nowrap;font-size:12px}
+/* intro overlay */
+#pl-intro{position:absolute;inset:0;background:rgba(4,9,14,.82);display:flex;align-items:center;justify-content:center;z-index:40;padding:20px}
+.pl-intro-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;padding:28px 30px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.pl-intro-card h2{font-size:22px;margin-bottom:4px}
+.pl-intro-card .lede{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.pl-intro-card h3{font-size:11px;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:18px 0 9px}
+.pl-howsteps{display:flex;flex-direction:column;gap:9px;margin-bottom:6px}
+.pl-howstep{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.pl-howstep .n{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#04212a;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.pl-howstep b{color:var(--text)}
+.pl-modegrid{display:grid;grid-template-columns:1fr;gap:8px}
+.pl-modegrid .m{border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-size:13px;line-height:1.45}
+.pl-modegrid .m b{color:var(--text)}
+.pl-modegrid .m .tag{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--accent);display:block;margin-bottom:2px}
+.pl-intro-note{font-size:12px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border);margin-top:18px;padding-top:14px}
+.pl-intro-note b{color:var(--warn)}
+.pl-intro-go{display:block;width:100%;background:var(--accent);color:#04212a;border:none;border-radius:9px;padding:14px;font-size:15px;font-weight:800;margin-top:20px}
+.pl-sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.pl-sec-label:first-child{margin-top:0}
+.pl-field{margin-bottom:10px}
+.pl-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+.pl-field select,.pl-field input[type=number]{width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px;font-family:var(--sans);font-size:13px}
+.pl-runs-row{display:flex;align-items:center;gap:10px}
+.pl-runs-row input[type=range]{flex:1}
+.pl-runs-val{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:64px;text-align:right}
+.pl-plan{border:1px solid var(--border);border-radius:8px;background:var(--panel2);padding:12px;margin-bottom:12px}
+.pl-plan-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pl-plan-head input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-weight:700;font-size:14px;padding:2px 0}
+.pl-plan-head .pl-del{background:none;border:none;color:var(--muted);font-size:16px;line-height:1}
+.pl-step{display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 6px;border-radius:5px;background:var(--panel);margin-bottom:4px}
+.pl-step .pl-turn{font-family:var(--mono);color:var(--accent2);font-weight:700;white-space:nowrap}
+.pl-step .pl-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-step .pl-jur{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.pl-step .pl-x{background:none;border:none;color:var(--muted);font-size:14px;line-height:1}
+.pl-vchip{display:inline-block;width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.pl-ap{font-family:var(--mono);font-size:11px;color:var(--muted);margin:4px 0 2px}
+.pl-ap.over{color:var(--bad);font-weight:700}
+.pl-addnode{margin-top:8px}
+.pl-addnode select{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--accent2);padding:6px;font-size:12px}
+.pl-addstep{display:flex;gap:6px;margin-top:6px}
+.pl-addstep select{flex:1;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px;font-size:12px}
+.pl-addstep input{width:46px;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px;font-size:12px;text-align:center}
+.pl-addstep button{background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px}
+.pl-empty{color:var(--muted);font-size:12px;font-style:italic;padding:6px 0}
+.pl-btn-add-plan{width:100%;background:var(--panel2);border:1px dashed var(--border);border-radius:8px;color:var(--muted);padding:9px;font-size:12px;margin-bottom:14px}
+.pl-run{width:100%;background:var(--accent);color:#04212a;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:800;letter-spacing:.03em}
+.pl-run:disabled{opacity:.5}
+/* results */
+.pl-guard{border:1px solid var(--warn);background:rgba(224,150,10,.08);border-radius:8px;padding:11px 14px;font-size:12px;color:#f0c674;margin-bottom:18px;line-height:1.5}
+.pl-guard b{color:var(--warn)}
+.pl-placeholder{color:var(--muted);font-size:14px;line-height:1.6;max-width:560px}
+.pl-placeholder h2{font-size:18px;color:var(--text);margin-bottom:10px}
+.pl-cells{display:flex;gap:16px;flex-wrap:wrap}
+.pl-cell{flex:1;min-width:300px;border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden}
+.pl-cell-head{padding:11px 14px;border-bottom:1px solid var(--border);background:var(--panel2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pl-cell-head .nm{font-weight:700;font-size:14px}
+.pl-cell-head .wd{font-size:11px;color:var(--muted)}
+.pl-cell-body{padding:14px}
+.pl-block-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.pl-headline{font-size:14px;line-height:1.5;margin-bottom:4px}
+.pl-headline b{color:var(--text)}
+.pl-distbar{display:flex;height:22px;border-radius:5px;overflow:hidden;margin:8px 0 6px;border:1px solid var(--border)}
+.pl-distbar span{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--mono);color:#04212a;min-width:0;overflow:hidden}
+.pl-distlegend{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;font-family:var(--mono);color:var(--muted);margin-bottom:14px}
+.pl-distlegend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+.pl-crit{list-style:none;margin:0 0 14px;padding:0}
+.pl-crit li{font-size:12px;line-height:1.5;padding:7px 0 7px 22px;position:relative;border-bottom:1px solid var(--border)}
+.pl-crit li:last-child{border-bottom:none}
+.pl-crit li .ic{position:absolute;left:0;top:7px;font-size:12px}
+.pl-crit .rule{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.pl-crit .conf{font-family:var(--mono);font-size:9px;letter-spacing:.08em;padding:1px 4px;border-radius:3px;border:1px solid var(--border);color:var(--muted);margin-left:4px}
+.pl-warn .ic{color:var(--warn)} .pl-good .ic{color:var(--good)} .pl-info .ic{color:var(--muted)}
+.pl-dials{display:flex;gap:10px;margin-bottom:6px}
+.pl-dial{flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:9px;text-align:center}
+.pl-dial .dl{font-size:9px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pl-dial .dv{font-size:20px;font-weight:800;font-family:var(--mono)}
+.pl-dial .dr{font-size:10px;font-family:var(--mono);color:var(--muted)}
+.pl-cost{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:14px}
+.pl-grade-wrap{border-top:1px dashed var(--border);padding-top:12px;display:flex;align-items:center;gap:12px}
+.pl-grade{font-size:40px;font-weight:900;line-height:1;font-family:var(--mono)}
+.pl-grade-note{font-size:11px;color:var(--muted);line-height:1.45}
+.pl-grade-note b{color:var(--warn)}
+.pl-verdict{border:1px solid var(--accent);background:rgba(41,211,224,.06);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;margin-bottom:18px}
+.pl-verdict b{color:var(--accent)}
+.pl-card-actions{display:flex;gap:10px;margin-top:6px}
+.pl-card-actions button{background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:9px 14px;font-size:12px}
+.planner-card{border-color:var(--accent)!important}
+.planner-card h3 .diff{background:var(--accent);color:#04212a}
+.gS{color:#c084fc}.gA{color:var(--good)}.gB{color:var(--accent)}.gC{color:var(--accent2)}.gF{color:var(--bad)}
+/* ===== Interactive tutorial (guided overlay) ===== */
+#tut{position:fixed;inset:0;z-index:55;display:none;pointer-events:none}
+#tut.on{display:block}
+.tut-panel{position:fixed;background:rgba(6,10,15,.74);pointer-events:auto}
+.tut-ring{position:fixed;border:2px solid var(--accent);border-radius:12px;box-shadow:0 0 0 3px rgba(41,211,224,.35),0 0 22px rgba(41,211,224,.55);pointer-events:none;transition:all .22s cubic-bezier(.4,0,.2,1);z-index:56}
+.tut-ring.pulse{animation:tutpulse 1.5s infinite}
+@keyframes tutpulse{0%,100%{box-shadow:0 0 0 3px rgba(41,211,224,.35),0 0 18px rgba(41,211,224,.45)}50%{box-shadow:0 0 0 6px rgba(41,211,224,.18),0 0 30px rgba(41,211,224,.75)}}
+.tut-bubble{position:fixed;z-index:65;max-width:360px;background:linear-gradient(180deg,#0f1822,#0b1119);border:1px solid var(--accent);border-radius:14px;padding:16px 17px 14px;box-shadow:0 16px 50px rgba(0,0,0,.6);pointer-events:auto;font-size:13px;line-height:1.5}
+.tut-bubble .tut-eyebrow{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:5px}
+.tut-bubble h4{margin:0 0 7px;font-size:15px;color:var(--text)}
+.tut-bubble p{margin:0 0 9px;color:var(--muted)}
+.tut-bubble b{color:var(--text)}
+.tut-bubble.warn{border-color:var(--bad)}
+.tut-bubble.warn .tut-eyebrow{color:var(--bad)}
+.tut-bubble.win{border-color:var(--good)}
+.tut-bubble.win .tut-eyebrow{color:var(--good)}
+.tut-foot{display:flex;align-items:center;gap:8px;margin-top:11px}
+.tut-foot .tut-prog{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.tut-foot .spacer{flex:1}
+.tut-foot button{border-radius:8px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--panel2);color:var(--muted)}
+.tut-foot button.go{background:var(--accent);border-color:var(--accent);color:#04212a;font-weight:700}
+.tut-cue{position:fixed;z-index:64;color:var(--accent);font-size:26px;pointer-events:none;animation:tutbob 1.1s infinite}
+@keyframes tutbob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 </style>
 </head>
 <body>
@@ -382,24 +628,49 @@ select:focus{border-color:var(--accent)}
   </div>
 </div>
 
-<!-- TITLE / MODE SELECT -->
+<!-- TITLE / TWO-DOOR FRONT -->
 <div id="title" class="hidden">
-  <div class="machine">K R Y S H A&nbsp;&nbsp;·&nbsp;&nbsp;К Р Ы Ш А <span class="beta-badge">BETA</span></div>
+  <div class="machine">K R Y S H A <span class="beta-badge">BETA</span></div>
   <h1 id="title-h1">The protection is the real target.</h1>
   <div class="tag" id="title-tag"></div>
-  <div class="phasebadge" id="phase-badge">PHASES 1–6 · board · adaptation engine · scoring · scenarios · analyst layer</div>
-  <div style="display:flex;gap:10px;align-items:center" class="title-help">
-    <button class="btn primary" id="title-help">▸ New here? How to play</button>
-    <button class="btn ghost" id="title-codex">Codex</button>
-    <button class="btn ghost hidden" id="title-feedback">Feedback</button>
+  <button class="btn primary" id="title-resume" style="display:none;margin-top:14px"></button>
+
+  <!-- DOOR SELECT — the default landing: two doors, one job each -->
+  <div id="door-select">
+    <div class="doors">
+      <button class="door-card door-a" id="door-a-btn">
+        <div class="door-eyebrow">START HERE · LEARN THE MODEL</div>
+        <h2>KRYSHA <span class="door-tag">the game</span></h2>
+        <p class="door-sub">Learn how the ecosystem works by trying to break it.</p>
+        <p class="door-desc">A guided walkthrough, a free-play sandbox, and real operations replayed as back-tests that show the model reproduces what actually happened.</p>
+        <span class="door-go">Enter ▸</span>
+      </button>
+      <button class="door-card door-b" id="door-b-btn">
+        <div class="door-eyebrow">DECISION SUPPORT · APPLY THE MODEL</div>
+        <h2>The Planner <span class="door-tag">analyst tool</span></h2>
+        <p class="door-sub">Evaluate a real course of action.</p>
+        <p class="door-desc">Bring a plan; the same engine runs it against the ecosystem model many times and returns a graded, sourced verdict. Compare options, stress one plan, or run concurrent operations. Decision support, not a forecast.</p>
+        <span class="door-go">Open the Planner ▸</span>
+      </button>
+    </div>
+    <div class="title-help" style="display:flex;gap:10px;align-items:center;justify-content:center">
+      <button class="btn ghost" id="title-codex">Codex</button>
+      <button class="btn ghost hidden" id="title-feedback">Feedback</button>
+    </div>
   </div>
-  <button class="btn primary" id="title-resume" style="display:none;margin-top:12px"></button>
-  <div class="section-label">Free play</div>
-  <div class="modes" id="sandbox-modes"></div>
-  <div class="section-label">Historical scenarios</div>
-  <div class="modes" id="scenario-modes"></div>
-  <div class="section-label" id="current-label">Current-ops (prospective)</div>
-  <div class="modes" id="current-modes"></div>
+
+  <!-- DOOR A — the game: walkthrough (default), sandbox, historical back-tests -->
+  <div id="door-game" class="hidden">
+    <button class="btn ghost door-back" id="door-a-back">‹ Back to start</button>
+    <div class="section-label">New here? Start with the walkthrough</div>
+    <div class="modes" id="walkthrough-modes"></div>
+    <div class="section-label">Free play</div>
+    <div class="modes" id="sandbox-modes"></div>
+    <div class="section-label">Historical operations · model back-tests</div>
+    <div class="backtest-note">Replays of real operations (Operation Cronos, Duck Hunt, and others). They are the back-test: proof the model reproduces what actually happened. Play them to see why the Planner can be trusted.</div>
+    <div class="modes" id="scenario-modes"></div>
+  </div>
+
   <div class="title-credit">Developed by <b>Reno</b> · built on the Ransomware Ecosystem Disruption Framework</div>
 </div>
 
@@ -452,6 +723,27 @@ select:focus{border-color:var(--accent)}
   </nav>
 </div>
 
+<!-- PLANNING MODE -->
+<div id="planner" class="hidden">
+  <header class="pl-head">
+    <span class="title-min">KRYSHA<span class="beta-badge">PLANNER · BETA</span></span>
+    <span class="pl-sub">Decision support · the same engine, evaluating a plan you bring to it</span>
+    <div class="pl-modetabs" id="pl-modetabs">
+      <button data-mode="compare" class="active">Compare plans</button>
+      <button data-mode="robust">Stress one plan</button>
+      <button data-mode="portfolio" title="Concurrent operations — several ops on one board under a shared budget">Concurrent ops</button>
+    </div>
+    <button class="btn ghost" id="pl-guide" style="margin-left:auto">❔ What is this?</button>
+    <button class="btn ghost" id="pl-exit">Exit</button>
+  </header>
+  <div class="pl-body">
+    <aside class="pl-left" id="pl-builder"></aside>
+    <main class="pl-right" id="pl-results"></main>
+  </div>
+  <!-- first-run / reopenable explainer -->
+  <div id="pl-intro" class="hidden"><div class="pl-intro-card" id="pl-intro-card"></div></div>
+</div>
+
 <!-- ACTION MODAL -->
 <div id="modal-scrim" class="scrim hidden">
   <div class="modal" id="modal"></div>
@@ -486,6 +778,15 @@ select:focus{border-color:var(--accent)}
    ============================================================================ */
 
 let PACK=null;
+
+/* ---- headless evaluation (Planning Mode) ----
+   When HEADLESS is true the engine runs with NO DOM or persistence side effects,
+   so a plan can be simulated many times to build an outcome distribution. The
+   adaptation/scoring math is untouched — only rendering, autosave and feed output
+   are short-circuited. Feed events are captured into HEADLESS_EVENTS for the
+   structural critique. See the PLANNING MODE block near the end of this file.   */
+let HEADLESS=false;
+let HEADLESS_EVENTS=null;
 
 /* ---- internal fallbacks (used ONLY if a pack omits config keys) ---- */
 const FALLBACK={
@@ -820,6 +1121,7 @@ function checkAchievements(landed){
   if(S.result==="win") unlockAchievement("ach_beat_history");
 }
 function showToast(name, desc){
+  if(HEADLESS) return;
   const wrap=document.getElementById('toasts'); if(!wrap) return;
   const t=document.createElement('div'); t.className='toast';
   t.innerHTML=`<div class="t-eyebrow">★ ACHIEVEMENT</div><div class="t-name">${name}</div><div class="t-desc">${desc}</div>`;
@@ -872,7 +1174,7 @@ function openCodex(){ document.getElementById('codex-scrim').classList.remove('h
 
 /* ---- save / resume (Phase 6) ---- */
 const SAVE_KEY="machine_save_v1";
-function saveGame(){ if(!S) return; try{ localStorage.setItem(SAVE_KEY, JSON.stringify({S, analyst:ANALYST})); }catch(e){} }
+function saveGame(){ if(!S||HEADLESS) return; try{ localStorage.setItem(SAVE_KEY, JSON.stringify({S, analyst:ANALYST})); }catch(e){} }
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
 function loadSave(){ try{ const r=localStorage.getItem(SAVE_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
 function setObjectiveBar(mode){
@@ -987,6 +1289,7 @@ function endCampaign(result){
   if(S.ended) return;
   S.ended=true;
   S.result=result||"clock";
+  if(HEADLESS) return;   // headless: record the end, skip persistence + after-action UI
   clearSave();
   checkAchievements([]);
   document.getElementById('end-turn').disabled=true;
@@ -1003,6 +1306,10 @@ function showAfterAction(){
   // missed levers from the scenario (map ids -> names where possible)
   const missed = scn ? (scn.missed_levers||[]).map(x=>{ const a=PACK.actions.find(z=>z.id===x); return a?a.name:x; }) : [];
   const won = (S.result==="win") || scenarioWinMet();
+  // second axis: legitimacy & blowback of the course actually played (weakest-link)
+  const aarLegit = (typeof pl_planLegit==="function") ? pl_planLegit({steps:S.history.map(h=>({actionId:h.id, turn:h.turn}))}, S.mode) : null;
+  const legitSec = aarLegit ? `<section><h4>Legitimacy &amp; blowback (second axis)</h4>
+      <p><b style="color:${LEGIT_COLOR[aarLegit.band]}">${aarLegit.band}</b> — effectiveness and legitimacy are separate axes: a course can grade well on effect yet be hard to authorize or defend. Your band is set, weakest-link, by ${aarLegit.draggers.map(d=>d.action.name+' ('+legitNorm(d.leg.band)+')').join(', ')}.</p></section>` : "";
 
   let cmp="";
   if(scn){
@@ -1040,6 +1347,7 @@ function showAfterAction(){
           <div class="d"><div class="dv" style="color:#29d3e0">${sc.c}</div><div class="dl">Ecosystem Economics</div></div>
         </div></section>
       <section><h4>WAIS — arrest impact</h4><div class="aar-wais">${waisHtml}</div></section>
+      ${legitSec}
       ${cmp}
       <section><h4>What you did</h4><ul class="aar-list">${did.length?did.map(d=>`<li>✓ ${d}</li>`).join(''):"<li>Nothing committed.</li>"}</ul></section>
       <section><h4>Achievements</h4><div class="ach-grid">${
@@ -1073,6 +1381,7 @@ function fireDataEvent(id){
 /* push to feed; tone in {info,triumph,setback,blunder,confirm} */
 function pushEvent(tone, html, toneOverride){
   const t=toneOverride||tone;
+  if(HEADLESS){ if(HEADLESS_EVENTS) HEADLESS_EVENTS.push({tone:t, html, turn:S.turn}); return; }
   S.feed.unshift({tone:t, html, turn:S.turn});
   renderFeed();
 }
@@ -1112,7 +1421,7 @@ let view={k:1,x:0,y:0}; // zoom/pan transform
 function el(tag,attrs,parent){ const e=document.createElementNS(SVGNS,tag);
   if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]); if(parent)parent.appendChild(e); return e; }
 
-function renderAll(){ renderHUD(); renderKPI(); renderBoard(); renderTray(); renderFeed(); if(S.selectedNode) renderInspector(S.selectedNode); }
+function renderAll(){ if(HEADLESS) return; renderHUD(); renderKPI(); renderBoard(); renderTray(); renderFeed(); if(S.selectedNode) renderInspector(S.selectedNode); }
 
 /* three KPI dials + composite grade, in the right rail */
 function renderKPI(){
@@ -1231,7 +1540,7 @@ function renderBoard(){
     if(hubOutcome==="BRAND_DEAD"||hubOutcome==="DEGRADED") cls+=' degraded';
     if(protState==="SEVERED") cls+=' degraded';
 
-    const ng=el('g',{class:cls,transform:`translate(${p.x},${p.y})`},nodes);
+    const ng=el('g',{class:cls,'data-node':id,transform:`translate(${p.x},${p.y})`},nodes);
     ng.style.cursor='pointer';
     // pending ring
     if(pendingHere) el('circle',{class:'ring',r:r+7,fill:'none',stroke:'#e0b040','stroke-width':1.5,'stroke-dasharray':'2 4'},ng);
@@ -1306,6 +1615,7 @@ function renderTray(){
       const trap = a.backfire_risk==="HIGH" ? `<span class="trap">⚠ trap</span>` : "";
       b.innerHTML=`<span>${a.name} ${trap}</span><span class="ap">${a.ap_cost} AP</span>`;
       b.disabled = S.ap < a.ap_cost;
+      b.dataset.act=a.id;
       b.addEventListener('click',()=>openActionModal(a));
       col.appendChild(b);
     });
@@ -1531,6 +1841,243 @@ function maybeAutoHelp(){
   if(!seen) showHelp();
 }
 
+/* ===================== GUIDED WALKTHROUGH (default landing path) =====================
+   A short multi-step lesson sequence shown before play. Reuses the help scrim/modal.
+   Ends by dropping the player into a seeded sandbox; suppresses the auto-briefing so it
+   doesn't double up. All counts read from the pack so the walkthrough re-skins with it. */
+let WT_STEP=0;
+function wtSteps(){
+  const ap=cfg("default_ap_per_turn"), turns=cfg("default_max_turns"), unit=cfg("turn_unit");
+  const nvec=(PACK.vectors||[]).length, njur=(PACK.jurisdictions||[]).length;
+  return [
+    {tag:"1 · THE IDEA", h:"The protection is the real target.",
+      body:`<p><b>Krysha</b> is Russian for “roof” — the state protection that shields ransomware
+        operators from arrest. This game is a living map of the Russia/CIS ransomware ecosystem.</p>
+        <p>The core lesson up front: hitting the visible criminals rarely works while the <b>protection
+        layer</b> stays intact. You learn how the machine really works by trying to break it.</p>`},
+    {tag:"2 · THE BOARD", h:"Read it as a pipeline.",
+      body:`<p>Money and access flow <b>left → right</b>: infrastructure on the left, through the central
+        <b>RaaS hub</b> (the ransomware brand), out to cash-out networks on the right. Bigger nodes matter more.</p>
+        <p>A mostly-hidden <b>protection layer</b> sits beneath the hub. <b>Click any node</b> to read what it
+        is and what breaks if you hit it.</p>`},
+    {tag:"3 · A QUARTER", h:"Spend, wait, watch.",
+      body:`<p>Each turn is one <b>${unit}</b>. You get <b>${ap} Action Points</b> and the campaign runs
+        <b>${turns} ${unit}s</b>.</p>
+        <ol class="steps">
+          <li><span class="num">1</span><span>Pick a lever from the tray — each shows its <b>AP cost</b>, its <b>lag</b> (${unit}s until it lands), its <b>backfire risk</b>, and which of ${njur} <b>jurisdictions</b> you're operating in.</span></li>
+          <li><span class="num">2</span><span>Hit <b>End Turn</b>. Time advances, committed actions resolve after their lag, and the <b>intel feed</b> reports what happened.</span></li>
+        </ol>`},
+    {tag:"4 · THE CATCH", h:"The obvious move backfires.",
+      body:`<p>The machine adapts. Smash a brand on its own and it <b>rebrands in a week</b>. Reach for an
+        arrest where the target is state-protected and you <b>harden the roof</b> and make things worse.</p>
+        <p>Pressure has to be <b>paired and sequenced</b> across the ${nvec} vectors — sever protection
+        <i>before</i> going loud, pair infrastructure hits with financial pressure. There is no single right
+        answer; experiment.</p>`},
+    {tag:"5 · SCORING", h:"You get a graded, sourced verdict.",
+      body:`<p>Three KPI dials and a composite grade (<b>F → C → B → A → S</b>) track your campaign in the
+        right rail; arrests are scored on a WAIS band. An <b>After-Action Report</b> at the end tells you your
+        grade, how you did versus the real-world outcome, and the levers you missed.</p>
+        <p>When you're ready to evaluate a real plan instead of learning, use <b>The Planner</b> from the start screen.</p>`}
+  ];
+}
+function renderWalkStep(){
+  const steps=wtSteps(), n=steps.length, s=steps[WT_STEP];
+  const dots=steps.map((_,i)=>`<span class="wt-dot${i===WT_STEP?' on':''}"></span>`).join('');
+  const last=WT_STEP===n-1;
+  document.getElementById('help-modal').innerHTML=`
+    <div class="modal-head">
+      <span class="vname eyebrow" style="color:var(--accent)">${s.tag}</span>
+      <h2>${s.h}</h2>
+    </div>
+    <div class="help-body">${s.body}</div>
+    <div class="help-foot">
+      <div class="wt-dots">${dots}</div>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="wt-skip">Skip</button>
+      ${WT_STEP>0?'<button class="btn ghost" id="wt-back">‹ Back</button>':''}
+      <button class="btn primary" id="wt-next">${last?'Start playing ▸':'Next ›'}</button>
+    </div>`;
+  const close=()=>{ try{localStorage.setItem(HELP_SEEN_KEY,"1");}catch(_){} document.getElementById('help-scrim').classList.add('hidden'); };
+  document.getElementById('wt-skip').onclick=close;
+  const bk=document.getElementById('wt-back'); if(bk) bk.onclick=()=>{ WT_STEP--; renderWalkStep(); };
+  document.getElementById('wt-next').onclick=()=>{
+    if(last){ close(); startGame({kind:'sandbox', def:{name:"Sandbox"}}); }
+    else { WT_STEP++; renderWalkStep(); }
+  };
+}
+/* ===================== INTERACTIVE TUTORIAL (guided overlay) =====================
+   Hands-on, fail-first onboarding. Replaces the old text walkthrough. It plays one
+   real quarter on the live board: first it guides the player into the classic mistake
+   (going loud while the roof is intact -> protection HARDENS, deterministically via the
+   protection_reflex rule), then rewinds and guides the correct sequence (sever the roof,
+   pair financial pressure). Backfire RNG is suppressed for the duration so every beat is
+   reproducible; Math.random is restored on exit. Drives the game's OWN functions, so the
+   skills transfer directly to free play.                                              */
+let TUT={on:false, i:0, steps:[], raf:0, rand:null, wrapped:false};
+
+function tutAct(id){ return function(){ return document.querySelector('.action-btn[data-act="'+id+'"]'); }; }
+function tutNode(id){ return function(){ return document.querySelector('.node-g[data-node="'+id+'"]'); }; }
+
+function tutScript(){
+  return [
+  // ---------- PHASE A: the mistake ----------
+  {eyebrow:'Welcome', h:'Let’s break the machine.',
+   body:'This is the Russia/CIS ransomware ecosystem. Money and services flow <b>left → right</b>. Your job is to disrupt it — but first, let’s watch the mistake almost everyone makes.',
+   await:'next', cta:'Show me ›', target:null},
+  {eyebrow:'Step 1 · the brand', h:'Meet the visible criminal.',
+   body:'The big square in the middle is the <b>RaaS hub</b> — the ransomware brand. It’s the obvious target. <b>Click it.</b>',
+   await:'node:raas', target:tutNode('raas')},
+  {eyebrow:'Step 2 · the obvious move', h:'Name and shame them?',
+   body:'That panel shows what the node is and what breaks if you hit it. The instinct is to go loud — publicly indict the operator. Let’s try exactly that.',
+   await:'next', cta:'Try it ›', target:()=>document.getElementById('inspector')},
+  {eyebrow:'Step 3 · go loud', h:'The “trap” lever.',
+   body:'In the Action Tray below, find <b>Public Indictment / Attribution</b> — note its <b>⚠ trap</b> tag. Click it.',
+   await:'modal:a_indictment_public', target:tutAct('a_indictment_public')},
+  {eyebrow:'Step 4 · commit', h:'Pull the trigger.',
+   body:'This is a <b>loud</b> move against a state-protected operator. Hit <b>Commit</b> and we’ll see what it does.',
+   await:'commit:a_indictment_public', block:false, target:()=>document.getElementById('m-confirm')},
+  {eyebrow:'Step 5 · end the quarter', h:'Let it land.',
+   body:'Nothing happens until the quarter resolves. Click <b>End Turn</b>.',
+   await:'endturn', target:()=>document.getElementById('end-turn')},
+  {eyebrow:'The catch', h:'You made it worse.', tone:'warn',
+   body:'Look at the <b>Protection Layer</b> (red ring) — it just <b>HARDENED</b>. You named him publicly, Moscow closed ranks, and the operator is now <i>harder</i> to touch. <b>Going loud while the roof is intact backfires.</b> This is the #1 lesson of the whole game.',
+   await:'next', cta:'Rewind & do it right ›', target:tutNode('protection')},
+  // ---------- PHASE B: the right way ----------
+  {eyebrow:'Reset', h:'Deal with the roof first.',
+   body:'Fresh board. “Krysha” means <b>roof</b> — the state protection shielding the operator. The rule: <b>cut the roof loose before you go loud.</b> That hidden node is the protection layer.',
+   await:'next', cta:'Let’s do it ›', target:tutNode('protection'),
+   pre:function(){ startGame({kind:'sandbox', def:{name:'Sandbox'}}); }},
+  {eyebrow:'Step 1 · sever', h:'Expose the protector.',
+   body:'Under <b>Protection-Layer Disruption</b> in the tray, pick <b>Officer Financial Exposure Operation</b> — it turns the protection relationship into a liability.',
+   await:'modal:a_officer_exposure', target:tutAct('a_officer_exposure')},
+  {eyebrow:'Step 1 · commit', h:'Commit the sever.',
+   body:'Three Action Points, but worth it — this is what makes brand-death reachable. Hit <b>Commit</b>.',
+   await:'commit:a_officer_exposure', block:false, target:()=>document.getElementById('m-confirm')},
+  {eyebrow:'Step 2 · pair it', h:'Now add paired pressure.',
+   body:'One lever is never enough. Pair the sever with financial pressure: pick <b>FNS Lifestyle-Inconsistency Referral</b> — it squeezes the money <i>and</i> helps cut the roof loose.',
+   await:'modal:a_fns_referral', target:tutAct('a_fns_referral')},
+  {eyebrow:'Step 2 · commit', h:'Commit the pair.',
+   body:'That spends your last point this quarter. <b>Commit.</b> Sever + financial = the paired pressure the model rewards.',
+   await:'commit:a_fns_referral', block:false, target:()=>document.getElementById('m-confirm')},
+  {eyebrow:'Step 3 · end the quarter', h:'Set it in motion.',
+   body:'Click <b>End Turn</b>. These levers have <b>lag</b> — they mature over the next few quarters.',
+   await:'endturn', target:()=>document.getElementById('end-turn')},
+  {eyebrow:'Fast-forward', h:'Watch them land.',
+   body:'Real operations take time. We’ll skip ahead a few quarters so you can see your moves mature.',
+   await:'next', cta:'Fast-forward ▸', target:()=>document.getElementById('kpi'),
+   run:function(){ let g=0; while(S && S.hub && S.hub.protection!=='SEVERED' && !S.ended && S.turn<S.maxTurns && g<6){ endTurn(); g++; } }},
+  {eyebrow:'The payoff', h:'The roof is gone.', tone:'win',
+   body:'The Protection Layer is now <b>SEVERED</b> — the shield is cut. Brand-death is finally reachable. Same operator, opposite result: going loud first <i>hardened</i> the roof; severing first <i>opened</i> it. <b>Sequence is everything.</b>',
+   await:'next', cta:'I’ve got it ›', target:tutNode('protection')},
+  {eyebrow:'Over to you', h:'The board is yours.', tone:'win',
+   body:'That’s the core loop: <b>sever the roof, then pile on paired financial + infrastructure pressure.</b> Now a fresh sandbox — real randomness back on, no single right answer. Experiment.',
+   await:'next', cta:'Start playing ▸', target:null}
+  ];
+}
+
+function tutBuildDom(){
+  if(document.getElementById('tut')) return;
+  const d=document.createElement('div'); d.id='tut';
+  d.innerHTML='<div class="tut-panel" data-p="t"></div><div class="tut-panel" data-p="b"></div>'
+    +'<div class="tut-panel" data-p="l"></div><div class="tut-panel" data-p="r"></div>'
+    +'<div class="tut-ring pulse" id="tut-ring"></div><div class="tut-bubble" id="tut-bubble"></div>';
+  document.body.appendChild(d);
+}
+function tutSetPanel(p,x,y,w,h){ if(!p)return; w=Math.max(0,w);h=Math.max(0,h);
+  p.style.left=x+'px';p.style.top=y+'px';p.style.width=w+'px';p.style.height=h+'px';
+  p.style.display=(w>0&&h>0)?'block':'none'; }
+function tutHidePanels(){ document.querySelectorAll('#tut .tut-panel').forEach(p=>p.style.display='none'); }
+function tutLayout(){
+  const step=TUT.steps[TUT.i]; if(!step) return;
+  const ring=document.getElementById('tut-ring'), bubble=document.getElementById('tut-bubble');
+  if(!ring||!bubble) return;
+  const W=window.innerWidth,H=window.innerHeight,pad=8;
+  const tgt=step.target?step.target():null;
+  let r=null;
+  if(tgt&&tgt.getBoundingClientRect){ const b=tgt.getBoundingClientRect();
+    if(b.width||b.height) r={x:b.left-pad,y:b.top-pad,w:b.width+pad*2,h:b.height+pad*2}; }
+  const pT=document.querySelector('#tut [data-p="t"]'),pB=document.querySelector('#tut [data-p="b"]'),
+        pL=document.querySelector('#tut [data-p="l"]'),pR=document.querySelector('#tut [data-p="r"]');
+  const block=step.block!==false;
+  if(block&&r){
+    tutSetPanel(pT,0,0,W,r.y);
+    tutSetPanel(pB,0,r.y+r.h,W,H-(r.y+r.h));
+    tutSetPanel(pL,0,r.y,r.x,r.h);
+    tutSetPanel(pR,r.x+r.w,r.y,W-(r.x+r.w),r.h);
+  } else if(block){ tutSetPanel(pT,0,0,W,H); tutSetPanel(pB,0,0,0,0); tutSetPanel(pL,0,0,0,0); tutSetPanel(pR,0,0,0,0); }
+  else { tutHidePanels(); }
+  if(r){ ring.style.display='block'; ring.style.left=r.x+'px'; ring.style.top=r.y+'px';
+    ring.style.width=r.w+'px'; ring.style.height=r.h+'px'; }
+  else ring.style.display='none';
+  // bubble placement
+  const bw=bubble.offsetWidth||340, bh=bubble.offsetHeight||170; let x,y;
+  if(!r){ x=(W-bw)/2; y=(H-bh)/2; }
+  else { if(r.y+r.h+12+bh<H) y=r.y+r.h+12; else if(r.y-12-bh>0) y=r.y-12-bh; else y=(H-bh)/2;
+    x=r.x+r.w/2-bw/2; }
+  x=Math.max(12,Math.min(x,W-bw-12)); y=Math.max(12,Math.min(y,H-bh-12));
+  bubble.style.left=x+'px'; bubble.style.top=y+'px';
+}
+function tutRender(){
+  tutBuildDom();
+  const step=TUT.steps[TUT.i];
+  if(!step){ tutFinish(); return; }
+  if(step.pre) step.pre();
+  const bubble=document.getElementById('tut-bubble');
+  bubble.className='tut-bubble'+(step.tone?(' '+step.tone):'');
+  const showGo = step.await==='next';
+  bubble.innerHTML='<span class="tut-eyebrow">'+(step.eyebrow||('Step '+(TUT.i+1)))+'</span>'
+    +(step.h?('<h4>'+step.h+'</h4>'):'')+'<p>'+step.body+'</p>'
+    +'<div class="tut-foot"><span class="tut-prog">'+(TUT.i+1)+' / '+TUT.steps.length+'</span>'
+    +'<button id="tut-skip">Skip tour</button><span class="spacer"></span>'
+    +(showGo?('<button class="go" id="tut-next">'+(step.cta||'Next ›')+'</button>'):'')+'</div>';
+  document.getElementById('tut').classList.add('on');
+  // scroll a tray/board target into view, then anchor
+  const tgt=step.target?step.target():null;
+  if(tgt&&tgt.scrollIntoView){ try{ tgt.scrollIntoView({block:'nearest',inline:'nearest'}); }catch(_){} }
+  tutLayout();
+  const nx=document.getElementById('tut-next'); if(nx) nx.onclick=function(){ if(step.run) step.run(); tutAdvance(); };
+  const sk=document.getElementById('tut-skip'); if(sk) sk.onclick=tutSkip;
+}
+function tutAdvance(){ TUT.i++; if(TUT.i>=TUT.steps.length){ tutFinish(); } else tutRender(); }
+function tutStepBack(){ if(TUT.i>0){ TUT.i--; tutRender(); } }
+function tutNotify(kind,id){
+  if(!TUT.on) return; const step=TUT.steps[TUT.i]; if(!step) return;
+  const a=step.await;
+  if(a===kind || a===(kind+':'+id)) tutAdvance();
+}
+function tutWrap(){
+  if(TUT.wrapped) return; TUT.wrapped=true;
+  const _sel=selectNode; selectNode=function(id){ _sel(id); tutNotify('node',id); };
+  const _modal=openActionModal; openActionModal=function(a){ _modal(a); tutNotify('modal',a.id); };
+  const _spend=spendAction; spendAction=function(a,j){ _spend(a,j); tutNotify('commit',a.id); };
+  const _end=endTurn; endTurn=function(){ _end(); tutNotify('endturn'); };
+  // #end-turn's onclick was bound to the original endTurn at boot — rebind to the wrapped one
+  const etb=document.getElementById('end-turn'); if(etb) etb.onclick=endTurn;
+  const _close=closeModal; closeModal=function(){ _close();
+    if(TUT.on){ const s=TUT.steps[TUT.i]; if(s&&typeof s.await==='string'&&s.await.indexOf('commit:')===0) tutStepBack(); } };
+}
+function tutStart(){
+  tutWrap();
+  try{ localStorage.setItem(HELP_SEEN_KEY,'1'); }catch(_){}
+  if(!TUT.rand){ TUT.rand=Math.random; Math.random=function(){ return 0.999; }; }
+  TUT.on=true; TUT.i=0; TUT.steps=tutScript();
+  startGame({kind:'sandbox', def:{name:'Sandbox'}});
+  tutRender();                       // build + show step 1 immediately
+  cancelAnimationFrame(TUT.raf);     // persistent loop keeps the spotlight anchored as the board renders/pans
+  const loop=function(){ if(!TUT.on) return; tutLayout(); TUT.raf=requestAnimationFrame(loop); };
+  TUT.raf=requestAnimationFrame(loop);
+}
+function tutCleanup(){
+  TUT.on=false; cancelAnimationFrame(TUT.raf);
+  if(TUT.rand){ Math.random=TUT.rand; TUT.rand=null; }
+  const d=document.getElementById('tut'); if(d) d.classList.remove('on');
+}
+function tutSkip(){ tutCleanup(); startGame({kind:'sandbox', def:{name:'Sandbox'}}); }
+function tutFinish(){ tutCleanup(); startGame({kind:'sandbox', def:{name:'Sandbox'}}); }
+
+// Launch the interactive tutorial (called from the Door A "Guided walkthrough" card).
+function startWalkthrough(){ tutStart(); }
+
 /* ============================== ZOOM / PAN ============================== */
 function clampK(k){ return Math.max(L.minK||0.05, Math.min(L.maxK||6, k)); }
 function zoomAt(factor, clientX, clientY){
@@ -1617,34 +2164,47 @@ function buildTitle(){
     const m=sv.S.mode; rb.textContent=`▸ Resume — ${m.kind==='scenario'?m.def.name:'Sandbox'} · ${sv.S.mode?('Q'+sv.S.turn):''}`;
     rb.onclick=resumeGame;
   } else rb.style.display='none';
-  // sandbox card
+
+  // always land on the door-select (the default landing), not deep in a sub-pane
+  showDoorSelect();
+
+  // DOOR A ▸ walkthrough card (the highlighted, recommended entry — default landing path)
+  const wt=document.getElementById('walkthrough-modes'); wt.innerHTML='';
+  const wc=modeCard({
+    title:"▸ Guided walkthrough", target:"5-minute intro to the whole model", diff:"START HERE",
+    desc:"A short guided path: why state protection is the real target, how the board works, how a quarter plays out, why the obvious move usually backfires, and how you're scored. Ends by dropping you into the live sandbox.",
+    onpick:()=>startWalkthrough()
+  });
+  wc.classList.add('walk-card');
+  wt.appendChild(wc);
+
+  // DOOR A ▸ sandbox card
   const sb=document.getElementById('sandbox-modes'); sb.innerHTML='';
   sb.appendChild(modeCard({
-    title:"Sandbox", target:"Full ecosystem", diff:"FREE PLAY",
-    desc:"The complete board, free play. Spend AP, watch lag and backfire resolve. The starting point for the greybox.",
+    title:"Sandbox", target:"Full ecosystem · seeded from the live 2026 board", diff:"FREE PLAY",
+    desc:"The complete board, free play. Spend AP, watch lag and backfire resolve. Best once you've done the walkthrough.",
     onpick:()=>startGame({kind:'sandbox', def:{name:"Sandbox"}})
   }));
 
-  // historical scenarios
+  // DOOR A ▸ historical operations, reframed as model back-tests
   const sc=document.getElementById('scenario-modes'); sc.innerHTML='';
   PACK.scenarios.forEach(s=>{
     sc.appendChild(modeCard({
-      title:s.name, target:s.target, diff:"DIFFICULTY "+s.difficulty,
+      title:s.name, target:s.target, diff:"BACK-TEST · DIFFICULTY "+s.difficulty,
       desc:s.lesson, onpick:()=>startGame({kind:'scenario', def:s})
     }));
   });
-
-  // current-ops candidates
-  const cur=document.getElementById('current-modes'); cur.innerHTML='';
-  const cc=PACK.candidate_scenarios_current && PACK.candidate_scenarios_current.scenarios;
-  if(cc && cc.length){
-    cc.forEach(s=>{
-      cur.appendChild(modeCard({
-        title:s.name, target:s.target, diff:"DIFFICULTY "+s.difficulty, open:true,
-        desc:s.lesson, onpick:()=>startGame({kind:'scenario', def:s})
-      }));
-    });
-  } else { document.getElementById('current-label').classList.add('hidden'); }
+  // NOTE: Current-ops (live-actor, open-outcome) boards now live inside The Planner
+  // as a selectable board type — see boardOpts in pl_renderBuilder.
+}
+/* ---- door navigation (two-door front) ---- */
+function showDoorSelect(){
+  document.getElementById('door-select').classList.remove('hidden');
+  document.getElementById('door-game').classList.add('hidden');
+}
+function showDoorGame(){
+  document.getElementById('door-select').classList.add('hidden');
+  document.getElementById('door-game').classList.remove('hidden');
 }
 function modeCard({title,target,diff,desc,open,onpick}){
   const c=document.createElement('button'); c.className='mode-card';
@@ -1718,8 +2278,11 @@ function boot(pack){
   document.getElementById('title').classList.remove('hidden');
   buildTitle();
   setupBoardInteraction();
+  // two-door front navigation
+  document.getElementById('door-a-btn').onclick=showDoorGame;
+  document.getElementById('door-a-back').onclick=showDoorSelect;
+  document.getElementById('door-b-btn').onclick=openPlanner;
   // help buttons (title + in-game)
-  document.getElementById('title-help').onclick=showHelp;
   document.getElementById('title-codex').onclick=openCodex;
   document.getElementById('help-open').onclick=showHelp;
   // header buttons
@@ -1772,9 +2335,915 @@ function readFile(file){
   r.readAsText(file);
 }
 
+/* ============================================================================
+   PLANNING MODE — "THE PLANNER"  (decision support, not a teaching game)
+   Reuses the adaptation/scoring engine HEADLESSLY: a plan is simulated many
+   times to build an outcome distribution, a rule-cited structural critique,
+   KPI spread and a model-consistency grade. No engine math is duplicated here.
+   See PLANNING-MODE-SPEC.md. Build order: evaluator → Mode 1 (compare) →
+   Mode 2 (robustness). Mode 3 (concurrent ops) is deliberately deferred.
+   ============================================================================ */
+const GRADE_RANK={F:0,C:1,B:2,A:3,S:4};
+const GRADE_COLOR={S:'#c084fc',A:'#22c55e',B:'#29d3e0',C:'#e0b040',F:'#ef4444'};
+const OUTCOME_WORD={BRAND_DEAD:'brand death',DEGRADED:'degraded survival',RECONSTITUTING:'reconstitution',ACTIVE:'full reconstitution / rebrand'};
+/* ---- Axis 2: Legitimacy & Blowback (decision-defensibility, NOT morality) ---- */
+const LEGIT_RANK={HIGH:3,MEDIUM:2,MED:2,LOW:1};
+const LEGIT_COLOR={HIGH:'#22c55e',MEDIUM:'#e0960a',MED:'#e0960a',LOW:'#ef4444'};
+const legitNorm=b=>b==='MED'?'MEDIUM':b;
+const ACTOR_SHORT={WESTERN_LE:'Western LE',ALLIED_LE:'Allied LE',REGULATORY:'Regulatory',PRIVATE_SECTOR:'Private sector',MEDIA:'Media',INDUCED_RUSSIAN_SIDE:'Induced RU-side',OGA:'OGA'};
+/* effective legitimacy of one lever given the protection state when it fires (applies
+   only the mechanical protection-state flips; other flips are surfaced as caveats). */
+function pl_leverLegit(action, protState){
+  const Lg=action.legitimacy; if(!Lg||!Lg.band) return null;
+  let band=legitNorm(Lg.band), blow=Lg.blowback, note=null, flipped=false;
+  (action.flips||[]).forEach(f=>{
+    const w=(f.when||'').toUpperCase();
+    const sev=/SEVERED/.test(w), intact=/INTACT|HARDENED/.test(w);
+    let match=false;
+    if(sev && !intact) match=(protState==='SEVERED');
+    else if(intact && !sev) match=(protState==='INTACT'||protState==='HARDENED');
+    if(match){ if(f.legitimacy_to){band=legitNorm(f.legitimacy_to);flipped=true;} if(f.blowback_to){blow=f.blowback_to;flipped=true;} if(f.note)note=f.note; }
+  });
+  return {band, blow, note, flipped, base:legitNorm(Lg.band)};
+}
+/* plan-level legitimacy = WEAKEST LINK: a plan is only as defensible as its least
+   defensible lever, after protection-state flips. Static (sequence-based), like the critique. */
+function pl_planLegit(plan, mode, world){
+  const sevThr=cfg('adaptation').protection.sever_threshold;
+  let baseProt=pl_baseProtection(mode); if(world&&world.id==='harden') baseProt='HARDENED';
+  const steps=plan.steps.map(s=>({s,a:pl_actionById(s.actionId)})).filter(x=>x.a).sort((x,y)=>x.s.turn-y.s.turn);
+  if(!steps.length) return null;
+  const severAtTurn={}; steps.forEach(({s,a})=>{ const sv=(a.adaptation&&a.adaptation.severs_protection)||0; if(sv) severAtTurn[s.turn]=(severAtTurn[s.turn]||0)+sv; });
+  const perLever=[];
+  steps.forEach(({s,a})=>{
+    let before=0; for(const t in severAtTurn){ if(+t < s.turn) before+=severAtTurn[t]; }   // severed in a PRIOR turn = "safe to go loud"
+    let prot = baseProt==='SEVERED'?'SEVERED' : baseProt==='HARDENED'?'HARDENED' : (before>=sevThr?'SEVERED':'INTACT');
+    const leg=pl_leverLegit(a, prot); if(leg) perLever.push({action:a, leg, turn:s.turn, prot});
+  });
+  if(!perLever.length) return null;
+  let worst=9, band='HIGH';
+  perLever.forEach(p=>{ const r=LEGIT_RANK[p.leg.band]||2; if(r<worst){worst=r; band=p.leg.band;} });
+  return {band:legitNorm(band), worst, perLever, draggers:perLever.filter(p=>(LEGIT_RANK[p.leg.band]||2)===worst)};
+}
+function pl_planLegitMulti(ops, mode, world){
+  const merged={name:'portfolio', steps:[]}; ops.forEach(o=>o.steps.forEach(s=>merged.steps.push(s)));
+  return pl_planLegit(merged, mode, world);
+}
+function pl_legitBadgeHtml(legit){
+  if(!legit) return '';
+  const c=LEGIT_COLOR[legit.band]||'#7a93ad';
+  return '<div class="pl-legit-badge" style="border-color:'+c+'"><span class="lab">Legitimacy &amp; blowback</span><span class="bnd" style="color:'+c+'">'+legit.band+'</span></div>';
+}
+function pl_legitDebriefHtml(legit){
+  if(!legit) return '';
+  const flagged=legit.perLever.filter(p=>(LEGIT_RANK[p.leg.band]||2)<3).sort((a,b)=>(LEGIT_RANK[a.leg.band]||2)-(LEGIT_RANK[b.leg.band]||2));
+  if(!flagged.length) return '<div class="pl-cost">Every committed lever is HIGH-legitimacy — a clean, defensible course of action.</div>';
+  const rows=flagged.map(p=>{ const c=LEGIT_COLOR[p.leg.band]||'#7a93ad'; const L=p.action.legitimacy||{};
+    const note=(p.leg.flipped&&p.leg.note)?p.leg.note:(L.note||'');
+    return '<li class="pl-info"><span class="ic" style="color:'+c+'">●</span><b>'+p.action.name+'</b> — <span style="color:'+c+';font-weight:700">'+legitNorm(p.leg.band)+'</span> '
+      +'<span class="rule">auth '+(L.authority||'?')+' · blowback '+(p.leg.blow||L.blowback||'?')+' · sustain '+(L.sustainability||'?')+'</span>'
+      +(note?'<div style="color:var(--muted);margin-top:2px">'+note+'</div>':'')+'</li>'; }).join('');
+  return '<ul class="pl-crit">'+rows+'</ul>';
+}
+
+/* the "worlds" Mode 2 stresses a plan across (spec §4 Mode 2) */
+function PL_WORLDS(){return[
+  {id:'baseline',  name:'Baseline',                note:'the board as read',                  apply:null,                                                    block:null},
+  {id:'harden',    name:'Protection hardened',     note:'krysha stronger than assumed',       apply:s=>{s.hub.protection='HARDENED';s.protectionRevealed=true;}, block:null},
+  {id:'arrest_off',name:'Arrest window closed',    note:'no travel-window arrest available',   apply:null,                                                    block:'arrest_available'},
+  {id:'successor', name:'Successor pre-positioned',note:'a rebrand already staged in the wings',apply:s=>{s.hub.substitutionFired=true;},                       block:null},
+];}
+
+/* planner UI/state */
+const PLN={mode:'compare', runs:80, baseBoard:'sandbox', plans:null, activePlan:0, results:null, wired:false};
+
+function pl_defaultPlan(n){return{name:'Plan '+String.fromCharCode(64+n), steps:[]};}
+function pl_defaultOp(n){return{name:'Operation '+String.fromCharCode(64+n), steps:[]};}
+function pl_actionById(id){return PACK.actions.find(a=>a.id===id);}
+function pl_vectorColor(vid){const v=L.vectorsById[vid];const m=cfg('vector_color_hex')||{};return (v&&m[v.color_role])||'#7a93ad';}
+/* node-first action discovery (ROADMAP §6): pick a target node, see the actions that hit it */
+function pl_nodeOptions(){
+  const targetable=new Set(); PACK.actions.forEach(a=>(a.targets||[]).forEach(t=>targetable.add(t)));
+  let html='<option value="__all">▸ Any target — browse all actions</option>';
+  (PACK.board_layout.layers||[]).forEach(ly=>{
+    const ids=Object.keys(L.layerMap).filter(id=>String(L.layerMap[id])===String(ly.id) && targetable.has(id));
+    if(!ids.length) return;
+    html+='<optgroup label="'+ly.name+'">'+ids.map(id=>{
+      const cnt=PACK.actions.filter(a=>(a.targets||[]).includes(id)).length;
+      return '<option value="'+id+'">'+L.nameOf(id)+' ('+cnt+(cnt===1?' action':' actions')+')</option>';
+    }).join('')+'</optgroup>';
+  });
+  return html;
+}
+function pl_actionOptionsFor(nodeId){
+  const acts=(nodeId&&nodeId!=='__all')?PACK.actions.filter(a=>(a.targets||[]).includes(nodeId)):PACK.actions;
+  const html=PACK.vectors.map(v=>{ const va=acts.filter(a=>a.vector===v.id);
+    if(!va.length) return '';
+    return '<optgroup label="'+v.name+'">'+va.map(a=>'<option value="'+a.id+'">'+a.name+' · '+a.ap_cost+'AP · lag '+a.lag_turns+' · '+a.backfire_risk+'</option>').join('')+'</optgroup>'; }).join('');
+  return html||'<option value="" disabled>No actions target this node</option>';
+}
+function pl_boardMode(boardId){
+  if(boardId==='sandbox') return {kind:'sandbox', def:{name:'Sandbox · live 2026 board'}};
+  const s=PACK.scenarios.find(x=>x.id===boardId)||(PACK.candidate_scenarios_current&&(PACK.candidate_scenarios_current.scenarios||[]).find(x=>x.id===boardId));
+  return {kind:'scenario', def:s};
+}
+function pl_boardName(boardId){const m=pl_boardMode(boardId);return m.kind==='sandbox'?'Sandbox · live 2026':(m.def.name+' → '+m.def.target);}
+function pl_structure(mode){return mode.kind==='scenario'?(mode.def.structure||'open_franchise'):cfg('adaptation').default_sandbox_structure;}
+function pl_baseProtection(mode){return (mode.kind==='scenario'&&mode.def.start&&mode.def.start.hub&&mode.def.start.hub.protection)||'INTACT';}
+
+/* ===== CAMPAIGN RESOURCES — coalition capacity + capability gate (planner only) =====
+   Points/quarter come from WHO is at the table (the coalition), not a flat number; a
+   lever is only usable if its actor is in the coalition (hard gate). Roster is data-driven
+   (addon `coalition`), so an airgapped deployment can extend it without code. Surge + windows
+   plug into pl_capacityAt()/pl_actorsAt() in pass 2. */
+function pl_coalitionRoster(){
+  const c=PACK._addon&&PACK._addon.coalition;
+  if(c&&c.members&&c.members.length) return c;
+  return {default:['WESTERN_LE'], members:[
+    {actor:'WESTERN_LE',name:'Western LE',capacity:2},
+    {actor:'ALLIED_LE',name:'Allied / cooperative LE',capacity:1},
+    {actor:'REGULATORY',name:'Regulators (Treasury / OFAC)',capacity:2},
+    {actor:'PRIVATE_SECTOR',name:'Private sector / providers',capacity:1},
+    {actor:'MEDIA',name:'Investigative media',capacity:1},
+    {actor:'INDUCED_RUSSIAN_SIDE',name:'Induced Russian-side',capacity:1,enable:true}
+  ]};
+}
+function pl_coalMember(actor){ return pl_coalitionRoster().members.find(m=>m.actor===actor); }
+function pl_coalSet(){ return new Set(PLN.coalition&&PLN.coalition.length?PLN.coalition:['WESTERN_LE']); }
+function pl_baseCapacity(){ let cap=0; pl_coalSet().forEach(a=>{ const m=pl_coalMember(a); cap+=m?(m.capacity||1):1; }); return cap; }
+/* PASS 2 — Phobos Quarter (surge) + planned windows feed these two hooks. */
+const DEFAULT_WINDOW_TYPES=[
+  {id:'travel',name:'Travel window',grants_actor:'ALLIED_LE',capacity:1,note:'Operator leaves protected territory — arrests become possible this quarter.'},
+  {id:'political',name:'Political crack',grants_actor:'INDUCED_RUSSIAN_SIDE',capacity:1,note:'The krysha wavers — Russian-side predation can be induced this quarter.'},
+  {id:'funding',name:'Funding / task-force surge',capacity:3,note:'Extra resources land this quarter — pure capacity.'},
+  {id:'media',name:'Media moment',grants_actor:'MEDIA',capacity:1,note:'A leak or story breaks — the press channel opens this quarter.'}
+];
+function pl_windowTypes(){ const w=PACK._addon&&PACK._addon.windows; return (w&&w.types&&w.types.length)?w.types:DEFAULT_WINDOW_TYPES; }
+function pl_windowType(id){ return pl_windowTypes().find(x=>x.id===id); }
+function pl_surgeDefault(){ const w=PACK._addon&&PACK._addon.windows; return (w&&w.surge_default)||6; }
+function pl_windowsAt(t){ return (PLN.windows||[]).filter(w=>+w.quarter===+t).map(w=>pl_windowType(w.type)).filter(Boolean); }
+function pl_capacityAt(t){
+  let cap=pl_baseCapacity();
+  if(PLN.surgeQuarter && +PLN.surgeQuarter===+t) cap+=(PLN.surge||0);     // the Phobos Quarter
+  pl_windowsAt(t).forEach(w=>{ cap+=(w.capacity||0); });                   // window capacity
+  return cap;
+}
+function pl_actorsAt(t){
+  const set=new Set(pl_coalSet());
+  pl_windowsAt(t).forEach(w=>{ if(w.grants_actor) set.add(w.grants_actor); }); // window unlocks an actor this quarter
+  return set;
+}
+/* OGA authorization (the green-light): analyst-controlled — always-on toggle, or placed
+   per quarter as an "authorization" window. The heaviest OGA levers need it. */
+function pl_authAt(t){ return !!PLN.ogaAlwaysAuth || (PLN.windows||[]).some(w=>w.type==='authorization' && +w.quarter===+(t||1)); }
+/* a lever is usable only if its actor is at the table AND (if it needs one) authorization is live.
+   legacy levers with no actor are always allowed. */
+function pl_leverAllowed(action, t){ t=t||1;
+  if(action.actor && !pl_actorsAt(t).has(action.actor)) return false;
+  if(action.requires_auth && !pl_authAt(t)) return false;
+  return true;
+}
+function pl_leverBlockReason(action, t){ t=t||1;
+  if(action.actor && !pl_actorsAt(t).has(action.actor)) return {reason:'partner', need:action.actor};
+  if(action.requires_auth && !pl_authAt(t)) return {reason:'auth'};
+  return null;
+}
+function pl_campaignLen(){ return PLN.lengthQ || cfg('default_max_turns') || 8; }
+
+/* ---- THE EVALUATOR: one headless run of a plan against a board+world ---- */
+function pl_runOnce(mode, plan, world){
+  HEADLESS_EVENTS=[];
+  newGame(mode);
+  applyStartState(mode);
+  if(world && world.apply) world.apply(S);
+  S.maxTurns = pl_campaignLen();
+  const block=world&&world.block;
+  const byTurn={}; plan.steps.forEach(st=>{(byTurn[st.turn]=byTurn[st.turn]||[]).push(st);});
+  const flags={jur:[], afford:[], coal:[]}; let apSpent=0;
+  while(!S.ended && S.turn<=S.maxTurns){
+    const t=S.turn;
+    S.ap = pl_capacityAt(t);   // points this quarter come from the coalition, not a flat number
+    (byTurn[t]||[]).forEach(st=>{
+      const action=pl_actionById(st.actionId); if(!action) return;
+      const blk=pl_leverBlockReason(action, t);
+      if(blk){ flags.coal.push({id:st.actionId,turn:t,name:action.name,actor:action.actor,reason:blk.reason}); return; }
+      if(block && action.requires_jurisdiction_capability===block){ flags.jur.push({id:st.actionId,turn:t,name:action.name,msg:'capability unavailable in this world'}); return; }
+      const gate=jurisdictionGate(action, st.jurisId);
+      if(!gate.ok){ flags.jur.push({id:st.actionId,turn:t,name:action.name,msg:gate.msg}); return; }
+      if(S.ap < action.ap_cost){ flags.afford.push({id:st.actionId,turn:t,name:action.name}); return; }
+      apSpent += action.ap_cost; spendAction(action, st.jurisId);
+    });
+    endTurn();
+  }
+  return {grade:computeGrade(), outcome:S.hub.outcome, protection:S.hub.protection,
+    dims:Object.assign({},S.hub.dims), scores:computeScores(), macroAch:!!S.macro.achieved,
+    waisHigh:S.wais.some(w=>w.band==='HIGH'), waisBest:S.wais.reduce((m,w)=>Math.max(m,w.total),0),
+    substitution:!!S.hub.substitutionFired, rebrands:S.hub.rebrandCount, severPoints:S.hub.severPoints,
+    apSpent, flags, result:S.result};
+}
+
+/* ---- aggregate many runs into a distribution + KPI spread ---- */
+function pl_evalCell(mode, plan, world, runs){
+  const rs=[]; for(let i=0;i<runs;i++) rs.push(pl_runOnce(mode, plan, world));
+  const grades={S:0,A:0,B:0,C:0,F:0}, outc={BRAND_DEAD:0,DEGRADED:0,RECONSTITUTING:0,ACTIVE:0};
+  const acc={a:[],b:[],c:[]}; let sub=0, wHigh=0, rankSum=0, macro=0;
+  rs.forEach(r=>{ grades[r.grade]++; outc[r.outcome]=(outc[r.outcome]||0)+1;
+    acc.a.push(r.scores.a); acc.b.push(r.scores.b); acc.c.push(r.scores.c);
+    if(r.substitution) sub++; if(r.waisHigh) wHigh++; if(r.macroAch) macro++; rankSum+=GRADE_RANK[r.grade]; });
+  const stat=arr=>({mean:Math.round(arr.reduce((s,v)=>s+v,0)/arr.length), min:Math.min.apply(null,arr), max:Math.max.apply(null,arr)});
+  const modal=obj=>Object.keys(obj).reduce((m,k)=>obj[k]>obj[m]?k:m, Object.keys(obj)[0]);
+  return {runs, grades, outc, modalGrade:modal(grades), modalOutcome:modal(outc),
+    kpi:{a:stat(acc.a),b:stat(acc.b),c:stat(acc.c)}, subPct:sub/runs, waisHighPct:wHigh/runs, macroPct:macro/runs,
+    meanRank:rankSum/runs, apSpent:rs[0].apSpent, flags:rs[0].flags, sample:rs[0]};
+}
+
+/* ---- structural critique: static plan analysis vs the framework rules ---- */
+function pl_critique(plan, mode, cell, world){
+  const A=cfg('adaptation'), thr=A.high_threshold, sevThr=A.protection.sever_threshold, M=A.macro_two_of_three;
+  const structure=pl_structure(mode), closed=structure==='closed_hierarchy';
+  let baseProt=pl_baseProtection(mode); if(world&&world.id==='harden') baseProt='HARDENED';
+  const steps=plan.steps.slice().sort((x,y)=>x.turn-y.turn);
+  const dims={identity:0,trust:0,financial:0,infrastructure:0}; let totalSever=0, hasArrest=false;
+  let loudBeforeSever=false, runningSever=0;
+  steps.forEach(st=>{ const a=pl_actionById(st.actionId); if(!a) return; const ad=a.adaptation||{}; const d=ad.dimensions||{};
+    for(const k in d) dims[k]=(dims[k]||0)+d[k];
+    if(ad.removes_operator) hasArrest=true;
+    if(ad.loud && baseProt==='INTACT' && runningSever<sevThr) loudBeforeSever=true;
+    if(ad.severs_protection){ totalSever+=ad.severs_protection; runningSever+=ad.severs_protection; }
+  });
+  const out=[]; const add=(sev,text,rule,conf)=>out.push({sev,text,rule,conf});
+  const paired=dims.financial>0||dims.identity>0;
+  // pairing
+  if(dims.infrastructure>0 && !paired)
+    add('warn','Infrastructure pressure with no paired money or identity vector. The framework predicts reconstitution within ~90 days — a sinkhole or seizure alone never sticks.','infra_alone_fails','CONFIRMED');
+  else if(dims.infrastructure>0 && paired)
+    add('good','Infrastructure pressure is paired with a money/identity vector, so disruption is slowed rather than shrugged off.','trust_needs_pairing','CONFIRMED');
+  // protection / loud
+  if(baseProt==='HARDENED')
+    add('warn','Protection starts hardened — until it is severed, the state shields reconstitution and identity exposure cannot kill the brand. Sever first.','protection_reflex','CONFIRMED');
+  if(loudBeforeSever)
+    add('warn','A loud action (public attribution/indictment) lands while protection is still intact and unsevered. This hardens the krysha — the protection-reflex trap. Sever protection BEFORE going loud.','protection_reflex','CONFIRMED');
+  if(baseProt==='INTACT' && totalSever>0 && totalSever<sevThr)
+    add('info','Severing effort ('+totalSever+' pt) is below the threshold ('+sevThr+'). Protection is pressured but not severed, so it still shields reconstitution.','protection','CONFIRMED');
+  if(totalSever>=sevThr)
+    add('good','Severing effort reaches the threshold ('+totalSever+'/'+sevThr+') — protection can be cut, making disruption stick instead of bouncing back.','protection','CONFIRMED');
+  // identity vs structure
+  if(dims.identity>=thr && closed)
+    add('good','Identity exposure ≥ threshold ('+dims.identity+'/'+thr+') against a closed hierarchy: the brand-death pathway is open — internal trust collapses.','identity_kills_brands','CONFIRMED');
+  else if(dims.identity>=thr && !closed)
+    add('info','Identity exposure ≥ threshold, but this is an open franchise: exposure forces degraded survival, not brand death. Franchises bend; only closed hierarchies break.','franchises_bend_hierarchies_break','CONFIRMED');
+  else if(dims.identity>0)
+    add('info','Identity exposure ('+dims.identity+'/'+thr+') is below the brand-death threshold — no personnel-driven collapse from this plan alone.','identity_kills_brands','CONFIRMED');
+  // macro two-of-three
+  const conds=[dims.trust>=M.trust_cascade_point, (closed&&dims.identity>=thr), dims.financial>=M.financial_coordinated_point];
+  const nConds=conds.filter(Boolean).length;
+  if(nConds>=M.needed)
+    add('good','Reaches '+nConds+' of 3 macro conditions {broad trust cascade · brand dissolution · coordinated financial pressure} — an ecosystem-level move is in reach.','macro_needs_two_of_three','CONFIRMED');
+  else
+    add('info','Only '+nConds+' of '+M.needed+' macro conditions met — pressure stays localized; the ecosystem-level (two-of-three) move will not fire.','macro_needs_two_of_three','CONFIRMED');
+  // substitution (empirical)
+  if(cell.subPct>0.25)
+    add('warn','No successor pre-positioned: a proxy/rebrand absorbs capacity in '+Math.round(cell.subPct*100)+'% of runs, accelerating reconstitution.','substitution','ANALYST_INFERENCE');
+  // arrests / WAIS
+  if(hasArrest && cell.waisHighPct>0)
+    add('good','Arrest lands into prepared exposure — WAIS HIGH reached in '+Math.round(cell.waisHighPct*100)+'% of runs (only ever achieved once in reality, via coordination).','identity_kills_brands','ANALYST_INFERENCE');
+  else if(hasArrest)
+    add('info','An arrest is planned, but WAIS impact depends on the exposure built first — an arrest alone scores only MODERATE.','identity_kills_brands','CONFIRMED');
+  // coalition / authorization / jurisdiction / capacity
+  if(cell.flags.coal && cell.flags.coal.length){
+    const partnerBlk=cell.flags.coal.filter(f=>f.reason!=='auth'), authBlk=cell.flags.coal.filter(f=>f.reason==='auth');
+    if(partnerBlk.length){ const need=[...new Set(partnerBlk.map(f=>ACTOR_SHORT[f.actor]||f.actor))];
+      add('warn',partnerBlk.length+' lever(s) needed a partner not at your table and never fired ('+partnerBlk.map(f=>f.name).join(', ')+'). Add to the coalition: '+need.join(', ')+'.','coalition','CONFIRMED'); }
+    if(authBlk.length)
+      add('warn',authBlk.length+' OGA operation(s) were not authorized in their quarter and never fired ('+authBlk.map(f=>f.name).join(', ')+'). Flip OGA to always-authorized, or place a green-light window.','authorization','CONFIRMED');
+  }
+  if(cell.flags.jur.length)
+    add('warn','Jurisdiction gate blocked '+cell.flags.jur.length+' action(s): '+cell.flags.jur.map(f=>f.name).join(', ')+'. They never fired.','jurisdiction','CONFIRMED');
+  if(cell.flags.afford.length)
+    add('warn',cell.flags.afford.length+' action(s) exceeded the coalition’s points/quarter capacity and did not fire: '+cell.flags.afford.map(f=>f.name).join(', ')+'. Add partners for more capacity, or spread them across quarters.','resource_budget','CONFIRMED');
+  if(!steps.length)
+    add('info','Empty plan — nothing is committed, so the board simply runs to the clock.','','CONFIRMED');
+  return out;
+}
+
+/* ---- run the whole sweep (sets HEADLESS, restores live state after) ---- */
+function pl_run(){
+  const savedS=S, savedHE=HEADLESS, savedHEV=HEADLESS_EVENTS;
+  HEADLESS=true;
+  try{
+    const mode=pl_boardMode(PLN.baseBoard), runs=PLN.runs;
+    if(PLN.mode==='compare'){
+      const worlds=PL_WORLDS(), base=worlds[0];
+      const cells=PLN.plans.map(p=>{ const cell=pl_evalCell(mode,p,base,runs);
+        return {label:p.name, sublabel:pl_boardName(PLN.baseBoard), cell, critique:pl_critique(p,mode,cell,base), legit:pl_planLegit(p,mode,base)}; });
+      PLN.results={mode:'compare', board:PLN.baseBoard, runs, cells, verdict:pl_compareVerdict(cells)};
+    } else { // robust
+      const plan=PLN.plans[PLN.activePlan]||PLN.plans[0];
+      const cells=PL_WORLDS().map(w=>{ const cell=pl_evalCell(mode,plan,w,runs);
+        return {label:w.name, sublabel:w.note, world:w, cell, legit:pl_planLegit(plan,mode,w)}; });
+      const baseCrit=pl_critique(plan,mode,cells[0].cell,PL_WORLDS()[0]);
+      PLN.results={mode:'robust', board:PLN.baseBoard, runs, plan:plan.name, cells, critique:baseCrit, verdict:pl_robustVerdict(cells)};
+    }
+  } finally { S=savedS; HEADLESS=savedHE; HEADLESS_EVENTS=savedHEV; }
+  PLN.view='results'; pl_renderResults(); pl_syncView();
+}
+function pl_holdPct(cell){ return (cell.grades.S+cell.grades.A+cell.grades.B)/cell.runs; }
+function pl_isHold(cell){ return pl_holdPct(cell)>=0.5; }  // degraded-survival-or-better in the majority of runs
+function pl_compareVerdict(cells){
+  if(cells.length<2) return '';
+  const ranked=cells.map(c=>({name:c.label, r:c.cell.meanRank})).sort((a,b)=>b.r-a.r);
+  const top=ranked[0], gap=top.r-ranked[1].r;
+  const word=gap>0.6?'clearly the stronger course':gap>0.2?'the stronger course':'marginally ahead — the plans are close';
+  return '<b>'+top.name+'</b> is '+word+' on this board (higher mean model-consistency across runs). This ranks structural behaviour, not real-world odds.';
+}
+function pl_robustVerdict(cells){
+  const holds=cells.filter(c=>pl_isHold(c.cell)).length, n=cells.length;
+  const fragile=cells.filter(c=>!pl_isHold(c.cell)).map(c=>c.label);
+  let s='The plan imposes degraded survival or better in <b>'+holds+' of '+n+'</b> stressed worlds.';
+  if(holds===n) s+=' It is robust — it survives being wrong about the world.';
+  else if(holds===0) s+=' It is brittle — it collapses under every stress tested.';
+  else s+=' It is conditionally robust; it collapses into reconstitution under: '+fragile.join(', ')+'.';
+  return s;
+}
+
+/* ================== MODE 3 — CONCURRENT OPERATIONS (portfolio) ==================
+   The one mode that needs new engine capability (spec §6). Built on the serial
+   evaluator, it adds three things:
+   (1) MULTI-OPERATION RESOLUTION — several operations merged into one shared game
+       state, so their dimensional pressure compounds and the macro two-of-three
+       condition can light up across operations a serial run would miss;
+   (2) a shared finite RESOURCE BUDGET the whole portfolio draws from — without it the
+       tool would always recommend doing everything; with it, adding an operation can
+       starve the others, which the ledger reports;
+   (3) INTERACTION ACCOUNTING — the portfolio is compared to each operation run solo to
+       classify the joint result as COMPOUND / COLLIDE / INTERFERE, plus static
+       same-node/same-turn collision detection. Hardest to validate — labeled as such. */
+function pl_portfolioBudgetDefault(){ const p=cfg('planning'); return (p&&p.portfolio_budget)||18; }
+
+function pl_collisions(ops){
+  const map={}; // "turn|node" -> Set(opIndex)  : nodes contested by >1 op in the same turn
+  ops.forEach((op,oi)=>op.steps.forEach(st=>{ const a=pl_actionById(st.actionId); if(!a) return;
+    (a.targets||[]).forEach(tid=>{ const k=st.turn+'|'+tid; (map[k]=map[k]||new Set()).add(oi); }); }));
+  const out=[];
+  Object.keys(map).forEach(k=>{ const s=map[k]; if(s.size>1){ const p=k.split('|');
+    out.push({turn:+p[0], node:p[1], nodeName:L.nameOf(p[1]), ops:[...s]}); } });
+  return out.sort((a,b)=>a.turn-b.turn);
+}
+
+/* one headless run of the whole portfolio against one board+world. Resources are the
+   per-quarter coalition capacity (+ surge / windows); operations compete for it. */
+function pl_runPortfolioOnce(mode, ops, world){
+  HEADLESS_EVENTS=[];
+  newGame(mode); applyStartState(mode); if(world&&world.apply) world.apply(S);
+  S.maxTurns = pl_campaignLen();
+  const block=world&&world.block;
+  const merged=[]; ops.forEach((op,oi)=>op.steps.forEach(st=>merged.push({op:oi, actionId:st.actionId, turn:st.turn, jurisId:st.jurisId})));
+  const byTurn={}; merged.forEach(m=>{(byTurn[m.turn]=byTurn[m.turn]||[]).push(m);});
+  let poolSpent=0; const starved=[]; const collided=[]; const firedByOp=ops.map(()=>0); const apByOp=ops.map(()=>0);
+  while(!S.ended && S.turn<=S.maxTurns){
+    const t=S.turn;
+    S.ap = pl_capacityAt(t);   // per-quarter capacity: coalition + surge (Phobos Quarter) + windows
+    const struck={}; // nodeId -> first op that struck it THIS turn (for cross-op collision)
+    (byTurn[t]||[]).forEach(m=>{
+      const a=pl_actionById(m.actionId); if(!a) return;
+      const blk=pl_leverBlockReason(a, t);
+      if(blk){ starved.push({op:m.op, name:a.name, turn:t, reason:blk.reason==='auth'?'auth':'coalition'}); return; }
+      if(block && a.requires_jurisdiction_capability===block){ starved.push({op:m.op,name:a.name,turn:t,reason:'jurisdiction'}); return; }
+      const gate=jurisdictionGate(a, m.jurisId); if(!gate.ok){ starved.push({op:m.op,name:a.name,turn:t,reason:'jurisdiction'}); return; }
+      if(S.ap < a.ap_cost){ starved.push({op:m.op,name:a.name,turn:t,reason:'throughput'}); return; }
+      // cross-op collision: every target already struck this turn by a DIFFERENT op → redundant.
+      // It still burns this quarter's capacity but adds no new structural pressure.
+      const tgts=a.targets||[];
+      const anyFresh=tgts.some(tid=>struck[tid]===undefined);
+      const blockedByOther=tgts.some(tid=>struck[tid]!==undefined && struck[tid]!==m.op);
+      if(tgts.length && !anyFresh && blockedByOther){ S.ap-=a.ap_cost; poolSpent+=a.ap_cost; apByOp[m.op]+=a.ap_cost; collided.push({op:m.op,name:a.name,turn:t}); return; }
+      poolSpent+=a.ap_cost; firedByOp[m.op]++; apByOp[m.op]+=a.ap_cost;
+      tgts.forEach(tid=>{ if(struck[tid]===undefined) struck[tid]=m.op; });
+      spendAction(a, m.jurisId);
+    });
+    endTurn();
+  }
+  return {grade:computeGrade(), outcome:S.hub.outcome, scores:computeScores(), macroAch:!!S.macro.achieved,
+    waisHigh:S.wais.some(w=>w.band==='HIGH'), substitution:!!S.hub.substitutionFired,
+    poolSpent, starved, collided, firedByOp, apByOp, result:S.result};
+}
+
+function pl_evalPortfolio(mode, ops, world, runs){
+  const rs=[]; for(let i=0;i<runs;i++) rs.push(pl_runPortfolioOnce(mode, ops, world));
+  const grades={S:0,A:0,B:0,C:0,F:0}, outc={BRAND_DEAD:0,DEGRADED:0,RECONSTITUTING:0,ACTIVE:0};
+  const acc={a:[],b:[],c:[]}; let macro=0, sub=0, wHigh=0, rankSum=0;
+  rs.forEach(r=>{ grades[r.grade]++; outc[r.outcome]=(outc[r.outcome]||0)+1;
+    acc.a.push(r.scores.a); acc.b.push(r.scores.b); acc.c.push(r.scores.c);
+    if(r.macroAch) macro++; if(r.substitution) sub++; if(r.waisHigh) wHigh++; rankSum+=GRADE_RANK[r.grade]; });
+  const stat=arr=>({mean:Math.round(arr.reduce((s,v)=>s+v,0)/arr.length), min:Math.min.apply(null,arr), max:Math.max.apply(null,arr)});
+  const modal=obj=>Object.keys(obj).reduce((m,k)=>obj[k]>obj[m]?k:m, Object.keys(obj)[0]);
+  const s0=rs[0]; // starvation/budget are deterministic (don't depend on backfire) → take run 0
+  return {runs, grades, outc, modalGrade:modal(grades), modalOutcome:modal(outc),
+    kpi:{a:stat(acc.a),b:stat(acc.b),c:stat(acc.c)}, macroPct:macro/runs, subPct:sub/runs, waisHighPct:wHigh/runs,
+    meanRank:rankSum/runs, poolSpent:s0.poolSpent, apSpent:s0.poolSpent, starved:s0.starved, collided:s0.collided, firedByOp:s0.firedByOp, apByOp:s0.apByOp};
+}
+
+function pl_portfolioVerdict(combined, solos, collisions){
+  const bestSolo=solos.reduce((m,s)=>Math.max(m,s.meanRank),0);
+  const cr=combined.meanRank, margin=0.25;
+  const combinedMacro=combined.macroPct>=0.5, anySoloMacro=solos.some(s=>s.macroPct>=0.5);
+  const jointMacro=combinedMacro && !anySoloMacro;
+  let tag, body;
+  if(jointMacro){
+    // the strongest, least ambiguous synergy: two-of-three lights up only when run together
+    tag='COMPOUND';
+    body='Run together, the operations <b>compound</b>: jointly they satisfy the macro two-of-three condition that no single operation reaches alone — the ecosystem-level move a serial run would miss. Portfolio model-consistency '+cr.toFixed(2)+'/4 against best-single '+bestSolo.toFixed(2)+'.';
+  } else if(cr < bestSolo-margin){
+    tag='INTERFERE';
+    body='Run together, the operations <b>interfere</b>: the portfolio ('+cr.toFixed(2)+'/4) underperforms the best single operation run alone ('+bestSolo.toFixed(2)+'). One operation’s loud/backfire effect is hardening protection and shielding the hub against another — they work against each other. Sequence them, don’t stack them.';
+  } else if(collisions.length && cr < bestSolo+0.5){
+    // genuine same-node overlap with no strong synergy → diminishing returns
+    tag='COLLIDE';
+    body='The operations <b>collide</b>: '+collisions.length+' same-node, same-turn overlap'+(collisions.length>1?'s':'')+' ('+collisions.slice(0,3).map(c=>c.nodeName+' T'+c.turn).join(', ')+(collisions.length>3?'…':'')+') mean two operations pay for the same effect. Marginal return over the best single operation is small ('+cr.toFixed(2)+' vs '+bestSolo.toFixed(2)+') — diminishing returns.';
+  } else if(cr>=bestSolo+margin){
+    tag='COMPOUND';
+    body='Run together, the operations <b>compound</b>: the portfolio reaches model-consistency '+cr.toFixed(2)+'/4, above the best single operation alone ('+bestSolo.toFixed(2)+'). Their pressure stacks rather than cancels.';
+  } else {
+    tag='ADDITIVE';
+    body='The operations are roughly <b>additive</b>: combined model-consistency '+cr.toFixed(2)+'/4 against best-single '+bestSolo.toFixed(2)+', with no strong compounding or collision detected.';
+  }
+  const capBinds=combined.starved.filter(s=>s.reason==='throughput').length;
+  if(capBinds) body+=' <span style="color:var(--warn)">Capacity binds: '+capBinds+' action(s) exceeded the quarter’s points — concentrate a Phobos Quarter or widen the coalition.</span>';
+  return {tag, body};
+}
+
+function pl_runPortfolio(){
+  const savedS=S, savedHE=HEADLESS, savedHEV=HEADLESS_EVENTS; HEADLESS=true;
+  try{
+    const mode=pl_boardMode(PLN.baseBoard), runs=PLN.runs, world=PL_WORLDS()[0];
+    const combined=pl_evalPortfolio(mode, PLN.ops, world, runs);
+    const solos=PLN.ops.map(op=>pl_evalCell(mode, op, world, runs));   // each op alone
+    const collisions=pl_collisions(PLN.ops);
+    PLN.results={mode:'portfolio', board:PLN.baseBoard, runs, combined, solos, collisions,
+      ops:PLN.ops.map(o=>o.name), verdict:pl_portfolioVerdict(combined, solos, collisions), legit:pl_planLegitMulti(PLN.ops, mode, world)};
+  } finally { S=savedS; HEADLESS=savedHE; HEADLESS_EVENTS=savedHEV; }
+  PLN.view='results'; pl_renderResults(); pl_syncView();
+}
+
+/* ============================== PLANNER RENDERING ============================== */
+function pl_introHtml(){
+  const step=(n,t)=>'<div class="pl-howstep"><span class="n">'+n+'</span><span>'+t+'</span></div>';
+  const mode=(tag,t)=>'<div class="m"><span class="tag">'+tag+'</span>'+t+'</div>';
+  return '<h2>The Planner</h2>'
+    +'<p class="lede">You bring a <b>plan</b> — a sequence of moves against the ransomware ecosystem — and the Planner runs it hundreds of times through the same model that powers the KRYSHA game. It does <b>not</b> tell you whether you “win.” It shows how the plan <b>behaves</b>: the range of likely outcomes, where it breaks the framework’s structural rules, and what it depends on being true.</p>'
+    +'<h3>How to use it</h3><div class="pl-howsteps">'
+    +step(1,'<b>Pick a starting board</b> — the situation you’re planning against (today’s live ecosystem, or a historical case like LockBit or Conti).')
+    +step(2,'<b>Click a node on the map</b> — a part of the ecosystem (leak sites, the protection layer, exchanges…). The number on each node is how many actions you can take against it.')
+    +step(3,'<b>Click an action</b> to add it to your plan, and use the −/+ to set which turn it happens.')
+    +step(4,'<b>Hit Evaluate.</b> You’ll get a spread of likely outcomes, a plain-language read on your plan, and a model-consistency grade.')
+    +'</div><h3>Three ways to use it</h3><div class="pl-modegrid">'
+    +mode('COMPARE PLANS','Build two or more plans and see which <b>course of action</b> is structurally stronger on the same board.')
+    +mode('STRESS ONE PLAN','Take one plan and test it across four “what if we’re wrong” worlds — is it <b>robust or brittle?</b>')
+    +mode('CONCURRENT OPS','Run several operations at once under a shared budget — do they <b>compound, collide, or interfere?</b>')
+    +'</div>'
+    +'<div class="pl-intro-note"><b>This is decision support, not a forecast.</b> Every result is “consistency with known structural dynamics,” calibrated to about seven real historical cases — never a probability of real-world success. Reopen this guide any time with the “What is this?” button, top-right.</div>'
+    +'<button class="pl-intro-go" id="pl-intro-go">Got it — start planning ▸</button>';
+}
+function pl_showIntro(){
+  document.getElementById('pl-intro-card').innerHTML=pl_introHtml();
+  document.getElementById('pl-intro').classList.remove('hidden');
+  document.getElementById('pl-intro-go').onclick=pl_hideIntro;
+}
+function pl_hideIntro(){ document.getElementById('pl-intro').classList.add('hidden'); try{localStorage.setItem('krysha_planner_seen','1');}catch(e){} }
+
+function openPlanner(){
+  if(!PLN.plans) PLN.plans=[pl_defaultPlan(1)];
+  if(!PLN.ops) PLN.ops=[pl_defaultOp(1), pl_defaultOp(2)];
+  if(PLN.budget==null) PLN.budget=pl_portfolioBudgetDefault();
+  if(PLN.activeTurn==null) PLN.activeTurn=1;
+  if(!PLN.coalition) PLN.coalition=(pl_coalitionRoster().default||['WESTERN_LE']).slice();
+  if(PLN.lengthQ==null) PLN.lengthQ=cfg('default_max_turns')||8;
+  if(PLN.surge==null) PLN.surge=pl_surgeDefault();
+  if(PLN.surgeQuarter===undefined) PLN.surgeQuarter=null;   // null = no Phobos Quarter set
+  if(!PLN.windows) PLN.windows=[];
+  if(PLN.ogaAlwaysAuth==null) PLN.ogaAlwaysAuth=true;       // green-light always on by default; can gate by window
+  PLN.view='build';
+  document.getElementById('title').classList.add('hidden');
+  document.getElementById('planner').classList.remove('hidden');
+  if(!PLN.wired){
+    document.getElementById('pl-exit').onclick=closePlanner;
+    document.getElementById('pl-guide').onclick=pl_showIntro;
+    document.getElementById('pl-intro').onclick=e=>{ if(e.target.id==='pl-intro') pl_hideIntro(); }; // click backdrop to dismiss
+    document.querySelectorAll('#pl-modetabs button').forEach(b=>{ if(b.classList.contains('locked')) return;
+      b.onclick=()=>{ PLN.mode=b.dataset.mode; PLN.results=null; PLN.view='build'; PLN.activePlan=0;
+        document.querySelectorAll('#pl-modetabs button').forEach(x=>x.classList.toggle('active',x===b));
+        pl_renderBuilder(); pl_renderResults(); pl_syncView(); }; });
+    PLN.wired=true;
+  }
+  pl_renderBuilder(); pl_renderResults(); pl_syncView();
+  try{ if(!localStorage.getItem('krysha_planner_seen')) pl_showIntro(); }catch(e){}
+}
+function closePlanner(){
+  document.getElementById('planner').classList.add('hidden');
+  document.getElementById('title').classList.remove('hidden');
+  buildTitle();
+}
+
+/* the clickable pipeline map — columns by layer, nodes with an action-count badge */
+function pl_mapHtml(){
+  const tcount=id=>PACK.actions.filter(a=>(a.targets||[]).includes(id)).length;
+  const byLayer={}; Object.keys(L.layerMap).forEach(id=>{const lid=String(L.layerMap[id]); (byLayer[lid]=byLayer[lid]||[]).push(id);});
+  let cols='';
+  (PACK.board_layout.layers||[]).forEach(ly=>{
+    const ids=byLayer[String(ly.id)]||[]; if(!ids.length) return;
+    const col=ly.color||'#888';
+    let cells='';
+    ids.forEach(id=>{ const cnt=tcount(id); const sel=PLN.selNode===id;
+      const tip=cnt?(cnt+' action'+(cnt>1?'s':'')+' available against this node'):'No action in the model targets this node — shown for context only';
+      cells+='<button class="pl-node'+(cnt?'':' dim')+(sel?' sel':'')+'" '+(cnt?'data-node="'+id+'"':'disabled')+' style="--lc:'+col+'" title="'+tip+'">'
+        +'<span class="pl-node-nm">'+L.shortOf(id)+'</span>'+(cnt?'<span class="pl-node-cnt">'+cnt+'</span>':'')+'</button>';
+    });
+    cols+='<div class="pl-col"><div class="pl-col-h" style="color:'+col+'">'+ly.name+'</div>'+cells+'</div>';
+  });
+  return '<div class="pl-map">'+cols+'</div>';
+}
+/* action chips for the selected node + the turn the action will land on */
+function pl_chipsHtml(){
+  if(!PLN.selNode) return '<div class="pl-chips-empty">▸ Click a node in the map above to see the actions available against it.</div>';
+  const acts=PACK.actions.filter(a=>(a.targets||[]).includes(PLN.selNode));
+  const maxT=pl_campaignLen();
+  const head='<div class="pl-chips-head"><b>'+L.nameOf(PLN.selNode)+'</b> — kick an action off in '
+     +'<span class="pl-turnpick"><button data-act="tdn" title="earlier">−</button><b id="pl-tval">Q'+PLN.activeTurn+'</b><button data-act="tup" title="later">+</button></span>'
+     +' <span style="color:var(--muted);font-size:12px">(each then takes effect after its own delay)</span></div>';
+  const chips=acts.map(a=>{
+    const band=a.legitimacy?legitNorm(a.legitimacy.band):null;
+    const bc=band?LEGIT_COLOR[band]:'#7a93ad';
+    const act=a.actor?(ACTOR_SHORT[a.actor]||a.actor):'';
+    const land=PLN.activeTurn+(a.lag_turns||0);
+    const blk=pl_leverBlockReason(a, PLN.activeTurn);
+    const allowed=!blk;
+    const lockTxt = blk ? (blk.reason==='auth' ? 'needs OGA authorization this quarter' : 'needs '+(ACTOR_SHORT[a.actor]||a.actor)+' in coalition') : '';
+    const overrun=land>maxT;
+    const landTxt = (a.lag_turns||0)===0 ? 'takes effect Q'+land+' (same quarter)' : 'takes effect Q'+land+' ('+a.lag_turns+'-quarter delay)';
+    const tip=((a.effect||'')+(band?'  ·  Legitimacy: '+band+(a.legitimacy.note?'. '+a.legitimacy.note:''):'')
+      +(blk?'  ·  LOCKED: '+lockTxt:'')).replace(/"/g,'&quot;');
+    return '<button class="pl-chip'+(allowed?'':' locked')+'" '+(allowed?'data-add="'+a.id+'"':'disabled')+' style="--vc:'+pl_vectorColor(a.vector)+'" title="'+tip+'">'
+      +'<span class="pl-chip-nm">'+a.name+(allowed?'':' <span class="lock">🔒</span>')+'</span>'
+      +'<span class="pl-chip-meta">'+a.ap_cost+' pt'+(a.ap_cost===1?'':'s')+' · '+landTxt+(overrun?' <span style="color:var(--bad)">· after campaign ends</span>':'')+' · backfire '+a.backfire_risk+'</span>'
+      +(band?'<span class="pl-chip-legit"><span class="dot" style="background:'+bc+'"></span>'+band+(act?' · '+act:'')+'</span>':'')
+      +(blk?'<span class="pl-chip-lockmsg">'+lockTxt+'</span>':'')
+      +'</button>';
+  }).join('');
+  return head+'<div class="pl-chips-grid">'+chips+'</div>';
+}
+/* the active plan's committed actions, as a turn-ordered timeline */
+function pl_timelineHtml(plan, apMax){
+  if(!plan.steps.length) return '<div class="pl-empty">No actions yet — click a node in the map, then an action.</div>';
+  const maxT=pl_campaignLen();
+  const sorted=plan.steps.map((s,i)=>({s,i})).sort((x,y)=>x.s.turn-y.s.turn);
+  let h='';
+  sorted.forEach(({s,i})=>{ const a=pl_actionById(s.actionId); if(!a) return;
+    const land=s.turn+(a.lag_turns||0); const lagTxt=(a.lag_turns||0)>0?' <span class="pl-land">→ lands Q'+land+(land>maxT?' ⚠':'')+'</span>':'';
+    h+='<div class="pl-step"><span class="pl-turn">Q'+s.turn+'</span><span class="pl-vchip" style="background:'+pl_vectorColor(a.vector)+'"></span>'
+      +'<span class="pl-name" title="'+a.name+'">'+a.name+lagTxt+'</span>'
+      +(s.jurisId?'<span class="pl-jur">'+(L.jurisById[s.jurisId]?L.jurisById[s.jurisId].name:s.jurisId)+'</span>':'')
+      +'<button class="pl-x" data-act="delstep" data-si="'+i+'">✕</button></div>'; });
+  const byT={}; plan.steps.forEach(s=>{ const a=pl_actionById(s.actionId); if(a) byT[s.turn]=(byT[s.turn]||0)+a.ap_cost; });
+  const over=Object.keys(byT).filter(t=>byT[t]>apMax);
+  if(Object.keys(byT).length) h+='<div class="pl-ap'+(over.length?' over':'')+'">Points/quarter (coalition gives '+apMax+'): '+Object.keys(byT).sort((a,b)=>a-b).map(t=>'Q'+t+' '+byT[t]+'/'+apMax).join('  ·  ')+(over.length?'  — over capacity, some won’t fire':'')+'</div>';
+  return h;
+}
+
+function pl_lenLabel(q){ const y=q/4; return q+' quarters · '+(Number.isInteger(y)?y:y.toFixed(1))+' yr'+(y===1?'':'s'); }
+/* Phobos Quarter (surge) + planned windows + a capacity-by-quarter strip */
+function pl_surgeWindowsHtml(){
+  const maxT=pl_campaignLen();
+  const qOpts=sel=>{ let o=''; for(let q=1;q<=maxT;q++) o+='<option value="'+q+'"'+(+sel===q?' selected':'')+'>Q'+q+'</option>'; return o; };
+  let h='<div class="pl-campaign2">';
+  // Phobos Quarter (surge)
+  h+='<div class="pl-camp-block"><label>⚡ Phobos Quarter (Surge)</label>'
+    +'<div class="pl-surge-row"><select id="pl-surge-q"><option value="">— off —</option>'+qOpts(PLN.surgeQuarter)+'</select>'
+    +'<span class="pl-surge-amt">+<input type="number" id="pl-surge-amt" min="0" max="24" value="'+PLN.surge+'"> pts</span></div>'
+    +'<div class="pl-camp-hint">A one-quarter capacity surge — a coordinated push. Drop it on a window for the full Phobos play.</div></div>';
+  // windows
+  h+='<div class="pl-camp-block grow"><label>🪟 Planned windows — openings you time into</label>';
+  h+='<div class="pl-win-add"><select id="pl-win-type">'+pl_windowTypes().map(w=>'<option value="'+w.id+'">'+w.name+(w.grants_actor?' (unlocks '+(ACTOR_SHORT[w.grants_actor]||w.grants_actor)+')':'')+' · +'+(w.capacity||0)+'</option>').join('')+'</select>'
+    +' in <select id="pl-win-q">'+qOpts()+'</select> <button class="pl-win-addbtn" id="pl-win-add">＋ place</button></div>';
+  if(PLN.windows&&PLN.windows.length){
+    h+='<div class="pl-win-list">'+PLN.windows.slice().sort((a,b)=>a.quarter-b.quarter).map(w=>{ const ty=pl_windowType(w.type)||{}; const idx=PLN.windows.indexOf(w);
+      return '<span class="pl-win-chip" title="'+(ty.note||'').replace(/"/g,'&quot;')+'">Q'+w.quarter+' · '+ty.name+(ty.grants_actor?' 🔓':'')+' +'+(ty.capacity||0)+'<button class="pl-win-x" data-delwin="'+idx+'">✕</button></span>'; }).join('')+'</div>';
+  } else h+='<div class="pl-camp-hint">None placed. A window unlocks a partner’s levers (and adds capacity) for one quarter — e.g. a travel window opens arrests.</div>';
+  // OGA authorization (the green-light) — only when OGA is at the table
+  if(pl_coalSet().has('OGA')){
+    h+='<label class="pl-ogachk"><input type="checkbox" id="pl-oga-always"'+(PLN.ogaAlwaysAuth?' checked':'')+'> ⬢ OGA always authorized</label>'
+      +'<div class="pl-camp-hint" style="margin-top:2px">'+(PLN.ogaAlwaysAuth?'The heaviest OGA operations are green-lit every quarter.':'Gated — place “OGA authorization (green-light)” windows above to authorize specific quarters.')+'</div>';
+  }
+  h+='</div></div>';
+  // capacity-by-quarter strip
+  h+='<div class="pl-capstrip"><span class="lbl">Capacity / quarter →</span>';
+  for(let q=1;q<=maxT;q++){ const cap=pl_capacityAt(q); const surge=+PLN.surgeQuarter===q; const wins=pl_windowsAt(q); const hot=surge||wins.length;
+    h+='<span class="pl-capcell'+(hot?' hot':'')+'" title="Q'+q+': '+cap+' pts'+(surge?' · Phobos surge +'+PLN.surge:'')+(wins.length?' · '+wins.map(w=>w.name).join(', '):'')+'">Q'+q+'<b>'+cap+'</b>'+(surge?'<span class="m">⚡</span>':'')+(wins.length?'<span class="m">🪟</span>':'')+'</span>'; }
+  h+='</div>';
+  return h;
+}
+function pl_renderBuilder(){
+  const root=document.getElementById('pl-builder'); const maxT=pl_campaignLen(), apMax=pl_baseCapacity();
+  const portfolio=PLN.mode==='portfolio';
+  const list = portfolio ? PLN.ops : PLN.plans;
+  if(PLN.activePlan>=list.length) PLN.activePlan=0;
+  if(PLN.activeTurn==null) PLN.activeTurn=1;
+  const active = list[PLN.activePlan] || list[0];
+  const pickable = portfolio || PLN.mode==='compare';
+
+  // Board menu: sandbox + historical back-tests + (folded in) current-ops live-actor boards.
+  // pl_boardMode() already resolves ids from PACK.candidate_scenarios_current.
+  const curOps=(PACK.candidate_scenarios_current&&PACK.candidate_scenarios_current.scenarios)||[];
+  let boardOpts='<option value="sandbox">Sandbox · live 2026 board</option>';
+  boardOpts+='<optgroup label="Historical back-tests">'
+    +PACK.scenarios.map(s=>'<option value="'+s.id+'">'+s.name+' → '+s.target+'</option>').join('')+'</optgroup>';
+  if(curOps.length) boardOpts+='<optgroup label="Current ops · live actor, open outcome">'
+    +curOps.map(s=>'<option value="'+s.id+'">'+s.name+' → '+s.target+'</option>').join('')+'</optgroup>';
+  const runLbl=()=>portfolio?'▸ Evaluate portfolio':PLN.mode==='robust'?'▸ Stress-test ('+PLN.runs+'×4 worlds)':'▸ Evaluate ('+PLN.runs+' runs)';
+
+  // per-mode "what am I doing here" banner
+  const exp={
+    compare:{ico:'⚖️', t:'<b>Compare plans.</b> Build two or more plans, then see which course of action is structurally stronger on the same board.'},
+    robust:{ico:'🛡️', t:'<b>Stress one plan.</b> Build one plan; the Planner tests it across four “what if we’re wrong about the world” cases to see if it holds up or collapses.'},
+    portfolio:{ico:'🔀', t:'<b>Concurrent operations.</b> Build several operations that run at once under one shared budget; the Planner shows whether they compound, collide, or interfere.'}
+  }[PLN.mode];
+  let html='<div class="pl-explain"><span class="ico">'+exp.ico+'</span><span class="tx">'+exp.t
+    +'<span class="steps"><br>To build: <b>click a node on the map → click an action → Evaluate.</b></span> &nbsp;<a id="pl-explain-guide">What is this? ↗</a></span></div>';
+
+  // toolbar
+  html+='<div class="pl-toolbar">';
+  html+='<div class="pl-tool"><label>Starting board</label><select id="pl-board">'+boardOpts+'</select></div>';
+  html+='<div class="pl-tool runs"><label>Runs · variance</label><div class="pl-runs-row"><input type="range" id="pl-runs" min="20" max="300" step="20" value="'+PLN.runs+'"><span class="pl-runs-val" id="pl-runs-val">'+PLN.runs+'</span></div></div>';
+  html+='<div class="pl-tool-right"><button class="pl-reset" id="pl-reset" title="Clear everything and start over">↺ Reset</button><button class="pl-run" id="pl-run">'+runLbl()+'</button></div>';
+  html+='</div>';
+
+  // Campaign setup — how long, and who's at the table (capacity comes from the coalition)
+  html+='<div class="pl-campaign">';
+  html+='<div class="pl-camp-block"><label>Campaign length</label><div class="pl-runs-row">'
+    +'<input type="range" id="pl-length" min="4" max="16" step="1" value="'+PLN.lengthQ+'"><span class="pl-runs-val" id="pl-length-val">'+pl_lenLabel(PLN.lengthQ)+'</span></div></div>';
+  html+='<div class="pl-camp-block grow"><label>Coalition — <b style="color:var(--accent)">'+pl_baseCapacity()+' points / quarter</b> · click to add or drop partners</label><div class="pl-coal">';
+  { const _mem=pl_coalitionRoster().members, _allOn=_mem.length>0&&_mem.every(m=>pl_coalSet().has(m.actor));
+    html+='<button class="pl-coal-chip all'+(_allOn?' on':'')+'" id="pl-coal-all" title="Add every partner to the table — see the full ceiling of what is possible with everyone in. Click again to reset.">✦ '+(_allOn?'All in':'All')+'</button>'; }
+  pl_coalitionRoster().members.forEach(m=>{ const on=pl_coalSet().has(m.actor);
+    html+='<button class="pl-coal-chip'+(on?' on':'')+'" data-coal="'+m.actor+'" title="'+(m.note||'').replace(/"/g,'&quot;')+'"><span class="cap">+'+(m.capacity||1)+'</span>'+m.name+(m.enable?' ⚠':'')+'</button>'; });
+  html+='</div></div>';
+  html+='</div>';
+  html+=pl_surgeWindowsHtml();
+
+  // which plan/op am I building (compare + portfolio)
+  if(pickable){
+    html+='<div class="pl-pills"><span class="lbl">'+(portfolio?'Building op:':'Building plan:')+'</span>';
+    list.forEach((p,i)=>{ html+='<button class="pl-pill'+(i===PLN.activePlan?' active':'')+'" data-pill="'+i+'">'+p.name
+        +(list.length>1?'<span class="pl-pill-x" data-delpill="'+i+'">✕</span>':'')+'</button>'; });
+    if(list.length<4) html+='<button class="pl-pill add" id="pl-add-'+(portfolio?'op':'plan')+'">＋ '+(portfolio?'operation':'plan')+'</button>';
+    html+='</div>';
+  }
+
+  // the map + chips + timeline
+  html+='<div class="pl-maphint">▸ Click a node to see what you can do to it, then click an action to add it'+(pickable?' to <b>'+active.name+'</b>':'')+'. Badges show how many actions target each node.</div>';
+  html+=pl_mapHtml();
+  html+='<div class="pl-maplegend"><span class="lg-on">●</span> coloured node + number = actions you can take against it · <span class="lg-off">●</span> dimmed = part of the ecosystem but no action available in the model</div>';
+  html+='<div class="pl-chips" id="pl-chips">'+pl_chipsHtml()+'</div>';
+  html+='<div class="pl-plan-panel"><input class="pl-plan-rename" data-act="rename" value="'+active.name.replace(/"/g,'&quot;')+'">'
+      +'<div class="pl-timeline" id="pl-timeline">'+pl_timelineHtml(active, apMax)+'</div></div>';
+  root.innerHTML=html;
+
+  // wire — toolbar
+  const boardSel=document.getElementById('pl-board'); boardSel.value=PLN.baseBoard; boardSel.onchange=()=>{PLN.baseBoard=boardSel.value;};
+  const runEl=document.getElementById('pl-runs'); runEl.oninput=()=>{PLN.runs=+runEl.value; document.getElementById('pl-runs-val').textContent=PLN.runs; document.getElementById('pl-run').textContent=runLbl();};
+  const budEl=document.getElementById('pl-budget'); if(budEl) budEl.oninput=()=>{ PLN.budget=+budEl.value; document.getElementById('pl-budget-val').textContent=PLN.budget+' pts'; };
+  const lenEl=document.getElementById('pl-length'); if(lenEl){ lenEl.oninput=()=>{ document.getElementById('pl-length-val').textContent=pl_lenLabel(+lenEl.value); }; lenEl.onchange=()=>{ PLN.lengthQ=+lenEl.value; if(PLN.activeTurn>PLN.lengthQ)PLN.activeTurn=PLN.lengthQ; pl_renderBuilder(); }; }
+  root.querySelectorAll('[data-coal]').forEach(b=>b.onclick=()=>{ const a=b.dataset.coal; const set=new Set(PLN.coalition);
+    if(set.has(a)) set.delete(a); else set.add(a); PLN.coalition=[...set]; pl_renderBuilder(); });
+  const coalAll=document.getElementById('pl-coal-all'); if(coalAll) coalAll.onclick=()=>{ const mem=pl_coalitionRoster().members, allOn=mem.length>0&&mem.every(m=>pl_coalSet().has(m.actor));
+    PLN.coalition = allOn ? (pl_coalitionRoster().default||['WESTERN_LE']).slice() : mem.map(m=>m.actor); pl_renderBuilder(); };
+  // Phobos Quarter (surge) + windows
+  const sq=document.getElementById('pl-surge-q'); if(sq) sq.onchange=()=>{ PLN.surgeQuarter=sq.value?+sq.value:null; pl_renderBuilder(); };
+  const sa=document.getElementById('pl-surge-amt'); if(sa) sa.onchange=()=>{ PLN.surge=Math.max(0,+sa.value||0); pl_renderBuilder(); };
+  const wadd=document.getElementById('pl-win-add'); if(wadd) wadd.onclick=()=>{ const ty=document.getElementById('pl-win-type').value, q=+document.getElementById('pl-win-q').value; if(ty&&q) PLN.windows.push({type:ty, quarter:q}); pl_renderBuilder(); };
+  root.querySelectorAll('[data-delwin]').forEach(x=>x.onclick=()=>{ PLN.windows.splice(+x.dataset.delwin,1); pl_renderBuilder(); });
+  const oa=document.getElementById('pl-oga-always'); if(oa) oa.onchange=()=>{ PLN.ogaAlwaysAuth=oa.checked; pl_renderBuilder(); };
+  document.getElementById('pl-run').onclick = portfolio ? pl_runPortfolio : pl_run;
+  const exg=document.getElementById('pl-explain-guide'); if(exg) exg.onclick=pl_showIntro;
+  document.getElementById('pl-reset').onclick=()=>{
+    if(!confirm('Clear the current '+(portfolio?'operations':'plan'+(PLN.mode==='compare'?'s':''))+' and start over from scratch?')) return;
+    if(portfolio) PLN.ops=[pl_defaultOp(1), pl_defaultOp(2)]; else PLN.plans=[pl_defaultPlan(1)];
+    PLN.activePlan=0; PLN.selNode=null; PLN.activeTurn=1; PLN.results=null; PLN.view='build';
+    pl_renderBuilder(); pl_renderResults(); pl_syncView();
+  };
+  // pills
+  root.querySelectorAll('[data-pill]').forEach(b=>b.onclick=e=>{ if(e.target.dataset.delpill!==undefined) return; PLN.activePlan=+b.dataset.pill; pl_renderBuilder(); });
+  root.querySelectorAll('[data-delpill]').forEach(x=>x.onclick=e=>{ e.stopPropagation(); list.splice(+x.dataset.delpill,1); if(PLN.activePlan>=list.length)PLN.activePlan=Math.max(0,list.length-1); pl_renderBuilder(); });
+  const ap2=document.getElementById('pl-add-plan'); if(ap2) ap2.onclick=()=>{ PLN.plans.push(pl_defaultPlan(PLN.plans.length+1)); PLN.activePlan=PLN.plans.length-1; pl_renderBuilder(); };
+  const ao2=document.getElementById('pl-add-op'); if(ao2) ao2.onclick=()=>{ PLN.ops.push(pl_defaultOp(PLN.ops.length+1)); PLN.activePlan=PLN.ops.length-1; pl_renderBuilder(); };
+  // rename
+  const ren=root.querySelector('[data-act=rename]'); if(ren) ren.onchange=()=>{ active.name=ren.value||active.name; pl_renderBuilder(); };
+  // map node clicks (toggle select)
+  root.querySelectorAll('[data-node]').forEach(n=>n.onclick=()=>{ PLN.selNode = (PLN.selNode===n.dataset.node)?null:n.dataset.node; pl_renderBuilder(); });
+  // turn stepper
+  const tdn=root.querySelector('[data-act=tdn]'); if(tdn) tdn.onclick=()=>{ PLN.activeTurn=Math.max(1,PLN.activeTurn-1); pl_renderBuilder(); };
+  const tup=root.querySelector('[data-act=tup]'); if(tup) tup.onclick=()=>{ PLN.activeTurn=Math.min(maxT,PLN.activeTurn+1); pl_renderBuilder(); };
+  // chip add → active plan at active turn
+  root.querySelectorAll('[data-add]').forEach(c=>c.onclick=()=>{
+    const a=pl_actionById(c.dataset.add); if(!a) return; let jurisId=null;
+    if(a.requires_jurisdiction_capability){ const opts=jurisdictionOptions(a).filter(j=>j[a.requires_jurisdiction_capability]); jurisId=(opts[0]||jurisdictionOptions(a)[0]||{}).id||null; }
+    active.steps.push({actionId:a.id, turn:PLN.activeTurn, jurisId}); pl_renderBuilder();
+  });
+  // timeline delete
+  root.querySelectorAll('[data-act=delstep]').forEach(x=>x.onclick=()=>{ active.steps.splice(+x.dataset.si,1); pl_renderBuilder(); });
+}
+
+/* toggle between the build view (#pl-builder) and the results view (#pl-results) */
+function pl_syncView(){
+  const b=document.getElementById('pl-builder'), r=document.getElementById('pl-results'); if(!b||!r) return;
+  if(PLN.view==='results'){ b.classList.add('hidden'); r.classList.remove('hidden'); }
+  else { r.classList.add('hidden'); b.classList.remove('hidden'); }
+}
+
+function pl_renderResults(){
+  const root=document.getElementById('pl-results');
+  const guard='<div class="pl-guard"><b>Model result, not a probability.</b> The engine encodes tendencies calibrated to ~7 historical cases. Everything below is <b>consistency with known structural dynamics</b>, never a likelihood of real-world success. The spread comes from operational-backfire variance; nothing fully validates a novel plan against ground truth — and nothing can.</div>';
+  if(!PLN.results){
+    const h2=PLN.mode==='compare'?'Compare courses of action':PLN.mode==='portfolio'?'Run concurrent operations on one board':'Stress one plan across many worlds';
+    const body=PLN.mode==='compare'
+        ? 'Build one or more plans on the left, pick a board, and hit <b>Evaluate</b>. The Planner runs each plan against the same board many times and reports how it behaves — outcome distribution, a rule-cited structural critique, KPI spread, and a model-consistency grade — then names the stronger course.'
+        : PLN.mode==='portfolio'
+        ? 'Build two or more <b>operations</b> on the left, set a shared <b>resource budget</b>, and hit <b>Evaluate</b>. The Planner runs them together on one board and reports whether they <b>compound</b> toward the macro two-of-three move, <b>collide</b> on the same node for diminishing returns, or <b>interfere</b> (one op’s backfire shielding the hub against another) — plus which operations the budget starves. This is the most experimental mode; cross-check it against the serial modes.'
+        : 'Build one plan on the left and hit <b>Evaluate</b>. The Planner runs it across four worlds — baseline, protection hardened, arrest window closed, successor pre-positioned — and reports across which worlds it still imposes degraded survival, and where it collapses into reconstitution.';
+    root.innerHTML=guard+'<div class="pl-placeholder"><h2>'+h2+'</h2><p>'+body+'</p></div>';
+    return;
+  }
+  if(PLN.results.mode==='portfolio'){ pl_renderPortfolioResults(); return; }
+  const R=PLN.results; let html='<button class="pl-edit-btn" id="pl-edit">← Edit plan</button>'+guard;
+  if(R.verdict) html+='<div class="pl-verdict">'+R.verdict+'</div>';
+  if(R.mode==='robust' && R.critique){ html+='<div class="pl-cell" style="margin-bottom:18px"><div class="pl-cell-head"><span class="nm">Structural critique · '+R.plan+'</span><span class="wd">vs framework rules</span></div><div class="pl-cell-body">'+pl_critHtml(R.critique)+'</div></div>'; }
+  html+='<div class="pl-cells">'+R.cells.map((c,i)=>pl_cellHtml(c, R.mode, i)).join('')+'</div>';
+  html+='<div class="pl-card-actions"><button id="pl-export">⎙ Export one-page card</button></div>';
+  root.innerHTML=html;
+  const ex=document.getElementById('pl-export'); if(ex) ex.onclick=pl_exportCard;
+  const ed=document.getElementById('pl-edit'); if(ed) ed.onclick=()=>{ PLN.view='build'; pl_syncView(); };
+}
+
+function pl_renderPortfolioResults(){
+  const root=document.getElementById('pl-results'), R=PLN.results, C=R.combined;
+  const guard='<div class="pl-guard"><b>Model result, not a probability.</b> Consistency with known structural dynamics, never a likelihood of real-world success. <b>Concurrent-ops interaction modeling is the most experimental part of this tool</b> — treat the compound/collide/interfere verdict as a hypothesis to cross-check against the serial modes, not a conclusion.</div>';
+  const vcolor={COMPOUND:'var(--good)',COLLIDE:'var(--warn)',INTERFERE:'var(--bad)',ADDITIVE:'var(--accent)'}[R.verdict.tag]||'var(--accent)';
+  let html='<button class="pl-edit-btn" id="pl-edit">← Edit operations</button>'+guard;
+  html+='<div class="pl-verdict" style="border-color:'+vcolor+'"><b style="color:'+vcolor+';font-family:var(--mono);letter-spacing:.08em">'+R.verdict.tag+'</b> · '+R.verdict.body+'</div>';
+
+  // combined portfolio cell
+  html+='<div class="pl-cell" style="margin-bottom:16px"><div class="pl-cell-head"><span class="nm">Portfolio · all operations together</span><span class="wd">'+pl_boardName(R.board)+'</span></div><div class="pl-cell-body">';
+  html+='<div class="pl-block-label">Outcome distribution</div>'+pl_headline(C)+pl_distbarHtml(C);
+  html+='<div class="pl-block-label">Interaction · joint macro</div>'
+    +'<div class="pl-cost">Joint macro two-of-three reached in '+Math.round(C.macroPct*100)+'% of runs'
+    +(C.subPct>0?' · substitution in '+Math.round(C.subPct*100)+'% of runs':'')+'.</div>';
+  html+='<div class="pl-block-label">KPI movement · resource budget</div>'+pl_dialsHtml(C);
+  const capStarved=C.starved.filter(s=>s.reason==='throughput').length;
+  const coalStarved=C.starved.filter(s=>s.reason==='coalition').length;
+  const wasted=(C.collided||[]).length;
+  html+='<div class="pl-cost">Resources: '+pl_baseCapacity()+' pts/quarter from the coalition'
+    +(PLN.surgeQuarter?' · Phobos Quarter Q'+PLN.surgeQuarter+' (+'+PLN.surge+')':'')
+    +(PLN.windows&&PLN.windows.length?' · '+PLN.windows.length+' window(s)':'')
+    +' · '+C.poolSpent+' pts committed'
+    +(capStarved?' · <span style="color:var(--warn)">'+capStarved+' over capacity in their quarter</span>':'')
+    +(coalStarved?' · <span style="color:var(--warn)">'+coalStarved+' needed a partner not at the table</span>':'')
+    +(wasted?' · <span style="color:var(--warn)">'+wasted+' wasted on a collision</span>':'')+'.</div>';
+  // per-operation contribution
+  html+='<div class="pl-block-label">Per-operation contribution</div><ul class="pl-crit">';
+  R.ops.forEach((nm,oi)=>{ const solo=R.solos[oi]; const fired=C.firedByOp[oi]||0; const total=(PLN.ops[oi]?PLN.ops[oi].steps.length:fired); const ap=C.apByOp[oi]||0;
+    html+='<li class="pl-info"><span class="ic">▸</span><b>'+nm+'</b> — alone: grade '+solo.modalGrade+' ('+solo.meanRank.toFixed(2)+'/4). In the portfolio: fired '+fired+'/'+total+' actions, drew '+ap+' pts.</li>'; });
+  html+='</ul>';
+  // node collisions
+  if(R.collisions.length){
+    html+='<div class="pl-block-label">Node collisions · same node, same turn</div><ul class="pl-crit">';
+    R.collisions.slice(0,6).forEach(c=>{ html+='<li class="pl-warn"><span class="ic">▲</span>'+c.nodeName+' contested at T'+c.turn+' by '+c.ops.map(o=>R.ops[o]||('op'+o)).join(' & ')+' — overlapping spend.</li>'; });
+    if(R.collisions.length>6) html+='<li class="pl-info"><span class="ic">○</span>+'+(R.collisions.length-6)+' more.</li>';
+    html+='</ul>';
+  }
+  if(R.legit){ html+='<div class="pl-block-label">Legitimacy &amp; blowback · weakest-link across all operations</div>'+pl_legitBadgeHtml(R.legit)+pl_legitDebriefHtml(R.legit); }
+  html+='<div class="pl-grade-wrap"><div class="pl-grade g'+C.modalGrade+'">'+C.modalGrade+'</div>'
+    +'<div class="pl-grade-note"><b>Two axes.</b> Effectiveness (grade) = model-consistency, not a forecast — portfolio mean rank '+C.meanRank.toFixed(2)+'/4 across '+C.runs+' runs.'+(R.legit?' Legitimacy (above) is the separate can-you-defend-it axis.':'')+'</div></div>';
+  html+='</div></div>';
+  html+='<div class="pl-card-actions"><button id="pl-export">⎙ Export one-page card</button></div>';
+  root.innerHTML=html;
+  const ex=document.getElementById('pl-export'); if(ex) ex.onclick=pl_exportCard;
+  const ed=document.getElementById('pl-edit'); if(ed) ed.onclick=()=>{ PLN.view='build'; pl_syncView(); };
+}
+
+function pl_distbarHtml(cell){
+  const order=['S','A','B','C','F'].filter(g=>cell.grades[g]>0);
+  const bar=order.map(g=>{ const pct=cell.grades[g]/cell.runs*100;
+    return '<span style="background:'+GRADE_COLOR[g]+';flex:'+pct+'">'+(pct>9?g:'')+'</span>'; }).join('');
+  const legend=order.map(g=>'<span><i style="background:'+GRADE_COLOR[g]+'"></i>'+g+' '+cell.grades[g]+'</span>').join('');
+  return '<div class="pl-distbar">'+bar+'</div><div class="pl-distlegend">'+legend+'</div>';
+}
+function pl_headline(cell){
+  if(pl_holdPct(cell)>=0.5){
+    const bd=cell.outc.BRAND_DEAD||0, dg=cell.outc.DEGRADED||0;
+    const lead = bd>=dg ? {w:'Brand death', n:bd} : {w:'Degraded survival', n:dg};
+    if(lead.n>0) return '<b>'+lead.w+'</b> in '+lead.n+' of '+cell.runs+' runs — the dominant result.';
+    return '<b>Disruption imposed</b> in '+Math.round(pl_holdPct(cell)*100)+'% of runs.';
+  }
+  return 'Dominant failure mode: <b>'+OUTCOME_WORD[cell.modalOutcome]+'</b> in '+(cell.outc[cell.modalOutcome])+' of '+cell.runs+' runs.';
+}
+function pl_critHtml(crit){
+  const conf=c=>c?'<span class="conf">'+c.replace('_',' ')+'</span>':'';
+  return '<ul class="pl-crit">'+crit.map(f=>'<li class="pl-'+f.sev+'"><span class="ic">'+(f.sev==='warn'?'▲':f.sev==='good'?'●':'○')+'</span>'+f.text+' <span class="rule">['+(f.rule||'—')+']</span>'+conf(f.conf)+'</li>').join('')+'</ul>';
+}
+function pl_dialsHtml(cell){
+  const d=(lbl,col,o)=>'<div class="pl-dial"><div class="dl">'+lbl+'</div><div class="dv" style="color:'+col+'">'+o.mean+'</div><div class="dr">'+o.min+'–'+o.max+'</div></div>';
+  return '<div class="pl-dials">'+d('Enforcement','#e0b040',cell.kpi.a)+d('Strife','#a855f7',cell.kpi.b)+d('Economics','#29d3e0',cell.kpi.c)+'</div>'
+    +'<div class="pl-cost">Resource cost: '+cell.apSpent+' AP committed'+(cell.subPct>0?' · substitution in '+Math.round(cell.subPct*100)+'% of runs':'')+'</div>';
+}
+function pl_cellHtml(c, mode, i){
+  const cell=c.cell;
+  let body='<div class="pl-block-label">Outcome distribution</div>'+pl_headline(cell)+pl_distbarHtml(cell);
+  if(mode==='compare'){ body+='<div class="pl-block-label">Structural critique</div>'+pl_critHtml(c.critique); }
+  body+='<div class="pl-block-label">KPI movement · resource cost</div>'+pl_dialsHtml(cell);
+  if(c.legit){ body+='<div class="pl-block-label">Legitimacy &amp; blowback · weakest-link</div>'+pl_legitBadgeHtml(c.legit)+pl_legitDebriefHtml(c.legit); }
+  body+='<div class="pl-grade-wrap"><div class="pl-grade g'+cell.modalGrade+'">'+cell.modalGrade+'</div>'
+    +'<div class="pl-grade-note"><b>Two axes.</b> Effectiveness (the grade) = model-consistency, not a forecast — mean rank '+cell.meanRank.toFixed(2)+'/4 over '+cell.runs+' runs.'
+    +(c.legit?' Legitimacy (above) is a separate axis: can you authorize and defend it.':'')+'</div></div>';
+  return '<div class="pl-cell"><div class="pl-cell-head"><span class="nm">'+c.label+'</span><span class="wd">'+(c.sublabel||'')+'</span></div><div class="pl-cell-body">'+body+'</div></div>';
+}
+
+/* one-page briefable card → print-ready window (airgap-safe, no network) */
+function pl_exportCard(){
+  const R=PLN.results; if(!R) return;
+  const stamp=PACK.pack_meta?(PACK.pack_meta.content_version||''):'';
+  const strip=s=>String(s).replace(/<[^>]+>/g,m=>(m==='<b>'||m==='</b>')?m:'');
+  let cellTxt='', critOnce='', subtitle='', verdictStr='';
+  if(R.mode==='portfolio'){
+    const C=R.combined, bs=C.starved.filter(s=>s.reason==='throughput').length;
+    subtitle='Concurrent operations · '+R.ops.length+' operations · '+pl_baseCapacity()+' pts/quarter coalition'+(PLN.surgeQuarter?' · Phobos Quarter Q'+PLN.surgeQuarter:'');
+    verdictStr='<b>'+R.verdict.tag+'</b> — '+strip(R.verdict.body);
+    const dist=['S','A','B','C','F'].filter(g=>C.grades[g]>0).map(g=>g+' '+C.grades[g]).join(' · ');
+    const perOp=R.ops.map((nm,oi)=>'<li>'+nm+' — alone grade '+R.solos[oi].modalGrade+' ('+R.solos[oi].meanRank.toFixed(2)+'/4); in portfolio fired '+(C.firedByOp[oi]||0)+'/'+(PLN.ops[oi]?PLN.ops[oi].steps.length:0)+', drew '+(C.apByOp[oi]||0)+' pts</li>').join('');
+    const coll=R.collisions.length?'<p class="di">Node collisions: '+R.collisions.map(c=>c.nodeName+' T'+c.turn).join(' · ')+'</p>':'';
+    cellTxt='<div class="cc"><h3>Portfolio · all operations together</h3>'
+      +'<p class="hl">'+strip(pl_headline(C))+'</p>'
+      +'<p class="di">Distribution: '+dist+' (n='+C.runs+') · grade '+C.modalGrade+' (model-consistency) · joint macro '+Math.round(C.macroPct*100)+'%</p>'
+      +'<p class="di">KPI mean — Enforcement '+C.kpi.a.mean+' · Strife '+C.kpi.b.mean+' · Economics '+C.kpi.c.mean+' · '+C.poolSpent+' pts committed'+(bs?' · '+bs+' starved':'')+'</p>'
+      +'<ul>'+perOp+'</ul>'+coll+'</div>';
+  } else {
+    subtitle=(R.mode==='compare'?'Course-of-action comparison':'Robustness test — '+R.plan)+' · '+R.runs+' runs/cell';
+    verdictStr=R.verdict?strip(R.verdict):'';
+    cellTxt=R.cells.map(c=>{ const cell=c.cell;
+      const dist=['S','A','B','C','F'].filter(g=>cell.grades[g]>0).map(g=>g+' '+cell.grades[g]).join(' · ');
+      const crit=(R.mode==='compare'?c.critique:R.critique)||[];
+      return '<div class="cc"><h3>'+c.label+' <small>'+(c.sublabel||'')+'</small></h3>'
+        +'<p class="hl">'+strip(pl_headline(cell))+'</p>'
+        +'<p class="di">Distribution: '+dist+' (n='+cell.runs+') · grade '+cell.modalGrade+' (model-consistency)</p>'
+        +'<p class="di">KPI mean — Enforcement '+cell.kpi.a.mean+' · Strife '+cell.kpi.b.mean+' · Economics '+cell.kpi.c.mean+' · '+cell.apSpent+' AP</p>'
+        +(R.mode==='compare'?'<ul>'+crit.map(f=>'<li>'+(f.sev==='warn'?'▲':f.sev==='good'?'●':'○')+' '+strip(f.text)+' ['+(f.rule||'—')+'·'+(f.conf||'')+']</li>').join('')+'</ul>':'')
+        +'</div>'; }).join('');
+    critOnce=R.mode==='robust'&&R.critique?'<div class="cc"><h3>Structural critique · '+R.plan+'</h3><ul>'+R.critique.map(f=>'<li>'+(f.sev==='warn'?'▲':f.sev==='good'?'●':'○')+' '+strip(f.text)+' ['+(f.rule||'—')+'·'+(f.conf||'')+']</li>').join('')+'</ul></div>':'';
+  }
+  const w=window.open('','_blank'); if(!w){ alert('Allow pop-ups to export the card.'); return; }
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Plan Assessment Card</title><style>'
+    +'body{font:13px/1.5 -apple-system,Segoe UI,Arial,sans-serif;color:#111;max-width:760px;margin:28px auto;padding:0 18px}'
+    +'h1{font-size:19px;margin:0 0 2px}.sub{color:#555;font-size:11px;margin-bottom:14px}'
+    +'.guard{border:1px solid #b8860b;background:#fdf6e3;padding:9px 12px;font-size:11px;border-radius:5px;margin-bottom:14px}'
+    +'.verdict{border-left:3px solid #0a7;padding:6px 10px;background:#f0fbf8;margin-bottom:14px}'
+    +'.cc{border:1px solid #ddd;border-radius:6px;padding:10px 13px;margin-bottom:12px}.cc h3{margin:0 0 5px;font-size:14px}.cc small{color:#777;font-weight:400}'
+    +'.hl{margin:3px 0;font-weight:600}.di{margin:2px 0;color:#444;font-size:11px;font-family:ui-monospace,Consolas,monospace}'
+    +'ul{margin:6px 0 0;padding-left:16px}li{margin:2px 0;font-size:11px}'
+    +'.ft{color:#888;font-size:10px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}'
+    +'@media print{button{display:none}}</style></head><body>'
+    +'<h1>KRYSHA — Plan Assessment Card</h1>'
+    +'<div class="sub">'+subtitle+' · Board: '+pl_boardName(R.board)+' · pack '+stamp+'</div>'
+    +'<div class="guard"><b>Model result, not a probability.</b> Consistency with known structural dynamics, calibrated to ~7 historical cases — never a likelihood of real-world success. No method fully validates a novel plan against ground truth.</div>'
+    +(verdictStr?'<div class="verdict">'+verdictStr+'</div>':'')
+    +critOnce+cellTxt
+    +'<div class="ft">Generated by KRYSHA Planner · confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE travel with each finding · PENDING reassessments preserved, not resolved.</div>'
+    +'<button onclick="window.print()" style="margin-top:10px;padding:8px 16px">Print / Save as PDF</button>'
+    +'</body></html>');
+  w.document.close();
+}
+
+/* KRYSHA extends the SHARED base pack with the lever catalog add-on (56 levers +
+   the Legitimacy/Blowback axis). The base content-pack-v1.json stays untouched;
+   we only merge the add-on in here. */
+function mergeLeverAddon(pack, addon){
+  if(!addon || !pack || !pack.actions) return pack;
+  const byId={}; pack.actions.forEach(a=>byId[a.id]=a);
+  (addon.levers||[]).forEach(lv=>{
+    const ex=byId[lv.id];
+    if(ex){ // existing lever: graft ONLY the new analytical fields, preserve every base field
+      ['actor','legitimacy','flips','case_basis'].forEach(k=>{ if(lv[k]!=null) ex[k]=lv[k]; });
+    } else { pack.actions.push(lv); byId[lv.id]=lv; } // new lever: add wholesale
+  });
+  pack._addon={actors:addon.actor_vocabulary||{}, axis:addon.legitimacy_axis||{}, coalition:addon.coalition||null, windows:addon.windows||null};
+  return pack;
+}
+
 (function init(){
   fetch('content-pack-v1.json',{cache:'no-store'})
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(pack=>
+      fetch('krysha-levers-addon.json',{cache:'no-store'})
+        .then(r=> r.ok ? r.json() : null).catch(()=>null)
+        .then(addon=>{ if(addon) mergeLeverAddon(pack, addon); else console.warn('lever add-on not found — running base 17 levers'); return pack; })
+    )
     .then(boot)
     .catch(err=>showDrop(err.message));
 })();
