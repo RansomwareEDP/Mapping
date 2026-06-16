@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cryptex / PM2BTC (Ivanov Cluster): Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── HEADER ── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* ── STATUS BADGES ── */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* ── HERO MODULE ── */
+.hero-module {
+  background: linear-gradient(135deg, #1a0a0a 0%, #1c1228 100%);
+  border: 1px solid #4a1515; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-red); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 220px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 60%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+
+/* ── SECTION HEADERS ── */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* ── CONFIDENCE BADGES ── */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* ── KPI / ATTRIBUTE TABLES ── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* ── CONTENT TABLES ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* ── TIMELINE ── */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* ── CITATION ── */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* ── WALLET ADDRESSES ── */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* ── GAP FLAGS ── */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "◆ GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* ── GALLERY ── */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+
+/* ── SOURCES ── */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* ── TIER LABELS ── */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">Cryptex / PM2BTC (Ivanov Cluster)</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-sanctioned">Sanctioned</span>
+    <span class="status-badge status-disrupted">Disrupted</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Cryptex status</span><span class="value" style="color:var(--accent-orange)">Sanctioned</span></div>
+    <div class="sidebar-meta-row"><span class="label">PM2BTC status</span><span class="value" style="color:var(--accent-red)">311 Order / Disrupted</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">Tolerated Safe Harbor</span></div>
+    <div class="sidebar-meta-row"><span class="label">Reg. jurisdiction</span><span class="value">St. Vincent / Russia</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : OPERATORS ABOVE FOLD -->
+<div class="hero-module">
+  <div class="hero-label">⚠ Sanctioned and Indicted Operators : Hero Module</div>
+  <div class="hero-title">The following individuals are named in the EDVA indictment and/or OFAC designation connected to this exchange cluster. Both remain at large in Russia; no extradition is available.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Sergey Sergeevich Ivanov</div>
+      <div class="op-alias">aka Sergey Omelnitskii; aka "Taleon"; aka "UAPS"</div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Money launderer / operator of UAPS, PinPays, PM2BTC; associated with Cryptex</span></div>
+      <div class="op-row"><span class="k">DOB</span><span class="v">2 Jun 1980</span></div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian</span></div>
+      <div class="op-row"><span class="k">Last known location</span><span class="v">St. Petersburg, Russia</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">Indicted EDVA (Sept 2024); at large</span></div>
+      <div class="op-row"><span class="k">Reward offer</span><span class="v">Up to $10M (State Dept. TOCRP)</span></div>
+      <span class="op-tag op-tag-indicted">Indicted</span>
+      <span class="op-tag op-tag-sanctioned">Sanctioned (SDN)</span>
+      <span class="op-tag op-tag-atlarge">At large</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Timur Kamilevich Shakhmametov</div>
+      <div class="op-alias">aka "JokerStash"; aka "Vega"</div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Creator/operator of Joker's Stash carding market; co-defendant</span></div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian</span></div>
+      <div class="op-row"><span class="k">Last known location</span><span class="v">Russia (assessed) <span class="badge badge-credible">Credible</span></span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">Indicted EDVA (Sept 2024); at large</span></div>
+      <div class="op-row"><span class="k">Reward offer</span><span class="v">Up to $10M (State Dept. TOCRP)</span></div>
+      <div class="op-row"><span class="k">OFAC status</span><span class="v">Not individually SDN-listed (as of June 2026)</span></div>
+      <span class="op-tag op-tag-indicted">Indicted</span>
+      <span class="op-tag op-tag-atlarge">At large</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Cryptex Lifetime Volume</div>
+      <div class="kpi-value">$5.88B+</div>
+      <div class="kpi-sub">Since 2018 inception (Chainalysis)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cryptex BTC Throughput</div>
+      <div class="kpi-value">$1.4B</div>
+      <div class="kpi-sub">62,586 BTC, 37,500+ tx (DOJ / blockchain analytics)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ivanov Services Throughput</div>
+      <div class="kpi-value">$1.15B</div>
+      <div class="kpi-sub">UAPS/PinPays/PM2BTC addrs, 2013–2024 (DOJ)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cryptex Ransomware Inflows</div>
+      <div class="kpi-value">$51.2M+</div>
+      <div class="kpi-sub">Funds derived from ransomware (OFAC)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">PM2BTC Illicit Share</div>
+      <div class="kpi-value">~50%</div>
+      <div class="kpi-sub">Of exchange activity linked to illicit (FinCEN)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">UAPS/PinPays Laundered</div>
+      <div class="kpi-value">$500M+</div>
+      <div class="kpi-sub">2022–2024 estimate (TRM Labs)</div>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <div class="callout-label">Overall Assessment</div>
+    Cryptex and PM2BTC are not independent exchanges but two nodes in a single ~20-year cybercrime money-laundering enterprise centered on Sergey Ivanov ("Taleon"/"UAPS"). The cluster (UAPS &rarr; PinPays &rarr; PM2BTC &rarr; Cryptex/CryptexPay) provided no-KYC convertible-virtual-currency-to-ruble exchange, fraud-shop payment processing, and ransomware cash-out for the Russian-speaking criminal ecosystem, including direct flows to OFAC-designated Garantex. The September 26, 2024 coordinated U.S.-Dutch action (OFAC designation, FinCEN 311/9714(a) order, EDVA indictment, domain and server seizures) disrupted the public infrastructure but did not reach the operators, who remain in Russia under safe harbor. Residual risk is operator-driven: the same individuals retain the relationships and tradecraft to reconstitute under new branding.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Cluster (primary nodes)</td><td>Cryptex (exchange) + PM2BTC (exchanger) + UAPS/PinPays (payment processors)</td></tr>
+      <tr><td>Cryptex registered entity</td><td>International Payment Service Provider LLC ("IPSP")</td></tr>
+      <tr><td>Registration jurisdiction (Cryptex)</td><td>St. Vincent and the Grenadines : Business Reg. No. 1628; established 1 Dec 2021</td></tr>
+      <tr><td>Registration jurisdiction (PM2BTC)</td><td>Not formally documented; assessed Russia-based exchanger <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Netherlands (servers seized by Dutch police/FIOD); distributed globally</td></tr>
+      <tr><td>Operator location (assessed)</td><td>Russia (St. Petersburg : Ivanov)</td></tr>
+      <tr><td>Operational period (Cryptex)</td><td>2018 – September 26, 2024 (domains seized)</td></tr>
+      <tr><td>Operational period (PM2BTC)</td><td>Since 2014 – September 26, 2024 (311 order / infrastructure seizure)</td></tr>
+      <tr><td>Operational period (UAPS)</td><td>Since 2013 (PinPays rebrand ~2015)</td></tr>
+      <tr><td>OFAC designation (Cryptex + Ivanov)</td><td>September 26, 2024 : E.O. 13694 (as amended by 13757) [CYBER2] and E.O. 14024</td></tr>
+      <tr><td>FinCEN action (PM2BTC)</td><td>September 26, 2024 : "primary money laundering concern," Section 9714(a) order (2nd-ever use)</td></tr>
+      <tr><td>EDVA indictment</td><td>Unsealed September 26, 2024 : Ivanov and Shakhmametov</td></tr>
+      <tr><td>EU / UK designation</td><td>Not located as of June 2026 <span class="badge badge-credible">Credible</span> (negative evidence)</td></tr>
+      <tr><td>Cryptex SDN wallet addresses</td><td>4 listed : BTC, ETH, LTC, TRX (see Section 05)</td></tr>
+      <tr><td>State nexus tier</td><td>TOLERATED SAFE HARBOR</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>Chainalysis and Tether (assisted Dutch seizure); TRM Labs; Elliptic</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2024/09/2024-09-cryptex-russian-ofac-1.jpg"
+           alt="Chainalysis: OFAC designates Russian exchange Cryptex, FinCEN names PM2BTC"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Cryptex / PM2BTC Designation</div>
+        <div class="cap-source">Chainalysis, September 2024. Coverage of the OFAC/FinCEN coordinated action.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2024/09/september-2024-blog-charts-1-1.png"
+           alt="Chainalysis chart: Cryptex value received by counterparty type"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Cryptex Value Received by Source</div>
+        <div class="cap-source">Chainalysis, 2024. Since late 2019 Cryptex received most value from fraud shops.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2024/09/uaps-non-sdn-grf.png"
+           alt="Chainalysis Reactor graph: UAPS funds flowing to Cryptex addresses"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">UAPS &rarr; Cryptex Flow (2024)</div>
+        <div class="cap-source">Chainalysis Reactor, 2024. $97M+ from UAPS via intermediaries; $92M+ to four Cryptex addresses.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2024/09/btc2pm-grf.png"
+           alt="Chainalysis Reactor graph: PM2BTC counterparties"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">PM2BTC Illicit Counterparties</div>
+        <div class="cap-source">Chainalysis Reactor, 2024. Hundreds of millions processed for ransomware and fraud shops.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/66f59655fa321463e452d1a0_66f5915e79920d6110c5b5b8_InsightsGraphTemplate_Horizontal1200x628%2520(17).jpeg"
+           alt="TRM Labs graph: CryptexPay illicit financial flows"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">CryptexPay Flow Analysis</div>
+        <div class="cap-source">TRM Labs, September 2024. CryptexPay generates a new address per transaction and mixes deposits.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.elliptic.co/hubfs/US%20Treasury%20Badge.jpg"
+           alt="Elliptic: US Treasury action against Cryptex and PM2BTC"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">U.S. Treasury Action Coverage</div>
+        <div class="cap-source">Elliptic, September 2024. Cryptex transferred millions of dollars in cryptoassets to Garantex.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>UAPS &rarr; PinPays &rarr; PM2BTC &rarr; Cryptex : One Operator Chain</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    The defining lineage feature here is not a successor exchange but a single continuous operator. On-chain analysis from Chainalysis, TRM Labs, and Elliptic shows shared wallet infrastructure linking UAPS, PinPays, PM2BTC, and Cryptex/CryptexPay. The cluster evolves by adding new front-end brands while preserving the same back-end laundering rails and the same controller (Ivanov). This is a rebrand-and-layer pattern, comparable in logic to Garantex/Grinex but driven by an individual launderer rather than a corporate exchange shell.
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2013</div><div class="timeline-text">UAPS (Universal Anonymous Payment System) launched on a dark web forum as an invite-only, API-integrable underground payment processor for fraud shops. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2014</div><div class="timeline-text">PM2BTC begins operating as a no-KYC exchange (Btc2pm.me), sharing wallet infrastructure with UAPS. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2015</div><div class="timeline-text">Many fraud shops migrate from UAPS to PinPays, an overt rebrand of UAPS sharing the same wallet infrastructure and customers. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2018</div><div class="timeline-text">Cryptex launches as a Russian-language instant exchange and trading platform. Lifetime throughput would exceed $5.88B. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Dec 1, 2021</div><div class="timeline-text">International Payment Service Provider LLC (the Cryptex registrant) established in St. Vincent and the Grenadines (Reg. No. 1628). <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC SDN]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Jan 2022</div><div class="timeline-text">CryptexPay launched to provide BTC/LTC payment processing for "high-risk" online businesses, explicitly advertising its lack of AML/KYC. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Sept 26, 2024</div><div class="timeline-text">Coordinated takedown: OFAC designations, FinCEN 9714(a) order on PM2BTC, EDVA indictment of Ivanov and Shakhmametov, domain and server seizures, &euro;7M crypto seized. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Treasury, DOJ, FIOD]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Evidentiary Pillars</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Shared wallet infrastructure.</strong> Chainalysis states PinPays shared wallet infrastructure with UAPS and that UAPS shared wallet infrastructure with PM2BTC; in 2024 alone UAPS sent more than $97M to intermediary addresses that then moved to Cryptex addresses, with over $92M reaching four Cryptex addresses. <span class="cite">[Chainalysis]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Common controller.</strong> OFAC lists "UAPS" as an alias of Ivanov himself; DOJ alleges Ivanov created and/or operated UAPS, PinPays, and PM2BTC, and that he is "currently associated with Cryptex." <span class="cite">[OFAC, DOJ]</span></p>
+  <p><span class="badge badge-credible">Credible</span> <strong>Cryptex corporate control.</strong> Ivanov is described by OFAC as "associated with" rather than the registered owner of Cryptex. The named registrant is International Payment Service Provider LLC. The precise ownership/control relationship between Ivanov and the St. Vincent shell is not publicly documented. <span class="cite">[OFAC]</span></p>
+
+  <h3>Operator Profiles</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Attribute</th><th>Sergey Sergeevich Ivanov</th><th>Timur Kamilevich Shakhmametov</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Aliases</strong></td><td>Sergey Omelnitskii (Cyrillic: Омельницкий); "Taleon"; "UAPS"</td><td>"JokerStash"; "Vega"</td></tr>
+        <tr><td><strong>DOB / identifiers</strong></td><td>2 Jun 1980; POB Russia; Russian passport 4015431802</td><td>Not publicly disclosed</td></tr>
+        <tr><td><strong>Nationality</strong></td><td>Russian</td><td>Russian</td></tr>
+        <tr><td><strong>Assessed location</strong></td><td>St. Petersburg, Russia</td><td>Russia (assessed) <span class="badge badge-credible">Credible</span></td></tr>
+        <tr><td><strong>Role</strong></td><td>~20-year professional cyber money launderer; operator of UAPS/PinPays/PM2BTC; associated with Cryptex; payment processor for Genesis Market, BriansClub, Faceless, Rescator</td><td>Creator/operator of Joker's Stash carding marketplace</td></tr>
+        <tr><td><strong>Charges (EDVA)</strong></td><td>Conspiracy to commit/aid bank fraud (Rescator); conspiracy to commit money laundering (Joker's Stash proceeds)</td><td>Conspiracy to commit/aid bank fraud; conspiracy to commit access device fraud; conspiracy to commit money laundering</td></tr>
+        <tr><td><strong>Sanctions</strong></td><td>OFAC SDN, 26 Sep 2024 [RUSSIA-EO14024]</td><td>Not individually SDN-listed as of June 2026</td></tr>
+        <tr><td><strong>Reward</strong></td><td>Up to $10M (State Dept. TOCRP)</td><td>Up to $10M (State Dept. TOCRP)</td></tr>
+        <tr><td><strong>Legal status</strong></td><td>At large in Russia; no extradition</td><td>At large in Russia; no extradition</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted)">A further State Department reward of up to $1M is offered for information identifying other leaders of Joker's Stash (besides Shakhmametov) and other key leaders of the UAPS, PM2BTC, and PinPays criminal groups (besides Ivanov). <span class="cite">[State Dept., Elliptic]</span></p>
+
+  <h3>Disputed / Unresolved Assessments</h3>
+  <div class="gap-flag">Chainalysis issued an October 7, 2024 correction clarifying that only Ivanov, not the UAPS service as a standalone entity, was the named OFAC target. "UAPS" appears in the SDN entry as an alias of Ivanov. Analysts should treat UAPS as operator-controlled infrastructure, not a separately designated entity.</div>
+  <div class="gap-flag">The corporate ownership chain behind Cryptex (International Payment Service Provider LLC, St. Vincent) and its precise legal link to Ivanov is not established in public sources.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics</h3>
+  <p><strong>Cryptex</strong> operated a Russian-language instant exchange plus a trading platform, and from January 2022 a payment-processing arm, CryptexPay, supporting BTC and LTC settlement for online businesses explicitly classified as "high-risk." <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis]</span></p>
+  <p><strong>PM2BTC</strong> operated since 2014 as a no-KYC exchanger specializing in direct convertible-virtual-currency-to-ruble conversion, routed through U.S.-sanctioned Russian financial institutions. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[FinCEN, Treasury]</span></p>
+  <p><strong>UAPS / PinPays</strong> functioned as invite-only, API-integrable payment processors for fraud shops rather than retail exchanges; in recent years UAPS's exchange function was minimal and on-chain behavior shows it acting primarily as a fraud-related payment processor and aggregator that pooled and redistributed deposits before forwarding to Cryptex. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Chainalysis, TRM Labs]</span></p>
+
+  <h3>KYC / AML Posture : Stated vs Observed</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Node</th><th>Stated policy</th><th>Observed behavior (LE / regulator sourced)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Cryptex / CryptexPay</strong></td>
+          <td>Marketed <em>absence</em> of AML/KYC as a feature; CryptexPay "explicitly advertised its lack of adherence to AML/KYC requirements."</td>
+          <td>DOJ: Cryptex "offers complete anonymity to Cryptex users by allowing them to register for accounts without providing know-your-customer compliance requirements" and "advertised itself directly to cybercriminals." <span class="badge badge-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>PM2BTC</strong></td>
+          <td>No credible public AML/KYC program; positioned as a no-KYC exchange.</td>
+          <td>FinCEN: "failed to maintain a credible and effective anti-money laundering and know your customer (KYC) program"; nearly half of exchange activity linked to illicit activity. <span class="badge badge-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>UAPS / PinPays</strong></td>
+          <td>Invite-only / admin-approval merchant onboarding (a closed criminal access model, not compliance).</td>
+          <td>Onboarding gate functioned to screen <em>in</em> trusted criminal merchants, not to screen out illicit actors. <span class="badge badge-inference">Analyst Inference</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-orange">
+    <div class="callout-label">Primary Analytical Finding : KYC Gap</div>
+    Unlike most high-risk exchanges where stated policy and observed behavior diverge, here the stated policy <em>was</em> the absence of compliance. The cluster did not merely tolerate illicit use through weak controls; it marketed anonymity and no-KYC processing as the core product. Per the schema's KYC rule, observed behavior is sourced from DOJ charging documents and the FinCEN order, not from the services' own claims.
+  </div>
+
+  <h3>Fiat Rail Analysis</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> PM2BTC provided "direct CVC-to-ruble exchange services using U.S.-sanctioned financial institutions." This is the cluster's clearest documented fiat rail: ruble settlement intermediated through already-sanctioned Russian banks. The specific institutions are not named in the public FinCEN/OFAC text. <span class="cite">[Treasury, FinCEN]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> On the carding side, Ivanov provided payment-processing support (via UAPS and PinPays) for purchases made on the Rescator site using bitcoin, bridging stolen-card fraud proceeds into crypto rails. <span class="cite">[DOJ]</span></p>
+  <p><span class="badge badge-credible">Credible (negative)</span> No specific correspondent bank, card processor, or named payment-institution relationship beyond the general "U.S.-sanctioned Russian financial institutions" language is documented in open sources. Granular fiat-rail mapping is an intelligence gap (Section 10).</p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p>Cryptex's registrant, International Payment Service Provider LLC, holds a St. Vincent and the Grenadines business registration (No. 1628). St. Vincent and the Grenadines does not license or supervise virtual asset service providers, making the registration a jurisdictional-of-convenience shell rather than evidence of regulatory compliance. <span class="badge badge-inference">Analyst Inference</span> PM2BTC has no documented licensing in any jurisdiction. <span class="badge badge-credible">Credible</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 04 : TECHNICAL INFRASTRUCTURE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domains</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Domain</th><th>Node</th><th>Status</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>cryptex.net</td><td>Cryptex (primary)</td><td>Listed on SDN entry; seized</td><td>OFAC SDN</td></tr>
+        <tr><td>cryptex.one</td><td>Cryptex (admin/operations)</td><td>Seized (District of Maryland order)</td><td>DOJ</td></tr>
+        <tr><td>btc2pm.me</td><td>PM2BTC</td><td>Associated; infrastructure seized</td><td>Chainalysis / USSS</td></tr>
+        <tr><td>UAPS / PM2BTC web domains</td><td>UAPS, PM2BTC</td><td>USSS court-authorized seizure</td><td>DOJ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Hosting and Resilience After Disruption</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Both Cryptex and PM2BTC had server infrastructure based in the Netherlands. On September 26, 2024 the Dutch FIOD and National High Tech Crime Unit, coordinating with the U.S. Secret Service, took those servers offline at various locations worldwide and seized cryptocurrency worth &euro;7M (~$7M+). <span class="cite">[FIOD, DOJ, TRM Labs]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> Chainalysis and Tether assisted the Dutch seizure of the &euro;7M in funds. <span class="cite">[Chainalysis]</span></p>
+  <div class="callout callout-blue">
+    <div class="callout-label">Disambiguation : Do Not Conflate</div>
+    A separate, unrelated entity also called "Cryptex" (an alleged crypto investment/Ponzi scheme using cryptex.to) rebranded to "Bytnex" in October 2025 after registrar abuse takedowns. This is <strong>not</strong> the Ivanov-linked Cryptex.net money-laundering exchange and should not be cited as reconstitution of the sanctioned service. <span class="badge badge-confirmed">Confirmed</span> distinct entity.
+  </div>
+
+  <h3>Apps, Nodes, and Channels</h3>
+  <div class="gap-flag">No public reporting documents dedicated mobile apps, blockchain node operations, or named Telegram channels for the Cryptex/PM2BTC cluster. Open-source coverage centers on web domains and server infrastructure. This is an intelligence gap.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Transaction Volume : By Source and Methodology</h3>
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Per the volume sourcing rule, figures from different vendors and authorities are presented separately with methodology, not averaged or collapsed.</p>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Figure</th><th>Scope / methodology</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>$5.88B+</td><td>Cryptex lifetime transaction value since 2018 inception</td><td>Chainalysis</td></tr>
+        <tr><td>$1.4B (62,586 BTC, 37,500+ tx)</td><td>Bitcoin addresses associated with Cryptex; value at time of transactions</td><td>DOJ (citing a blockchain analytics firm)</td></tr>
+        <tr><td>$1.15B</td><td>Crypto addresses tied to Ivanov's UAPS/PinPays/PM2BTC services, 12 Jul 2013 – 10 Aug 2024</td><td>DOJ</td></tr>
+        <tr><td>$1B+</td><td>PM2BTC lifetime processed value</td><td>FinCEN / Chainalysis</td></tr>
+        <tr><td>$500M+</td><td>Laundered through UAPS/PinPays, 2022–2024</td><td>TRM Labs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Three-Phase On-Chain Flow</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Receipt &rarr; Layering &rarr; Extraction</div>
+    <strong>Receipt:</strong> Criminal proceeds enter at the fraud-shop / ransomware edge. UAPS/PinPays aggregate deposits from multiple cybercrime services (carding shops, Genesis Market, Rescator, ransomware actors).<br>
+    <strong>Layering:</strong> PinPays/UAPS apply a "mixer" technique, pooling and redistributing funds through interconnected wallets to obscure origin; CryptexPay generates a new wallet address per transaction and mixes deposits. This is the "unusual obfuscation that inhibits attribution" cited by FinCEN.<br>
+    <strong>Extraction:</strong> Funds consolidate to Cryptex addresses (in 2024, $92M+ of $97M+ UAPS outflow reached four Cryptex addresses) and exit via CVC-to-ruble conversion (PM2BTC) or onward transfer to other cash-out venues including Garantex. <span class="cite">[Chainalysis, TRM Labs, FinCEN]</span>
+  </div>
+
+  <h3>Illicit-Exposure Breakdown</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Metric</th><th>Value</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Cryptex BTC inflow from criminal addresses</td><td>~31% ($441M): $297M fraud + $115M+ ransomware</td><td>DOJ</td></tr>
+        <tr><td>Cryptex BTC inflow from cybercriminal-used services</td><td>9% ($162M)</td><td>DOJ</td></tr>
+        <tr><td>Cryptex BTC outflow to U.S.-sanctioned entities / darknet markets</td><td>28% of all BTC sent</td><td>DOJ</td></tr>
+        <tr><td>Cryptex ransomware-derived inflows</td><td>$51.2M+</td><td>OFAC</td></tr>
+        <tr><td>Cryptex transactions to fraud shops, mixers, no-KYC exchanges, Garantex</td><td>$720M+</td><td>OFAC</td></tr>
+        <tr><td>Ivanov addresses from criminal sources</td><td>~32%: $158M+ fraud, $8.8M+ ransomware, $4.7M darknet drug markets</td><td>DOJ</td></tr>
+        <tr><td>PM2BTC activity linked to illicit sources</td><td>Nearly 50%; worse than 99% of VASPs</td><td>FinCEN</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Sanctioned Wallet Addresses (OFAC SDN, Cryptex)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Asset</th><th>Address</th></tr></thead>
+      <tbody>
+        <tr><td>BTC (XBT)</td><td><span class="wallet-addr">13JtX4h7G5ZuNK5mFudKGq9DHLvvMFuNuz</span></td></tr>
+        <tr><td>ETH</td><td><span class="wallet-addr">0x0931cA4D13BB4ba75D9B7132AB690265D749a5E7</span></td></tr>
+        <tr><td>LTC</td><td><span class="wallet-addr">M8yFL6SFC6TreATegTyuSYkDfDRbisdpT3</span></td></tr>
+        <tr><td>TRX</td><td><span class="wallet-addr">TTUDyVhhpCC1xJoPmWzdjLAzeoPwbSABdr</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted)">OFAC listed four addresses; Elliptic notes it is aware of thousands of additional addresses connected to Cryptex, PM2BTC, Joker's Stash, and PinPays beyond the SDN list. <span class="cite">[OFAC, Elliptic]</span></p>
+
+  <h3>Sanctions and Risk Ratings</h3>
+  <p>Cryptex and Ivanov are OFAC SDN-listed (blocked; secondary sanctions risk flagged). PM2BTC is subject to a FinCEN Section 9714(a) order prohibiting covered U.S. financial institutions from certain transmittals of funds involving it. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC, FinCEN]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vertical</th><th>Specific actors</th><th>Evidence tier</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Fraud shops / carding</strong></td><td>Genesis Market, Rescator, Joker's Stash, BriansClub/Brian Dumps, Faceless</td><td><span class="badge badge-confirmed">Confirmed</span></td><td>OFAC, DOJ, Chainalysis</td></tr>
+        <tr><td><strong>Ransomware</strong></td><td>Conti and Trickbot named for PM2BTC; ransomware proceeds broadly</td><td><span class="badge badge-confirmed">Confirmed</span> (cluster) / <span class="badge badge-credible">Credible</span> (named families)</td><td>TRM Labs, OFAC, DOJ</td></tr>
+        <tr><td><strong>Darknet drug markets</strong></td><td>Unnamed DNMs ($4.7M into Ivanov addresses)</td><td><span class="badge badge-confirmed">Confirmed</span></td><td>DOJ</td></tr>
+        <tr><td><strong>Initial access brokers</strong></td><td>Unnamed; cited categorically by OFAC</td><td><span class="badge badge-credible">Credible</span></td><td>OFAC</td></tr>
+        <tr><td><strong>Sanctions evasion</strong></td><td>Flows to OFAC-designated Garantex; CVC-to-ruble via sanctioned banks</td><td><span class="badge badge-confirmed">Confirmed</span></td><td>OFAC, Elliptic</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>High-Profile Criminal Flows</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Genesis Market.</strong> Ivanov (via UAPS) served as a payment processor for the OFAC-designated fraud shop Genesis Market, whose website was taken down by law enforcement in 2023. <span class="cite">[OFAC, Chainalysis]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Rescator and Joker's Stash.</strong> Ivanov provided bitcoin payment-processing support for Rescator and laundered proceeds from Joker's Stash. Rescator advertised data from up to 40 million payment cards and PII of ~70 million people stolen from a major U.S. retailer in 2013, costing that victim at least $202M. Joker's Stash sold ~40M cards annually (hundreds of millions overall); profit estimates range $280M to $1B+. <span class="cite">[DOJ]</span></p>
+  <p><span class="badge badge-credible">Credible</span> <strong>Ekaterina Zhdanova.</strong> Chainalysis identifies a Cryptex connection to the OFAC-sanctioned Russian money launderer Ekaterina Zhdanova, who laundered for Russian elites and ransomware groups. <span class="badge badge-single">Single Source</span> <span class="cite">[Chainalysis]</span></p>
+
+  <h3>Geographic Patterns</h3>
+  <p>Client base is overwhelmingly the Russian-speaking cybercrime ecosystem: Cryptex advertised in Russian, marketed on exclusive Russian-language criminal forums, and settled into rubles. Victim base (carding) is concentrated in the United States. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Treasury, DOJ]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Assessed Tier : TOLERATED SAFE HARBOR</div>
+    The assessed nexus is <strong>TOLERATED SAFE HARBOR</strong>: the Russian state is aware that such actors operate in its jurisdiction and refrains from enforcement, but there is no public evidence of state tasking, coordination, or direct control of the Cryptex/PM2BTC cluster. Treasury's own framing supports this tier: it states the action "further illustrates that Russia continues to offer safe harbor to such actors" and that the U.S. has "pressed the Russian government to take concrete steps to prevent cyber criminals from freely operating in its jurisdiction."
+  </div>
+
+  <h3>Three-Jurisdiction Separation</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Finding</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Entity registration</td><td>Cryptex: St. Vincent and the Grenadines (IPSP LLC, Reg. 1628). PM2BTC: not formally documented (assessed Russia-based)</td><td><span class="badge badge-confirmed">Confirmed</span> / <span class="badge badge-credible">Credible</span></td></tr>
+        <tr><td>Infrastructure hosting</td><td>Netherlands (seized servers); distributed globally</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Assessed operator location</td><td>Russia (St. Petersburg : Ivanov)</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Negative Evidence</h3>
+  <p>If a higher nexus tier (probable cooperation or direct control) applied, one would expect indicators such as: documented FSB/Rosfinmonitoring tasking, state protection from Russian prosecution paired with selective targeting of state adversaries, or integration into state sanctions-evasion programs. <strong>None of these is present in open sources for this cluster.</strong> What is documented is the absence of Russian enforcement against Ivanov despite a U.S. indictment and a $10M reward, which is consistent with passive safe harbor rather than active direction. <span class="badge badge-inference">Analyst Inference</span></p>
+  <div class="gap-flag">No explicit Russian state direction, tasking, or protection of the Cryptex/PM2BTC cluster is documented. The safe-harbor assessment rests on the absence of enforcement and Treasury's general framing, not on direct evidence of coordination.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+  <h3>September 26, 2024 Coordinated Action</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Instrument</th><th>Authority / agency</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>OFAC designation</td><td>E.O. 13694 (as amended by 13757) [CYBER2] + E.O. 14024</td><td>Cryptex and Ivanov added to SDN List; property blocked; 4 wallet addresses listed</td></tr>
+        <tr><td>FinCEN order</td><td>Section 9714(a), Combating Russian Money Laundering Act</td><td>PM2BTC named "primary money laundering concern"; covered FIs prohibited from certain transmittals (2nd-ever 9714(a) use, after Bitzlato)</td></tr>
+        <tr><td>EDVA indictment</td><td>USAO-EDVA + USSS Cyber Investigative Section</td><td>Ivanov and Shakhmametov charged (bank fraud, access device fraud, money laundering)</td></tr>
+        <tr><td>Domain seizures</td><td>USSS; District of Maryland seizure order</td><td>cryptex.net, cryptex.one, plus UAPS/PM2BTC domains seized</td></tr>
+        <tr><td>Server seizures</td><td>Netherlands Police / FIOD / NHTCU</td><td>Servers taken offline worldwide; &euro;7M crypto seized (with Chainalysis + Tether)</td></tr>
+        <tr><td>Rewards</td><td>State Dept. TOCRP</td><td>Up to $10M each for Ivanov and Shakhmametov; up to $1M for other named-group leaders</td></tr>
+        <tr><td>Operation framework</td><td>Operation Endgame (multinational)</td><td>Coordinated with Latvia, Europol, German BKA, UK NCA, NCFTA</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Indictment Detail</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Ivanov: one count conspiracy to commit and aid/abet bank fraud (Rescator payment processing) and one count conspiracy to commit money laundering (Joker's Stash proceeds). Shakhmametov: bank fraud, access device fraud, and money laundering conspiracies tied to operating Joker's Stash. Prosecuted by AUSA Zoe Bedell (EDVA) and CCIPS; Cryptex investigation handled with the District of Maryland (AUSA Thomas Sullivan). <span class="cite">[DOJ]</span></p>
+
+  <h3>Post-Disruption / Post-Sanction Reconstitution</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">Reconstitution Assessment</div>
+    <strong>Public infrastructure: no confirmed reconstitution as of June 2026.</strong> The seized cryptex.net/cryptex.one domains and the PM2BTC/UAPS infrastructure have not been shown to have re-launched under a new brand in any credible reporting. The October 2025 "Cryptex &rarr; Bytnex" rebrand circulating in open sources refers to an unrelated investment-scheme entity (cryptex.to) and must not be counted as reconstitution of the sanctioned service. <span class="badge badge-confirmed">Confirmed</span> distinct.<br><br>
+    <strong>Operator capacity: intact.</strong> Ivanov and Shakhmametov remain at large in Russia. The enforcement action removed domains, servers, and ~$7M, but did not reach the operators, their relationships, or their tradecraft. The structural risk is operator-led reconstitution under new branding, consistent with the cluster's documented rebrand-and-layer history (UAPS &rarr; PinPays &rarr; PM2BTC &rarr; Cryptex). <span class="badge badge-inference">Analyst Inference</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Two-tier model applied to all entries. <strong>Tier 1 : Transaction confidence:</strong> how confident are we that funds transited this cluster from/to the entity? <strong>Tier 2 : Facilitation assessment:</strong> characterization of the cluster's role (Active facilitation / Structural enablement / Incidental processing). These are independent assessments and must not be collapsed.</p>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Relationship type</th>
+          <th>Tier 1: Transaction confidence</th>
+          <th>Tier 2: Facilitation assessment</th>
+          <th>Corroborating vendors</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Garantex</strong></td>
+          <td>OFAC-designated peer exchange; downstream cash-out</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">OFAC: Cryptex associated with $720M+ in transactions to services including Garantex. Elliptic: Cryptex transferred millions to Garantex.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Cluster routed value to another no/low-KYC venue rather than coordinating a joint scheme.</span></td>
+          <td>OFAC, Elliptic</td>
+          <td>Two-vendor corroboration. Garantex separately sanctioned April 2022.</td>
+        </tr>
+        <tr>
+          <td><strong>Genesis Market</strong></td>
+          <td>OFAC-designated fraud shop; payment-processing client</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">OFAC and DOJ: Ivanov/UAPS served as payment processor for Genesis Market (taken down 2023).</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">UAPS knowingly processed payments for the fraud shop as a service it integrated.</span></td>
+          <td>OFAC, DOJ, Chainalysis</td>
+          <td>Multiple authorities. Direct service relationship, not incidental flow.</td>
+        </tr>
+        <tr>
+          <td><strong>Joker's Stash</strong></td>
+          <td>Carding marketplace; Shakhmametov-operated; Ivanov laundered proceeds</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">DOJ indictment: Ivanov laundered Joker's Stash proceeds; co-charged with operator Shakhmametov.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Laundering of proceeds is a charged, deliberate service.</span></td>
+          <td>DOJ, State Dept., Elliptic</td>
+          <td>Co-defendant relationship binds the two operators.</td>
+        </tr>
+        <tr>
+          <td><strong>Rescator</strong></td>
+          <td>Carding website; UAPS/PinPays payment-processing client</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">DOJ: Ivanov provided bitcoin payment-processing support for Rescator via UAPS and PinPays.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Charged as conspiracy to commit/aid bank fraud.</span></td>
+          <td>DOJ</td>
+          <td>Single-authority but it is the charging document. <span class="badge badge-single">Single Source</span> for processing detail.</td>
+        </tr>
+        <tr>
+          <td><strong>BriansClub / Brian Dumps, Faceless</strong></td>
+          <td>Fraud shops; UAPS payment-processing clients</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Chainalysis names these as UAPS fraud-shop clients; not individually quantified.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Same integrated payment-processor model as Genesis/Rescator.</span></td>
+          <td>Chainalysis</td>
+          <td><span class="badge badge-single">Single Source</span>. TRM/Elliptic have not published entity-specific figures.</td>
+        </tr>
+        <tr>
+          <td><strong>Conti / Trickbot</strong></td>
+          <td>Ransomware groups; PM2BTC cash-out</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: PM2BTC a "preferred platform" for Conti and Trickbot via direct CVC-to-ruble conversion. Not wallet-level attributed in public text.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">No-KYC ruble cash-out predictably served these actors at scale.</span></td>
+          <td>TRM Labs</td>
+          <td><span class="badge badge-single">Single Source</span> for the named-family attribution.</td>
+        </tr>
+        <tr>
+          <td><strong>Ekaterina Zhdanova</strong></td>
+          <td>OFAC-sanctioned money launderer; on-chain link to Cryptex</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Chainalysis Reactor shows a Cryptex connection to Zhdanova.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span> / <span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Nature of the link (direct dealing vs shared counterparties) not specified publicly.</span></td>
+          <td>Chainalysis</td>
+          <td><span class="badge badge-single">Single Source</span>. Relationship depth unresolved.</td>
+        </tr>
+        <tr>
+          <td><strong>U.S.-sanctioned Russian financial institutions</strong></td>
+          <td>Fiat ruble settlement rails for PM2BTC</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">FinCEN: PM2BTC provides direct CVC-to-ruble exchange using U.S.-sanctioned financial institutions. Institutions not named.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Sanctioned banks provided the off-ramp; no evidence of bespoke coordination.</span></td>
+          <td>FinCEN, Treasury</td>
+          <td>Specific banks unnamed in public text. Fiat-rail gap.</td>
+        </tr>
+        <tr>
+          <td><strong>Tether (USDT)</strong></td>
+          <td>Stablecoin issuer; froze/assisted seizure (counter-party, not facilitator)</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Tether assisted the Dutch &euro;7M seizure alongside Chainalysis.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Listed for completeness as a remediating counterparty, not an enabler.</span></td>
+          <td>Chainalysis, FIOD</td>
+          <td>Included to document the asset-freeze relationship.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Pre-disruption, the cluster was a significant Russian-speaking-ecosystem launderer: Cryptex was one of OFAC's largest-ever service-level crypto designations by lifetime throughput ($5.88B+), and PM2BTC carried an illicit ratio worse than 99% of VASPs. It was a specialist fraud-and-ransomware cash-out rail, not a mass-market exchange like Garantex. <span class="cite">[Chainalysis, FinCEN]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    The September 2024 action was a clean infrastructure takedown: domains seized, Netherlands-hosted servers taken offline, ~$7M recovered, and the FinCEN 9714(a) order severing PM2BTC from the U.S. financial system. Because the operators sit in Russia under safe harbor, the action degraded the cluster's public-facing capacity without neutralizing its human capital. Net effect: meaningful short-term disruption of throughput and trust, but the controlling individuals and their criminal relationships persist.
+  </div>
+
+  <h3>Reconstitution Status</h3>
+  <p>Cryptex brand: <strong>No confirmed reconstitution.</strong> Seized domains; SDN-listed. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>PM2BTC / UAPS: <strong>No confirmed reconstitution</strong> under a new brand in credible reporting as of June 2026. <span class="badge badge-credible">Credible</span></p>
+  <p>Operator network: <strong>Intact.</strong> Ivanov and Shakhmametov at large in Russia; no extradition path. <span class="badge badge-confirmed">Confirmed</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Specific U.S.-sanctioned Russian banks used by PM2BTC for ruble settlement are not named in public sources. Correspondent/fiat-rail mapping unknown.</div>
+  <div class="gap-flag">Corporate ownership chain behind Cryptex (International Payment Service Provider LLC, St. Vincent) and its legal link to Ivanov is undocumented.</div>
+  <div class="gap-flag">PM2BTC's formal registration jurisdiction (if any) is not established; "Russia-based" is an assessment.</div>
+  <div class="gap-flag">Named ransomware families beyond Conti/Trickbot, and wallet-level ransomware attribution, are largely proprietary to analytics vendors.</div>
+  <div class="gap-flag">EU and UK sanctions status not located as of June 2026; whether either has mirrored the U.S. action is unconfirmed.</div>
+  <div class="gap-flag">Whether the operators have begun standing up a successor brand post-September 2024 is not documented in open sources.</div>
+  <div class="gap-flag">Mobile apps, node operations, and Telegram channels for the cluster are not documented.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- RECENT REPORTING -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[Oct 7, 2024]</span> Chainalysis issues a correction clarifying that only Ivanov, not the UAPS service as a standalone entity, was the named OFAC target; "UAPS" appears as an alias of Ivanov in the SDN entry. <span class="cite">[Chainalysis]</span></p>
+  <p><span class="cite">[Sept 26, 2024]</span> Coordinated U.S.-Dutch action: OFAC designates Cryptex and Ivanov; FinCEN names PM2BTC a primary money laundering concern (2nd-ever 9714(a) use after Bitzlato); EDVA unseals indictment of Ivanov and Shakhmametov; USSS and Dutch FIOD seize domains/servers and &euro;7M. <span class="cite">[Treasury, DOJ, FIOD, TRM Labs, Elliptic]</span></p>
+  <p><span class="cite">[Oct 2025]</span> Open-source confusion: an unrelated "Cryptex" investment scheme (cryptex.to) rebrands to "Bytnex." Flagged here only to prevent misattribution; not the sanctioned Cryptex.net. <span class="cite">[behindMLM, Decripto]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SOURCES -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://home.treasury.gov/news/press-releases/jy2616" target="_blank">U.S. Treasury: Treasury Takes Coordinated Actions Against Illicit Russian Virtual Currency Exchanges and Cybercrime Facilitator (JY2616) : September 26, 2024</a></li>
+    <li><a href="https://ofac.treasury.gov/recent-actions/20240926" target="_blank">OFAC: Russia-related Designations; Cyber-related Designation (SDN entries, Cryptex + Ivanov, 4 wallet addresses) : September 26, 2024</a></li>
+    <li><a href="https://www.fincen.gov/resources/statutes-regulations/federal-register-notices/imposition-special-measure-prohibiting-0" target="_blank">FinCEN: Section 9714(a) Order Imposing Special Measure Prohibiting Transmittals Involving PM2BTC</a></li>
+    <li><a href="https://www.justice.gov/usao-edva/pr/two-russian-nationals-charged-connection-operating-billion-dollar-money-laundering" target="_blank">DOJ EDVA: Two Russian Nationals Charged; Justice Department Seizes Web Domains for Multiple Illicit Crypto Exchanges : September 26, 2024</a></li>
+    <li><a href="https://www.chainalysis.com/blog/ofac-sanctions-russian-exchange-cryptex-uaps-fraud-shop-2024/" target="_blank">Chainalysis: OFAC Designates Russian Exchange Cryptex, FinCEN names PM2BTC (updated Oct 7, 2024)</a></li>
+    <li><a href="https://www.elliptic.co/blog/ofac-and-fincen-target-major-russian-money-laundering-services-including-cryptex-and-pm2btc" target="_blank">Elliptic: OFAC and FinCEN target major Russian money laundering services including Cryptex and PM2BTC</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/us-treasury-takes-coordinated-actions-against-illicit-russian-virtual-currency-exchanges-and-cybercrime-facilitators-pmbtc-and-cryptex" target="_blank">TRM Labs: US Treasury Takes Coordinated Actions Against Illicit Russian VC Exchanges and Cybercrime Facilitators PM2BTC and Cryptex</a></li>
+    <li><a href="https://www.state.gov/transnational-organized-crime-rewards-program-offers-for-two-russian-nationals-and-sanctions-on-illicit-russian-virtual-currency-exchanges-and-cybercrime-facilitator/" target="_blank">U.S. Department of State: TOCRP Reward Offers for Ivanov and Shakhmametov : September 26, 2024</a></li>
+    <li><a href="https://www.secretservice.gov/investigations/mostwanted/ivanov" target="_blank">U.S. Secret Service: Most Wanted : Sergey Sergeevich Ivanov</a></li>
+    <li><a href="https://www.secretservice.gov/investigations/mostwanted/shakhmametov" target="_blank">U.S. Secret Service: Most Wanted : Timur Kamilevich Shakhmametov</a></li>
+    <li><a href="https://www.fiod.nl/seizure-of-7-million-euros-of-crypto-currency-and-2-crypto-currency-exchanges-offline/" target="_blank">Dutch FIOD: Seizure of &euro;7M of cryptocurrency and 2 crypto exchanges taken offline</a></li>
+    <li><a href="https://therecord.media/cryptocurrency-exchanges-seizures-ivanov-sanctions-us-netherlands" target="_blank">The Record (Recorded Future News): US-led operation disrupts crypto exchanges linked to Russian cybercrime</a></li>
+    <li><a href="https://cyberscoop.com/jokers-stash-cryptex-uaps-pm2btc-cybercrime-money-laundering/" target="_blank">CyberScoop: Two Russian nationals indicted for servicing millions of dollars in cybercrime funds</a></li>
+    <li><a href="https://www.fincen.gov/news/news-releases/fincen-identifies-virtual-currency-exchange-bitzlato-primary-money-laundering" target="_blank">FinCEN: Bitzlato 9714(a) action (first use precedent) : January 2023</a></li>
+    <li><a href="https://behindmlm.com/companies/cryptex-reboots-as-bytnex-following-domain-seizure/" target="_blank">behindMLM: Cryptex reboots as Bytnex (UNRELATED investment-scheme entity : disambiguation only)</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). All volume figures cited with source and methodology; figures from different vendors are not averaged. Two-tier connected entity model applied throughout Section 09. Designation date is September 26, 2024.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
