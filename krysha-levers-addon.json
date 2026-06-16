@@ -1,0 +1,1828 @@
+{
+ "_note": "KRYSHA lever catalog add-on. New schema fields: actor, legitimacy{band,authority,blowback,sustainability,note}, flips[], case_basis. origin marks existing vs new.",
+ "actor_vocabulary": {
+  "WESTERN_LE": "Western law enforcement",
+  "ALLIED_LE": "Allied / cooperative-jurisdiction LE",
+  "REGULATORY": "Treasury/OFAC/financial regulators",
+  "PRIVATE_SECTOR": "Industry, providers, analytics",
+  "MEDIA": "Investigative press",
+  "INDUCED_RUSSIAN_SIDE": "Russian-side predation the disruptor enables but does not control",
+  "OGA": "Other Government Agencies — non-LE national-level capabilities (deliberately unspecified)"
+ },
+ "legitimacy_axis": {
+  "band": "overall HIGH/MEDIUM/LOW",
+  "authority": "is the actor empowered; does it burn a case/source",
+  "blowback": "does it harden the target or escalate (LOW good / HIGH bad)",
+  "sustainability": "defensible to allies/public over time"
+ },
+ "coalition": {
+  "_note": "Who is at the table. The planner starts with `default` only; the analyst adds members to build a coalition. `capacity` is points/quarter that member contributes; a lever is only usable if its `actor` is in the coalition (hard capability gate). Roster is DATA — extend it on an airgapped deployment (add named/real partners) without touching code.",
+  "default": ["WESTERN_LE"],
+  "members": [
+   {"actor": "WESTERN_LE", "name": "Western LE", "capacity": 2, "note": "Your home agency; the backbone. Indictments, seizures, undercover."},
+   {"actor": "ALLIED_LE", "name": "Allied / cooperative LE", "capacity": 1, "note": "Unlocks arrests where a jurisdiction cooperates (the travel-window plays)."},
+   {"actor": "REGULATORY", "name": "Regulators (Treasury / OFAC)", "capacity": 2, "note": "Unlocks sanctions, designations, de-banking. Durable, defensible."},
+   {"actor": "PRIVATE_SECTOR", "name": "Private sector / providers", "capacity": 1, "note": "Hosting, registrars, CDNs, analytics. Fast, deniable, reconstitutes."},
+   {"actor": "MEDIA", "name": "Investigative media", "capacity": 1, "note": "Deniable public-domain exposure; no Western-state fingerprint."},
+   {"actor": "INDUCED_RUSSIAN_SIDE", "name": "Induced Russian-side", "capacity": 1, "enable": true, "note": "Predation you ENABLE but do not control. Cheap capacity, low legitimacy/authority."},
+   {"actor": "OGA", "name": "Other Government Agencies (OGA)", "capacity": 2, "veiled": true, "note": "Non-LE national-level capabilities — offensive cyber, directed-deniable operations, and technical attribution. Broad and powerful; the heaviest operations are escalatory or exposure-sensitive and need authorization. (Deliberately unspecified.)"}
+  ]
+ },
+ "windows": {
+  "_note": "PLANNED openings (deterministic — the analyst or a scenario places them on a quarter). Each grants extra capacity and/or unlocks an actor's levers FOR THAT QUARTER ONLY. This is how Phobos Aetor worked: spot the opening, concentrate force into it. Data — extend on the airgapped box.",
+  "surge_default": 6,
+  "types": [
+   {"id": "travel", "name": "Travel window", "grants_actor": "ALLIED_LE", "capacity": 1, "note": "The operator leaves protected territory — arrests in a cooperative jurisdiction become possible this quarter."},
+   {"id": "political", "name": "Political crack", "grants_actor": "INDUCED_RUSSIAN_SIDE", "capacity": 1, "note": "The krysha wavers — Russian-side predation can be induced this quarter."},
+   {"id": "funding", "name": "Funding / task-force surge", "capacity": 3, "note": "Extra resources land this quarter — pure capacity, no new partner."},
+   {"id": "media", "name": "Media moment", "grants_actor": "MEDIA", "capacity": 1, "note": "A leak or story breaks — the press channel opens this quarter."},
+   {"id": "authorization", "name": "OGA authorization (green-light)", "capacity": 0, "note": "A finding / green-light — enables the heaviest OGA operations (offensive & covert) this quarter. Or flip OGA to always-authorized."}
+  ]
+ },
+ "levers": [
+  {
+   "id": "lv_oga_attribution",
+   "name": "Technical Attribution / Unmasking",
+   "vector": "underground",
+   "targets": ["raas"],
+   "ap_cost": 2, "lag_turns": 1, "backfire_risk": "LOW",
+   "effect": "Technical collection unmasks the operators — anonymous actors become named and located.",
+   "teaching_point": "Attribution is the precondition for every finish: a sanction or arrest is only as good as the unmasking under it.",
+   "confidence": "CREDIBLE",
+   "actor": "OGA",
+   "legitimacy": {"band": "HIGH", "authority": "HIGH", "blowback": "LOW", "sustainability": "HIGH", "note": "Lawful collection, high value — but acting on it can burn sources and methods."},
+   "origin": "new",
+   "adaptation": {"dimensions": {"identity": 2}},
+   "case_basis": "Technical attribution behind multiple indictments/sanctions."
+  },
+  {
+   "id": "lv_oga_c2_neutralize",
+   "name": "Offensive C2 Neutralization",
+   "vector": "infrastructure",
+   "targets": ["n05_loaders", "raas"],
+   "ap_cost": 2, "lag_turns": 0, "backfire_risk": "MEDIUM",
+   "effect": "Neutralize botnet/loader command-and-control by force.",
+   "teaching_point": "Offensive takedown is fast and forceful — but it reconstitutes without pairing, and it is escalatory.",
+   "confidence": "CREDIBLE",
+   "actor": "OGA",
+   "requires_auth": true,
+   "legitimacy": {"band": "MEDIUM", "authority": "HIGH", "blowback": "HIGH", "sustainability": "MED", "note": "Authorized offensive operation; effective but escalatory and burns access."},
+   "origin": "new",
+   "adaptation": {"dimensions": {"infrastructure": 2}, "loud": true},
+   "flips": [{"when": "protection INTACT", "blowback_to": "HIGH", "note": "Loud offensive action can harden protection / provoke escalation."}],
+   "case_basis": "REvil taken offline by offensive action, 2021."
+  },
+  {
+   "id": "lv_oga_infra_takedown",
+   "name": "Forced Infrastructure Takedown",
+   "vector": "infrastructure",
+   "targets": ["n03_bph"],
+   "ap_cost": 3, "lag_turns": 0, "backfire_risk": "MEDIUM",
+   "effect": "Degrade or seize hosting infrastructure by means unavailable to LE or providers.",
+   "teaching_point": "Reaches infrastructure in non-cooperative space — but infra alone rebuilds, now with escalation cost on top.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "OGA",
+   "requires_auth": true,
+   "legitimacy": {"band": "MEDIUM", "authority": "HIGH", "blowback": "HIGH", "sustainability": "MED", "note": "Authorized but escalatory and sovereignty-sensitive."},
+   "origin": "new",
+   "adaptation": {"dimensions": {"infrastructure": 2}, "loud": true},
+   "flips": [{"when": "protection INTACT", "blowback_to": "HIGH", "note": "Escalatory while protection is intact."}]
+  },
+  {
+   "id": "lv_oga_leaksite_offensive",
+   "name": "Offensive Leak-Site Disruption",
+   "vector": "infrastructure",
+   "targets": ["n06_leaksite"],
+   "ap_cost": 2, "lag_turns": 0, "backfire_risk": "MEDIUM",
+   "effect": "Force the negotiation/leak site offline by offensive means — the authorized version of the deniable DDoS.",
+   "teaching_point": "Same effect as the deniable hacktivist play, but with authority behind it and a fingerprint on it.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "OGA",
+   "requires_auth": true,
+   "legitimacy": {"band": "MEDIUM", "authority": "HIGH", "blowback": "MED", "sustainability": "MED", "note": "Authorized offensive disruption; attributable."},
+   "origin": "new",
+   "adaptation": {"dimensions": {"infrastructure": 1}}
+  },
+  {
+   "id": "lv_oga_influence",
+   "name": "Directed Influence Operation",
+   "vector": "underground",
+   "targets": ["n07_trust", "raas"],
+   "ap_cost": 2, "lag_turns": 1, "backfire_risk": "LOW",
+   "effect": "A controlled, deniable influence operation that fractures trust inside the ecosystem.",
+   "teaching_point": "The controlled cousin of induced distrust: you direct it — deniable, until it is exposed.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "OGA",
+   "requires_auth": true,
+   "legitimacy": {"band": "MEDIUM", "authority": "LOW", "blowback": "LOW", "sustainability": "MED", "note": "Covert and directed; deniable but oversight-sensitive."},
+   "origin": "new",
+   "adaptation": {"dimensions": {"trust": 3}},
+   "flips": [{"when": "exposed / attributed", "legitimacy_to": "LOW", "note": "Exposure of a covert operation collapses its legitimacy."}],
+   "case_basis": "Directed influence; contrast with the uncontrolled Conti fracture."
+  },
+  {
+   "id": "lv_oga_insider",
+   "name": "Directed Insider Operation",
+   "vector": "protection_layer",
+   "targets": ["raas", "protection", "n07_trust"],
+   "ap_cost": 3, "lag_turns": 2, "backfire_risk": "MEDIUM",
+   "effect": "A controlled insider/penetration operation that surfaces identities and severs protection from within.",
+   "teaching_point": "The controlled cousin of induced predation: directed and deniable, with the same exposure risk.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "OGA",
+   "requires_auth": true,
+   "legitimacy": {"band": "MEDIUM", "authority": "LOW", "blowback": "LOW", "sustainability": "MED", "note": "Covert; high effect, deniable, exposure-catastrophic."},
+   "origin": "new",
+   "adaptation": {"dimensions": {"trust": 2, "identity": 1}, "severs_protection": 1},
+   "flips": [{"when": "exposed / attributed", "legitimacy_to": "LOW", "note": "Exposure collapses legitimacy."}],
+   "case_basis": "Contrast with the Satuchin induced (uncontrolled) predation."
+  },
+  {
+   "id": "a_otc_designation",
+   "name": "Designate OTC Broker Cluster",
+   "vector": "financial",
+   "targets": [
+    "n01_otc"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Strands large cash-out; compounds each turn it stays in place.",
+   "teaching_point": "Financial designation is the most durable vector: infrastructure rebuilds in days, financial exposure compounds.",
+   "confidence": "CONFIRMED",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Treasury/OFAC authority is clear and defensible; slow but durable."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "financial": 2
+    }
+   },
+   "case_basis": "OFAC OTC designations (Suex 2021, Garantex 2022)."
+  },
+  {
+   "id": "a_exchange_kyc",
+   "name": "VASP KYC / Enhanced Due Diligence Push",
+   "vector": "financial",
+   "targets": [
+    "n02_exchanges"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Narrows compliant cash-out gateways; raises friction.",
+   "teaching_point": "Each designation raises actor cost even when an alternative exists.",
+   "confidence": "CONFIRMED",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Regulatory engagement, not coercion; high authority, low blowback."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1
+    }
+   }
+  },
+  {
+   "id": "a_mixer_designation",
+   "name": "Designate Mixing Service",
+   "vector": "financial",
+   "targets": [
+    "n08_mixers"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Flags mixer flows; raises downstream compliance friction.",
+   "teaching_point": "Designation degrades fungibility of laundered proceeds.",
+   "confidence": "CONFIRMED",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Tornado Cash / Blender precedent; defensible."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1
+    }
+   },
+   "case_basis": "OFAC: Blender.io 2022, Tornado Cash 2022."
+  },
+  {
+   "id": "a_bph_upstream",
+   "name": "Upstream Provider Engagement (BPH)",
+   "vector": "infrastructure",
+   "targets": [
+    "n03_bph"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Pressures transit/peering to drop the bulletproof host.",
+   "teaching_point": "Infrastructure pressure works only when paired with a money or identity vector.",
+   "confidence": "CONFIRMED",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Private peering pressure is legitimate but reconstitutes fast."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 2
+    }
+   }
+  },
+  {
+   "id": "a_leaksite_takedown",
+   "name": "Leak-Site Seizure",
+   "vector": "infrastructure",
+   "targets": [
+    "n06_leaksite"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Seizes the leak/negotiation site; temporary.",
+   "teaching_point": "Seizure alone is a leadership transition, not degradation.",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Warrant/MLAT-backed seizure; legitimate but short-lived alone."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   },
+   "case_basis": "LockBit relaunched in 5 days; BlackCat leak site back in 48-72h."
+  },
+  {
+   "id": "a_leaksite_decryptor",
+   "name": "Seize Site + Release Decryptor (Cronos model)",
+   "vector": "infrastructure",
+   "targets": [
+    "n06_leaksite",
+    "n07_trust"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Seizure plus decryptor and affiliate-data reveal corrodes trust.",
+   "teaching_point": "Pairing seizure with a trust attack is what made Operation Cronos bite.",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "HIGH",
+    "note": "Cronos-style psyop on top of lawful seizure; high legitimacy and high effect."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1,
+     "trust": 2
+    }
+   },
+   "case_basis": "Operation Cronos (LockBit) Feb 2024."
+  },
+  {
+   "id": "a_loader_sinkhole",
+   "name": "Sinkhole Loader Botnet (Duck Hunt model)",
+   "vector": "infrastructure",
+   "targets": [
+    "n05_loaders"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW-MEDIUM",
+   "effect": "Sinkholes C2; capacity returns unless paired with money/identity.",
+   "teaching_point": "A sinkhole alone fails; add the money vector (the Duck Hunt lesson).",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful court-authorized takeover; reconstitutes without pairing."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 2
+    }
+   },
+   "case_basis": "Operation Duck Hunt (Qakbot) 2023."
+  },
+  {
+   "id": "a_iab_infiltration",
+   "name": "Infiltrate / Take Down IAB Market",
+   "vector": "underground",
+   "targets": [
+    "n04_iab"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Undercover presence + takedown seeds buyer distrust.",
+   "teaching_point": "Infiltration degrades trust as well as infrastructure.",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Undercover market work is well-established and deniable."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1,
+     "trust": 1
+    }
+   }
+  },
+  {
+   "id": "a_stealer_takedown",
+   "name": "Stealer-Log Market Takedown",
+   "vector": "underground",
+   "targets": [
+    "n10_stealers"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Removes a stealer-log marketplace; supply re-lists elsewhere.",
+   "teaching_point": "Takedown without victim notification leaves the supply intact.",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Lawful takedown; supply migrates."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "a_trust_node",
+   "name": "Disrupt Escrow / Arbitrator (Trust Node)",
+   "vector": "underground",
+   "targets": [
+    "n07_trust"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Compromising escrow/arbitration collapses deal-making confidence.",
+   "teaching_point": "Trust infrastructure is a higher-leverage target than any single market.",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "HIGH",
+    "note": "Hitting escrow is lawful and structurally potent."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "trust": 3,
+     "identity": 1
+    }
+   }
+  },
+  {
+   "id": "a_third_country_arrest",
+   "name": "Third-Country Arrest (travel window)",
+   "vector": "legal",
+   "targets": [
+    "raas"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Arrest during travel to a cooperative jurisdiction removes the operator.",
+   "teaching_point": "Operators are reachable only when they leave protected territory.",
+   "confidence": "CONFIRMED",
+   "actor": "ALLIED_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "HIGH",
+    "note": "Lawful extradition/arrest; depends on a travel window."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "identity": 2
+    },
+    "removes_operator": true
+   },
+   "case_basis": "Multiple 2023-2025 third-country arrests (Georgia, Thailand)."
+  },
+  {
+   "id": "a_indictment_public",
+   "name": "Public Indictment / Attribution",
+   "vector": "legal",
+   "targets": [
+    "raas"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "HIGH",
+   "effect": "Names the operator publicly; signals capability.",
+   "teaching_point": "Going loud before protection is severed hardens the krysha (protection-reflex trap).",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "HIGH",
+    "blowback": "HIGH",
+    "sustainability": "MED",
+    "note": "Lawful, but counterproductive if timed wrong."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "loud": true
+   },
+   "flips": [
+    {
+     "when": "protection still INTACT/HARDENED",
+     "blowback_to": "HIGH",
+     "note": "Hardens protection, burns the element of surprise; legitimacy effectively LOW here."
+    },
+    {
+     "when": "protection already SEVERED",
+     "blowback_to": "LOW",
+     "note": "With protection cut, attribution converts to durable identity pressure."
+    }
+   ]
+  },
+  {
+   "id": "a_fns_referral",
+   "name": "FNS Lifestyle-Inconsistency Referral",
+   "vector": "legal",
+   "targets": [
+    "n09_mules",
+    "protection"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Tax-authority referral on unexplained wealth; also pressures protectors.",
+   "teaching_point": "Domestic tax exposure is a rare lever that reaches protected actors.",
+   "confidence": "CREDIBLE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Uses Russia's own tax apparatus; deniable, low blowback."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1,
+     "identity": 1
+    },
+    "severs_protection": 1
+   }
+  },
+  {
+   "id": "a_mule_disruption",
+   "name": "Mule Recruitment / Front-Company Disruption",
+   "vector": "legal",
+   "targets": [
+    "n09_mules"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW-MEDIUM",
+   "effect": "Dismantles recruitment funnels and front companies.",
+   "teaching_point": "Cash-out depends on replaceable but frictional human networks.",
+   "confidence": "CONFIRMED",
+   "actor": "ALLIED_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Lawful financial-crime enforcement."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1
+    }
+   }
+  },
+  {
+   "id": "a_officer_exposure",
+   "name": "Officer Financial Exposure Operation",
+   "vector": "protection_layer",
+   "targets": [
+    "protection"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Surfaces a protecting officer's financial footprint.",
+   "teaching_point": "The protector has personal exposure that the protected do not.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "MED",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Depends on method: sanctions/FOIA-grade = higher; intrusion = lower."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "severs_protection": 2
+   }
+  },
+  {
+   "id": "a_journalism_pipeline",
+   "name": "Investigative-Journalism Pipeline",
+   "vector": "protection_layer",
+   "targets": [
+    "protection",
+    "n07_trust"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Feeds verified material to investigative outlets.",
+   "teaching_point": "Public-domain exposure via press is deniable and politically durable.",
+   "confidence": "CREDIBLE",
+   "actor": "MEDIA",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Free-press channel; no Western-state fingerprint, hard to retaliate against."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "trust": 1,
+     "identity": 1
+    },
+    "severs_protection": 1
+   },
+   "case_basis": "Conti leaks reporting; bellingcat-style deanonymization."
+  },
+  {
+   "id": "a_cvd_reform",
+   "name": "Coordinated Vulnerability Disclosure (CVD) Reform",
+   "vector": "financial",
+   "targets": [
+    "n16_exploit"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Shrinks the exploit-broker market by speeding patching.",
+   "teaching_point": "Reducing exploit shelf-life starves the access pipeline upstream.",
+   "confidence": "CREDIBLE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Policy/ecosystem reform; unimpeachable."
+   },
+   "origin": "existing",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_otc_banking_cutoff",
+   "name": "Correspondent-Banking / Payment-Rail Cutoff",
+   "vector": "financial",
+   "targets": [
+    "n01_otc"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Severs fiat on/off-ramps the broker relies on.",
+   "teaching_point": "Cutting the fiat rail hurts more than naming the wallet.",
+   "confidence": "CREDIBLE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Correspondent de-risking is standard and durable."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 2
+    }
+   }
+  },
+  {
+   "id": "lv_otc_arrest_coop",
+   "name": "Operator Arrest in Cooperative CIS State",
+   "vector": "legal",
+   "targets": [
+    "n01_otc"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Arrest where the broker operates outside Russian protection (KZ/GE/AM).",
+   "teaching_point": "OTC brokers travel and base in selectively-cooperative states.",
+   "confidence": "CREDIBLE",
+   "actor": "ALLIED_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful where jurisdiction cooperates; not available in Russia."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1,
+     "financial": 1
+    },
+    "removes_operator": true
+   }
+  },
+  {
+   "id": "lv_exch_sanction",
+   "name": "Sanction / Designate Exchange",
+   "vector": "financial",
+   "targets": [
+    "n02_exchanges"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Designates the non-compliant exchange; cuts it from compliant rails.",
+   "teaching_point": "Designation strands the cash-out venue, not just a wallet.",
+   "confidence": "CONFIRMED",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Garantex-style action; defensible and durable."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 2
+    }
+   },
+   "case_basis": "Garantex designation/seizure 2022-2025."
+  },
+  {
+   "id": "lv_exch_debank",
+   "name": "Correspondent De-Banking",
+   "vector": "financial",
+   "targets": [
+    "n02_exchanges"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Pressures correspondent banks to drop the exchange.",
+   "teaching_point": "An exchange with no banking is a wallet with no exit.",
+   "confidence": "CREDIBLE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Standard de-risking."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1
+    }
+   }
+  },
+  {
+   "id": "lv_bph_host_raid",
+   "name": "Host-Country LE Raid / Seizure",
+   "vector": "infrastructure",
+   "targets": [
+    "n03_bph"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 2,
+   "backfire_risk": "MEDIUM",
+   "effect": "Physical/legal seizure where the host is incorporated.",
+   "teaching_point": "BPH dies only when the host-country acts; upstream pressure alone is temporary.",
+   "confidence": "CREDIBLE",
+   "actor": "ALLIED_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful raid where jurisdiction allows; reconstitutes if not paired."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 2
+    }
+   },
+   "case_basis": "Lolek / Aeza-style hosting actions."
+  },
+  {
+   "id": "lv_bph_registrar",
+   "name": "Registrar / IP-Range Deplatform",
+   "vector": "infrastructure",
+   "targets": [
+    "n03_bph",
+    "n13_dns"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Revokes domains and IP allocations tied to the host.",
+   "teaching_point": "Infrastructure ID is replaceable but each rotation costs the actor.",
+   "confidence": "CONFIRMED",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Registry/RIR policy enforcement."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_exploit_indict",
+   "name": "Indict Exploit Broker",
+   "vector": "legal",
+   "targets": [
+    "n16_exploit"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "MEDIUM",
+   "effect": "Charges a named broker selling access to RaaS.",
+   "teaching_point": "Brokers are individuals with travel exposure.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful; same loud-before-sever caveat applies."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "loud": true
+   },
+   "flips": [
+    {
+     "when": "protection INTACT",
+     "blowback_to": "HIGH",
+     "note": "Loud naming hardens any protection."
+    }
+   ]
+  },
+  {
+   "id": "lv_exploit_buyup",
+   "name": "Market Interference / Bug-Bounty Crowd-Out",
+   "vector": "financial",
+   "targets": [
+    "n16_exploit"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 3,
+   "backfire_risk": "LOW",
+   "effect": "Legitimate bounties out-compete criminal exploit demand.",
+   "teaching_point": "Raising the legitimate price of bugs starves the criminal market.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Market mechanism; fully legitimate."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_iab_honeypot",
+   "name": "Honeypot Access Listings",
+   "vector": "underground",
+   "targets": [
+    "n04_iab"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Sells salted/booby-trapped access to poison the market.",
+   "teaching_point": "Poisoned supply degrades trust faster than takedown.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Undercover deception is lawful and high-leverage."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "trust": 2
+    }
+   }
+  },
+  {
+   "id": "lv_iab_admin_arrest",
+   "name": "Arrest Market Admin",
+   "vector": "legal",
+   "targets": [
+    "n04_iab"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Removes the market operator via cooperative jurisdiction.",
+   "teaching_point": "Admin removal collapses confidence if paired with data reveal.",
+   "confidence": "CREDIBLE",
+   "actor": "ALLIED_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful where reachable."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1,
+     "trust": 1
+    },
+    "removes_operator": true
+   }
+  },
+  {
+   "id": "lv_loaders_c2_takedown",
+   "name": "C2 Domain / Host Takedown",
+   "vector": "infrastructure",
+   "targets": [
+    "n05_loaders",
+    "n13_dns"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Kills active C2 via registrar/host action.",
+   "teaching_point": "C2 takedown is fast but rebuilds without financial pairing.",
+   "confidence": "CONFIRMED",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Routine abuse enforcement."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_loaders_indict",
+   "name": "Indict Loader Operator",
+   "vector": "legal",
+   "targets": [
+    "n05_loaders",
+    "raas"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "HIGH",
+   "effect": "Names the botnet operator.",
+   "teaching_point": "Naming without severing protection hardens the krysha.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "HIGH",
+    "blowback": "HIGH",
+    "sustainability": "MED",
+    "note": "Lawful but timing-sensitive."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "loud": true
+   },
+   "flips": [
+    {
+     "when": "protection INTACT",
+     "blowback_to": "HIGH",
+     "note": "Protection-reflex trap."
+    }
+   ]
+  },
+  {
+   "id": "lv_leaksite_deplatform",
+   "name": "Hosting / CDN Deplatform",
+   "vector": "infrastructure",
+   "targets": [
+    "n06_leaksite"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Pressures CDN/host to drop the leak site.",
+   "teaching_point": "Deplatforming is friction, not death.",
+   "confidence": "CONFIRMED",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Terms-of-service enforcement."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_leaksite_ddos",
+   "name": "Persistent DDoS of Leak Site",
+   "vector": "infrastructure",
+   "targets": [
+    "n06_leaksite"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 1,
+   "backfire_risk": "MEDIUM",
+   "effect": "Keeps the negotiation/leak site offline by force.",
+   "teaching_point": "Offensive disruption is effective but legally gray for state actors.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "INDUCED_RUSSIAN_SIDE",
+   "legitimacy": {
+    "band": "LOW",
+    "authority": "LOW",
+    "blowback": "MED",
+    "sustainability": "LOW",
+    "note": "Extralegal for Western LE; better deniably induced. Vigilante/hacktivist territory."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   },
+   "flips": [
+    {
+     "when": "attributed to Western state",
+     "legitimacy_to": "LOW",
+     "note": "Authority problem; do not own it."
+    },
+    {
+     "when": "deniable third-party",
+     "blowback_to": "LOW",
+     "note": "No Western fingerprint."
+    }
+   ]
+  },
+  {
+   "id": "lv_trust_sockpuppet",
+   "name": "Reputation / Sockpuppet Attack on Brokers",
+   "vector": "underground",
+   "targets": [
+    "n07_trust"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Seeds accusations of snitching/scamming against key brokers.",
+   "teaching_point": "Manufactured distrust is cheaper than arrests and self-sustains.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Influence operation; deniable, gray on authority."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "trust": 2,
+     "identity": 1
+    }
+   }
+  },
+  {
+   "id": "lv_trust_seed_distrust",
+   "name": "Induce Internal Distrust (rip-and-run signal)",
+   "vector": "underground",
+   "targets": [
+    "n07_trust",
+    "raas"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Amplifies the perception that members are cooperating or stealing.",
+   "teaching_point": "Trust collapse from within is the cheapest path to ecosystem degradation.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "INDUCED_RUSSIAN_SIDE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "LOW",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Induced, not directly controlled; deniable, no Western fingerprint."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "trust": 3
+    }
+   },
+   "case_basis": "Conti internal fracture after 2022 leaks."
+  },
+  {
+   "id": "lv_mixer_seize",
+   "name": "Seize Mixer Infrastructure",
+   "vector": "infrastructure",
+   "targets": [
+    "n08_mixers"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Court-ordered seizure of mixer servers/keys.",
+   "teaching_point": "Seizure + designation compounds the laundering tax.",
+   "confidence": "CONFIRMED",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Sinbad/Blender precedent."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1,
+     "financial": 1
+    }
+   },
+   "case_basis": "Sinbad.io seizure 2023."
+  },
+  {
+   "id": "lv_mixer_demix",
+   "name": "On-Chain Demixing + Attribution",
+   "vector": "financial",
+   "targets": [
+    "n08_mixers"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 3,
+   "backfire_risk": "LOW",
+   "effect": "Tracing that defeats the mixer and attributes flows.",
+   "teaching_point": "Demonstrated demixing erodes the value proposition of the mixer.",
+   "confidence": "CREDIBLE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Analytics; fully legitimate."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1,
+     "identity": 1
+    }
+   }
+  },
+  {
+   "id": "lv_mules_bank_controls",
+   "name": "Bank Fraud-Control Tightening",
+   "vector": "financial",
+   "targets": [
+    "n09_mules"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Pushes receiving banks to flag mule patterns.",
+   "teaching_point": "Raising mule attrition raises the whole network's cost.",
+   "confidence": "CREDIBLE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Standard AML."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1
+    }
+   }
+  },
+  {
+   "id": "lv_mules_network_arrest",
+   "name": "Arrest Laundering Network",
+   "vector": "legal",
+   "targets": [
+    "n09_mules"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Coordinated arrests of the cash-out crew.",
+   "teaching_point": "Networks are replaceable but each takedown imposes real delay.",
+   "confidence": "CREDIBLE",
+   "actor": "ALLIED_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful where reachable."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1,
+     "identity": 1
+    },
+    "removes_operator": true
+   }
+  },
+  {
+   "id": "lv_stealers_victim_notify",
+   "name": "Seize + Victim Notification",
+   "vector": "underground",
+   "targets": [
+    "n10_stealers"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Takedown plus credential reset at scale devalues the logs.",
+   "teaching_point": "Notifying victims is what turns a takedown into supply destruction.",
+   "confidence": "CREDIBLE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Protective; unimpeachable."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1,
+     "financial": 1
+    }
+   }
+  },
+  {
+   "id": "lv_stealers_processor_cut",
+   "name": "Payment-Processor Cutoff",
+   "vector": "financial",
+   "targets": [
+    "n10_stealers"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Cuts the subscription-payment processors the market uses.",
+   "teaching_point": "Even crypto-first markets have payment chokepoints.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Processor enforcement."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1
+    }
+   }
+  },
+  {
+   "id": "lv_crypters_takedown",
+   "name": "Crypter Service Takedown",
+   "vector": "infrastructure",
+   "targets": [
+    "n11_crypters"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Removes the crypter/packer service and its panel.",
+   "teaching_point": "Detection evasion is a service with its own infrastructure.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Lawful takedown."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_crypters_detection",
+   "name": "Force AV/EDR Detection of Stub",
+   "vector": "infrastructure",
+   "targets": [
+    "n11_crypters"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Industry coordination to burn the crypter's evasion stub.",
+   "teaching_point": "Burning the stub resets the service's whole value proposition.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Defensive coordination."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_crypters_dev_indict",
+   "name": "Indict Crypter Developer",
+   "vector": "legal",
+   "targets": [
+    "n11_crypters"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "MEDIUM",
+   "effect": "Charges the named developer.",
+   "teaching_point": "Small dev teams are individually exposed.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful; loud-timing caveat."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "loud": true
+   }
+  },
+  {
+   "id": "lv_vps_abuse",
+   "name": "Provider Abuse-Desk Pressure",
+   "vector": "infrastructure",
+   "targets": [
+    "n12_vps"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Forces resellers to enforce abuse policy.",
+   "teaching_point": "Gray-market VPS depends on lax abuse handling.",
+   "confidence": "CREDIBLE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "ToS enforcement."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_vps_kyc",
+   "name": "Reseller KYC Mandate",
+   "vector": "financial",
+   "targets": [
+    "n12_vps"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Regulatory push for reseller identity checks.",
+   "teaching_point": "KYC at the reseller raises the cost of anonymous infrastructure.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Policy reform."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_dns_registrar_suspend",
+   "name": "Registrar Suspension at Scale",
+   "vector": "infrastructure",
+   "targets": [
+    "n13_dns"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Bulk suspension of malicious domains.",
+   "teaching_point": "Domain churn is cheap; sustained registrar pressure compounds.",
+   "confidence": "CONFIRMED",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Abuse enforcement."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_dns_rpz",
+   "name": "DNS Firewall / RPZ Blocking",
+   "vector": "infrastructure",
+   "targets": [
+    "n13_dns",
+    "n05_loaders"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Resolver-level blocking of malicious domains.",
+   "teaching_point": "Protective resolution shrinks reach without a takedown.",
+   "confidence": "CREDIBLE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Defensive; unimpeachable."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_exfil_takedown",
+   "name": "Seize Exfil Staging Infrastructure",
+   "vector": "infrastructure",
+   "targets": [
+    "n14_exfil"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "LOW",
+   "effect": "Removes cloud/staging buckets used for data theft.",
+   "teaching_point": "Cutting staging interrupts the double-extortion pipeline.",
+   "confidence": "CREDIBLE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Cloud-provider/LE action."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_exfil_cloud_pressure",
+   "name": "Cloud-Provider Monitoring + Disruption",
+   "vector": "infrastructure",
+   "targets": [
+    "n14_exfil"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Provider-side detection of bulk-exfil patterns.",
+   "teaching_point": "The same providers staging the data can detect it.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "PRIVATE_SECTOR",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Provider policy."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1,
+     "identity": 1
+    }
+   }
+  },
+  {
+   "id": "lv_proxy_provider",
+   "name": "Residential-Proxy Provider Pressure",
+   "vector": "infrastructure",
+   "targets": [
+    "n15_proxy"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Pressures proxy providers sourcing criminal traffic.",
+   "teaching_point": "Anonymization layers have commercial chokepoints.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "MED",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "Regulatory/ToS."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1
+    }
+   }
+  },
+  {
+   "id": "lv_proxy_infiltrate",
+   "name": "Infiltrate + Attribute Proxy Network",
+   "vector": "underground",
+   "targets": [
+    "n15_proxy"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "Undercover mapping that strips anonymity.",
+   "teaching_point": "Mapping the proxy layer enables attribution upstream.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Undercover technique."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "infrastructure": 1,
+     "identity": 1
+    }
+   }
+  },
+  {
+   "id": "lv_raas_public_dox",
+   "name": "Public Doxxing of Operator by LE",
+   "vector": "legal",
+   "targets": [
+    "raas"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 1,
+   "backfire_risk": "HIGH",
+   "effect": "State publicly publishes the operator's real identity/personal data.",
+   "teaching_point": "LE-attributed doxxing is the textbook protection-reflex trap: it hardens the krysha and burns collection.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "LOW",
+    "authority": "LOW",
+    "blowback": "HIGH",
+    "sustainability": "LOW",
+    "note": "Extrajudicial naming sits outside clean LE authority, signals sources/methods, and consolidates state protection."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "loud": true
+   },
+   "flips": [
+    {
+     "when": "protection INTACT/HARDENED",
+     "legitimacy_to": "LOW",
+     "blowback_to": "HIGH",
+     "note": "Worst case: hardens protection, no durable pressure."
+    },
+    {
+     "when": "protection already SEVERED",
+     "blowback_to": "MED",
+     "note": "Marginally better once protection is gone, but a formal indictment is the cleaner instrument."
+    }
+   ],
+   "case_basis": "Contrast with Conti/Trickbot deanonymization that worked via leaks, not LE press releases."
+  },
+  {
+   "id": "lv_raas_induce_predation",
+   "name": "Induce Internal Predation (fake-krysha / insider leak)",
+   "vector": "protection_layer",
+   "targets": [
+    "raas",
+    "protection",
+    "n07_trust"
+   ],
+   "ap_cost": 3,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Create conditions for Russian-side actors to prey on the operators (fake-siloviki extortion, amplified insider leaks).",
+   "teaching_point": "When deanonymization surfaces through Russian-side predation, it imposes identity/trust cost with no Western fingerprint and no authority problem.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "INDUCED_RUSSIAN_SIDE",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "LOW",
+    "blowback": "LOW",
+    "sustainability": "MED",
+    "note": "High effect, deniable, politically clean for the West, but not directly controllable and conditionally good."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "trust": 2,
+     "identity": 1
+    },
+    "severs_protection": 1
+   },
+   "flips": [
+    {
+     "when": "survivors consolidate under stronger protection",
+     "blowback_to": "MED",
+     "note": "Predation can harden the strong while culling the weak."
+    },
+    {
+     "when": "predation is disinformation",
+     "note": "May mislead targeting; treat WAIS impact as ANALYST_INFERENCE."
+    }
+   ],
+   "case_basis": "Ruslan Satuchin fake-FSB extortion of Conti (charged Art.159 ch.4, 2025)."
+  },
+  {
+   "id": "lv_raas_bounty",
+   "name": "Rewards-for-Justice Bounty",
+   "vector": "legal",
+   "targets": [
+    "raas"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "MEDIUM",
+   "effect": "Public bounty incentivizes insiders to inform.",
+   "teaching_point": "A bounty monetizes the distrust that already exists inside the crew.",
+   "confidence": "CREDIBLE",
+   "actor": "WESTERN_LE",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "HIGH",
+    "note": "Lawful incentive; can also spook the crew into security."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1,
+     "trust": 1
+    }
+   },
+   "case_basis": "$10M RFJ bounties on LockBit/Conti leadership."
+  },
+  {
+   "id": "lv_raas_sanction",
+   "name": "Sanction Named Operator",
+   "vector": "financial",
+   "targets": [
+    "raas"
+   ],
+   "ap_cost": 1,
+   "lag_turns": 2,
+   "backfire_risk": "LOW",
+   "effect": "OFAC designation of the individual operator.",
+   "teaching_point": "Personal sanctions constrain travel and cash-out simultaneously.",
+   "confidence": "CONFIRMED",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "HIGH",
+    "authority": "HIGH",
+    "blowback": "LOW",
+    "sustainability": "HIGH",
+    "note": "Defensible; pairs identity with financial."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "financial": 1,
+     "identity": 1
+    }
+   },
+   "case_basis": "OFAC designations of LockBitSupp / Conti members."
+  },
+  {
+   "id": "lv_prot_sanction",
+   "name": "Sanction / Name the Protector",
+   "vector": "protection_layer",
+   "targets": [
+    "protection"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Designates or names the protecting officer/unit.",
+   "teaching_point": "Sanctioning the protector raises the cost of providing krysha.",
+   "confidence": "CREDIBLE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "HIGH",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Lawful but invites symmetric retaliation."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "severs_protection": 1
+   }
+  },
+  {
+   "id": "lv_prot_diplomatic",
+   "name": "Diplomatic / Visa Pressure on Patrons",
+   "vector": "protection_layer",
+   "targets": [
+    "protection"
+   ],
+   "ap_cost": 2,
+   "lag_turns": 3,
+   "backfire_risk": "MEDIUM",
+   "effect": "Targets the patrons' families/assets abroad via visa and asset measures.",
+   "teaching_point": "Protectors have offshore exposure the protected lack.",
+   "confidence": "ANALYST_INFERENCE",
+   "actor": "REGULATORY",
+   "legitimacy": {
+    "band": "MEDIUM",
+    "authority": "MED",
+    "blowback": "MED",
+    "sustainability": "MED",
+    "note": "Statecraft lever; slow, politically heavy."
+   },
+   "origin": "new",
+   "adaptation": {
+    "dimensions": {
+     "identity": 1
+    },
+    "severs_protection": 1
+   }
+  }
+ ]
+}
