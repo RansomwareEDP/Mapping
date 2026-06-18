@@ -562,6 +562,16 @@ select:focus{border-color:var(--accent)}
 .pl-distbar span{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--mono);color:#04212a;min-width:0;overflow:hidden}
 .pl-distlegend{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;font-family:var(--mono);color:var(--muted);margin-bottom:14px}
 .pl-distlegend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+.pl-spread{margin:2px 0 14px}
+.pl-spread-bar{display:flex;height:12px;border-radius:5px;overflow:hidden;border:1px solid var(--border)}
+.pl-spread-bar span{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:var(--mono);color:#04212a;min-width:0;overflow:hidden}
+.pl-spread-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;font-family:var(--mono);color:var(--muted);margin-top:5px}
+.pl-spread-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+.pl-spread-note{font-size:10px;color:var(--muted);line-height:1.45;margin-top:5px}
+.pl-theme-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+.pl-theme-chip{font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--border);border-radius:7px;padding:3px 7px;line-height:1.3}
+.pl-theme-chip b{font-size:13px;font-weight:800}
+.pl-theme-chip .rg{opacity:.8}
 .pl-crit{list-style:none;margin:0 0 14px;padding:0}
 .pl-crit li{font-size:12px;line-height:1.5;padding:7px 0 7px 22px;position:relative;border-bottom:1px solid var(--border)}
 .pl-crit li:last-child{border-bottom:none}
@@ -617,12 +627,12 @@ select:focus{border-color:var(--accent)}
 <div id="loader">
   <div class="load-card">
     <div class="eyebrow" style="margin-bottom:10px">KRYSHA · a ransomware ecosystem disruption simulator</div>
-    <h2>Loading content pack…</h2>
+    <h2 id="load-h2">Loading content pack…</h2>
     <p id="load-msg">Reading <code>content-pack-v1.json</code>.</p>
     <div id="drop" class="drop hidden">
-      Couldn't auto-load the pack (this happens when you open the file directly from disk).<br>
-      <b>Drag <code>content-pack-v1.json</code> here</b>, or click to choose it.
-      <input type="file" id="filepick" accept=".json,application/json" class="hidden">
+      <b>Drag the data file(s) here</b>, or click to choose them.<br>
+      Required: <code>content-pack-v1.json</code>. Optional (for the full lever set): <code>krysha-levers-addon.json</code> — drop both together.
+      <input type="file" id="filepick" accept=".json,application/json" class="hidden" multiple>
     </div>
     <div id="load-err" class="load-err"></div>
   </div>
@@ -789,6 +799,24 @@ let PACK=null;
 let HEADLESS=false;
 let HEADLESS_EVENTS=null;
 
+/* ---- declared uncertainty sources (Planner decomposition) ----
+   The teaching game has exactly ONE stochastic element: the operational-backfire
+   coin. To stop the Planner's "outcome distribution" from being one coin flipped,
+   the Planner adds a SECOND, declared source: ADVERSARY-RESPONSE uncertainty —
+   reactions the teaching game resolves deterministically (does the krysha harden
+   when you go loud; does a successor step in when a brand is knocked down) become
+   probabilistic draws. These two flags let the evaluator run each source in
+   ISOLATION so the spread can be attributed (see pl_evalCell decomposition).
+   In the LIVE teaching game PL_ADV stays false, so its clean cause→effect is
+   unchanged; only PL_BF (backfire) is live there, exactly as before.            */
+let PL_BF=true;    // operational-backfire variance active
+let PL_ADV=false;  // adversary-response uncertainty active (Planner only)
+/* An adversary reaction that is deterministic in the teaching game (it always
+   happens) becomes a draw of probability p when adversary-response uncertainty is
+   live. Returns true (reaction fires) in the deterministic case, preserving the
+   teaching game and the backfire-only isolation pass exactly.                    */
+function advReact(p){ return (HEADLESS && PL_ADV) ? (Math.random() < p) : true; }
+
 /* ---- internal fallbacks (used ONLY if a pack omits config keys) ---- */
 const FALLBACK={
   default_ap_per_turn:4, default_max_turns:12, turn_unit:"quarter",
@@ -948,7 +976,7 @@ function endTurn(){
   landing.forEach(p=>{
     const a=p.action;
     const prob=cfg("backfire_probability")[a.backfire_risk] ?? 0;
-    if(Math.random() < prob){
+    if(PL_BF && Math.random() < prob){
       pushEvent("blunder",
         `<b>${a.name}</b> backfired. The move drew attention before it bit — no pressure applied this quarter. ` +
         `<span style="color:var(--muted)">(backfire risk: ${a.backfire_risk})</span>`);
@@ -1033,7 +1061,11 @@ function resolveAdaptation(landed){
   const A=cfg("adaptation"), H=S.hub, dims=H.dims;
 
   // P1 — protection_reflex: going loud while protected hardens the krysha
-  if(H.loudPending && H.protection==="INTACT"){ H.protection="HARDENED"; H.loudPending=false; S.protectionRevealed=true; fireDataEvent("ev_protection_harden"); }
+  if(H.loudPending && H.protection==="INTACT"){ H.loudPending=false;
+    // ADVERSARY-RESPONSE draw: the krysha USUALLY closes ranks when you go loud while
+    // protected (the protection-reflex), but a real patron does not reflex every time.
+    // advReact() returns true (always hardens) in the teaching game — unchanged there.
+    if(advReact(0.75)){ H.protection="HARDENED"; S.protectionRevealed=true; fireDataEvent("ev_protection_harden"); } }
 
   // tick any in-progress reconstitution
   if(H.outcome==="RECONSTITUTING"){
@@ -1055,10 +1087,19 @@ function resolveAdaptation(landed){
     if(idHigh && shielded){
       if(!H.hardenNoted){ H.hardenNoted=true;
         pushEvent("blunder", `Identities are exposed — but you hardened the protection first, so the state shields reconstitution and the brand survives. <span style="color:var(--muted)">(sever protection BEFORE going loud — that's the trap)</span>`); }
-    } else if(idHigh && closed){ H.outcome="BRAND_DEAD"; fireDataEvent("ev_brand_death"); }
+    } else if(idHigh && closed){
+      // ADVERSARY-RESPONSE draw (decided once per run, then sticky): how cohesive is THIS
+      // instantiation of the closed hierarchy under exposure — does it actually collapse,
+      // or does a core hold it together. advReact() always collapses in the teaching game.
+      if(H._breakRoll===undefined) H._breakRoll=advReact(0.80);
+      if(H._breakRoll){ H.outcome="BRAND_DEAD"; fireDataEvent("ev_brand_death"); }
+    }
     else if(idHigh && !closed && H.outcome!=="DEGRADED"){
-      H.outcome="DEGRADED";
-      pushEvent("triumph", `Identity exposure forces <b>degraded survival</b> on the franchise — it limps on at a fraction of capacity but does not die. <span style="color:var(--muted)">(franchises bend; only closed hierarchies break)</span>`);
+      // ADVERSARY-RESPONSE draw (sticky): does exposure actually force the franchise into
+      // degraded survival, or does it absorb the hit this time. Deterministic in the game.
+      if(H._degradeRoll===undefined) H._degradeRoll=advReact(0.78);
+      if(H._degradeRoll){ H.outcome="DEGRADED";
+        pushEvent("triumph", `Identity exposure forces <b>degraded survival</b> on the franchise — it limps on at a fraction of capacity but does not die. <span style="color:var(--muted)">(franchises bend; only closed hierarchies break)</span>`); }
     }
   }
 
@@ -1077,7 +1118,13 @@ function resolveAdaptation(landed){
 
   // P4 — substitution (proxy): disruption without coordinated financial pressure lets a successor in
   if((H.outcome==="RECONSTITUTING"||H.outcome==="BRAND_DEAD") && !H.substitutionFired){
-    if(dims.financial < A.macro_two_of_three.financial_coordinated_point){ H.substitutionFired=true; fireDataEvent("ev_substitution"); }
+    if(dims.financial < A.macro_two_of_three.financial_coordinated_point){
+      // ADVERSARY-RESPONSE draw: whether a successor is already staged to absorb the
+      // knocked-down brand. Less likely as coordinated financial pressure strands the
+      // money that would bankroll one. advReact() always fires in the teaching game.
+      const pSub=Math.max(0.45, 0.85 - 0.18*(dims.financial||0));
+      if(advReact(pSub)){ H.substitutionFired=true; fireDataEvent("ev_substitution"); }
+    }
   }
 
   // P5 — macro_needs_two_of_three (and whether it is HELD over time → S grade)
@@ -1970,6 +2017,17 @@ function tutScript(){
   {eyebrow:'The payoff', h:'The roof is gone.', tone:'win',
    body:'The Protection Layer is now <b>SEVERED</b> — the shield is cut. Brand-death is finally reachable. Same operator, opposite result: going loud first <i>hardened</i> the roof; severing first <i>opened</i> it. <b>Sequence is everything.</b>',
    await:'next', cta:'I’ve got it ›', target:tutNode('protection')},
+  {eyebrow:'Before you go · the dice', h:'Moves can backfire.', tone:'warn',
+   body:'One thing we held back while teaching: every move carries a chance of <b>backfiring</b>. Watch the feed — we commit a loud, risky move and resolve the quarter, and this time it backfires. It <b>drew attention before it bit and applied no pressure at all</b>. Riskier levers backfire more often. That uncertainty is real, and it is exactly why the Planner runs a plan <b>many times</b> instead of once.',
+   await:'next', cta:'Makes sense ›', target:()=>document.getElementById('feed'),
+   pre:function(){
+     startGame({kind:'sandbox', def:{name:'Sandbox'}});
+     Math.random=function(){ return 0.01; };   // force the backfire draw for this one beat
+     var a=PACK.actions.find(function(x){return x.id==='lv_oga_c2_neutralize';})
+          ||PACK.actions.find(function(x){return x.id==='a_indictment_public';});
+     if(a){ spendAction(a,null); var n=(a.lag_turns||0)+1; for(var i=0;i<n&&S&&!S.ended;i++) endTurn(); }
+     Math.random=function(){ return 0.999; };   // restore the teaching suppression
+   }},
   {eyebrow:'Over to you', h:'The board is yours.', tone:'win',
    body:'That’s the core loop: <b>sever the roof, then pile on paired financial + infrastructure pressure.</b> Now a fresh sandbox — real randomness back on, no single right answer. Experiment.',
    await:'next', cta:'Start playing ▸', target:null}
@@ -2403,21 +2461,49 @@ function boot(pack){
   window.addEventListener('resize',()=>{ if(S){ renderBoard(); } });
 }
 
+/* Cold-open fail state: the page couldn't auto-load its data file. Instead of a raw
+   fetch error, show a calm, plain-language explanation and a working manual loader
+   that accepts BOTH the content pack and the (optional) lever add-on together. */
 function showDrop(errMsg){
-  document.getElementById('load-msg').innerHTML="Open the page through a local server, or load the pack manually below.";
+  const h2=document.getElementById('load-h2'); if(h2) h2.textContent="Couldn’t load the data file";
+  document.getElementById('load-msg').innerHTML=
+    "The simulator needs its data file, <code>content-pack-v1.json</code>, to run. "
+    +"On the live site that loads automatically — seeing this usually means the page was opened "
+    +"straight from disk, so the browser blocked the data load.<br><br>"
+    +"<b>To run it here:</b> drop the file(s) below, or re-open the page through its website / a local server.";
   document.getElementById('drop').classList.remove('hidden');
-  if(errMsg) document.getElementById('load-err').textContent=errMsg;
+  const errEl=document.getElementById('load-err');
+  if(errMsg) errEl.textContent="Technical detail: "+errMsg;
   const drop=document.getElementById('drop'), input=document.getElementById('filepick');
   drop.onclick=()=>input.click();
-  input.onchange=e=>{ const f=e.target.files[0]; if(f) readFile(f); };
+  input.onchange=e=>readFiles(e.target.files);
   ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
   ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
-  drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) readFile(f); });
+  drop.addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files) readFiles(e.dataTransfer.files); });
 }
-function readFile(file){
-  const r=new FileReader();
-  r.onload=()=>{ try{ boot(JSON.parse(r.result)); }catch(err){ document.getElementById('load-err').textContent="Invalid JSON: "+err.message; } };
-  r.readAsText(file);
+/* Read one or more dropped/selected JSON files, tell the content pack apart from the
+   lever add-on, merge them, and boot. Clears the error on success, explains on failure. */
+function readFiles(fileList){
+  const files=Array.prototype.slice.call(fileList||[]);
+  const errEl=document.getElementById('load-err');
+  if(!files.length) return;
+  let pack=null, addon=null, pending=files.length, parseErr=null;
+  const finish=()=>{ if(pending>0) return;
+    if(!pack){ errEl.textContent = parseErr
+        ? "Couldn’t read that file (is it valid JSON?): "+parseErr
+        : "That file wasn’t the content pack. Please add content-pack-v1.json."; return; }
+    try{ if(addon) mergeLeverAddon(pack, addon); errEl.textContent=""; boot(pack); }
+    catch(err){ errEl.textContent="Couldn’t start the simulator: "+err.message; }
+  };
+  files.forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{ try{ const j=JSON.parse(r.result);
+        if(j && (j.actor_vocabulary||j.legitimacy_axis||(j.levers&&!j.nodes))) addon=j; else pack=j;
+      }catch(err){ parseErr=err.message; }
+      pending--; finish(); };
+    r.onerror=()=>{ parseErr="file could not be read"; pending--; finish(); };
+    r.readAsText(f);
+  });
 }
 
 /* ============================================================================
@@ -2627,9 +2713,34 @@ function pl_runOnce(mode, plan, world){
     apSpent, flags, result:S.result};
 }
 
+/* ---- run a batch of headless runs with a chosen set of uncertainty sources live ---- */
+function pl_runBatch(mode, plan, world, runs, bf, adv){
+  const sbf=PL_BF, sadv=PL_ADV; PL_BF=bf; PL_ADV=adv;
+  const rs=[]; for(let i=0;i<runs;i++) rs.push(pl_runOnce(mode, plan, world));
+  PL_BF=sbf; PL_ADV=sadv; return rs;
+}
+/* dispersion of a batch = standard deviation of the ordinal grade rank (0=F … 4=S).
+   0 means every run landed on the same grade (a degenerate, informationally-thin spread). */
+function pl_gradeSD(rs){ if(!rs.length) return 0;
+  const r=rs.map(x=>GRADE_RANK[x.grade]); const m=r.reduce((s,v)=>s+v,0)/r.length;
+  return Math.sqrt(r.reduce((s,v)=>s+(v-m)*(v-m),0)/r.length); }
+/* attribute the spread to its two declared sources by running each in isolation. This is
+   the answer to "the distribution is one coin": it quantifies how much of the spread is
+   operational-backfire variance vs adversary-response uncertainty. (Isolation estimate;
+   the small interaction term between the two sources is not separated out.)            */
+function pl_spreadDecomp(mode, plan, world, runs, sdFull){
+  const d=Math.max(40, Math.min(runs, 120));
+  const sdBf =pl_gradeSD(pl_runBatch(mode, plan, world, d, true,  false)); // backfire only
+  const sdAdv=pl_gradeSD(pl_runBatch(mode, plan, world, d, false, true));  // adversary only
+  const tot=sdBf+sdAdv;
+  return {sdFull, sdBf, sdAdv,
+    bfShare: tot>0?sdBf/tot:null, advShare: tot>0?sdAdv/tot:null,
+    degenerate: sdFull<0.05 && tot<0.05};
+}
+
 /* ---- aggregate many runs into a distribution + KPI spread ---- */
 function pl_evalCell(mode, plan, world, runs){
-  const rs=[]; for(let i=0;i<runs;i++) rs.push(pl_runOnce(mode, plan, world));
+  const rs=pl_runBatch(mode, plan, world, runs, true, true);   // headline: BOTH sources live
   const grades={S:0,A:0,B:0,C:0,F:0}, outc={BRAND_DEAD:0,DEGRADED:0,RECONSTITUTING:0,ACTIVE:0};
   const acc={a:[],b:[],c:[]}; let sub=0, wHigh=0, rankSum=0, macro=0;
   rs.forEach(r=>{ grades[r.grade]++; outc[r.outcome]=(outc[r.outcome]||0)+1;
@@ -2637,9 +2748,10 @@ function pl_evalCell(mode, plan, world, runs){
     if(r.substitution) sub++; if(r.waisHigh) wHigh++; if(r.macroAch) macro++; rankSum+=GRADE_RANK[r.grade]; });
   const stat=arr=>({mean:Math.round(arr.reduce((s,v)=>s+v,0)/arr.length), min:Math.min.apply(null,arr), max:Math.max.apply(null,arr)});
   const modal=obj=>Object.keys(obj).reduce((m,k)=>obj[k]>obj[m]?k:m, Object.keys(obj)[0]);
+  const spread=pl_spreadDecomp(mode, plan, world, runs, pl_gradeSD(rs));
   return {runs, grades, outc, modalGrade:modal(grades), modalOutcome:modal(outc),
     kpi:{a:stat(acc.a),b:stat(acc.b),c:stat(acc.c)}, subPct:sub/runs, waisHighPct:wHigh/runs, macroPct:macro/runs,
-    meanRank:rankSum/runs, apSpent:rs[0].apSpent, flags:rs[0].flags, sample:rs[0]};
+    meanRank:rankSum/runs, apSpent:rs[0].apSpent, flags:rs[0].flags, sample:rs[0], spread};
 }
 
 /* ---- structural critique: static plan analysis vs the framework rules ---- */
@@ -3150,7 +3262,7 @@ function pl_syncView(){
 
 function pl_renderResults(){
   const root=document.getElementById('pl-results');
-  const guard='<div class="pl-guard"><b>Model result, not a probability.</b> The engine encodes tendencies calibrated to ~7 historical cases. Everything below is <b>consistency with known structural dynamics</b>, never a likelihood of real-world success. The spread comes from operational-backfire variance; nothing fully validates a novel plan against ground truth — and nothing can.</div>';
+  const guard='<div class="pl-guard"><b>Model result, not a probability.</b> The engine encodes tendencies calibrated to ~7 historical cases. Everything below is <b>consistency with known structural dynamics</b>, never a likelihood of real-world success. The spread comes from <b>two declared sources</b>: operational-backfire variance and adversary-response uncertainty (whether the krysha hardens; whether a successor is pre-positioned). The breakdown under each distribution shows how much each source contributes. Nothing fully validates a novel plan against ground truth, and nothing can.</div>';
   if(!PLN.results){
     const h2=PLN.mode==='compare'?'Compare courses of action':PLN.mode==='portfolio'?'Run concurrent operations on one board':'Stress one plan across many worlds';
     const body=PLN.mode==='compare'
@@ -3174,7 +3286,7 @@ function pl_renderResults(){
 
 function pl_renderPortfolioResults(){
   const root=document.getElementById('pl-results'), R=PLN.results, C=R.combined;
-  const guard='<div class="pl-guard"><b>Model result, not a probability.</b> Consistency with known structural dynamics, never a likelihood of real-world success. <b>Concurrent-ops interaction modeling is the most experimental part of this tool</b> — treat the compound/collide/interfere verdict as a hypothesis to cross-check against the serial modes, not a conclusion.</div>';
+  const guard='<div class="pl-guard"><b>Model result, not a probability.</b> Consistency with known structural dynamics, never a likelihood of real-world success. The spread comes from two declared sources (operational-backfire variance and adversary-response uncertainty); the breakdown under the distribution shows how much each contributes. <b>Concurrent-ops interaction modeling is the most experimental part of this tool</b> — treat the compound/collide/interfere verdict as a hypothesis to cross-check against the serial modes, not a conclusion.</div>';
   const vcolor={COMPOUND:'var(--good)',COLLIDE:'var(--warn)',INTERFERE:'var(--bad)',ADDITIVE:'var(--accent)'}[R.verdict.tag]||'var(--accent)';
   let html='<button class="pl-edit-btn" id="pl-edit">← Edit operations</button>'+guard;
   html+='<div class="pl-verdict" style="border-color:'+vcolor+'"><b style="color:'+vcolor+';font-family:var(--mono);letter-spacing:.08em">'+R.verdict.tag+'</b> · '+R.verdict.body+'</div>';
@@ -3210,7 +3322,9 @@ function pl_renderPortfolioResults(){
   }
   if(R.legit){ html+='<div class="pl-block-label">Legitimacy &amp; blowback · weakest-link across all operations</div>'+pl_legitBadgeHtml(R.legit)+pl_legitDebriefHtml(R.legit); }
   html+='<div class="pl-grade-wrap"><div class="pl-grade g'+C.modalGrade+'">'+C.modalGrade+'</div>'
-    +'<div class="pl-grade-note"><b>Two axes.</b> Effectiveness (grade) = model-consistency, not a forecast — portfolio mean rank '+C.meanRank.toFixed(2)+'/4 across '+C.runs+' runs.'+(R.legit?' Legitimacy (above) is the separate can-you-defend-it axis.':'')+'</div></div>';
+    +'<div class="pl-grade-note"><b>Two axes.</b> Effectiveness (grade) = model-consistency, not a forecast — portfolio mean rank '+C.meanRank.toFixed(2)+'/4 across '+C.runs+' runs.'+(R.legit?' Legitimacy (above) is the separate can-you-defend-it axis.':'')
+    +'<div style="margin-top:7px">The letter compresses these three themes — do not quote it alone:</div>'+pl_themeChips(C)
+    +'</div></div>';
   html+='</div></div>';
   html+='<div class="pl-card-actions"><button id="pl-export">⎙ Export one-page card</button></div>';
   root.innerHTML=html;
@@ -3223,7 +3337,35 @@ function pl_distbarHtml(cell){
   const bar=order.map(g=>{ const pct=cell.grades[g]/cell.runs*100;
     return '<span style="background:'+GRADE_COLOR[g]+';flex:'+pct+'">'+(pct>9?g:'')+'</span>'; }).join('');
   const legend=order.map(g=>'<span><i style="background:'+GRADE_COLOR[g]+'"></i>'+g+' '+cell.grades[g]+'</span>').join('');
-  return '<div class="pl-distbar">'+bar+'</div><div class="pl-distlegend">'+legend+'</div>';
+  return '<div class="pl-distbar">'+bar+'</div><div class="pl-distlegend">'+legend+'</div>'+pl_spreadHtml(cell);
+}
+/* Where does the spread come from? Decompose it into the two declared sources so the
+   distribution above is never read as "one coin flipped". */
+const SPREAD_COLOR={backfire:'#e0960a', adversary:'#a855f7'};
+function pl_spreadHtml(cell){
+  const sp=cell.spread; if(!sp) return '';
+  if(sp.degenerate)
+    return '<div class="pl-spread-note"><b style="color:var(--muted)">Near-degenerate spread.</b> This plan returns one grade in almost every run — it is barely sensitive to either uncertainty source, so the distribution above is informationally thin (little to read into the shape).</div>';
+  const bf=Math.round((sp.bfShare||0)*100), adv=100-bf;
+  return '<div class="pl-spread"><div class="pl-block-label" style="margin-bottom:5px">What drives the spread</div>'
+    +'<div class="pl-spread-bar">'
+    +'<span style="background:'+SPREAD_COLOR.backfire+';flex:'+bf+'">'+(bf>=14?bf+'%':'')+'</span>'
+    +'<span style="background:'+SPREAD_COLOR.adversary+';flex:'+adv+'">'+(adv>=14?adv+'%':'')+'</span></div>'
+    +'<div class="pl-spread-legend"><span><i style="background:'+SPREAD_COLOR.backfire+'"></i>Operational backfire '+bf+'%</span>'
+    +'<span><i style="background:'+SPREAD_COLOR.adversary+'"></i>Adversary response '+adv+'%</span></div>'
+    +'<div class="pl-spread-note">Two declared sources, each measured in isolation (the small interaction term between them is not separated). Backfire = a committed move drawing attention before it bites; adversary-response = whether the krysha hardens and whether a successor is pre-positioned.</div></div>';
+}
+/* plain-text spread line for the exported (print) card */
+function pl_spreadTxt(sp){ if(!sp) return '';
+  if(sp.degenerate) return 'Spread: near-degenerate — one grade in almost every run (informationally thin)';
+  const bf=Math.round((sp.bfShare||0)*100);
+  return 'Spread sources: operational backfire '+bf+'% · adversary-response '+(100-bf)+'%'; }
+/* Fix: never let the single letter grade stand alone — surface the underlying theme
+   spread (already computed) right beside it so it cannot be quoted as a lone score. */
+function pl_themeChips(cell){
+  const k=cell.kpi; if(!k) return '';
+  const chip=(lbl,col,o)=>'<span class="pl-theme-chip">'+lbl+' <b style="color:'+col+'">'+o.mean+'</b> <span class="rg">('+o.min+'–'+o.max+')</span></span>';
+  return '<div class="pl-theme-chips">'+chip('Enforcement','#e0b040',k.a)+chip('Strife','#a855f7',k.b)+chip('Economics','#29d3e0',k.c)+'</div>';
 }
 function pl_headline(cell){
   if(pl_holdPct(cell)>=0.5){
@@ -3251,7 +3393,9 @@ function pl_cellHtml(c, mode, i){
   if(c.legit){ body+='<div class="pl-block-label">Legitimacy &amp; blowback · weakest-link</div>'+pl_legitBadgeHtml(c.legit)+pl_legitDebriefHtml(c.legit); }
   body+='<div class="pl-grade-wrap"><div class="pl-grade g'+cell.modalGrade+'">'+cell.modalGrade+'</div>'
     +'<div class="pl-grade-note"><b>Two axes.</b> Effectiveness (the grade) = model-consistency, not a forecast — mean rank '+cell.meanRank.toFixed(2)+'/4 over '+cell.runs+' runs.'
-    +(c.legit?' Legitimacy (above) is a separate axis: can you authorize and defend it.':'')+'</div></div>';
+    +(c.legit?' Legitimacy (above) is a separate axis: can you authorize and defend it.':'')
+    +'<div style="margin-top:7px">The letter compresses these three themes — do not quote it alone:</div>'+pl_themeChips(cell)
+    +'</div></div>';
   return '<div class="pl-cell"><div class="pl-cell-head"><span class="nm">'+c.label+'</span><span class="wd">'+(c.sublabel||'')+'</span></div><div class="pl-cell-body">'+body+'</div></div>';
 }
 
@@ -3271,7 +3415,8 @@ function pl_exportCard(){
     cellTxt='<div class="cc"><h3>Portfolio · all operations together</h3>'
       +'<p class="hl">'+strip(pl_headline(C))+'</p>'
       +'<p class="di">Distribution: '+dist+' (n='+C.runs+') · grade '+C.modalGrade+' (model-consistency) · joint macro '+Math.round(C.macroPct*100)+'%</p>'
-      +'<p class="di">KPI mean — Enforcement '+C.kpi.a.mean+' · Strife '+C.kpi.b.mean+' · Economics '+C.kpi.c.mean+' · '+C.poolSpent+' pts committed'+(bs?' · '+bs+' starved':'')+'</p>'
+      +'<p class="di">'+pl_spreadTxt(C.spread)+'</p>'
+      +'<p class="di">KPI themes (mean, range) — Enforcement '+C.kpi.a.mean+' ('+C.kpi.a.min+'–'+C.kpi.a.max+') · Strife '+C.kpi.b.mean+' ('+C.kpi.b.min+'–'+C.kpi.b.max+') · Economics '+C.kpi.c.mean+' ('+C.kpi.c.min+'–'+C.kpi.c.max+') · '+C.poolSpent+' pts committed'+(bs?' · '+bs+' starved':'')+'</p>'
       +'<ul>'+perOp+'</ul>'+coll+'</div>';
   } else {
     subtitle=(R.mode==='compare'?'Course-of-action comparison':'Robustness test — '+R.plan)+' · '+R.runs+' runs/cell';
@@ -3282,7 +3427,8 @@ function pl_exportCard(){
       return '<div class="cc"><h3>'+c.label+' <small>'+(c.sublabel||'')+'</small></h3>'
         +'<p class="hl">'+strip(pl_headline(cell))+'</p>'
         +'<p class="di">Distribution: '+dist+' (n='+cell.runs+') · grade '+cell.modalGrade+' (model-consistency)</p>'
-        +'<p class="di">KPI mean — Enforcement '+cell.kpi.a.mean+' · Strife '+cell.kpi.b.mean+' · Economics '+cell.kpi.c.mean+' · '+cell.apSpent+' AP</p>'
+        +'<p class="di">'+pl_spreadTxt(cell.spread)+'</p>'
+        +'<p class="di">KPI themes (mean, range) — Enforcement '+cell.kpi.a.mean+' ('+cell.kpi.a.min+'–'+cell.kpi.a.max+') · Strife '+cell.kpi.b.mean+' ('+cell.kpi.b.min+'–'+cell.kpi.b.max+') · Economics '+cell.kpi.c.mean+' ('+cell.kpi.c.min+'–'+cell.kpi.c.max+') · '+cell.apSpent+' AP</p>'
         +(R.mode==='compare'?'<ul>'+crit.map(f=>'<li>'+(f.sev==='warn'?'▲':f.sev==='good'?'●':'○')+' '+strip(f.text)+' ['+(f.rule||'—')+'·'+(f.conf||'')+']</li>').join('')+'</ul>':'')
         +'</div>'; }).join('');
     critOnce=R.mode==='robust'&&R.critique?'<div class="cc"><h3>Structural critique · '+R.plan+'</h3><ul>'+R.critique.map(f=>'<li>'+(f.sev==='warn'?'▲':f.sev==='good'?'●':'○')+' '+strip(f.text)+' ['+(f.rule||'—')+'·'+(f.conf||'')+']</li>').join('')+'</ul></div>':'';
@@ -3300,7 +3446,7 @@ function pl_exportCard(){
     +'@media print{button{display:none}}</style></head><body>'
     +'<h1>KRYSHA — Plan Assessment Card</h1>'
     +'<div class="sub">'+subtitle+' · Board: '+pl_boardName(R.board)+' · pack '+stamp+'</div>'
-    +'<div class="guard"><b>Model result, not a probability.</b> Consistency with known structural dynamics, calibrated to ~7 historical cases — never a likelihood of real-world success. No method fully validates a novel plan against ground truth.</div>'
+    +'<div class="guard"><b>Model result, not a probability.</b> Consistency with known structural dynamics, calibrated to ~7 historical cases, never a likelihood of real-world success. Spread = two declared sources: operational-backfire variance + adversary-response uncertainty. The letter grade compresses three themes (shown with each cell); do not quote it alone. No method fully validates a novel plan against ground truth.</div>'
     +(verdictStr?'<div class="verdict">'+verdictStr+'</div>':'')
     +critOnce+cellTxt
     +'<div class="ft">Generated by KRYSHA Planner · confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE travel with each finding · PENDING reassessments preserved, not resolved.</div>'
