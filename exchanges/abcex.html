@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABCeX (Nueva Cryptologia): Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* STATUS BADGES */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-active     { background: #0d2b1a; color: #3fb950; border-color: #1a4731; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* HERO MODULE */
+.hero-module {
+  background: linear-gradient(135deg, #1a1208 0%, #1c1228 100%);
+  border: 1px solid #5a3a15; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-orange); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 240px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 62%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+
+/* SECTION HEADERS */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* CONFIDENCE BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* KPI / ATTRIBUTE TABLES */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CONTENT TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* TIMELINE */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* CITATION */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* WALLET ADDRESSES */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* GAP FLAGS */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "\25C6 GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* GALLERY */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+.img-source { font-size: 10px; color: var(--text-muted); }
+
+/* SOURCES */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* TIER LABELS */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">ABCeX / Nueva Cryptologia</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-sanctioned">Sanctioned</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Tracked Exchanges</div>
+  <ul class="sidebar-nav">
+    <li><a href="garantex.html">Garantex / Grinex</a></li>
+    <li><a href="cryptex.html">Cryptex / PM2BTC</a></li>
+    <li><a href="exmo.html">EXMO</a></li>
+    <li><a href="rapira.html">Rapira</a></li>
+    <li><a href="bitpapa.html">Bitpapa</a></li>
+    <li><span style="font-weight:700">ABCeX</span></li>
+    <li><a href="audia6.html">AudiA6 / Dark2Web</a></li>
+    <li><a href="post-garantex-network.html">Post-Garantex Network</a></li>
+  </ul>
+  
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Status</span><span class="value" style="color:var(--accent-orange)">Sanctioned (UK)</span></div>
+    <div class="sidebar-meta-row"><span class="label">UK designation</span><span class="value">26 May 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">Tolerated Safe Harbor</span></div>
+    <div class="sidebar-meta-row"><span class="label">Operator location</span><span class="value">Russia (assessed)</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : SANCTIONED OPERATOR ABOVE FOLD -->
+<div class="hero-module">
+  <div class="hero-label">&#9888; Assessed Operator with Active Sanctions : Hero Module</div>
+  <div class="hero-title">UK authorities (FCDO) named ABCeX (the trading name of Nueva Cryptologia) as linked to Sergey Mendeleev when they designated the platform on 26 May 2026. Mendeleev, a co-founder of the sanctioned exchange Garantex, was separately designated by the U.S. Treasury (OFAC) on 14 August 2025. He has publicly denied founding ABCeX; the operational link is an analytic assessment supported by government and vendor reporting, not a court finding.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Sergey Mendeleev</div>
+      <div class="op-alias">Garantex co-founder : assessed figure behind ABCeX</div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Assessed key figure in ABCeX management; founder/controller of Exved and InDeFi Bank</span></div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian</span></div>
+      <div class="op-row"><span class="k">Assessed location</span><span class="v">Russia / UAE (not in custody)</span></div>
+      <div class="op-row"><span class="k">OFAC status</span><span class="v">Designated 14 Aug 2025 (Garantex executive; Exved, InDeFi Bank network)</span></div>
+      <div class="op-row"><span class="k">UK link</span><span class="v">FCDO ties ABCeX to Mendeleev in 26 May 2026 designation rationale</span></div>
+      <div class="op-row"><span class="k">Self-description</span><span class="v">Publicly denies founding ABCeX</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CREDIBLE (operational tie); CONFIRMED (OFAC designation as Garantex executive)</span></div>
+      <span class="op-tag op-tag-sanctioned">OFAC Designated</span>
+      <span class="op-tag op-tag-atlarge">At Large</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Nueva Cryptologia, S.A.S. de C.V.</div>
+      <div class="op-alias">d.b.a. ABCex : sanctioned legal entity</div>
+      <div class="op-row"><span class="k">Type</span><span class="v">Corporate registrant of the ABCeX platform</span></div>
+      <div class="op-row"><span class="k">Registration</span><span class="v">El Salvador (Avenida La Revolucion, Plaza Presidente, Level 6, Local 1)</span></div>
+      <div class="op-row"><span class="k">Website</span><span class="v">abcex.io</span></div>
+      <div class="op-row"><span class="k">UK status</span><span class="v">Designated 26 May 2026, Russia (Sanctions) (EU Exit) Regulations 2019</span></div>
+      <div class="op-row"><span class="k">Stated basis</span><span class="v">Material services to sanctioned exchanges Garantex and Grinex</span></div>
+      <div class="op-row"><span class="k">OFAC / EU</span><span class="v">Not directly designated as of June 2026 (EU 21st package proposed, pending)</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (UK designation; entity name and registration)</span></div>
+      <span class="op-tag op-tag-sanctioned">UK Designated</span>
+      <span class="op-tag op-tag-custody">Operational</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ============================================== -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Crypto Processed</div>
+      <div class="kpi-value">$11B+</div>
+      <div class="kpi-sub">Cumulative cryptoassets processed (Elliptic, Feb 2026)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Bilateral Sanctioned Exposure</div>
+      <div class="kpi-value">$355M</div>
+      <div class="kpi-sub">With UK-sanctioned + A7 entities since 2023 (TRM Labs)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Flow to Aifory Pro</div>
+      <div class="kpi-value">$175.2M</div>
+      <div class="kpi-sub">$168.7M inbound to Aifory; ABCeX = 96% of Aifory sanctioned inflows (TRM)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Flow to Garantex</div>
+      <div class="kpi-value">$133.4M</div>
+      <div class="kpi-sub">ABCeX = Garantex 3rd-largest on-chain counterparty (TRM)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Physical Offices</div>
+      <div class="kpi-value">37</div>
+      <div class="kpi-sub">Crypto-to-cash offices in Russia; 30,000+ users in year one (Phemex)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">UK Designation</div>
+      <div class="kpi-value">26 May 2026</div>
+      <div class="kpi-sub">First UK use of Reg 17A against a crypto platform (FCDO)</div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Overall Assessment</div>
+    ABCeX is a ruble-centric crypto-fiat exchange that emerged in late 2023 and scaled rapidly through 2024 to 2025 as an order-book plus peer-to-peer (P2P) on/off-ramp with extensive physical cash infrastructure in Russia. Blockchain-intelligence vendors place it at the center of the post-Garantex sanctions-evasion ecosystem: Elliptic reports it has processed at least $11 billion in cryptoassets, and TRM Labs identifies it as Garantex's third-largest on-chain counterparty and the dominant source of inflows to the high-risk exchange Aifory Pro. The Perplexity research draft characterized ABCeX as "the largest unsanctioned exchange" in Elliptic's network. That framing is now outdated: on 26 May 2026 the United Kingdom designated ABCeX (legal entity Nueva Cryptologia, S.A.S. de C.V.) under the Russia sanctions regime, citing material services to the sanctioned exchanges Garantex and Grinex. Its assessed operating figure, Garantex co-founder Sergey Mendeleev, was designated by OFAC in August 2025. The exchange remains operational and, per Kharon, is extending its reach by white-labeling its technology to secondary exchanges (Ural.Ex, AWX). State nexus is assessed at TOLERATED SAFE HARBOR, edging toward PROBABLE COOPERATION, with no evidence of direct state control.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Service type</td><td>Crypto-fiat exchange: order-book + P2P ruble-to-crypto trading, physical cash desks, futures and margin, cryptomat hardware</td></tr>
+      <tr><td>Legal entity</td><td>Nueva Cryptologia, Sociedad Por Acciones Simplificada de Capital Variable (S.A.S. de C.V.), d.b.a. ABCex <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO]</span></td></tr>
+      <tr><td>Aliases / branding</td><td>ABCEX, ABCeX; marketed as "crypto-fiat exchange" and "P2P arbitrage exchange No. 1"; brand ambassador Khabib Nurmagomedov</td></tr>
+      <tr><td>Entity registration jurisdiction</td><td>El Salvador (Nueva Cryptologia S.A.S. de C.V.) <span class="badge badge-confirmed">Confirmed</span>. Secondary veneer: Tbilisi Technology Park free industrial zone, Georgia (Google Play app listing) <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Not publicly mapped; primary domain abcex.io. Customer-facing operations anchored in Russia (offices, cash desks, cryptomats) <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Assessed operator location</td><td>Russia (Moscow, Federation Tower). Assessed figure Sergey Mendeleev (Russian), assessed in Russia/UAE <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Operational period</td><td>Emerged late 2023; rapid expansion 2024 to 2025; futures and margin launched January 2026; operational as of June 2026</td></tr>
+      <tr><td>Volume (cumulative)</td><td>At least $11B in cryptoassets processed (Elliptic, Feb 2026). Do not average across vendors: TRM reports $355M bilateral exposure to the UK-sanctioned + A7 set since 2023 (a counterparty-specific figure, not total throughput)</td></tr>
+      <tr><td>Geographic footprint</td><td>37 crypto-to-cash offices in Russia; presence in Kyrgyzstan; Russia/CIS-centric user base</td></tr>
+      <tr><td>OFAC designation</td><td>Entity: not designated as of June 2026 <span class="badge badge-confirmed">Confirmed</span>. Assessed operator Mendeleev: designated 14 Aug 2025 <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>UK designation</td><td>Designated 26 May 2026, Russia (Sanctions) (EU Exit) Regulations 2019 <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO]</span></td></tr>
+      <tr><td>EU designation</td><td>Not individually listed as of June 2026; EU 21st sanctions package (proposed 9 June 2026) includes transaction bans on 11 crypto platforms (adoption pending) <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>State nexus tier</td><td>TOLERATED SAFE HARBOR (edging toward PROBABLE COOPERATION); no DIRECT CONTROL evidence</td></tr>
+      <tr><td>Status</td><td>Sanctioned (UK, 26 May 2026); operational; part of post-Garantex reconstitution</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>Elliptic and TRM Labs (entity-specific reporting); Kharon (corporate-network); TI-Russia (cryptolaundromat)</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://www.elliptic.co/hs-fs/hubfs/abcex.png?width=700&amp;height=634&amp;name=abcex.png"
+           alt="Elliptic graph: direct transaction flows between ABCeX and sanctioned Russia-centric entities"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">ABCeX On-Chain Flow Graph</div>
+        <div class="cap-source"><span class="img-source">Elliptic, 2026. Direct flows between ABCeX and sanctioned or high-risk Russia-centric entities.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://assets.publishing.service.gov.uk/media/6a1588949819be865f421d09/s960_Sanction_Evaders-02.png"
+           alt="UK FCDO announcement banner: crackdown on backdoor Russian sanctions evasion"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">UK Sanctions Announcement</div>
+        <div class="cap-source"><span class="img-source">UK FCDO, May 2026. ABCeX (Nueva Cryptologia) among 18 designations in the package.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://dbi08h1l6ojmx.cloudfront.net/061126_UKRussiaSanctions_CV01.gif"
+           alt="Kharon ClearView network graph centered on ABCEX and the Federation Tower cluster"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">ABCeX Corporate Network</div>
+        <div class="cap-source"><span class="img-source">Kharon ClearView, 2026. ABCeX at the center of the Federation Tower evasion cluster.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://dbi08h1l6ojmx.cloudfront.net/UK-crypto-1.png"
+           alt="Screengrab: ABCEX marketing featuring Russian former MMA champion Khabib Nurmagomedov"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">ABCeX Brand Marketing</div>
+        <div class="cap-source"><span class="img-source">Kharon (screengrab), 2026. ABCeX uses ex-MMA champion Khabib Nurmagomedov to promote the platform.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://dbi08h1l6ojmx.cloudfront.net/UK-crypto-2.png"
+           alt="Ural.Ex website FAQ noting partnership with the ABCEX exchange"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">White-Label Partner: Ural.Ex</div>
+        <div class="cap-source"><span class="img-source">Kharon (screengrab), 2026. Ural.Ex markets itself as an official ABCeX and Rapira partner.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c542b33fe189ca9e3d9_v2-pre-vs-post-garantex.png"
+           alt="TRM Labs chart: outgoing flows to Garantex-successor exchanges before and after takedown"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Post-Garantex Successor Flows</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Flows to successor exchanges (incl. ABCeX) grew 10x after the March 2025 takedown.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ============================================== -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>Part of the Post-Garantex Successor Ecosystem</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    ABCeX is best understood not as a formal rebrand of a single predecessor but as a node in the successor ecosystem that absorbed flows after enforcement against Garantex. Three evidentiary pillars connect it to the Garantex lineage: (1) shared physical infrastructure, an office in Moscow's Federation Tower previously occupied by Garantex; (2) confirmed on-chain interplay, with ABCeX assessed as Garantex's third-largest on-chain counterparty and a relationship dating to October 2023, well before the March 2025 Garantex takedown; and (3) a shared human-capital tie through Sergey Mendeleev, the Garantex co-founder UK authorities link to ABCeX. <span class="badge badge-confirmed">Confirmed</span> (infrastructure, on-chain); <span class="badge badge-credible">Credible</span> (operator tie) <span class="cite">[Elliptic, TRM, Kharon, UK FCDO]</span>
+  </div>
+
+  <h4>Evidentiary Pillars</h4>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Pillar</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Shared physical infrastructure</strong></td>
+          <td>ABCeX operates from Moscow's Federation Tower, a location previously occupied by sanctioned Garantex. Kharon notes the tower also hosts/hosted Aifory Pro, Garantex, and VTB Bank.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Elliptic; Kharon</span></td>
+        </tr>
+        <tr>
+          <td><strong>On-chain interplay</strong></td>
+          <td>TRM identifies ABCeX as Garantex's third-largest on-chain counterparty; relationship began October 2023. $133.4M bilateral with Garantex. Elliptic reports significant ABCeX flows to Garantex and Aifory Pro.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM Labs; Elliptic</span></td>
+        </tr>
+        <tr>
+          <td><strong>Human-capital tie (Mendeleev)</strong></td>
+          <td>UK FCDO links ABCeX to Garantex co-founder Sergey Mendeleev. TRM notes ABCeX's "historic ties to Garantex co-founder Sergey Mendeleev." Mendeleev publicly denies founding ABCeX.</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">UK FCDO; TRM; FinTelegram</span></td>
+        </tr>
+        <tr>
+          <td><strong>USDT cluster interplay (Arvix/Exved)</strong></td>
+          <td>TI-Russia reports "dynamic financial interplay between Arvix.pro (ABCEX), Garantex, and Grinex," with continuous USDT flows across the cluster. Now partially corroborated by the broader Mendeleev/Exved nexus.</td>
+          <td><span class="tier-credible">CREDIBLE</span> <span class="badge badge-single">Single Source</span><br><span style="font-size:11px;color:var(--text-muted)">TI-Russia (cryptolaundromat) for the specific Arvix interplay</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operator Profiles</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Resolution of a Prior Intelligence Gap</div>
+    The Perplexity draft recorded "no public naming of founders, beneficial owners, or core operators" as an explicit gap. Follow-on research partially resolves this. UK and U.S. government action plus vendor reporting now attach a named, sanctioned individual to the platform.
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Individual</th><th>Details</th><th>Legal status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Sergey Mendeleev</strong></td>
+          <td>Co-founder of Garantex; founder/controller of Exved and InDeFi Bank (with Alexander Lebedev, former KGB/SVR officer). Assessed key figure behind ABCeX management; publicly denies founding it. Nationality: Russian. Assessed location: Russia/UAE.</td>
+          <td><span class="tier-confirmed">OFAC designated 14 Aug 2025</span> (as Garantex executive; Exved, InDeFi Bank). UK ties ABCeX to him 26 May 2026. Not in custody. <span class="badge badge-confirmed">Confirmed</span> (OFAC); <span class="badge badge-credible">Credible</span> (ABCeX tie)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gap-flag">No public naming of ABCeX's day-to-day management team, beneficial owners beyond the assessed Mendeleev tie, or board/C-suite. Mendeleev's exact role (owner vs. technical/operational figure) is not court-established.</div>
+
+  <h3>Disputed Assessments</h3>
+  <p><span class="badge badge-credible">Credible</span> Mendeleev's public denial of founding ABCeX is the principal disputed point. The analytic position taken here treats the operational tie as CREDIBLE (single strong government source plus vendor corroboration) rather than CONFIRMED, because no charging document or court finding has adjudicated his specific role at ABCeX. The OFAC designation of Mendeleev as a Garantex executive is CONFIRMED and independent of the ABCeX question. <span class="cite">[UK FCDO, OFAC, TRM, FinTelegram]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ============================================== -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics and Product Set</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> ABCeX runs a hybrid centralized-exchange plus P2P model anchored in ruble flows. Elliptic confirms it "facilitates both order-book and P2P ruble-to-cryptoasset trading." Marketed assets include USDT and "ruble code"; users can top up by bank card or cash. In January 2026 the platform launched bitcoin futures and margin trading, moving beyond basic spot/P2P into leveraged products. <span class="cite">[Elliptic, Bits.media]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> ABCeX positions itself for P2P arbitrage ("P2P arbitrage exchange No. 1") and has deployed what it claims is the world's first no-fee "cryptomat" hardware for free crypto deposits and withdrawals, with stated plans to expand to other Russian cities. <span class="cite">[Bits.media]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> Per Kharon, ABCeX also operates a white-label model: it lets secondary exchanges build their own storefronts on its technology, "allowing new entities to offer the same services for which ABCEX was sanctioned." This is a resilience and reconstitution mechanism, not just a retail product. <span class="cite">[Kharon]</span></p>
+
+  <h3>KYC/AML Posture: Stated Policy vs Observed Behavior</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Stated Policy vs Observed Behavior (Schema Rule)</div>
+    <strong>Stated policy:</strong> ABCeX does not foreground identity verification or AML controls in its public marketing; no detailed KYC/AML statement is quoted in major coverage. Marketing emphasizes ease of use, P2P without banks, cash desks, and cryptomats. <span class="badge badge-credible">Credible</span><br><br>
+    <strong>Observed behavior (sourced to vendor/government framing, not the exchange's claims):</strong> Elliptic reports ABCeX "utilises a wallet obfuscation strategy to prevent cryptoasset transactions from being linked to the service," a technique inconsistent with transparency or effective monitoring. The UK designated the entity for providing material services to sanctioned exchanges (Garantex, Grinex). The gap between an absent/unstated compliance posture and observed obfuscation plus large flows to sanctioned counterparties is the primary analytical finding. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic, UK FCDO]</span>
+  </div>
+  <div class="gap-flag">No law-enforcement charging document detailing specific KYC/AML failures (thresholds, Travel Rule non-compliance, monitoring gaps) exists in open sources. The UK designation is an administrative action; its underlying evidentiary file is not public.</div>
+
+  <h3>Fiat Rails (Schema Rule: Must Be Addressed)</h3>
+  <p><span class="badge badge-credible">Credible</span> ABCeX's fiat on/off ramps are predominantly physical and P2P rather than banking-rail: 37 crypto-to-cash offices across Russia (plus presence in Kyrgyzstan) for cash deposits and withdrawals; cryptomat hardware for cash payouts; and P2P integration for card-based and local transfers exploited by arbitrageurs. <span class="cite">[Phemex, Bits.media]</span></p>
+  <p><strong>Banking relationships:</strong> No specific banks or payment processors are publicly named as ABCeX counterparties; flows are described generically as RUB and card payments. No documented de-risking or bank-termination events appear in open sources. This subsection is included per schema even though no named bank relationship is documented. <span class="badge badge-credible">Credible</span></p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The platform's legal entity, Nueva Cryptologia, S.A.S. de C.V., is registered in El Salvador. A secondary Georgian free-industrial-zone address appears on the Google Play app listing. No license number or named regulator is cited for either jurisdiction; both read as registration veneers for a Russia-centric operation rather than evidence of substantive licensed supervision. There is no evidence of EU or UK licensing; the platform is now UK-designated rather than UK-licensed. <span class="cite">[UK FCDO, Google Play]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 04 : TECHNICAL -->
+<!-- ============================================== -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domains, Hosting, APIs</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Primary domain: abcex.io, with mobile subdomain m.abcex.io used for onboarding and referral flows. The platform advertises dedicated API support via Telegram (@ABCEX_API_support), indicating API endpoints for market-maker and arbitrage clients. <span class="cite">[UK FCDO, ABCeX Telegram]</span></p>
+  <div class="gap-flag">Hosting providers, CDN, and SSL/infrastructure fingerprinting are not publicly reported; WHOIS/DNS-side mapping of abcex.io and any successor domains is an open task.</div>
+
+  <h3>Mobile Apps and Bots</h3>
+  <p><span class="badge badge-credible">Credible</span> Android app "ABCEX: Buy &amp; Sell Crypto" is listed on Google Play in Russian and English (the English listing carries the Tbilisi FIZ address). A Russian-language Telegram channel (@abcex_io) advertises a trading link, official bot (@ABCEX_IO_BOT), tech support (@ABCEX_support1, @ABCEX_SUPPORT_BOT), regional support (@ABCEX_City_support), API support, and a separate desk-to-desk OTC bot (@abcex_exchange_bot). <span class="cite">[Google Play, ABCeX Telegram]</span></p>
+
+  <h3>Architecture Hints</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> The feature set (order book, P2P, futures, margin, cryptomat integration, white-label provisioning to third parties) implies a proprietary platform rather than a low-cost turnkey white-label. Elliptic's note on wallet obfuscation suggests an internal wallet-management system that separates user deposit addresses from exchange hot wallets via intermediate hops. Public confirmation of the stack is not available. <span class="cite">[Elliptic, Bits.media]</span></p>
+
+  <h3>Resilience After Disruption</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> ABCeX's relevant disruption to date is the March 2024 Crocus-linked raids (see Section 08), after which it resumed operations and subsequently expanded (futures, margin, cryptomats). Its white-label provisioning to Ural.Ex and AWX is a structural resilience feature: it lets the underlying technology and client base persist under new storefronts even as the ABCeX brand itself attracts enforcement. <span class="cite">[Kommersant, Kharon, Bits.media]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ============================================== -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Overall Volume and Role</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Volume Sourcing (Schema Rule: Cite Source and Methodology; Do Not Average)</div>
+    <strong>Elliptic (Feb 2026):</strong> ABCeX "has processed at least $11 billion in cryptoassets" (cumulative throughput).<br>
+    <strong>TRM Labs (May 2026):</strong> $355 million bilateral exposure to the UK-sanctioned + A7-network set since 2023 (a counterparty-specific figure, not total throughput): $175.2M with Aifory Pro, $133.4M with Garantex, $38.1M with Rapira.<br>
+    These figures measure different things (total processed vs. sanctioned-counterparty bilateral exposure) and are presented separately, not combined.
+  </div>
+
+  <h3>Phase 1: Receipt (Who Deposits and From Where)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Elliptic frames ABCeX as serving sanctioned and high-risk Russia-centric actors. TRM data shows ABCeX sits at the center of the post-Garantex ecosystem with inbound flows from the broader Russia-linked network. Public reporting does not break out criminal vs. licit share; the $11B figure is total processed value, not strictly illicit. <span class="cite">[Elliptic, TRM]</span></p>
+
+  <h3>Phase 2: Layering (Internal Mechanics, Obfuscation)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Elliptic: "ABCeX utilises a wallet obfuscation strategy to prevent cryptoasset transactions from being linked to the service," implying service-owned wallets not clearly branded as exchange addresses plus inter-wallet hops to complicate attribution. <span class="cite">[Elliptic]</span></p>
+  <p><span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span> TI-Russia describes "dynamic financial interplay" among Arvix.pro (ABCEX), Garantex, and Grinex with continuous USDT flows, implying multi-step routing across services for layering. No public address lists or graphs accompany this claim. <span class="cite">[TI-Russia]</span></p>
+
+  <h3>Phase 3: Extraction (Where Funds Go)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> To other exchanges: TRM quantifies ABCeX's outbound role as the dominant source of inflows to Aifory Pro ($168.7M inbound to Aifory; ABCeX = 96% of Aifory's sanctioned-counterparty inflows), plus $133.4M bilateral with Garantex and $38.1M with Rapira. This positions ABCeX as an upstream hub feeding downstream nodes, not a terminal settlement venue. To fiat: physical cash extraction via the 37 offices and cryptomats, plus P2P RUB payouts. <span class="cite">[TRM, Elliptic, Phemex]</span></p>
+
+  <h3>Designated Addresses and Risk Status</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> No OFAC-designated ABCeX wallet addresses exist (the entity is not on the OFAC SDN list). The UK 26 May 2026 designation lists the legal entity and website but, in public materials reviewed, does not enumerate specific wallet addresses. El Salvador (registration) and Georgia (app-listing veneer) are not on FATF black/grey lists; the relevant exposure is jurisdictional arbitrage, not host-country blacklisting. <span class="cite">[OFAC, UK FCDO]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ============================================== -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vertical</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Sanctions evasion / state-aligned flows</strong></td>
+          <td>Elliptic, UK FCDO, and TRM all frame ABCeX as core post-Garantex sanctions-evasion infrastructure, converting rubles to crypto for cross-border movement shielded from banking oversight.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Terrorism-financing investigation (Crocus)</strong></td>
+          <td>March 2024 raids of ABCeX and Beribit in Federation Tower in a case about financing the Crocus City Hall attack. TRM states ABCeX is "under investigation for facilitating transactions linked to the March 2024 Crocus City Hall terrorist attack." No charges against the exchange itself published.</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Channel under investigation, not confirmed culpability</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware / darknet / carding / fraud</strong></td>
+          <td>No open-source case names ABCeX as a specific cash-out venue for a named ransomware family or darknet market. Given its role, location, and counterparties, such use is highly likely but not individually evidenced in public reporting.</td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Geographic Patterns</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> ABCeX is Russia-centric in operations (offices, cryptomats, RUB focus) with CIS extension (Kyrgyzstan), making it a natural hub for Russian and CIS-based actors. There is no sign in open sources of meaningful U.S./EU retail targeting; non-CIS usage is likely incidental or for cross-jurisdictional flows. <span class="cite">[Phemex, Elliptic, Bits.media]</span></p>
+
+  <h3>High-Profile Flows</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The best-evidenced high-profile flows are inter-exchange: ABCeX to Aifory Pro ($175.2M), to Garantex ($133.4M), and to Rapira ($38.1M) per TRM. These are the concrete, quantified criminal-adjacent flows; individual victim-level cases are not public. <span class="cite">[TRM]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ============================================== -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <h3>Jurisdictional Separation (Schema Rule: Three Jurisdictions)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Assessment</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Entity registration</strong></td>
+          <td>El Salvador: Nueva Cryptologia, S.A.S. de C.V. (Avenida La Revolucion, Plaza Presidente). Secondary veneer: Tbilisi Technology Park FIZ, Georgia (Google Play listing).</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (El Salvador) / <span class="tier-credible">CREDIBLE</span> (Georgia veneer)</td>
+        </tr>
+        <tr>
+          <td><strong>2. Infrastructure hosting</strong></td>
+          <td>Not publicly mapped. Domain abcex.io; customer-facing operations (offices, cash desks, cryptomats) anchored in Russia. Hosting provider and server location unknown.</td>
+          <td><span class="tier-credible">CREDIBLE</span> (Russia-anchored ops) / <span class="tier-inference">UNKNOWN</span> (specific hosting)</td>
+        </tr>
+        <tr>
+          <td><strong>3. Assessed operator location</strong></td>
+          <td>Russia (Moscow, Federation Tower). Assessed figure Sergey Mendeleev (Russian), assessed in Russia/UAE.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>State Nexus Tier: TOLERATED SAFE HARBOR (edging toward PROBABLE COOPERATION)</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">Assessment</div>
+    <strong>Indicators for Tolerated Safe Harbor:</strong> ABCeX operates openly in a high-visibility Moscow location (Federation Tower) historically associated with Garantex and other sanctioned financial entities; it handles large volumes including flows to/from sanctioned entities yet has not been shut down domestically; the 2024 raids did not produce public closure.<br><br>
+    <strong>Indicators edging toward Probable Cooperation:</strong> Continued operation after the 2024 raids and after Elliptic/UK exposure, without visible Russian enforcement, suggests at least tacit acceptance. The platform's integration into the broader A7/Garantex-successor structure (which has state-linked elements via Promsvyazbank and sanctioned oligarch Ilan Shor) raises the possibility of infrastructural support for state resilience under sanctions. This A7 linkage is network-level context; direct state tasking of ABCeX is not evidenced.<br><br>
+    <strong>Evidence against Direct Control:</strong> No open-source evidence that FSB, Rosfinmonitoring, or other state organs own or manage ABCeX; no named officials or state entities identified as shareholders.
+  </div>
+
+  <h3>Negative Evidence (What Would Be Expected if Higher Nexus Existed)</h3>
+  <p>If ABCeX were under DIRECT CONTROL or PROBABLE COOPERATION, one would expect indicators such as documented state shareholding, named intelligence-officer involvement, procurement or defense-payment tasking, or protection signaling (e.g., enforcement immunity letters). None of these are present in open sources. The 2024 raids cut against a strong-protection reading, although their inconclusive outcome is also consistent with tolerated operation. The assessment therefore stops at TOLERATED SAFE HARBOR with movement indicators, not PROBABLE COOPERATION. <span class="badge badge-inference">Analyst Inference</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ============================================== -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+  <h3>Sanctions</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Action</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>UK (FCDO / OFSI)</strong></td>
+          <td>Designated Nueva Cryptologia S.A.S. de C.V. (d.b.a. ABCex) on 26 May 2026 under the Russia (Sanctions) (EU Exit) Regulations 2019, for material services to sanctioned exchanges Garantex and Grinex. Part of an 18-designation package (incl. Huobi/HTX, Exmo, Bitpapa, Rapira, Aifory Pro, A7, A7A5 issuer). First UK use of Reg 17A (correspondent-banking/payment-processing ban) against crypto platforms.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (asset freeze in force)</td>
+        </tr>
+        <tr>
+          <td><strong>OFAC (U.S.)</strong></td>
+          <td>ABCeX entity not designated as of June 2026. Assessed operator Sergey Mendeleev designated 14 Aug 2025 (as Garantex executive; Exved and InDeFi Bank network).</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (entity not listed; operator listed)</td>
+        </tr>
+        <tr>
+          <td><strong>EU</strong></td>
+          <td>ABCeX not individually listed. EU 21st sanctions package proposed 9 June 2026 includes transaction bans on 11 Russia-linked crypto platforms; adoption and entity-specific scope pending.</td>
+          <td><span class="tier-credible">CREDIBLE</span> (proposed, not yet adopted)</td>
+        </tr>
+        <tr>
+          <td><strong>FinCEN</strong></td>
+          <td>No Section 311 action or advisory specific to ABCeX in open sources.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Raids and Investigations</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Oct 2023</div><div class="timeline-text">ABCeX on-chain relationship with Garantex begins, per TRM, well before Garantex's takedown. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Mar 2024</div><div class="timeline-text">Russian security services raid ABCeX and Beribit offices in Federation Tower in a case about financing the Crocus City Hall attack (RBC, SHOT, Baza). Kommersant later reports searches ended; ABCeX resumed operations. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[RBC, Kommersant]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Aug 2025</div><div class="timeline-text">OFAC designates Sergey Mendeleev (and Exved, InDeFi Bank, Grinex network) as part of the Garantex-successor crackdown. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Feb 2026</div><div class="timeline-text">Elliptic publishes its Russia-linked sanctions-evasion report naming ABCeX ($11B processed; flows to Garantex and Aifory Pro). <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">26 May 2026</div><div class="timeline-text">UK designates ABCeX (Nueva Cryptologia) and 17 other entities/individuals; asset freeze in force. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO, TRM]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div></div>
+      <div class="timeline-content"><div class="timeline-date">9 Jun 2026</div><div class="timeline-text">Kharon reports ABCeX continues operating and white-labeling its tech (Ural.Ex, AWX) despite designation. EU proposes 21st package (11 crypto platforms). <span class="badge badge-credible">Credible</span> <span class="cite">[Kharon]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Post-Sanction Reconstitution Assessment (Schema Rule)</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Reconstitution: Primary Output, Not a Footnote</div>
+    ABCeX occupies both sides of the reconstitution dynamic. (1) <strong>As a successor:</strong> it is itself part of the post-Garantex reconstitution, absorbing ruble-onramp function after the March 2025 Garantex takedown (TRM: flows to the successor set, including ABCeX, grew roughly tenfold post-takedown). (2) <strong>As a future reconstitution risk:</strong> because the UK action is an asset-freeze designation rather than an infrastructure seizure, ABCeX remains operational, and its white-label provisioning to Ural.Ex (Yekaterinburg) and AWX Solutions FZ LLC (Dubai, assessed rebrand of US-sanctioned Crypto Explorer DMCC/AWEX) is a built-in continuity mechanism: the same services can persist under new storefronts. The relevant indicators to monitor are new brand registrations on ABCeX technology, Telegram channel migration, and domain/infrastructure continuity. <span class="badge badge-credible">Credible</span> <span class="cite">[TRM, Kharon]</span>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ============================================== -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-label">Two-Tier Model (Applied to Every Entry)</div>
+    <strong>Tier 1, Transaction confidence:</strong> how confident that funds transited ABCeX (CONFIRMED / CREDIBLE / ANALYST INFERENCE), backed by on-chain evidence where available.<br>
+    <strong>Tier 2, Facilitation assessment:</strong> an analytical characterization of ABCeX's role: Active facilitation, Structural enablement, or Incidental processing. The two tiers are independent and never collapsed.
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Entity</th><th>Tier 1: Transaction confidence</th><th>Tier 2: Facilitation</th><th>Vendor coverage</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Garantex</strong><br><span style="font-size:11px;color:var(--text-muted)">Sanctioned exchange; shared Federation Tower</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: $133.4M bilateral; ABCeX = Garantex's 3rd-largest counterparty; began Oct 2023. Elliptic: significant ABCeX flows to Garantex.</span></td>
+          <td><span class="tier-structural">Structural enablement</span> with probable <span class="tier-active">active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Wallet obfuscation + Mendeleev tie + large flows to a sanctioned exchange exceed incidental overlap.</span></td>
+          <td>Corroborating: TRM, Elliptic, Kharon, UK FCDO. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Aifory Pro</strong><br><span style="font-size:11px;color:var(--text-muted)">UK-sanctioned high-risk exchange</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: $175.2M bilateral ($168.7M inbound to Aifory); ABCeX = 96% of Aifory's sanctioned-counterparty inflows. Elliptic corroborates.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">ABCeX is upstream hub feeding Aifory; no evidence of joint ownership. Both UK-designated same day.</span></td>
+          <td>Corroborating: TRM, Elliptic. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Rapira</strong><br><span style="font-size:11px;color:var(--text-muted)">UK-sanctioned; Georgia-incorporated, Moscow office</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: $38.1M bilateral with ABCeX. Kharon: shared white-label partner (Ural.Ex).</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Peer node providing redundant ruble-to-crypto pathways; Ural.Ex markets both.</span></td>
+          <td>Corroborating: TRM, Kharon. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Grinex</strong><br><span style="font-size:11px;color:var(--text-muted)">Sanctioned Garantex successor</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">UK cites ABCeX's "suspected links to Garantex and Grinex." TI-Russia: Arvix/ABCEX-Garantex-Grinex USDT interplay.</span> <span class="badge badge-single">Single Source</span> for the direct Arvix interplay (TI-Russia)</td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Cluster co-participation; direct ABCeX to Grinex flow not separately quantified in public vendor data.</span></td>
+          <td>Corroborating: UK FCDO (assertion), TI-Russia. TRM/Elliptic have not published a direct ABCeX to Grinex figure.</td>
+        </tr>
+        <tr>
+          <td><strong>Ural.Ex</strong><br><span style="font-size:11px;color:var(--text-muted)">Yekaterinburg OTC desk; white-label partner</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Kharon: Ural.Ex markets itself as official partner of ABCeX (and Rapira), running on ABCeX-provisioned tech.</span> <span class="badge badge-single">Single Source</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Markets sanctions-evasion invoice settlement and EU-export workarounds; ABCeX knowingly powers the storefront.</span></td>
+          <td>Corroborating: Kharon. No other vendor has published. <span class="badge badge-single">Single Source</span></td>
+        </tr>
+        <tr>
+          <td><strong>AWX Solutions FZ LLC</strong><br><span style="font-size:11px;color:var(--text-muted)">Dubai; assessed rebrand of US-sanctioned Crypto Explorer DMCC/AWEX</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Kharon: AWX is a Ural.Ex partner sharing the Yekaterinburg desk and a Federation Tower address; ecosystem-level, not a direct ABCeX flow.</span> <span class="badge badge-single">Single Source</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Two hops from ABCeX via Ural.Ex; provides UAE off-ramp redundancy. Ukraine-sanctioned (Jul 2025).</span></td>
+          <td>Corroborating: Kharon. No other vendor has published. <span class="badge badge-single">Single Source</span></td>
+        </tr>
+        <tr>
+          <td><strong>Bitpapa</strong><br><span style="font-size:11px;color:var(--text-muted)">UAE-registered P2P; OFAC/Ukraine/UK sanctioned</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Same Elliptic/UK network; no public direct ABCeX to Bitpapa flow figure.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Co-participant in the sanctions-evasion corridor; no evidence of coordinated operations.</span></td>
+          <td>Corroborating (network-level): Elliptic, TRM, UK FCDO. No direct bilateral figure published.</td>
+        </tr>
+        <tr>
+          <td><strong>Huobi / HTX</strong><br><span style="font-size:11px;color:var(--text-muted)">UK-sanctioned global exchange</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: Huobi is a persistent counterparty to nearly every entity in the UK package incl. the ABCeX successor set ($1.13B to the set post-takedown); ABCeX-specific bilateral not isolated.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Large-exchange liquidity bridge for the successor set; ABCeX-specific role likely incidental at the bilateral level.</span></td>
+          <td>Corroborating: TRM. Huobi/HTX publicly disputes that the sanctioned entity equals its operating brand.</td>
+        </tr>
+        <tr>
+          <td><strong>A7 / A7A5 (Old Vector LLC)</strong><br><span style="font-size:11px;color:var(--text-muted)">UK-sanctioned ruble-stablecoin infrastructure</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">ABCeX is within the broader UK-sanctioned + A7 set in TRM's analysis; no isolated ABCeX to A7 bilateral published.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Network-level; A7 has state-linked elements (Promsvyazbank, Ilan Shor). Relevant to Section 07 nexus.</span></td>
+          <td>Corroborating (network-level): TRM, UK FCDO.</td>
+        </tr>
+        <tr>
+          <td><strong>Beribit</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-raided Moscow exchange</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Joint March 2024 Federation Tower raids; no public on-chain link.</span></td>
+          <td><span class="tier-incidental">Unknown / Incidental</span><br><span style="font-size:11px;color:var(--text-muted)">Plausible overlapping client base; not substantiated in open sources.</span></td>
+          <td>Corroborating: RBC, Kommersant (raid co-location only). No on-chain vendor link published.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ============================================== -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> ABCeX is one of the principal platforms that absorbed Garantex's ruble-onramp function. TRM shows flows to the successor set (Rapira, Aifory Pro, Grinex.io, ABCeX, A7, A7A5) grew more than tenfold after the March 2025 Garantex takedown, from $111M in the prior 26 months to $1.13B in the following 14 months. ABCeX sits at the center of that set as Garantex's third-largest historical counterparty and Aifory's dominant inflow source. <span class="cite">[TRM, Elliptic]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    The UK designation is the first material enforcement action against ABCeX itself, but it is an asset-freeze (correspondent-banking/payment-processing ban under Reg 17A), not an infrastructure seizure or operator arrest. Its bite is on UK-nexus financial access and counterparty risk, not on ABCeX's domestic Russian operations or its servers. The structural weakness this profile flags is therefore the inverse of a takedown like AudiA6: the human capital (Mendeleev) is in a non-cooperating jurisdiction and at large, and the technology persists under white-label storefronts. Degrading ABCeX requires multilateral designation breadth plus pressure on its fiat-rail and counterparty network, not a single-jurisdiction listing.
+  </div>
+
+  <h3>Reconstitution Status</h3>
+  <p>ABCeX brand: <strong>Operational and expanding.</strong> Futures and margin launched Jan 2026; white-label provisioning live (Ural.Ex, AWX). <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>As a successor: <strong>Active.</strong> Core node in the post-Garantex reconstitution. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM]</span></p>
+  <p>Future reconstitution risk: <strong>High.</strong> Asset-freeze designation without seizure plus white-label continuity means services can migrate to new storefronts. <span class="badge badge-credible">Credible</span> <span class="cite">[Kharon]</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Mendeleev's exact role at ABCeX (owner, technical principal, or namesake tie) is not court-established; he publicly denies founding it.</div>
+  <div class="gap-flag">No public ABCeX wallet-cluster address lists; only aggregate and bilateral counterparty figures are released by Elliptic and TRM.</div>
+  <div class="gap-flag">Hosting providers, CDN, and server locations for abcex.io are not publicly mapped.</div>
+  <div class="gap-flag">No named ransomware-family or darknet-market case ties ABCeX as a specific cash-out venue in public reporting.</div>
+  <div class="gap-flag">No specific bank or payment-processor fiat-rail relationships are documented.</div>
+  <div class="gap-flag">EU 21st-package adoption and whether ABCeX is individually listed is unresolved as of June 2026; OFAC designation of the entity (vs. operator) has not occurred.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- RECENT REPORTING -->
+<!-- ============================================== -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[9 Jun 2026]</span> Kharon reports ABCeX (alias Nueva Cryptologia) continues operating and white-labeling its technology to Ural.Ex and AWX despite the UK designation; documents the Federation Tower cluster and Khabib Nurmagomedov marketing. <span class="cite">[Kharon]</span></p>
+  <p><span class="cite">[26 May 2026]</span> UK FCDO designates ABCeX and 17 other entities/individuals (Huobi/HTX, Exmo, Bitpapa, Rapira, Aifory Pro, A7, A7A5 issuer, Eurasian Savings Bank); TRM and Elliptic publish analyses; first UK use of Reg 17A against crypto. <span class="cite">[UK FCDO, TRM, Elliptic]</span></p>
+  <p><span class="cite">[21 Feb 2026, updated 3 Mar 2026]</span> Elliptic names ABCeX in its Russia-linked sanctions-evasion report: $11B processed, wallet obfuscation, flows to Garantex and Aifory Pro. <span class="cite">[Elliptic]</span></p>
+  <p><span class="cite">[Jan 2026]</span> ABCeX launches bitcoin futures and margin trading. <span class="cite">[Bits.media]</span></p>
+  <p><span class="cite">[14 Aug 2025]</span> OFAC designates Sergey Mendeleev (Garantex co-founder) with Exved, InDeFi Bank, and the Grinex network. <span class="cite">[OFAC]</span></p>
+  <p><span class="cite">[Mar 2024]</span> Russian security services raid ABCeX and Beribit in Federation Tower in the Crocus attack financing case; operations later resume. <span class="cite">[RBC, Kommersant]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SOURCES -->
+<!-- ============================================== -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://www.elliptic.co/blog/russia-linked-cryptocurrency-services-and-sanctions-evasion" target="_blank">Elliptic: Russia-linked cryptocurrency services and sanctions evasion : 21 February 2026 (updated 3 March 2026)</a></li>
+    <li><a href="https://www.gov.uk/government/news/uk-cracks-down-on-backdoor-russian-sanctions-evasion-with-tough-new-measures" target="_blank">UK FCDO: UK cracks down on backdoor Russian sanctions evasion with tough new measures : 26 May 2026</a></li>
+    <li><a href="https://www.gov.uk/government/publications/list-of-russia-sanctions-designations-26-may-2026" target="_blank">UK Government: List of Russia sanctions designations, 26 May 2026 (Nueva Cryptologia S.A.S. de C.V., d.b.a. ABCex)</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/uk-designates-huobi-exmo-bitpapa-and-11-other-entities-for-russian-crypto-sanctions-evasion" target="_blank">TRM Labs: UK Designates Huobi, Exmo, Bitpapa, and 11 Other Entities for Russian Crypto Sanctions Evasion : 26 May 2026</a></li>
+    <li><a href="https://www.kharon.com/brief/russia-crypto-sanctions-abcex-uralex-garantex" target="_blank">Kharon: These Crypto Exchanges Are Openly Offering To Help Russians Skirt Sanctions : 9 June 2026</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/the-imitation-game-following-garantexs-takedown-are-these-high-risk-exchanges-copying-its-playbook" target="_blank">TRM Labs: The Imitation Game: Following Garantex's Takedown : 3 September 2025</a></li>
+    <li><a href="https://home.treasury.gov/news/press-releases/sb0225" target="_blank">U.S. Treasury / OFAC: Sanctions on Garantex successor network and executives (Mendeleev, Mira Serda, Karavatsky) : 14 August 2025</a></li>
+    <li><a href="https://cryptolaundromat.ti-russia.org/chapter-1/" target="_blank">Transparency International Russia: Exved, The Ghost Successor of Garantex (Arvix/ABCEX-Garantex-Grinex interplay) : 2025</a></li>
+    <li><a href="https://fintelegram.com/compliance-report-sergey-mendeleev-garantex-and-exved-the-rising-role-of-crypto-in-russias-sanctions-evasion-strategy/" target="_blank">FinTelegram: Sergey Mendeleev, Garantex, and Exved compliance report</a></li>
+    <li><a href="https://phemex.com/news/article/abcex-opens-37-offices-in-russia-for-cryptotocash-services-21348" target="_blank">Phemex: ABCEX opens 37 offices in Russia for crypto-to-cash services</a></li>
+    <li><a href="https://bits.media/abcex-zapustila-fyuchersy-na-bitkoin-i-marzhinalnuyu-torgovlyu/" target="_blank">Bits.media: ABCEX launches bitcoin futures and margin trading : January 2026</a></li>
+    <li><a href="https://www.rbc.ru/society/29/03/2024/6606bf179a7947667c061caf" target="_blank">RBC: Security services conduct searches at crypto exchange (ABCeX, Beribit; Crocus case) : 29 March 2024</a></li>
+    <li><a href="https://www.kommersant.ru/doc/6608024" target="_blank">Kommersant: Beribit and ABCEX report end of searches at their offices : March 2024</a></li>
+    <li><a href="https://play.google.com/store/apps/details?id=io.abcex.app&amp;hl=en" target="_blank">Google Play: ABCEX: Buy &amp; Sell Crypto (Tbilisi FIZ address on English listing)</a></li>
+    <li><a href="https://ofac.treasury.gov/sanctions-list-search-tool" target="_blank">OFAC Sanctions List Search (checked: ABCeX/Nueva Cryptologia entity not designated as of June 2026)</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). Volume figures cited with source and methodology; figures from different vendors and authorities are presented separately, not averaged. Two-tier connected entity model applied throughout Section 09 (Tier 1 transaction confidence + Tier 2 facilitation assessment). Three jurisdictions documented separately per schema. Status: Sanctioned (UK, 26 May 2026); operational; assessed state nexus TOLERATED SAFE HARBOR.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

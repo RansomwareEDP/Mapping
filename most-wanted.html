@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ransomware Most Wanted - Actor Profiles</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#2a3140;
+    --txt:#e6edf3; --muted:#8b97a7; --accent:#e0b341; --red:#e5534b;
+    --op:#e5534b; --enab:#3fb950; --host:#a371f7; --facil:#db61a2; --launder:#39a0c9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.5}
+  header{padding:28px 32px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#11161f,#0d1117)}
+  h1{margin:0 0 4px;font-size:24px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px;max-width:980px}
+  .stats{display:flex;gap:22px;margin-top:14px;flex-wrap:wrap}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 14px}
+  .stat b{font-size:18px;color:var(--accent)} .stat span{color:var(--muted);font-size:12px;display:block}
+  .controls{position:sticky;top:0;z-index:10;background:rgba(13,17,23,.95);backdrop-filter:blur(6px);padding:14px 32px;border-bottom:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input[type=search]{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:9px 12px;border-radius:8px;font-size:14px}
+  select{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:9px 10px;border-radius:8px;font-size:13px}
+  .count{color:var(--muted);font-size:12px;margin-left:auto}
+  main{padding:8px 32px 60px}
+  .section{margin-top:30px}
+  .section h2{font-size:16px;border-left:3px solid var(--accent);padding-left:10px;margin:0 0 4px}
+  .section .desc{color:var(--muted);font-size:12px;margin:0 0 14px;padding-left:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .card.op{border-top:3px solid var(--op)}
+  .card.access,.card.precursor{border-top:3px solid var(--enab)}
+  .card.laundering{border-top:3px solid var(--launder)}
+  .card.hosting{border-top:3px solid var(--host)}
+  .card.facilitation{border-top:3px solid var(--facil)}
+  .chead{display:flex;gap:12px;padding:14px 14px 10px}
+  .photo{width:78px;height:96px;flex:none;border-radius:6px;background:var(--panel2);border:1px solid var(--line);object-fit:cover;object-position:center top}
+  .ph-fallback{width:78px;height:96px;flex:none;border-radius:6px;background:linear-gradient(135deg,#222a38,#161b22);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--muted)}
+  .hbody{min-width:0}
+  .name{font-size:15px;font-weight:700;line-height:1.25}
+  .slug{font-size:10px;color:#5b6675;font-family:monospace;margin-top:2px}
+  .alias{font-size:12px;color:var(--accent);margin-top:5px;font-style:italic;word-break:break-word}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 10px}
+  .b{font-size:10.5px;padding:2px 7px;border-radius:20px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);white-space:nowrap}
+  .b.cat{color:#fff}
+  .b.op{background:rgba(229,83,75,.16);border-color:var(--op);color:#f0a59f}
+  .b.enab{background:rgba(63,185,80,.14);border-color:var(--enab);color:#86e29a}
+  .b.host{background:rgba(163,113,247,.14);border-color:var(--host);color:#c9a9fb}
+  .b.facil{background:rgba(219,97,162,.14);border-color:var(--facil);color:#f0a6cd}
+  .b.launder{background:rgba(57,160,201,.14);border-color:var(--launder);color:#9bd4ea}
+  .b.reward{background:rgba(224,179,65,.14);border-color:var(--accent);color:var(--accent)}
+  .b.conf-High{border-color:#3fb95066;color:#86e29a}
+  .b.conf-Moderate{border-color:#d2992266;color:#e3c07a}
+  .rows{padding:4px 14px 14px;border-top:1px solid var(--line);margin-top:auto}
+  .row{display:flex;gap:8px;font-size:12.5px;padding:4px 0;border-bottom:1px solid #1d2430}
+  .row:last-child{border-bottom:none}
+  .row .k{color:var(--muted);flex:none;width:86px}
+  .row .v{color:var(--txt);min-width:0}
+  .fam{background:var(--panel2);border-left:2px solid var(--facil);padding:7px 10px;margin:8px 14px 0;border-radius:0 6px 6px 0;font-size:12px;color:#e8c7da}
+  .bio{padding:10px 14px 0;font-size:12.5px;color:#c4cdda}
+  .srcchips{display:flex;flex-wrap:wrap;gap:4px 6px}
+  .srcchips a{color:var(--accent);text-decoration:none;border-bottom:1px dotted #5b6675}
+  .srcchips a:hover{border-bottom-color:var(--accent)}
+  .srcchips span{color:var(--txt)}
+  .src{padding:10px 14px 14px}
+  .src a.pdf{display:inline-block;font-size:11.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px}
+  .src a.pdf:hover{border-color:var(--accent)}
+  .ref{padding:8px 14px 0;font-size:11.5px;color:var(--muted)}
+  .ref a{color:var(--accent);text-decoration:none;border-bottom:1px dotted #5b6675}
+  .ref a:hover{border-bottom-color:var(--accent)}
+  .nophoto{font-size:10px;color:#5b6675;margin-top:6px;max-width:78px}
+  footer{padding:24px 32px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px}
+  code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:11px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ransomware Most Wanted - Actor Profiles</h1>
+  <div class="sub">Officially wanted, indicted, or sanctioned ransomware principals and the supporting ecosystem selected for tracking. The first section covers operators, group leadership, and deployment affiliates (direct actors); the remaining sections cover function-specific support roles (access, laundering, hosting, facilitation). Photographs are drawn from official wanted pages where available and auto-load from the source; sanctions-only designations frequently carry no official photo. Confidence labels reflect the strength of public-source attribution. Not for operational use; verify against primary sources before action.</div>
+</header>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="Search name, alias, group, origin...">
+  <select id="fCat"><option value="">All categories</option></select>
+  <select id="fOrigin"><option value="">All origins</option></select>
+  <select id="fConf"><option value="">All confidence</option><option>High</option><option>Moderate</option></select>
+  <span class="count" id="count"></span>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  Compiled for analytical / briefing use. Sources: FBI Cyber's Most Wanted, U.S. Secret Service, U.S. State Dept Rewards for Justice, U.S. Treasury OFAC, UK NCA, Australia DFAT, EU Most Wanted (Operation Endgame / BKA), INTERPOL, U.S. DOJ indictments. Photographs remain the property of the issuing authorities and are shown for identification purposes. To add a missing photo, drop a file named <code>photos/&lt;slug&gt;.jpg</code> beside this page (slug shown on each card).
+</footer>
+
+<script>
+const CAT = {
+  op:{label:"Ransomware Operators, Leadership & Affiliates", short:"Operator / Leadership", cls:"op", badge:"op",
+      desc:"Direct actors: group leaders, developers, and deployment affiliates who built or ran ransomware operations (includes Conti/Trickbot leadership)."},
+  access:{label:"Initial Access, Loaders & Botnets", short:"Initial Access", cls:"access", badge:"enab",
+      desc:"Operators of droppers, loaders, botnets, exploit kits, and credential theft (Trickbot, Qakbot, DanaBot, Angler) that provide ransomware initial access. Includes the Operation Endgame cohort."},
+  laundering:{label:"Money Laundering & Financial Infrastructure", short:"Laundering", cls:"laundering", badge:"launder",
+      desc:"Operators of exchanges, mixers, and payment services that move and clean ransomware proceeds."},
+  hosting:{label:"Bulletproof Hosting Infrastructure", short:"Bulletproof Hosting", cls:"hosting", badge:"host",
+      desc:"Providers of takedown-resistant hosting that keeps ransomware crews online."},
+  facilitation:{label:"Facilitation & State Protection", short:"Facilitation", cls:"facilitation", badge:"facil",
+      desc:"Financial, familial, and state-linked facilitators who shield operators from disruption and prosecution."},
+  precursor:{label:"Precursor / Banking-Trojan Crews", short:"Precursor Crew", cls:"precursor", badge:"enab",
+      desc:"Historical banking-trojan crews that seeded today's ransomware ecosystem."}
+};
+const FBI = s => "https://www.fbi.gov/wanted/cyber/"+s;
+const FBIimg = s => "https://www.fbi.gov/wanted/cyber/"+s+"/@@images/image/large";
+const BKA = c => "https://www.bka.de/DE/IhreSicherheit/Fahndungen/Personen/BekanntePersonen/Endgame_2/"+c+"/Sachverhalt.html";
+
+const D = [
+ // ---- OPERATORS, LEADERSHIP & AFFILIATES ----
+ {slug:"khoroshev",cat:"op",name:"Dmitry Yuryevich Khoroshev",alias:'"LockBitSupp", "putinkrab"',group:"LockBit (creator / administrator)",origin:"Russia",sources:"DOJ, OFAC, NCA, AU, RFJ",reward:"$10M (RFJ)",sanctions:"OFAC / UK / AU (May 2024)",status:"At large (Russia)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Identified by the UK NCA in May 2024 as the creator and administrator of LockBit, the most prolific RaaS operation of its era. Western agencies identify him as the public 'LockBitSupp' persona; the actor publicly disputed that identification, so the persona link is contested even though law enforcement maintains it. LockBit claimed over 2,000 victims and collected more than $500M before Operation Cronos disrupted its infrastructure.",
+  src:[["NCA","https://www.nationalcrimeagency.gov.uk/news/lockbit-leader-unmasked-and-sanctioned"],["RFJ","https://www.state.gov/transnational-organized-crime-rewards-program/lockbit-ransomware-administrator-dmitry-yuryevich-khoroshev"]],
+  ref:[["Reuters","https://www.reuters.com/technology/cybersecurity/uk-allies-sanction-russian-leader-lockbit-cybercrime-gang-2024-05-07/"]]},
+ {slug:"matveev",cat:"op",name:"Mikhail Pavlovich Matveev",alias:'"Wazawaka", "m1x", "Boriselcin", "Uhodiransomwar"',group:"LockBit, Hive, Babuk (affiliate / developer)",origin:"Russia",sources:"FBI, DOJ, OFAC, RFJ",reward:"$10M (RFJ)",sanctions:"OFAC (May 2023)",status:"Charged in Russia Dec 2024; will not be extradited",conf:"High",photo:FBIimg("mikhail-pavlovich-matveev"),
+  family:"No public familial information.",
+  bio:"DOB 17 Aug 1992. Brown hair, blue/grey eyes; full-sleeve tattoo on right arm; missing left ring finger. Ties to Kaliningrad and St. Petersburg; has travelled to Thailand. Prolific affiliate and alleged Babuk developer; charged over attacks on the DC Metropolitan Police and a NJ police department. His later domestic Russian charge signals selective state tolerance rather than cooperation.",
+  src:[["FBI",FBI("mikhail-pavlovich-matveev")]]},
+ {slug:"yakubets-maksim",cat:"op",name:"Maksim Viktorovich Yakubets",alias:'"aqua"',group:"Evil Corp leader (BitPaymer / WastedLocker; Dridex)",origin:"Russia (b. Ukraine)",sources:"FBI, DOJ, OFAC, NCA, AU, RFJ",reward:"$5M (RFJ)",sanctions:"OFAC (2019); UK/AU (2024)",status:"At large",conf:"High",photo:FBIimg("maksim-viktorovich-yakubets"),
+  family:"Father-in-law: Eduard Benderskiy (former FSB officer, key protector). Father: Viktor Yakubets. Brother: Artem Yakubets. Married into the Benderskiy family.",
+  bio:"DOB 20 May 1987, born Ukraine. About 5 ft 10 in, 170 lbs, brown hair and eyes. Founder and leader (alias 'Aqua') of the family-centred Moscow operation; oversaw Dridex development and Zeus/Bugat/Cridex operations, later deploying ransomware (BitPaymer, WastedLocker). Acted as the group's liaison to Russian intelligence (FSB, SVR, GRU). Charged 2019 in W.D. Pennsylvania.",
+  src:[["FBI",FBI("maksim-viktorovich-yakubets")]]},
+ {slug:"turashev",cat:"op",name:"Igor Olegovich Turashev",alias:'"nintutu"',group:"Evil Corp (administrator)",origin:"Russia",sources:"FBI, DOJ, OFAC",reward:"-",sanctions:"OFAC (2019)",status:"At large",conf:"High",photo:FBIimg("igor-olegovich-turashev"),
+  family:"No public familial information.",
+  bio:"Co-defendant of Yakubets; administered Evil Corp's Dridex/Bugat infrastructure used for credential theft, wire fraud, and ransomware deployment. After a 2019 split with Yakubets, led DoppelPaymer ransomware; wanted by German authorities since 2023. His company reportedly placed third in a 2022 Wagner Group hackathon.",
+  src:[["FBI",FBI("igor-olegovich-turashev")]]},
+ {slug:"ryzhenkov",cat:"op",name:"Aleksandr Ryzhenkov",alias:"-",group:"Evil Corp + LockBit affiliate",origin:"Russia",sources:"FBI, OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"High",photo:FBIimg("aleksandr-ryzhenkov"),
+  family:"Described in NCA reporting as Yakubets' deputy / right-hand.",
+  bio:"Yakubets' long-time second-in-command (partners since about 2013 in The Business Club); co-developed Dridex and WastedLocker. Unmasked during Operation Cronos as both an Evil Corp member and a LockBit affiliate, linking the two ecosystems. Sanctioned tri-laterally in October 2024.",
+  src:[["FBI",FBI("aleksandr-ryzhenkov")]]},
+ {slug:"polyanin",cat:"op",name:"Yevgeniy Igorevich Polyanin",alias:"-",group:"REvil / Sodinokibi (Kaseya)",origin:"Russia",sources:"FBI, DOJ, OFAC",reward:"-",sanctions:"OFAC (Nov 2021)",status:"At large",conf:"High",photo:FBIimg("yevgeniy-igorevich-polyanin"),
+  family:"No public familial information.",
+  bio:"REvil/Sodinokibi affiliate tied to supply-chain ransomware attacks; about $6.1M in proceeds seized at the time of his 2021 indictment.",
+  src:[["FBI",FBI("yevgeniy-igorevich-polyanin")]]},
+ {slug:"bogachev",cat:"op",name:"Evgeniy Mikhailovich Bogachev",alias:'"slavik", "lucky12345"',group:"CryptoLocker; GameOver Zeus botnet",origin:"Russia",sources:"FBI, OFAC, RFJ",reward:"$3M (RFJ)",sanctions:"OFAC (2016)",status:"At large",conf:"High",photo:FBIimg("evgeniy-mikhailovich-bogachev"),
+  family:"No public familial information.",
+  bio:"Believed based in Anapa, Russia. Author and operator of GameOver Zeus and the CryptoLocker ransomware that pioneered the modern crypto-extortion model. Carries the longest-standing U.S. cyber bounty at $3M.",
+  src:[["FBI",FBI("evgeniy-mikhailovich-bogachev")]]},
+ {slug:"tymoshchuk",cat:"op",name:"Volodymyr Viktorovych Tymoshchuk",alias:'"deadforz", "Boba", "msfv", "farnetwork"',group:"Nefilim, LockerGoga, MegaCortex (administrator)",origin:"Ukraine",sources:"FBI, DOJ, RFJ",reward:"$11M (RFJ)",sanctions:"-",status:"Fugitive",conf:"High",photo:FBIimg("volodymyr-viktorovych-tymoshchuk"),
+  family:"No public familial information.",
+  bio:"DOB 2 Oct 1996, born Ukraine; speaks Russian and Ukrainian; ties to Poland, Romania, Moldova, Turkiye, Russia, Belarus. Administered three ransomware strains (Dec 2018 to Oct 2021) hitting more than 250 US companies. Charged E.D.N.Y., indictment unsealed Sept 2025.",
+  src:[["FBI",FBI("volodymyr-viktorovych-tymoshchuk")]]},
+ {slug:"sungatov",cat:"op",name:"Artur Sungatov",alias:"-",group:"LockBit (affiliate)",origin:"Russia",sources:"DOJ, OFAC",reward:"-",sanctions:"OFAC (Feb 2024)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Indicted in the District of New Jersey in February 2024 alongside Kondratyev for deploying LockBit against US manufacturing and other victims; sanctioned the same week under Operation Cronos.",
+  src:[["DOJ","https://www.justice.gov/usao-nj/pr/dual-russian-and-israeli-national-extradited-united-states-his-role-lockbit-ransomware"]]},
+ {slug:"kondratyev",cat:"op",name:"Ivan Gennadievich Kondratyev",alias:'"Bassterlord"',group:"LockBit (affiliate; REvil ties)",origin:"Russia",sources:"DOJ, OFAC",reward:"-",sanctions:"OFAC (Feb 2024)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Prominent LockBit affiliate and figurehead known for publishing affiliate guidance. Indicted Feb 2024; nine cryptocurrency addresses listed in his OFAC designation.",
+  src:[["DOJ","https://www.justice.gov/usao-nj/pr/dual-russian-and-israeli-national-extradited-united-states-his-role-lockbit-ransomware"]]},
+ {slug:"nefedov",cat:"op",name:"Oleg Evgenievich Nefedov",alias:'"Tramp", "Trump", "GG", "AA", "kurva", "Washingt0n", "S.Jimmi"',group:"Black Basta (leader); Conti ties",origin:"Russia",sources:"EU Most Wanted (BKA), INTERPOL Red Notice",reward:"Possibly via Conti $10M RFJ (alias 'Tramp')",sanctions:"-",status:"At large (Russia); arrested Yerevan Jun 2024, then released",conf:"High",photo:null,
+  family:"No public familial information. Alleged ties to high-ranking Russian politicians and to the FSB/GRU.",
+  bio:"Added to EU Most Wanted and an INTERPOL Red Notice in January 2026. Named in leaked Black Basta chat logs as ringleader: set targets, recruited members, ran negotiations, and controlled proceeds. Prior Conti links; alias 'Tramp' matches an alias in the Aug 2022 $10M Conti reward.",
+  src:[["EU Most Wanted","https://eumostwanted.eu/"],["BKA","https://www.bka.de/DE/IhreSicherheit/Fahndungen/Personen/BekanntePersonen/BlackBasta/Sachverhalt.html"]],
+  ref:[["BILD","https://www.bild.de/news/bka-fahndet-nach-krypto-erpresser-und-kopf-der-black-basta-bande-6968b56f6b40895ba7f6e5a7"]]},
+ {slug:"ermakov",cat:"op",name:"Aleksandr Gennadievich Ermakov",alias:'"blade_runner", "GistaveDore", "GustaveDore", "JimJones"',group:"REvil (Medibank attack)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Jan 2024)",status:"Sanctioned; reportedly detained in Russia (contested)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"First individual sanctioned by Australia for a cyberattack. Tied to the 2022 REvil-linked breach of Medibank that exposed 9.7M records, including highly sensitive health data, after a ransom was refused.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/jy2041"]],
+  ref:[["ABC News","https://www.abc.net.au/news/2024-01-23/aleksandr-ermakov-medibank-private-data-breach-cyber-attack/103378142"],["The Guardian","https://www.theguardian.com/australia-news/2024/jan/28/shadowy-world-of-ransomware-for-hire-revealed-by-online-account-activity-linked-to-the-medibank-hack"]]},
+ {slug:"ahmadi",cat:"op",name:"Mansour Ahmadi",alias:"-",group:"Iranian extortion / encryption operations",origin:"Iran",sources:"FBI, DOJ, RFJ",reward:"$10M (shared, RFJ)",sanctions:"-",status:"At large",conf:"High",photo:FBIimg("mansour-ahmadi"),
+  family:"No public familial information.",
+  bio:"Indicted Sept 2022 for a ransomware-style extortion campaign against U.S. critical-infrastructure providers, local governments, and businesses. A shared $10M RFJ offer covers him and two co-defendants.",
+  src:[["FBI",FBI("mansour-ahmadi")]]},
+ {slug:"kovalev-vitalii",cat:"op",name:"Vitalii Nikolaevich Kovalev",alias:'"Stern", "Ben", "Bentley", "Bergen", "Alex Konor"',group:"Conti (alleged leader 'Stern'); Trickbot",origin:"Russia",sources:"EU Most Wanted (Endgame), USSS",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Aged about 36. Named in Operation Endgame as the alleged leader of the Conti ransomware group under the moniker 'Stern' and an early Trickbot figure. Press reporting (El Pais, 2025) describes him running the operation like a company, with offices and staff bonuses. Appears on both the EU Most Wanted list and the USSS Most Wanted list.",
+  src:[["BKA",BKA("KVN")]],
+  ref:[["El Pais","https://english.elpais.com/international/2025-06-26/vitaly-kovalev-the-russian-hacker-who-has-offices-and-gives-bonuses-to-his-employees.html"]]},
+ {slug:"galochkin",cat:"op",name:"Maksim Sergeevich Galochkin",alias:'"bentley", "crypt", "manuel", "Max17", "volhvb"',group:"Trickbot / Conti (core member)",origin:"Russia",sources:"EU Most Wanted (Endgame), DOJ, OFAC",reward:"-",sanctions:"OFAC (Sept 2023)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Aged about 43. Core Trickbot/Conti member named in the September 2023 US/UK Trickbot indictment-and-sanctions set; added to EU Most Wanted under Operation Endgame.",
+  src:[["BKA",BKA("GMS")]]},
+ {slug:"tsarev",cat:"op",name:"Mikhail Mikhailovich Tsarev",alias:'"Mango", "alevizo"',group:"Conti / Trickbot (manager)",origin:"Russia",sources:"EU Most Wanted (Endgame), OFAC, NCA",reward:"-",sanctions:"OFAC / UK (2023)",status:"At large",conf:"Moderate",photo:null,
+  family:"No public familial information.",
+  bio:"Conti/Trickbot manager known as 'Mango'; sanctioned by the US and UK in 2023 and listed on EU Most Wanted via Operation Endgame.",
+  src:[["BKA",BKA("TMM")]]},
+
+ // ---- INITIAL ACCESS, LOADERS & BOTNETS ----
+ {slug:"kiselev",cat:"access",name:"Dmitrii Sergeevich Kiselev",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame (Season 2, May 2025) as part of the loader/botnet ecosystem feeding ransomware. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("KDS")]]},
+ {slug:"khalitov",cat:"access",name:"Danil Raisowitsch Khalitov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("KDR")]]},
+ {slug:"koniukhov",cat:"access",name:"Konstantin Pavlovich Koniukhov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("KKP")]]},
+ {slug:"kurov",cat:"access",name:"Artem Igorevich Kurov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("KAI")]]},
+ {slug:"kovalskii",cat:"access",name:"Aleksei Valerevich Kovalskii",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("KAV")]]},
+ {slug:"mikhailov",cat:"access",name:"Maksim Sergeevich Mikhailov",alias:'"Baget", "MaxMS76"',group:"Trickbot (sanctioned member); Operation Endgame",origin:"Russia",sources:"EU Most Wanted (Endgame), OFAC, NCA",reward:"-",sanctions:"OFAC / UK (Feb 2023, Trickbot)",status:"At large",conf:"High",photo:null,family:"No public familial information.",bio:"DOB 26 Jul 1976; linked to Sevastopol; Russian and Ukrainian nationality. Sanctioned by the US and UK in February 2023 as a member of the Trickbot cybercrime group, then listed on EU Most Wanted under Operation Endgame.",src:[["BKA",BKA("MMS")],["OFAC","https://home.treasury.gov/news/press-releases/jy1256"]],ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-Gm3dYUW5KkML5gcfG4ZUxy/"]]},
+ {slug:"osipov",cat:"access",name:"Oleg Vasilevich Osipov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("OOV")]]},
+ {slug:"prokop",cat:"access",name:"Roman Mikhailovich Prokop",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("PRM")]]},
+ {slug:"sharafetdinov",cat:"access",name:"Iskander Rifkatovich Sharafetdinov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("SIR")]]},
+ {slug:"sedletskii",cat:"access",name:"Valerii Sedletskii",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("SV")]]},
+ {slug:"shupliakov",cat:"access",name:"Danil Alekseevich Shupliakov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("SDA")]]},
+ {slug:"vakhromeev",cat:"access",name:"Ivan Vakhromeev",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("VI")]]},
+ {slug:"valiakhmetov",cat:"access",name:"Vadim Firdavisovich Valiakhmetov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("VVF")]]},
+ {slug:"vasilchenko",cat:"access",name:"Aleksandr Mikhailovich Vasilchenko",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("VAM")]]},
+ {slug:"zhukov",cat:"access",name:"Aleksandr Vadimovich Zhukov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("ZAV")]]},
+ {slug:"kalinin",cat:"access",name:"Artem Kalinin",alias:"-",group:"DanaBot (banking trojan / botnet)",origin:"Russia",sources:"EU Most Wanted (Endgame), DOJ",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:null,family:"No public familial information.",bio:"Charged in the Central District of California DanaBot scheme; DanaBot is a banking trojan and botnet used for initial access and fraud. Named under Operation Endgame.",src:[["DOJ","https://www.justice.gov/usao-cdca/pr/16-defendants-federally-charged-connection-danabot-malware-scheme-infected-computers"]]},
+ {slug:"stepanov",cat:"access",name:"Aleksandr Stepanov",alias:'"JimmBee"',group:"DanaBot (banking trojan / botnet)",origin:"Russia",sources:"EU Most Wanted (Endgame), DOJ",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:null,family:"No public familial information.",bio:"Charged in the DanaBot scheme (C.D. Cal); named under Operation Endgame as part of the botnet ecosystem enabling downstream ransomware.",src:[["DOJ","https://www.justice.gov/usao-cdca/pr/16-defendants-federally-charged-connection-danabot-malware-scheme-infected-computers"]]},
+ {slug:"lefterov",cat:"access",name:"Alexander Lefterov",alias:'"Alander", "Drik"',group:"Credential-theft botnet",origin:"Ukraine",sources:"FBI, USSS",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:FBIimg("alexander-lefterov"),
+  family:"No public familial information.",
+  bio:"Operated a botnet of compromised computers used to harvest banking and account credentials, providing the access layer that ransomware crews rely on. Appears on FBI and USSS lists.",
+  src:[["FBI",FBI("alexander-lefterov")]]},
+ {slug:"kadariya",cat:"access",name:"Volodymyr Iuriyovych Kadariya",alias:"-",group:"Angler Exploit Kit / malvertising",origin:"Belarus",sources:"USSS, DOJ, RFJ",reward:"$2.5M (RFJ)",sanctions:"-",status:"At large",conf:"High",photo:null,
+  family:"No public familial information. Co-defendants: Maksim Silnikau, Andrei Tarasov.",
+  bio:"Charged (D.N.J., 2023; unsealed 2024) over a decade-long malvertising scheme using the Angler Exploit Kit to deliver malware and ransomware to millions of users.",
+  src:[["USSS","https://www.secretservice.gov/investigations/mostwanted/kadariya"]]},
+ {slug:"tarasov",cat:"access",name:"Andrei Vladimirovich Tarasov",alias:"-",group:"Angler Exploit Kit / malvertising",origin:"Russia",sources:"USSS, DOJ",reward:"-",sanctions:"-",status:"At large (per USSS)",conf:"Moderate",photo:null,
+  family:"No public familial information. Co-defendant of Kadariya and Silnikau.",
+  bio:"Charged alongside Kadariya in the Angler Exploit Kit malvertising conspiracy that seeded malware and ransomware infections.",
+  src:[["USSS","https://www.secretservice.gov/investigations/mostwanted/tarasov"]]},
+
+ // ---- MONEY LAUNDERING ----
+ {slug:"ivanov",cat:"laundering",name:"Sergey Sergeevich Ivanov",alias:'"Taleon"',group:"UAPS / PM2BTC / PinPays / Cryptex",origin:"Russia",sources:"USSS, DOJ, OFAC, RFJ",reward:"$10M (RFJ)",sanctions:"OFAC (Sept 2024)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Operated payment and laundering services moving about $1.15B, roughly a third tied to criminal activity including ransomware proceeds. Indicted E.D. Virginia Sept 2024 alongside Joker's Stash operator Shakhmametov.",
+  src:[["USSS","https://www.secretservice.gov/investigations/mostwanted/ivanov"]]},
+ {slug:"nguyen",cat:"laundering",name:"Minh Quoc Nguyen",alias:"-",group:"ChipMixer (crypto mixer)",origin:"Vietnam",sources:"FBI, DOJ",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:FBIimg("minh-quoc-nguyen"),
+  family:"No public familial information.",
+  bio:"Operated ChipMixer, a cryptocurrency mixing service used to launder ransomware and other criminal proceeds before its 2023 takedown.",
+  src:[["FBI",FBI("minh-quoc-nguyen")]]},
+
+ // ---- BULLETPROOF HOSTING ----
+ {slug:"mishin",cat:"hosting",name:"Alexander Igorevich Mishin",alias:"-",group:"Zservers / XHost (LockBit hosting)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Feb 2025)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Co-administrator of Zservers/XHost bulletproof hosting; advertised the service and directed LockBit cryptocurrency transactions. Sanctioned tri-laterally Feb 2025; Dutch police seized 127 servers.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases"]]},
+ {slug:"bolshakov",cat:"hosting",name:"Aleksandr Sergeyevich Bolshakov",alias:"-",group:"Zservers / XHost (LockBit hosting)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Feb 2025)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Zservers administrator implicated in changing a hacker's IP address on demand to keep a ransomware operation online despite an abuse complaint.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases"]]},
+ {slug:"volosovik",cat:"hosting",name:"Aleksandr Volosovik",alias:'"Yalishanda"',group:"Media Land (LockBit, Black Basta, Play, BlackSuit, Evil Corp)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Nov 2025)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"General director of Media Land bulletproof hosting, advertised on criminal forums as 'Yalishanda'. Provided servers and troubleshooting to multiple ransomware and DDoS crews.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+ {slug:"zatolokin",cat:"hosting",name:"Kirill Zatolokin",alias:"-",group:"Media Land",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Nov 2025)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Media Land employee responsible for collecting customer payments and coordinating with cyber actors; works closely with Volosovik on operations.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+ {slug:"pankova",cat:"hosting",name:"Yulia Pankova",alias:"-",group:"Media Land",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Nov 2025)",status:"At large",conf:"Moderate",photo:null,
+  family:"Associate of Aleksandr Volosovik; handles his finances and legal matters.",
+  bio:"Designated for assisting Volosovik with legal issues and handling his finances while aware of the illicit nature of Media Land's activity.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+ {slug:"penzev",cat:"hosting",name:"Arsenii Aleksandrovich Penzev",alias:"-",group:"Aeza Group (Meduza, Lumma, ransomware)",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Jul 2025)",status:"Arrested in Russia Apr 2025 (domestic charges)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"CEO and 33% owner of Aeza Group bulletproof hosting, used by infostealer and ransomware operators. Reportedly arrested in Russia in April 2025 on domestic illegal-banking charges.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+ {slug:"bozoyan",cat:"hosting",name:"Yurii Meruzhanovich Bozoyan",alias:"-",group:"Aeza Group",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Jul 2025)",status:"Arrested in Russia Apr 2025",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"General director and 33% owner of Aeza Group; reportedly arrested in Russia April 2025 alongside Penzev.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+ {slug:"gast",cat:"hosting",name:"Vladimir Vyacheslavovich Gast",alias:"-",group:"Aeza Group",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Jul 2025)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Technical director of Aeza Group bulletproof hosting, sanctioned July 2025 for enabling ransomware and malware infrastructure.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+ {slug:"knyazev",cat:"hosting",name:"Igor Anatolyevich Knyazev",alias:"-",group:"Aeza Group",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Jul 2025)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"33% owner of Aeza Group who manages operations; sanctioned July 2025.",
+  src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
+
+ // ---- FACILITATION & STATE PROTECTION ----
+ {slug:"benderskiy",cat:"facilitation",name:"Eduard Benderskiy",alias:"-",group:"Evil Corp (FSB-linked facilitator)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"High",photo:null,
+  family:"Father-in-law of Maksim Yakubets (Evil Corp leader). Former FSB officer (Spetsnaz / Vympel).",
+  bio:"Identified by the NCA as a key facilitator who used his former FSB position and connections to protect Evil Corp from disruption and prosecution. Former senior officer of the FSB's 'Vympel' unit; per Bellingcat reporting linked to overseas assassinations. After the 2019 sanctions he provided senior members security and ensured Russian authorities did not pursue them. The clearest documented state-to-ransomware protection link.",
+  src:[["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]]},
+ {slug:"yakubets-viktor",cat:"facilitation",name:"Viktor Grigoryevich Yakubets",alias:"-",group:"Evil Corp",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"Moderate",photo:null,
+  family:"Father of Maksim Yakubets (Evil Corp leader).",
+  bio:"DOB 19 Feb 1964; Russian. Had significant pre-cyber money-laundering ties: the family laundering expertise Maksim built Evil Corp upon. Listed by OFAC as a member of Evil Corp and designated in the October 2024 tri-lateral (US/UK/AU) action against the group.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/jy2623"],["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-Z9duFNtMgrS6MEf92wLk2b/"],["Video","https://www.youtube.com/watch?v=jPhR2ehowBs"]]},
+ {slug:"yakubets-artem",cat:"facilitation",name:"Artem Viktorovich Yakubets",alias:"-",group:"Evil Corp",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"Moderate",photo:null,
+  family:"Brother of Maksim Yakubets (Evil Corp leader); son of Viktor Yakubets.",
+  bio:"DOB 17 Jan 1986, born Polonnoye, Khmelnytskyi Oblast, Ukraine; Russian citizenship; based in Moscow. Listed by OFAC as a member of Evil Corp and designated in the October 2024 tri-lateral (US/UK/AU) action.",
+  src:[["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-eqcbRHsA6LKobfwF3JBf46/"]]},
+ {slug:"ryzhenkov-sergey",cat:"facilitation",name:"Sergey Viktorovich Ryzhenkov",alias:'"Serega Maloy", "poch", "sten"',group:"Evil Corp (sanctioned member)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"High",photo:null,
+  family:"Shares patronymic with Aleksandr Ryzhenkov; likely his brother.",
+  bio:"DOB 15 Feb 1989, born Uzbekistan; Russian; based in Moscow. Designated by OFAC, the UK and Australia in the October 2024 tri-lateral action as a member of Evil Corp.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/jy2623"],["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-V7yqiCXwPAmEdpMSotEf3i/"]]},
+ {slug:"shchetinin",cat:"facilitation",name:"Aleksey Yevgenevich Shchetinin",alias:'"Alex Schetinin", "Lesha Shchetinin"',group:"Evil Corp (sanctioned member)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 22 Aug 1987; Russian; based in Moscow. Designated by OFAC, the UK and Australia in the October 2024 tri-lateral action as a member of Evil Corp.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/jy2623"],["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-QzmmLb7iy4nRv3EgqtyUyQ/"]]},
+ {slug:"ramazanov",cat:"facilitation",name:"Beyat Enverovich Ramazanov",alias:"-",group:"Evil Corp (sanctioned member)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Based in Moscow. Designated by OFAC, the UK and Australia in the October 2024 tri-lateral action as a member of Evil Corp.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/jy2623"],["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-GHAyNjQa2en5Qy3W9fffYe/"]]},
+ {slug:"pogodin",cat:"facilitation",name:"Vadim Gennadievich Pogodin",alias:"-",group:"Evil Corp (sanctioned member)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Oct 2024)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Based in Moscow. Designated by OFAC, the UK and Australia in the October 2024 tri-lateral action as a member of Evil Corp.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/jy2623"],["NCA","https://www.gov.uk/government/news/uk-sanctions-members-of-notorious-evil-corp-cyber-crime-gang-after-lammy-calls-out-putins-mafia-state"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-7GC87GjVjzkxEF8T7AsmdS/"]]},
+ {slug:"bashlikov",cat:"facilitation",name:"Aleksei Bashlikov",alias:"-",group:"Evil Corp support / money-laundering network",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 18 Mar 1988, born Russia; based in Moscow. Named in the December 2019 OFAC action against Evil Corp as part of the group's support and money-laundering network.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-QnDGGBMcj7DF5ria7M4EFK/"]]},
+ {slug:"safarov",cat:"facilitation",name:"Azamat Safarov",alias:"-",group:"Evil Corp support / money-laundering network",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 26 Mar 1990, born Uzbekistan; based in Moscow. Named in the December 2019 OFAC Evil Corp action as part of the support and money-laundering network.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-W5BifCE35MMPCoVDsQMS7g/"]]},
+ {slug:"zamulko",cat:"facilitation",name:"Ruslan Zamulko",alias:"-",group:"Evil Corp support / money-laundering network",origin:"Russia / Ukraine",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 25 Jun 1970, born Ukraine; based in Moscow. Named in the December 2019 OFAC Evil Corp action as part of the support and money-laundering network.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-bfzinoWwPsbtdwEbX8NQn8/"]]},
+ {slug:"shevchuk",cat:"facilitation",name:"Tatiana Shevchuk",alias:"-",group:"Evil Corp support / money-laundering network",origin:"Russia / Ukraine",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 8 Jan 1970; based in Moscow. Named in the December 2019 OFAC Evil Corp action as part of the support and money-laundering network.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-fGkefQfGQCKUdGcKHmGnkw/"]]},
+ {slug:"burkhonova",cat:"facilitation",name:"Gulsara Burkhonova",alias:"-",group:"Evil Corp support / money-laundering network",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 6 Apr 1977; based in Moscow. Named in the December 2019 OFAC Evil Corp action as part of the support and money-laundering network.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-jBTq2hb5FdUtsR9tWEFkMs/"]]},
+ {slug:"alvares",cat:"facilitation",name:"Carlos Alvares",alias:"-",group:"Evil Corp money-laundering / front-company network",origin:"Spain / Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 18 May 1971, born Spain (Spanish ID); based in Moscow. Named in the December 2019 OFAC Evil Corp action as a money-laundering / front-company facilitator.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-hb8ST4twrBcAjdG79GNj8W/"]]},
+ {slug:"guberman",cat:"facilitation",name:"David Guberman",alias:"-",group:"Evil Corp money-laundering / front-company network",origin:"Israel / Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 1 Mar 1971, born Ukraine (Israeli ID); based in Moscow. Named in the December 2019 OFAC Evil Corp action as a money-laundering / front-company facilitator.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-UkLQKiSpN7aFqLJskcEytm/"]]},
+ {slug:"manidis",cat:"facilitation",name:"Georgios Manidis",alias:"-",group:"Evil Corp money-laundering / front-company network",origin:"Greece / Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"DOB 23 Aug 1971 (Greek ID); based in Moscow. Named in the December 2019 OFAC Evil Corp action as a money-laundering / front-company facilitator.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]],
+  ref:[["OpenSanctions","https://www.opensanctions.org/entities/NK-6xfyACEu7HnrcF2JmzyA3q/"]]},
+ {slug:"slobodskoy-kirill",cat:"facilitation",name:"Kirill Slobodskoy",alias:"-",group:"Evil Corp (family member / cousin)",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned",conf:"High",photo:null,
+  family:"Cousin of Maksim Yakubets (Evil Corp leader); brother of Dmitriy Slobodskoy.",
+  bio:"Named in the December 2019 OFAC action against Evil Corp for acting for or on behalf of, and providing material assistance to, the group. Part of the Yakubets family operation per the NCA report.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]]},
+ {slug:"slobodskoy-dmitry",cat:"facilitation",name:"Dmitriy Slobodskoy",alias:"-",group:"Evil Corp (family member / cousin)",origin:"Russia",sources:"OFAC",reward:"-",sanctions:"OFAC (Dec 2019)",status:"Sanctioned",conf:"High",photo:null,
+  family:"Cousin of Maksim Yakubets (Evil Corp leader); brother of Kirill Slobodskoy.",
+  bio:"Named in the December 2019 OFAC action against Evil Corp for acting for or on behalf of, and providing material assistance to, the group. Part of the Yakubets family operation per the NCA report.",
+  src:[["OFAC","https://home.treasury.gov/news/press-releases/sm845"]]},
+
+ // ---- PRECURSOR ----
+ {slug:"bron",cat:"precursor",name:"Alexey Dmitrievich Bron",alias:'"thehead"',group:"Zeus / JabberZeus (banking trojan crew)",origin:"Ukraine",sources:"FBI",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,
+  family:"No public familial information.",
+  bio:"Resident of Ukraine; charged in August 2012 in the District of Nebraska JabberZeus racketeering indictment for operating the Zeus banking trojan to steal online-banking credentials and coordinate fraudulent transfers. Co-defendants used the monikers 'aqua' (later identified as Maksim Yakubets) and 'lucky12345' (Evgeniy Bogachev), tying the crew directly to the later Evil Corp lineage.",
+  src:[["FBI","https://www.fbi.gov/wanted/cyber/jabberzeus-subjects"]],
+  ref:[["DOJ indictment","https://www.justice.gov/usao-ne/file/764236/dl?inline="]]},
+ {slug:"klepikov",cat:"precursor",name:"Ivan Viktorovich Klepikov",alias:'"petr0vich", "nowhere"',group:"Zeus / JabberZeus (banking trojan crew)",origin:"Ukraine",sources:"FBI",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,
+  family:"No public familial information.",
+  bio:"Resident of Ukraine; charged in August 2012 in the District of Nebraska JabberZeus racketeering indictment for operating the Zeus banking trojan to capture banking credentials and move stolen funds. Co-defendants used the monikers 'aqua' (Maksim Yakubets) and 'lucky12345' (Evgeniy Bogachev), linking the crew to the later Evil Corp lineage.",
+  src:[["FBI","https://www.fbi.gov/wanted/cyber/jabberzeus-subjects"]],
+  ref:[["DOJ indictment","https://www.justice.gov/usao-ne/file/764236/dl?inline="]]},
+ {slug:"tikonov",cat:"precursor",name:"Alexey Tikonov",alias:'"kusanagi"',group:"Zeus / JabberZeus (banking trojan crew); coder/developer",origin:"Russia",sources:"DOJ",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,
+  family:"No public familial information.",
+  bio:"Resident of Tomsk, Russia; alleged coder/developer for the JabberZeus crew, charged in the District of Nebraska indictment. As a Russia-based member he was never arrested and remains at large. Part of the crew whose lineage fed the Evil Corp ecosystem.",
+  src:[["DOJ indictment","https://www.justice.gov/usao-ne/file/764236/dl?inline="]],
+  ref:[["DOJ (Nine Charged)","https://www.justice.gov/archives/opa/pr/nine-charged-conspiracy-steal-millions-dollars-using-zeus-malware"]]}
+];
+
+const main=document.getElementById('main');
+const fCat=document.getElementById('fCat'),fOrigin=document.getElementById('fOrigin'),fConf=document.getElementById('fConf'),q=document.getElementById('q');
+
+Object.keys(CAT).forEach(k=>{let o=document.createElement('option');o.value=k;o.textContent=CAT[k].label;fCat.appendChild(o);});
+[...new Set(D.map(d=>d.origin))].sort().forEach(o=>{let e=document.createElement('option');e.value=o;e.textContent=o;fOrigin.appendChild(e);});
+
+
+function initials(n){return n.replace(/\(group\)/,'').trim().split(/[ ,]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function imgFail(img,ini){const d=document.createElement('div');d.className='ph-fallback';d.textContent=ini;img.replaceWith(d);}
+window.imgFail=imgFail;
+function stepImg(img){
+  const arr=JSON.parse(img.getAttribute('data-srcs'));
+  let i=parseInt(img.getAttribute('data-i'),10)+1;
+  if(i<arr.length){img.setAttribute('data-i',String(i));img.src=arr[i];}
+  else{img.onerror=null;imgFail(img,img.getAttribute('data-ini'));}
+}
+window.stepImg=stepImg;
+
+function photoHTML(d){
+  const ini=initials(d.name), cands=[];
+  if(d.photo)cands.push(d.photo);
+  ['jpg','jpeg','png','webp'].forEach(e=>cands.push('photos/'+d.slug+'.'+e));
+  return `<img class="photo" src="${cands[0]}" data-srcs='${JSON.stringify(cands)}' data-i="0" data-ini="${ini}" alt="" loading="lazy" onerror="stepImg(this)">`;
+}
+
+const GEN=[["FBI","https://www.fbi.gov/wanted/cyber"],["USSS","https://www.secretservice.gov/investigations/mostwanted"],["RFJ","https://rewardsforjustice.net/"],["OFAC","https://ofac.treasury.gov/recent-actions"],["NCA","https://www.nationalcrimeagency.gov.uk/"],["EU Most Wanted","https://eumostwanted.eu/"],["EUMW","https://eumostwanted.eu/"],["INTERPOL","https://www.interpol.int/How-we-work/Notices/Red-Notices/View-Red-Notices"],["DOJ","https://www.justice.gov/"],["AU","https://www.dfat.gov.au/international-relations/security/sanctions/sanctions-regimes/thematic-sanctions-significant-cyber-incidents"],["Treasury","https://home.treasury.gov/policy-issues/financial-sanctions/recent-actions"]];
+function srcURL(token,d){
+  for(const [lab,url] of d.src){
+    if(token.indexOf(lab)>-1) return url;
+    if(lab==='BKA'&&token.indexOf('EU Most Wanted')>-1) return url;
+    if(lab==='Treasury'&&token.indexOf('OFAC')>-1) return url;
+    if(lab==='EU Most Wanted'&&token.indexOf('EUMW')>-1) return url;
+  }
+  for(const [k,u] of GEN){ if(token.indexOf(k)>-1) return u; }
+  return null;
+}
+function card(d){
+  const c=CAT[d.cat];
+  const listed=d.sources.split(',').map(t=>{const tok=t.trim();const u=srcURL(tok,d);return u?`<a href="${u}" target="_blank" rel="noopener">${esc(tok)}</a>`:`<span>${esc(tok)}</span>`;}).join('');
+  let rowsHTML='';
+  rowsHTML+=`<div class="row"><span class="k">Group</span><span class="v">${esc(d.group)}</span></div>`;
+  rowsHTML+=`<div class="row"><span class="k">Origin</span><span class="v">${esc(d.origin)}</span></div>`;
+  rowsHTML+=`<div class="row"><span class="k">Listed by</span><span class="v srcchips">${listed}</span></div>`;
+  if(d.reward&&d.reward!=='-')rowsHTML+=`<div class="row"><span class="k">Reward</span><span class="v">${esc(d.reward)}</span></div>`;
+  if(d.sanctions&&d.sanctions!=='-')rowsHTML+=`<div class="row"><span class="k">Sanctions</span><span class="v">${esc(d.sanctions)}</span></div>`;
+  rowsHTML+=`<div class="row"><span class="k">Status</span><span class="v">${esc(d.status)}</span></div>`;
+  const fbiEntry=d.src.find(s=>s[0]==='FBI');
+  const pdf=fbiEntry?`<div class="src"><a class="pdf" href="${fbiEntry[1]}/@@download.pdf" target="_blank" rel="noopener">FBI wanted poster (PDF)</a></div>`:'';
+  const refs=(d.ref||[]).slice();
+  if(d.group.indexOf('Evil Corp')>-1)refs.push(["NCA report (PDF)","photos/evil-corp-behind-the-screens.pdf"]);
+  const refHTML=refs.length?`<div class="ref">Reference: ${refs.map(r=>`<a href="${r[1]}" target="_blank" rel="noopener">${esc(r[0])}</a>`).join(', ')}</div>`:'';
+  const fam=(d.family&&d.family!=='No public familial information.')?`<div class="fam"><b>Family / associations:</b> ${esc(d.family)}</div>`:'';
+  const nophoto=!d.photo?`<div class="nophoto">photo: drop photos/${d.slug}.jpg</div>`:'';
+  const aliasHTML=(d.alias&&d.alias!=='-')?`<div class="alias">${esc(d.alias)}</div>`:'';
+  const rewardBadge=(d.reward&&d.reward!=='-')?`<span class="b reward">${esc(d.reward.split('(')[0].trim())}</span>`:'';
+  return `<div class="card ${c.cls}">
+    <div class="chead">
+      <div>${photoHTML(d)}${nophoto}</div>
+      <div class="hbody">
+        <div class="name">${esc(d.name)}</div>
+        <div class="slug">${d.slug}</div>
+        ${aliasHTML}
+      </div>
+    </div>
+    <div class="badges">
+      <span class="b cat ${c.badge}">${c.short}</span>
+      <span class="b">${esc(d.origin)}</span>
+      <span class="b conf-${d.conf}">${d.conf} confidence</span>
+      ${rewardBadge}
+    </div>
+    ${fam}
+    <div class="bio">${esc(d.bio)}</div>
+    <div class="rows">${rowsHTML}</div>
+    ${refHTML}${pdf}
+  </div>`;
+}
+
+function render(){
+  const term=q.value.trim().toLowerCase(), fc=fCat.value, fo=fOrigin.value, fcf=fConf.value;
+  main.innerHTML='';
+  let shown=0;
+  Object.keys(CAT).forEach(k=>{
+    if(fc&&fc!==k)return;
+    const items=D.filter(d=> d.cat===k
+      && (!fo||d.origin===fo)
+      && (!fcf||d.conf===fcf)
+      && (!term||(d.name+' '+d.alias+' '+d.group+' '+d.origin+' '+d.sources).toLowerCase().includes(term)));
+    if(!items.length)return;
+    shown+=items.length;
+    const sec=document.createElement('div');
+    sec.className='section';
+    sec.innerHTML=`<h2>${CAT[k].label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></h2><p class="desc">${CAT[k].desc}</p><div class="grid">${items.map(card).join('')}</div>`;
+    main.appendChild(sec);
+  });
+  document.getElementById('count').textContent=shown+' of '+D.length+' shown';
+  if(!shown)main.innerHTML='<p style="color:var(--muted);padding:40px 0">No actors match the current filters.</p>';
+}
+[q,fCat,fOrigin,fConf].forEach(el=>el.addEventListener('input',render));
+render();
+console.log('Actor slugs (for photos/ folder):',D.map(d=>d.slug).join(', '));
+</script>
+</body>
+</html>

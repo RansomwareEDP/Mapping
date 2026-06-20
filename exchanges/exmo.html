@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXMO / Exmo.me (EXMO Exchange Limited; EXMO RBC Ltd): Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* STATUS BADGES */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-active     { background: #0d2b1a; color: #3fb950; border-color: #1a4731; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* HERO MODULE */
+.hero-module {
+  background: linear-gradient(135deg, #1a1208 0%, #1c1228 100%);
+  border: 1px solid #5a3a15; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-orange); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 240px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 62%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+.op-tag-gap { background: #2d2400; color: #e3b341; border: 1px solid #6b5600; }
+
+/* SECTION HEADERS */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* CONFIDENCE BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* KPI / ATTRIBUTE TABLES */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CONTENT TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* TIMELINE */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* CITATION */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* WALLET ADDRESSES */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* GAP FLAGS */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "\25C6 GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* GALLERY */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+.img-source { font-size: 10px; color: var(--text-muted); }
+
+/* SOURCES */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* TIER LABELS */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">EXMO / Exmo.me</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-sanctioned">Sanctioned</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Tracked Exchanges</div>
+  <ul class="sidebar-nav">
+    <li><a href="garantex.html">Garantex / Grinex</a></li>
+    <li><a href="cryptex.html">Cryptex / PM2BTC</a></li>
+    <li><span style="font-weight:700">EXMO</span></li>
+    <li><a href="rapira.html">Rapira</a></li>
+    <li><a href="bitpapa.html">Bitpapa</a></li>
+    <li><a href="abcex.html">ABCeX</a></li>
+    <li><a href="audia6.html">AudiA6 / Dark2Web</a></li>
+    <li><a href="post-garantex-network.html">Post-Garantex Network</a></li>
+  </ul>
+  
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Status</span><span class="value" style="color:var(--accent-orange)">Sanctioned (UK, Ukraine); active</span></div>
+    <div class="sidebar-meta-row"><span class="label">UK designation</span><span class="value">26 May 2026 (RUS3602)</span></div>
+    <div class="sidebar-meta-row"><span class="label">OFAC designation</span><span class="value">None</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">None (Russia)</span></div>
+    <div class="sidebar-meta-row"><span class="label">Operator (brand)</span><span class="value">S. Zhdanov (UK/assessed)</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : NAMED OWNER, ENTITY DESIGNATED, NOT INDIVIDUALLY SDN -->
+<div class="hero-module">
+  <div class="hero-label">&#9888; Named Owner, Entity Designated : Hero Module</div>
+  <div class="hero-title">EXMO EXCHANGE LIMITED (UK) is the designated entity (UK FCDO, 26 May 2026, RUS3602). Its majority owner of record is Serhii (Sergei) Zhdanov, EXMO's chief executive, listed at UK Companies House as holding 75 percent or more of the shares since 29 September 2025. He is covered by the entity designation through the Director Disqualification measure but is not individually SDN-listed and is not OFAC-designated. The Russia-facing platform Exmo.me is operated by a separate Kazakhstan entity (EXMO RBC Ltd), sanctioned by Ukraine in July 2025. A widely circulated claim conflating Zhdanov with Garantex co-founder Sergey Mendeleev, and asserting an OFAC designation, is incorrect and is rejected in this profile.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Serhii (Sergei) Zhdanov</div>
+      <div class="op-alias">CEO, EXMO; majority owner, EXMO EXCHANGE LIMITED</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Assessed Ukrainian (FCCA; "EXMO UK")</span></div>
+      <div class="op-row"><span class="k">Ownership</span><span class="v">75&ndash;100% of EXMO EXCHANGE LIMITED since 29 Sep 2025 (UK PSC); received Bark's 37.51% in 2022</span></div>
+      <div class="op-row"><span class="k">Entity</span><span class="v">EXMO EXCHANGE LIMITED, Co. 11655602 (London)</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; covered by entity designation (director disqualification); not individually SDN</span></div>
+      <div class="op-row"><span class="k">OFAC</span><span class="v">Not designated</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (UK PSC; corporate record)</span></div>
+      <span class="op-tag op-tag-sanctioned">Entity Designated</span>
+      <span class="op-tag op-tag-atlarge">Not Individually SDN</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Pavel Lerner</div>
+      <div class="op-alias">Co-founder / former managing director, EXMO</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian; Poland residence permit</span></div>
+      <div class="op-row"><span class="k">Note</span><span class="v">Abducted in Kyiv Dec 2017 (released after ransom reportedly paid)</span></div>
+      <div class="op-row"><span class="k">Current role</span><span class="v">No current operational role documented</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; not sanctioned</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (founder); current status CREDIBLE</span></div>
+      <span class="op-tag op-tag-atlarge">Founder, Historic</span>
+      <span class="op-tag op-tag-gap">Current Role Unknown</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Ivan Petukhovsky</div>
+      <div class="op-alias">Co-founder, EXMO (with Edward Bark, Russian, exited 2022)</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">CIS (not firmly documented)</span></div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Original co-founder; current control not established</span></div>
+      <div class="op-row"><span class="k">Related</span><span class="v">Edward Bark (Russian) transferred 37.51% to Zhdanov in 2022</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; not sanctioned</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CREDIBLE (open-source founder lists)</span></div>
+      <span class="op-tag op-tag-gap">Attribution Gap</span>
+      <span class="op-tag op-tag-atlarge">Not Sanctioned</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ============================================== -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Direct With Sanctioned Entities</div>
+      <div class="kpi-value">&gt;$19.5M</div>
+      <div class="kpi-sub">EXMO direct transactions with Garantex, Grinex, Chatex (TRM, May 2026)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Exmo.me &rarr; Garantex</div>
+      <div class="kpi-value">&gt;$1M</div>
+      <div class="kpi-sub">Direct flows from Exmo.me to sanctioned Garantex (Elliptic, Feb 2026)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Custodial Infrastructure</div>
+      <div class="kpi-value">Shared</div>
+      <div class="kpi-sub">Exmo.com and Exmo.me share custodial wallets (TRM): corporate split, not operational split</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">UK Designation</div>
+      <div class="kpi-value">26 May 2026</div>
+      <div class="kpi-sub">RUS3602; EXMO EXCHANGE LIMITED; five measures; 3 designated TRON addresses</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ukraine Designation</div>
+      <div class="kpi-value">Jul 2025</div>
+      <div class="kpi-sub">EXMO RBC Ltd (Kazakhstan), operator of Exmo.me</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">OFAC Designation</div>
+      <div class="kpi-value">None</div>
+      <div class="kpi-sub">Not designated by the US as of June 2026</div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Overall Assessment</div>
+    EXMO is a Russian-founded centralized exchange operating since roughly 2013 to 2014. After Russia's 2022 invasion of Ukraine, the London-based brand (EXMO EXCHANGE LIMITED) announced an "exit" from Russia, Belarus and Kazakhstan and sold that business to an undisclosed buyer who operates the Russia-facing platform Exmo.me through a Kazakhstan entity, EXMO RBC Ltd. The central finding is that the separation was corporate, not operational: TRM's blockchain analysis found that Exmo.com and Exmo.me share custodial wallet infrastructure, and that EXMO conducted more than $19.5 million in direct transactions with sanctioned entities (Garantex, Grinex, Chatex). Elliptic separately reported that Exmo.me sent more than $1 million directly to Garantex and continues to transact with other Russia-linked services. The UK designated EXMO EXCHANGE LIMITED on 26 May 2026 (RUS3602) within the 18-entity A7/crypto package, applying five measures and listing three TRON wallet addresses. Ukraine had already sanctioned the Kazakhstan operator (EXMO RBC Ltd) in July 2025. As of June 2026 EXMO is not OFAC-designated and the platform remains active. Three corrections to the source draft: (1) the $19.5 million figure and the shared-custodial-wallet finding are TRM's, not Elliptic's; Elliptic's specific contribution is the $1 million-plus direct-to-Garantex flow. (2) The UK sanctioned the UK entity EXMO EXCHANGE LIMITED (website exmo.com); Ukraine sanctioned the separate Kazakhstan entity that runs Exmo.me; the two should not be merged. (3) The claim that EXMO's CEO Sergei Zhdanov is "Sergei Mendeleyev" and was OFAC-designated is false: Zhdanov and Garantex co-founder Sergey Mendeleev are different people, and there is no OFAC designation. State nexus to Russia is assessed at NONE: EXMO is a Western-registered, assessed Ukrainian-led brand whose Russia exposure is commercial and structural, not state-directed; Roskomnadzor in fact blocked exmo.com in the CIS around 2017.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Service type</td><td>Centralized order-book spot exchange (BTC, ETH, XRP, ADA, USDT, native EXM token); margin, P2P/OTC and simple earn products; ruble and other fiat on/off ramps retained on Exmo.me for the CIS market</td></tr>
+      <tr><td>Designated entity</td><td>EXMO EXCHANGE LIMITED (UK), Companies House 11655602, incorporated 1 Nov 2018, formerly EXMO PAYMENTS LTD; registered 2 Kingdom Street, London W2 6JP <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO; OpenSanctions; Companies House]</span></td></tr>
+      <tr><td>Russia-facing operator</td><td>EXMO RBC Ltd (Kazakhstan), operator of the Exmo.me domain; sanctioned by Ukraine Jul 2025 <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Aliases / branding</td><td>EXMO; EXMO Exchange; Exmo.com (global); Exmo.me (Russia/Belarus/Kazakhstan mirror); related EXMO Poland Sp. z o.o.; legacy EXMO Finance LLP</td></tr>
+      <tr><td>Entity registration jurisdiction</td><td>United Kingdom (EXMO EXCHANGE LIMITED, London) for the designated brand entity; Kazakhstan (EXMO RBC Ltd) for the Exmo.me operator; Poland for EXMO Poland Sp. z o.o. <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Not specified in open sources; the load-bearing finding is that Exmo.com and Exmo.me share custodial wallets and hot wallets (TRM). Designated addresses are TRON (TRC-20) <span class="badge badge-confirmed">Confirmed</span> (shared wallets) <span class="badge badge-inference">Analyst Inference</span> (physical hosting)</td></tr>
+      <tr><td>Assessed operator location</td><td>Brand leadership: Serhii Zhdanov, assessed UK/Ukraine. Russia-facing Exmo.me operation: nominal Kazakhstan, true control not publicly attributed <span class="badge badge-credible">Credible</span> (Zhdanov) <span class="badge badge-inference">Analyst Inference</span> (Exmo.me control)</td></tr>
+      <tr><td>Operational period</td><td>Brand active since ~2013&ndash;2014; 2022 split into Exmo.com (non-CIS) and Exmo.me (CIS); both active as of June 2026</td></tr>
+      <tr><td>Volume (direct with sanctioned set)</td><td>TRM: &gt;$19.5M EXMO direct with Garantex/Grinex/Chatex (May 2026). Elliptic: &gt;$1M Exmo.me&rarr;Garantex (Feb 2026). Different methods/windows; presented separately, not averaged <span class="badge badge-confirmed">Confirmed</span> (metrics); <span class="badge badge-single">Single Source</span> each</td></tr>
+      <tr><td>Geographic footprint</td><td>Exmo.com: non-CIS / European positioning. Exmo.me: Russia, Belarus, Kazakhstan; exmo.com blocked to Russian IPs (Roskomnadzor, ~2017)</td></tr>
+      <tr><td>UK designation</td><td>EXMO EXCHANGE LIMITED designated 26 May 2026, Russia (Sanctions) (EU Exit) Regulations 2019, RUS3602; asset freeze plus four further measures <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO]</span></td></tr>
+      <tr><td>Ukraine designation</td><td>EXMO RBC Ltd (Kazakhstan), operator of Exmo.me, sanctioned Jul 2025; UK entity also appears in Ukraine's war-sanctions database <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[President.gov.ua; GUR]</span></td></tr>
+      <tr><td>OFAC designation</td><td>None as of June 2026 <span class="badge badge-confirmed">Confirmed</span> (negative evidence)</td></tr>
+      <tr><td>Designated digital addresses</td><td>Three TRON (TRC-20) addresses (UK RUS3602): <span class="wallet-addr">TJqUC56SDZ373JYRurzXtMcor2HQvN9BaU</span>, <span class="wallet-addr">TVa1p4aTVoHuF4EDGthn57FbKNbu4DRJkQ</span>, <span class="wallet-addr">TCQqA58EmX6AnUZKPCogL2Q441B4ThbJGN</span> <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>State nexus tier (Russia)</td><td>NONE. Western-registered, assessed Ukrainian-led brand; Russia exposure is commercial/structural; no documented Russian-state tasking, protection, or control; Russia blocked exmo.com (~2017)</td></tr>
+      <tr><td>Status</td><td>Sanctioned (UK FCDO, Ukraine); not OFAC-designated; platform active; no rebrand observed</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>TRM Labs (&gt;$19.5M direct with sanctioned set; shared custodial wallets; May 2026); Elliptic (Exmo.me&rarr;Garantex &gt;$1M; Feb 2026, updated Mar 2026); Chainalysis (A7-package coverage, May 2026)</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160ca792747eb7a1764751_Square%20chart%20template.png"
+           alt="TRM Labs chart accompanying the EXMO Exchange Limited section of the 26 May 2026 UK designation analysis"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">EXMO Designation Analysis Chart</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Chart accompanying the EXMO Exchange Limited entry in TRM's UK-designation analysis (&gt;$19.5M direct with sanctioned entities).</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c542b33fe189ca9e3d9_v2-pre-vs-post-garantex.png"
+           alt="TRM Labs chart: flows to Garantex-successor exchanges before and after the March 2025 takedown"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Post-Garantex Ecosystem Flows</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Flows into the Garantex-successor set, in which EXMO was co-designated on 26 May 2026, before and after the 7 March 2025 takedown.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c8591cf78a405a225fc_v1-huobi-annual-flows.png"
+           alt="TRM Labs chart: outgoing flows to UK-designated and A7-network Russian entities by year"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">A7 / UK-Designated Network Context</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Yearly flows into the UK-designated and A7-network set in which EXMO was co-designated.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.elliptic.co/hs-fs/hubfs/79_Blockchain-intelligence-is-the-highway_720x380-1.png?width=1000&amp;name=79_Blockchain-intelligence-is-the-highway_720x380-1.png"
+           alt="Elliptic report header: Russia-linked cryptocurrency services and sanctions evasion"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Russia-Linked Services Report</div>
+        <div class="cap-source"><span class="img-source">Elliptic, Feb 2026 (updated Mar 2026). Report naming Exmo.me among Russia-linked sanctions-evasion services.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ============================================== -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>One Brand, Two Front-Ends: The 2022 Split and the Continuity Question</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    EXMO has operated since roughly 2013 to 2014 as a Russian-speaking-market centralized exchange. After Russia's February 2022 invasion of Ukraine, the London-based EXMO announced it would exit Russia, Belarus and Kazakhstan, stop onboarding users from those countries and remove ruble pairs from Exmo.com. The Russia, Belarus and Kazakhstan business was sold to an undisclosed buyer, who operates it through a Kazakhstan entity (EXMO RBC Ltd) under the Exmo.me domain using the same brand and interface. The analytically decisive point is that the separation was corporate rather than operational: TRM found that Exmo.com and Exmo.me share custodial wallet infrastructure, indicating continuity of the underlying platform despite the nominal sale. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Cointelegraph; IBTimes; TRM Labs]</span>
+  </div>
+
+  <h4>Evidentiary Pillars</h4>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Pillar</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Brand, UX and customer messaging</strong></td>
+          <td>Exmo.com and Exmo.me share brand, interface and product stack; the 2022 restructuring was explicitly marketed as a split of one business, with the buyer continuing to use the EXMO name in the CIS.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Cointelegraph; IBTimes; review sources</span></td>
+        </tr>
+        <tr>
+          <td><strong>Shared custodial infrastructure</strong></td>
+          <td>TRM: Exmo.com and Exmo.me share custodial wallet infrastructure, "indicating that corporate separation did not produce operational separation." This is the strongest continuity indicator; it is blockchain-analytics reporting, not primary wallet data the analyst has independently verified.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM Labs (single vendor on the shared-wallet finding)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ownership / control restructuring</strong></td>
+          <td>In 2022, Russian-citizen founder Edward Bark transferred his 37.51% stake to Serhii Zhdanov, concentrating ownership of EXMO EXCHANGE LIMITED in a non-Russian principal as part of the de-Russification narrative. The buyer of the CIS business is undisclosed; control of EXMO RBC Ltd (Exmo.me) is not publicly attributed.</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">CoinDesk/Yahoo; UK PSC record</span></td>
+        </tr>
+        <tr>
+          <td><strong>No new codebase / clean break</strong></td>
+          <td>No source indicates Exmo.me was rebuilt on an independent stack; reporting describes the "same interface" and shared back-end wallets, contradicting a clean successor model.</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Negative evidence; TRM continuity finding</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operator Profiles</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Serhii (Sergei) Zhdanov:</strong> chief executive of EXMO and, per the UK Companies House Persons with Significant Control register, holder of 75 percent or more of EXMO EXCHANGE LIMITED (Co. 11655602) since 29 September 2025. In 2022 he received the 37.51 percent stake transferred by Russian-citizen founder Edward Bark. Public profiles list him as a chartered accountant (FCCA) associated with "EXMO UK," supporting an assessed UK/Ukraine location rather than Russia. He is covered by the entity designation through the Director Disqualification measure but is not individually SDN-listed and is not OFAC-designated. <span class="cite">[OpenSanctions/UK PSC; E-CryptoNews; Crunchbase]</span></p>
+
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Pavel Lerner:</strong> co-founder and former managing director of EXMO, a Russian citizen with a Poland residence permit. He was abducted in central Kyiv in December 2017 and released after a ransom was reportedly paid; the incident coincided with a DDoS attack on the exchange. No current operational role is documented. <span class="badge badge-credible">Credible</span> (current status) <span class="cite">[Cointelegraph; The Hacker News]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> <strong>Ivan Petukhovsky and Edward Bark:</strong> named in open-source founder lists alongside Lerner. Bark (Russian citizen) exited in 2022, transferring his stake to Zhdanov. Maria Stankevich is cited in some sources as a senior EXMO executive/spokesperson. Current control roles for Petukhovsky and Stankevich are not firmly established. <span class="cite">[Coinpedia; review sources]</span></p>
+
+  <h3>Disputed Assessments</h3>
+  <p><span class="badge badge-single">Single Source</span> <strong>Rejected claim:</strong> a derivative consumer-warning source (cybercriminal.com) asserts that Sergei Zhdanov, "also rendered as Sergei Mendeleyev," was designated by OFAC as a co-owner and board member of EXMO alongside the Russian mining firm BitRiver. This is incorrect on two counts. First, Zhdanov (EXMO's chief executive) and Sergey Mendeleev (a Garantex co-founder associated with ABCeX) are different individuals; the names are not interchangeable. Second, no OFAC designation of EXMO or of Zhdanov exists in the SDN list as of June 2026. The actual designations are UK (entity, RUS3602) and Ukraine (EXMO RBC Ltd, Kazakhstan). This profile treats the conflated OFAC claim as false. <span class="cite">[cybercriminal.com (rejected); OFAC SDN; UK FCDO]</span></p>
+
+  <div class="gap-flag">The beneficial owner(s) of EXMO RBC Ltd (Kazakhstan), the undisclosed buyer of the 2022 CIS business that operates Exmo.me, are not publicly identified. This is the profile's primary attribution gap.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ============================================== -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics and Product Set</h3>
+  <p><span class="badge badge-credible">Credible</span> Across both front-ends the stack is broadly identical: a centralized order-book spot exchange supporting dozens of assets (BTC, ETH, XRP, ADA, USDT) plus the native EXMO Coin (EXM) used for fee discounts; margin trading; P2P and OTC-style features; and simple earn products. Fiat on/off ramps, including ruble pairs, were removed from Exmo.com after 2022 but reportedly remained available through Exmo.me for the CIS market. EXMO has historically promoted itself as a long-running, never-hacked European exchange. <span class="cite">[CoinGecko; review sources; Exmo.com]</span></p>
+
+  <h3>Geographic Posture vs Observed Usage</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Officially, EXMO states it stopped serving residents of Russia, Belarus and Kazakhstan on Exmo.com after the 2022 invasion. In practice, Exmo.me is described by both Elliptic and media as continuing to serve users in those countries, filling the gap. Russian users reach the service via the Exmo.me mirror because Roskomnadzor blocked the main domain in the CIS around 2017. The result is a split front-end model over shared back-end custody. <span class="cite">[Elliptic; IBTimes; review sources]</span></p>
+
+  <h3>KYC/AML Posture: Stated Policy vs Observed Behavior</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Stated Policy vs Observed Behavior (Schema Rule)</div>
+    <strong>Stated policy:</strong> EXMO's public materials state that sanctions compliance is "a core element" of governance, that customer transactions are screened with "advanced blockchain analytics tools," and that transactions involving sanctioned or high-risk addresses are escalated or blocked "in strict accordance with applicable laws and internal policies." EXMO issued an official statement disputing Elliptic's allegations. <span class="badge badge-credible">Credible</span> (from the exchange's own claims) <span class="cite">[EXMO official statement]</span><br><br>
+    <strong>Observed behavior (sourced to LE/intelligence framing and forensic vendors, not the exchange's claims):</strong> The UK statement of reasons assesses that EXMO EXCHANGE LIMITED has been involved in obtaining a benefit from or supporting the Government of Russia by providing financial services to persons in a sector of strategic significance (Russian financial services). TRM reports more than $19.5 million in EXMO direct transactions with sanctioned entities (Garantex, Grinex, Chatex) and shared custodial wallets between the two front-ends. Elliptic reports Exmo.me sent more than $1 million directly to Garantex. Ukrainian sanctions intelligence characterizes the Exmo.me operation as enabling exchange without mandatory verification. The gap between a self-marketed screening capability and observed acceptance of flows with publicly flagged sanctioned entities is the primary analytical finding, and points to structural KYC/AML failure in the Russia-facing segment. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO; TRM; Elliptic; President.gov.ua]</span>
+  </div>
+  <div class="gap-flag">No public law-enforcement charging document detailing specific Exmo.me KYC/AML thresholds, Travel Rule non-compliance, or monitoring gaps. The UK designation is administrative; its underlying evidentiary file is not public.</div>
+
+  <h3>Fiat Rails (Schema Rule: Must Be Addressed)</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> No specific bank or payment-processor relationships for Exmo.me are documented in the reviewed English-language open sources. The Russia-facing operation retained ruble fiat on/off ramps after Exmo.com dropped them, which necessarily implies access to Russian payment rails, but the specific banks or processors are not named, likely reflecting de-risking and deliberate opacity. EXMO's Western entities historically claimed European/UK banking access; the UK Correspondent Banking measure now prohibits UK credit and financial institutions from establishing or continuing correspondent relationships with the designated entity and from processing payments to, from or via it. The fiat-rail picture for Exmo.me specifically is a documented gap rather than an established bank list. <span class="cite">[UK FCDO; review sources]</span></p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p><span class="badge badge-credible">Credible</span> EXMO has promoted registrations in Poland (EXMO Poland Sp. z o.o.) and a UK presence, with some sources claiming FCA cryptoasset-business and FinCEN MSB registration for legacy EXMO entities. Critical reviews and registry checks dispute several of these claims, arguing that EXMO entities are not in fact licensed as financial-service providers by the FCA or other named regulators and that branding overstates regulatory status. For Exmo.me specifically, the operator EXMO RBC Ltd is a Kazakhstan-registered crypto business with no robust Western licensing evident in open sources. Treat licensing claims as marketing unless matched to a primary regulator record. <span class="cite">[Review sources; ICO register]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 04 : TECHNICAL -->
+<!-- ============================================== -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domain Portfolio</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Domain</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>exmo.com</strong></td><td>Global / non-CIS front-end; website of record for the UK-designated EXMO EXCHANGE LIMITED; blocked to Russian IPs by Roskomnadzor (~2017)</td></tr>
+        <tr><td><strong>exmo.me</strong></td><td>Russia, Belarus and Kazakhstan mirror; operated by EXMO RBC Ltd (Kazakhstan); same interface as exmo.com</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><span class="badge badge-confirmed">Confirmed</span> The decisive infrastructure finding is back-end, not front-end: TRM reports that deposits to both platforms consolidate into shared custodial wallets and hot wallets. The two domains are different shop-fronts over a common custody layer, which is why corporate separation did not produce operational separation. <span class="cite">[TRM Labs; review sources]</span></p>
+
+  <h3>Designated Digital Addresses</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The UK designation (RUS3602) lists three TRON (TRC-20) addresses associated with EXMO EXCHANGE LIMITED:</p>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Chain</th><th>Address</th></tr></thead>
+      <tbody>
+        <tr><td>TRON (TRC-20)</td><td><span class="wallet-addr">TJqUC56SDZ373JYRurzXtMcor2HQvN9BaU</span></td></tr>
+        <tr><td>TRON (TRC-20)</td><td><span class="wallet-addr">TVa1p4aTVoHuF4EDGthn57FbKNbu4DRJkQ</span></td></tr>
+        <tr><td>TRON (TRC-20)</td><td><span class="wallet-addr">TCQqA58EmX6AnUZKPCogL2Q441B4ThbJGN</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>VASP and compliance teams should treat these as designated-entity addresses subject to UK asset-freeze obligations and as high-risk indicators elsewhere. The TRON focus is consistent with USDT-on-TRON being the dominant settlement asset across the Russia-linked ecosystem. No OFAC-designated EXMO addresses exist. <span class="cite">[UK FCDO; OpenSanctions]</span></p>
+
+  <h3>Apps, API and Channels</h3>
+  <p><span class="badge badge-credible">Credible</span> EXMO operates web and mobile platforms with a documented public API. Specific hosting providers, SSL patterns, data-center locations and blockchain-node configuration are not enumerated in the reviewed open sources. The UK Internet Services measure requires UK-facing app stores, internet-access and social-media services to take reasonable steps to block access to the designated entity's content and applications for UK users; this does not produce immediate global takedown. <span class="cite">[Exmo.com; UK FCDO]</span></p>
+
+  <h3>Resilience After Disruption</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> After the 2022 "exit," EXMO reconstituted CIS access almost immediately via Exmo.me and EXMO RBC Ltd, preserving continuity for existing customers. Following the May 2026 UK designation, the platform remained operational; the dual-front-end structure plus shared custody provide resilience, since UK-only measures do not reach a Kazakhstan-operated, non-UK-facing mirror. Further domain or infrastructure adaptation is plausible but not yet documented in open sources as of June 2026. <span class="cite">[IBTimes; TRM; UK FCDO]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ============================================== -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Volume (Cite Source and Methodology; Do Not Average)</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Volume Sourcing (Schema Rule)</div>
+    <strong>TRM Labs (May 2026):</strong> EXMO conducted more than $19.5 million in direct transactions with sanctioned entities, specifically Garantex, Grinex and Chatex; TRM also found Exmo.com and Exmo.me sharing custodial wallet infrastructure.<br>
+    <strong>Elliptic (Feb 2026, updated Mar 2026):</strong> Exmo.me sent more than $1 million directly to Garantex and continues to transact with other Russia-linked services.<br>
+    <strong>Correction:</strong> the source draft attributed the $19.5 million figure and the shared-wallet finding partly to Elliptic. Both are TRM's. Elliptic's specific published figure for EXMO is the $1 million-plus Exmo.me-to-Garantex flow.<br>
+    These figures cover different windows and wallet-cluster thresholds and are presented separately, not combined or averaged. EXMO's own historical daily-volume figure (over $200 million reported by the exchange) is a marketing claim, not an illicit-flow measure, and is not comparable.
+  </div>
+
+  <h3>Three-Phase On-Chain Flow (EXMO as Node)</h3>
+  <h4>Phase 1: Receipt</h4>
+  <p><span class="badge badge-credible">Credible</span> Exmo.me receives ruble and crypto deposits from Russian-speaking retail traders and from brokers and intermediaries transacting with Russia-linked and sanctioned platforms. Confirmed direct-counterparty exposure includes Garantex, Grinex and Chatex (TRM) and Garantex specifically (Elliptic). Receipt of named ransomware or darknet actor funds is inferential: no EXMO-specific actor-level attribution has been published by TRM, Elliptic or Chainalysis. <span class="cite">[TRM; Elliptic]</span></p>
+
+  <h4>Phase 2: Layering</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> The defining layering mechanism is the shared custody layer: deposits to Exmo.me and Exmo.com consolidate into common hot wallets, blending Russia-facing flows with the Western-facing entity's flows and obscuring source platform. Within that pooled custody, users can trade and swap across assets (settlement is TRON-heavy, consistent with the designated TRC-20 addresses), enabling chain-hopping and co-mingling. No EXMO-specific mixer or coinjoin usage is documented. <span class="badge badge-inference">Analyst Inference</span> (asset-level mixing) <span class="cite">[TRM]</span></p>
+
+  <h4>Phase 3: Extraction</h4>
+  <p><span class="badge badge-credible">Credible</span> Funds exit to other exchanges (including sanctioned venues such as Garantex) and, for the CIS segment, to ruble fiat off-ramps via Russian payment rails (specific processors not public). Because custody is shared, extraction can occur through the Western-facing side of the same wallet set. No specific downstream receiving exchange for EXMO-originating flows is enumerated in open sources. <span class="cite">[TRM; Elliptic]</span></p>
+
+  <h3>Designated Addresses and Sanctions Summary</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Action</th><th>Date / Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UK FCDO (RUS3602)</strong></td><td>EXMO EXCHANGE LIMITED. Asset freeze; Correspondent Banking and processing payments; Internet Services; Director Disqualification; Trust Services. Three designated TRON addresses.</td><td>26 May 2026; active</td></tr>
+        <tr><td><strong>Ukraine (President / GUR)</strong></td><td>EXMO RBC Ltd (Kazakhstan), operator of Exmo.me, sanctioned for sanctions circumvention; UK entity also catalogued in Ukraine's war-sanctions database</td><td>Jul 2025; active</td></tr>
+        <tr><td><strong>OFAC</strong></td><td>No designation of EXMO or named EXMO operators</td><td>Not designated as of June 2026</td></tr>
+        <tr><td><strong>EU</strong></td><td>No entity-specific EXMO listing; EU 20th package bans EU transactions with Russian CASPs broadly (crypto measures from 24 May 2026)</td><td>No individual listing</td></tr>
+        <tr><td><strong>FATF</strong></td><td>No FATF-specific EXMO listing</td><td>N/A</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ============================================== -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Actor type</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Russia sanctions-evasion flows</strong></td>
+          <td>UK statement of reasons (support to Russian financial sector); TRM &gt;$19.5M direct with Garantex/Grinex/Chatex; Elliptic &gt;$1M Exmo.me&rarr;Garantex; Ukraine designation of the Kazakhstan operator.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Russia-linked exchanges / OTC brokers</strong></td>
+          <td>Direct on-chain flows with Garantex, Grinex and Chatex documented by TRM; Garantex specifically by Elliptic.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Russian-speaking retail / grey-market traders</strong></td>
+          <td>Exmo.me explicitly serves Russia, Belarus and Kazakhstan retail users with ruble rails; this is the platform's marketed base.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware proceeds (indirect)</strong></td>
+          <td>Direct counterparty exposure to Garantex/Grinex, whose documented clientele includes ransomware actors; no EXMO-specific ransomware-flow attribution published.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+        <tr>
+          <td><strong>Darknet market proceeds (indirect)</strong></td>
+          <td>Same inferential chain via Garantex/Grinex clientele; no EXMO-specific darknet attribution published.</td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Geographic Patterns</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Illicit and high-risk flows originate in or transit Russia, Belarus and Kazakhstan, matching Exmo.me's marketed base. Because custody is shared with Exmo.com, Russia-linked flows can co-mingle with Western-facing trading flows, complicating geographic attribution at the wallet level. <span class="cite">[Elliptic; TRM]</span></p>
+
+  <h3>High-Profile Flows</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> (aggregate) Quantitative anchors are the TRM &gt;$19.5 million direct-with-sanctioned-entities figure and the Elliptic &gt;$1 million Exmo.me-to-Garantex figure. No individually named criminal-actor flows with attributed dollar amounts have been published for EXMO; the figures are counterparty-level, not actor-level, attribution. This is a documented intelligence gap (Section 10). <span class="cite">[TRM; Elliptic]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ============================================== -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <h3>Jurisdictional Separation (Schema Rule: Three Jurisdictions)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Assessment</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Entity registration</strong></td>
+          <td>United Kingdom for the designated brand entity (EXMO EXCHANGE LIMITED, London, Co. 11655602); Kazakhstan for the Exmo.me operator (EXMO RBC Ltd); Poland for EXMO Poland Sp. z o.o.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>2. Infrastructure hosting</strong></td>
+          <td>Physical hosting jurisdiction not specified in open sources. Confirmed structural fact: shared custodial wallets across Exmo.com and Exmo.me; designated addresses are TRON.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (shared custody) / <span class="tier-inference">UNKNOWN</span> (hosting country)</td>
+        </tr>
+        <tr>
+          <td><strong>3. Assessed operator location</strong></td>
+          <td>Brand leadership: Serhii Zhdanov, assessed UK/Ukraine. Russia-facing Exmo.me control: nominal Kazakhstan, true beneficial owner unidentified.</td>
+          <td><span class="tier-credible">CREDIBLE</span> (Zhdanov) / <span class="tier-inference">UNKNOWN</span> (Exmo.me control)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>State Nexus Tier (Russia): NONE</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Assessment</div>
+    <strong>Why NONE rather than a higher tier:</strong> EXMO is materially different from the Russia-operated venues in this ecosystem (Garantex, Rapira, ABCeX). It is a Western-registered brand with an assessed Ukrainian chief executive and owner, it publicly cut ties with Russia in 2022, and the Russian state itself blocked exmo.com in the CIS around 2017. The Russia exposure that drew UK and Ukrainian sanctions is commercial and structural: the Exmo.me mirror serves Russian demand and its shared custody enables sanctioned-entity flows. That is a sanctions-evasion and KYC/AML problem, not evidence of Russian state direction.<br><br>
+    <strong>What would be expected if a higher tier existed, and is absent:</strong> no documented Russian-state ownership or operational control; no FSB or Rosfinmonitoring tasking, coordination or protection; no state-protection signaling; and, contrary to a safe-harbor reading, an actual record of Russian-state hostility to the brand (the Roskomnadzor block). The Ukrainian and UK measures frame EXMO as supporting Russia's financial sector through services, not as a Russian-state instrument.<br><br>
+    <strong>Caveat:</strong> the continued reachability of Exmo.me inside Russia could be read as passive tolerance of the mirror. This is logged as a low-confidence escalation signal, not a basis for a TOLERATED SAFE HARBOR rating, because the true control of EXMO RBC Ltd is unattributed and the brand's posture is Western-facing.
+  </div>
+
+  <h3>Negative Evidence (Expected if Higher Nexus Existed)</h3>
+  <p>If EXMO were under TOLERATED SAFE HARBOR, PROBABLE COOPERATION or DIRECT CONTROL by Russia, one would expect documented state coordination, protection from enforcement, or ownership links to Russian state organs. None are present; the available record points the other way (a Russian block of the brand's primary domain and a non-Russian principal). The assessment therefore holds at NONE, with the unattributed control of EXMO RBC Ltd flagged as the key uncertainty. <span class="badge badge-inference">Analyst Inference</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ============================================== -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+  <h3>UK Designation (Primary Action)</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">UK FCDO RUS3602 : 26 May 2026</div>
+    EXMO EXCHANGE LIMITED was designated under the Russia (Sanctions) (EU Exit) Regulations 2019 as an "involved person" for obtaining a benefit from or supporting the Government of Russia by carrying on business in the Russian financial services sector. It was one of 18 entities and individuals in the A7/crypto package, which the UK valued at over $90 billion in the prior year, and which marked the first application of Regulation 17A to cryptoasset exchanges. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO; UK Sanctions List; TRM]</span>
+  </div>
+  <p><strong>Five measures imposed:</strong> Asset Freeze; Correspondent Banking Sanctions and processing payments (Regulation 17A); Internet Services Sanctions; Director Disqualification Sanction; and Trust Services Sanctions. Three designated TRON addresses are listed. The Regulation 17A measure prohibits UK credit and financial institutions from maintaining correspondent relationships with EXMO and from processing any payment where EXMO appears anywhere in the chain, shifting UK compliance from name-screening toward full transaction-chain tracing. The designated UK entity's listed website is exmo.com; the Russia-facing Exmo.me is operated by the separately sanctioned Kazakhstan entity. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OpenSanctions; UK Sanctions List; Elliptic]</span></p>
+
+  <h3>Sanctions and Enforcement Summary</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Action</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UK (FCDO / OFSI)</strong></td><td>EXMO EXCHANGE LIMITED, RUS3602, 26 May 2026; five measures; 3 TRON addresses; within 18-entity A7/crypto package (incl. Huobi/HTX, Bitpapa, Rapira, ABCeX/Nueva Cryptologia, Aifory).</td><td><span class="tier-confirmed">CONFIRMED</span> (asset freeze in force)</td></tr>
+        <tr><td><strong>Ukraine (President / GUR)</strong></td><td>EXMO RBC Ltd (Kazakhstan), operator of Exmo.me, sanctioned Jul 2025 for sanctions circumvention; UK entity also catalogued in Ukraine's war-sanctions database.</td><td><span class="tier-confirmed">CONFIRMED</span></td></tr>
+        <tr><td><strong>OFAC (U.S.)</strong></td><td>No designation of EXMO or of Zhdanov. The claim of an OFAC designation in a derivative source is false.</td><td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td></tr>
+        <tr><td><strong>EU</strong></td><td>No entity-specific EXMO listing. 20th package bans EU transactions with Russia-based CASPs broadly (crypto measures from 24 May 2026).</td><td><span class="tier-confirmed">CONFIRMED</span> (no individual listing)</td></tr>
+        <tr><td><strong>FinCEN / DOJ</strong></td><td>No Section 311 action, advisory, indictment, or criminal complaint naming EXMO located in open sources.</td><td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Timeline</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">~2013&ndash;2014</div><div class="timeline-text">EXMO launches as a Russian-speaking-market centralized exchange (founders incl. Lerner, Petukhovsky, Bark). <span class="badge badge-confirmed">Confirmed</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Dec 2017</div><div class="timeline-text">EXMO managing director Pavel Lerner abducted in Kyiv; released after reported ransom; site hit by DDoS. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Cointelegraph]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Apr 2022</div><div class="timeline-text">EXMO announces exit from Russia/Belarus/Kazakhstan; sells CIS business to undisclosed buyer; Exmo.me launched under EXMO RBC Ltd (Kazakhstan). Bark transfers 37.51% stake to Zhdanov. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Cointelegraph; IBTimes]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Jul 2025</div><div class="timeline-text">Ukraine sanctions EXMO RBC Ltd (Kazakhstan) as operator of Exmo.me, for sanctions circumvention. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[President.gov.ua]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot blue"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">29 Sep 2025</div><div class="timeline-text">UK Companies House records Serhii Zhdanov holding 75% or more of EXMO EXCHANGE LIMITED. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK PSC]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot blue"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">21 Feb 2026 (upd. 3 Mar)</div><div class="timeline-text">Elliptic names Exmo.me among Russia-linked sanctions-evasion services: &gt;$1M direct to Garantex. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div></div>
+      <div class="timeline-content"><div class="timeline-date">26 May 2026</div><div class="timeline-text">UK FCDO designates EXMO EXCHANGE LIMITED (RUS3602) in the 18-entity A7/crypto package; five measures; 3 TRON addresses. TRM publishes &gt;$19.5M direct-with-sanctioned-entities and shared-custodial-wallet findings. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO; TRM]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Post-Sanction Reconstitution Assessment (Schema Rule)</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Reconstitution: Continuity Already Built In, No New Brand Observed</div>
+    <strong>Pre-existing hedging:</strong> EXMO's reconstitution problem was solved before sanctions ever landed. The 2022 split produced a Russia-facing mirror (Exmo.me / EXMO RBC Ltd, Kazakhstan) that is jurisdictionally and corporately separate from the UK-designated entity, while sharing custody. UK measures bite the London entity; they do not reach a Kazakhstan-operated mirror.<br><br>
+    <strong>Post-designation status:</strong> the platform remained active as of June 2026. No new brand, domain migration, or customer-migration message has been documented after 26 May 2026.<br><br>
+    <strong>Outlook:</strong> unlike Garantex/Grinex, this is not a takedown-and-rebrand case; it is a built-in dual-front-end structure. The most likely near-term adaptation is incremental (new mirrors or partner entities for the CIS segment) rather than a wholesale rebrand. The decisive lever would be OFAC and/or EU follow-on action plus attribution of EXMO RBC Ltd's beneficial owner. <span class="badge badge-credible">Credible</span> <span class="cite">[TRM; UK FCDO]</span>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ============================================== -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-label">Two-Tier Model (Applied to Every Entry)</div>
+    <strong>Tier 1, Transaction confidence:</strong> how confident that funds transited EXMO (CONFIRMED / CREDIBLE / ANALYST INFERENCE), backed by on-chain evidence where available.<br>
+    <strong>Tier 2, Facilitation assessment:</strong> an analytical characterization of EXMO's role: Active facilitation, Structural enablement, or Incidental processing. The two tiers are independent and never collapsed.
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Entity</th><th>Tier 1: Transaction confidence</th><th>Tier 2: Facilitation</th><th>Vendor coverage</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Exmo.com &harr; Exmo.me</strong><br><span style="font-size:11px;color:var(--text-muted)">Two front-ends of the same brand</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: shared custodial wallet infrastructure; deposits consolidate into common hot wallets. <span class="badge badge-single">Single Source</span> on the shared-wallet finding.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">The shared-custody architecture predictably blends Russia-facing flows with the Western entity; this is the mechanism that turns a corporate split into operational continuity.</span></td>
+          <td>Corroborating: TRM. Elliptic treats Exmo.me as Russia-facing but did not publish the shared-wallet claim.</td>
+        </tr>
+        <tr>
+          <td><strong>Garantex</strong><br><span style="font-size:11px;color:var(--text-muted)">OFAC-sanctioned exchange (disrupted Mar 2025)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Elliptic: Exmo.me sent &gt;$1M directly to Garantex. TRM: Garantex among the &gt;$19.5M direct-with-sanctioned set.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Repeated direct flows to a publicly sanctioned exchange despite a marketed screening capability indicate deficient controls predictably enabling the use; active facilitation is not established at the operator level.</span></td>
+          <td>Corroborating: Elliptic, TRM. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Grinex</strong><br><span style="font-size:11px;color:var(--text-muted)">Garantex successor</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM lists Grinex among the entities in EXMO's &gt;$19.5M direct-with-sanctioned transactions.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Transacting with the named Garantex successor extends the same control failure to the reconstituted node; no evidence of knowing operator coordination.</span></td>
+          <td>Corroborating: TRM. Per-pair figure not separately published.</td>
+        </tr>
+        <tr>
+          <td><strong>Chatex</strong><br><span style="font-size:11px;color:var(--text-muted)">OFAC-sanctioned (Nov 2021) Russia-linked service</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM names Chatex among the sanctioned entities in EXMO's &gt;$19.5M direct transactions.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Direct exposure to a long-sanctioned entity; per-pair value not published; consistent with systemic screening gaps.</span></td>
+          <td>Corroborating: TRM. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Huobi / HTX</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated global exchange (UK, 26 May 2026)</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Co-designated in the same UK package and a persistent counterparty to nearly every entity in it (TRM); no EXMO-specific bilateral figure published.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Common large-exchange liquidity context rather than evidence of a direct EXMO-Huobi operational relationship.</span></td>
+          <td>Corroborating (package membership): UK FCDO, TRM. Huobi/HTX disputes that the sanctioned entity equals its operating brand.</td>
+        </tr>
+        <tr>
+          <td><strong>A7 network / A7A5</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated evasion architecture</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">EXMO is co-designated within the A7/crypto package, but no EXMO-specific on-chain flow to A7 LLC or the A7A5 stablecoin is published.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Membership in the designated package implies ecosystem proximity; direct A7A5 transit by EXMO is unquantified.</span></td>
+          <td>Corroborating (package): UK FCDO. No EXMO-specific A7A5 figure published.</td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware / darknet actors</strong><br><span style="font-size:11px;color:var(--text-muted)">Via Garantex/Grinex chain</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">No EXMO-specific attribution of named ransomware or darknet actor flows in any published analytics report.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Control failures predictably enable processing of funds from actors who use Garantex/Grinex; no evidence of knowing coordination with specific groups.</span></td>
+          <td>Corroborating (underlying Garantex/Grinex clientele): TRM, Elliptic. No EXMO-specific actor attribution published.</td>
+        </tr>
+        <tr>
+          <td><strong>EXMO Poland Sp. z o.o.</strong><br><span style="font-size:11px;color:var(--text-muted)">Related corporate entity</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Listed as an asset/related entity of EXMO EXCHANGE LIMITED (OpenSanctions/Companies House).</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Corporate affiliate within the EXMO group; no independent illicit-flow attribution to the Polish entity.</span></td>
+          <td>Corroborating: OpenSanctions; Companies House.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ============================================== -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> EXMO is an established mid-tier brand with long-standing recognition among Russian-speaking traders. The 2022 split preserved that CIS user base through Exmo.me while letting Exmo.com pursue a European positioning. After the Garantex takedown and rising scrutiny, the Russia-facing segment sits within the cluster of Russia-tolerant venues absorbing displaced grey-market demand, though EXMO's published illicit-flow exposure ($19.5M direct, TRM) is an order of magnitude smaller than the highest-volume nodes (Rapira, ABCeX, Huobi). <span class="cite">[CoinGecko; TRM]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    The UK designation plus the prior Ukrainian listing are the formal actions; both are administrative, not infrastructure seizures or arrests. Their bite is on UK and Ukraine-nexus financial access and counterparty exposure, sharpened by Regulation 17A's payment-chain prohibition, which will progressively degrade EXMO's access to compliant global infrastructure as institutions screen the designated entity and its three TRON addresses. The structural weaknesses this profile flags: (1) the dual-front-end design means UK-only measures do not reach the Kazakhstan-operated Exmo.me, so the Russia-facing service can persist; (2) the beneficial owner of EXMO RBC Ltd is unidentified, so there is no human pressure point on the Russia side; and (3) absent OFAC action, the dollar-clearing and secondary-sanctions pressure that bit Garantex is not yet applied. Degrading the Russia-facing operation requires OFAC/EU multilateralization, attribution of EXMO RBC Ltd's owner, and mapping of the shared custodial clusters that link the two front-ends.
+  </div>
+
+  <h3>Reconstitution Status</h3>
+  <p>Brand: <strong>Sanctioned (UK, Ukraine) but active; no rebrand.</strong> The platform continued operating after 26 May 2026; the dual-front-end structure provides built-in continuity. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Continuity design: <strong>Pre-built.</strong> The 2022 split already established a jurisdictionally separate Russia-facing mirror over shared custody, so reconstitution is structural rather than reactive. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Future risk: <strong>Persistence over clean exit.</strong> With no seizure and a non-UK operator for Exmo.me, the Russia-facing service can continue for CIS users; incremental new mirrors or partner entities are the most likely adaptation. <span class="badge badge-credible">Credible</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Identity of the beneficial owner(s) of EXMO RBC Ltd (Kazakhstan), the undisclosed 2022 buyer that operates Exmo.me. Highest-priority gap.</div>
+  <div class="gap-flag">Whether the shared-custodial-wallet finding (TRM, single vendor) is corroborated by Elliptic or Chainalysis at the wallet-cluster level.</div>
+  <div class="gap-flag">Per-pair on-chain figures for EXMO with Grinex and Chatex (TRM published the aggregate &gt;$19.5M, not the breakdown).</div>
+  <div class="gap-flag">Specific fiat rails (banks, processors) used by Exmo.me for ruble on/off ramps.</div>
+  <div class="gap-flag">Whether OFAC and/or the EU will follow with entity-specific EXMO designations, and whether any EXMO wallet clusters will be SDN-listed.</div>
+  <div class="gap-flag">Current operational roles, if any, of founders Petukhovsky and Lerner and executive Stankevich.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- RECENT REPORTING -->
+<!-- ============================================== -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[26 May 2026]</span> UK FCDO designates EXMO EXCHANGE LIMITED (RUS3602) and 17 other entities/individuals in the A7/crypto package; five measures and three TRON addresses listed. TRM publishes accompanying analysis: EXMO &gt;$19.5M direct with Garantex/Grinex/Chatex and shared custodial wallets between Exmo.com and Exmo.me. <span class="cite">[UK FCDO; TRM]</span></p>
+  <p><span class="cite">[21 Feb 2026, updated 3 Mar 2026]</span> Elliptic names Exmo.me among Russia-linked sanctions-evasion services: serves Russia/Belarus/Kazakhstan and sent &gt;$1M directly to Garantex. <span class="cite">[Elliptic]</span></p>
+  <p><span class="cite">[29 Sep 2025]</span> UK Companies House records Serhii Zhdanov holding 75% or more of EXMO EXCHANGE LIMITED. <span class="cite">[UK PSC]</span></p>
+  <p><span class="cite">[Jul 2025]</span> Ukraine sanctions EXMO RBC Ltd (Kazakhstan), identified as operator of the Exmo.me exchange, for sanctions circumvention. <span class="cite">[President.gov.ua]</span></p>
+  <p><span class="cite">[Apr 2022]</span> EXMO announces exit from Russia, Belarus and Kazakhstan, selling the CIS business to an undisclosed buyer who continues the EXMO brand via Exmo.me under a Kazakhstan entity; founder Edward Bark transfers his 37.51% stake to Zhdanov. <span class="cite">[Cointelegraph; IBTimes]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SOURCES -->
+<!-- ============================================== -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://www.opensanctions.org/entities/gb-fcdo-rus3602/" target="_blank">OpenSanctions: EXMO EXCHANGE LTD. (UK FCDO RUS3602, 26 May 2026; five measures; three designated TRON addresses; UK Co. 11655602, formerly EXMO PAYMENTS LTD; PSC Serhii Zhdanov 75%+; EXMO POLAND Sp. z o.o.)</a></li>
+    <li><a href="https://www.gov.uk/government/publications/list-of-russia-sanctions-designations-26-may-2026" target="_blank">UK Government: List of Russia sanctions designations, 26 May 2026 (18-entity A7/crypto package incl. EXMO EXCHANGE LIMITED)</a></li>
+    <li><a href="https://www.gov.uk/government/news/uk-cracks-down-on-backdoor-russian-sanctions-evasion-with-tough-new-measures" target="_blank">UK FCDO: UK cracks down on backdoor Russian sanctions evasion with tough new measures (26 May 2026; A7 network ~$90B/year; first Reg. 17A application to crypto)</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/uk-designates-huobi-exmo-bitpapa-and-11-other-entities-for-russian-crypto-sanctions-evasion" target="_blank">TRM Labs: UK Designates Huobi, Exmo, Bitpapa, and 11 Other Entities (EXMO &gt;$19.5M direct with Garantex/Grinex/Chatex; Exmo.com and Exmo.me share custodial wallets; Ukraine sanctioned the Kazakhstan Exmo entity Jul 2025) : 26 May 2026</a></li>
+    <li><a href="https://www.elliptic.co/blog/russia-linked-cryptocurrency-services-and-sanctions-evasion" target="_blank">Elliptic: Russia-linked cryptocurrency services and sanctions evasion (Exmo.me serves Russia/Belarus/Kazakhstan; sent &gt;$1M directly to Garantex) : 21 Feb 2026 (upd. 3 Mar 2026)</a></li>
+    <li><a href="https://www.elliptic.co/blog/uk-designates-cryptoasset-exchanges-in-sweeping-new-sanctions-package" target="_blank">Elliptic: UK designates cryptoasset exchanges including HTX in sweeping new sanctions package (Regulation 17A extended to crypto; full-chain tracing) : 26 May 2026</a></li>
+    <li><a href="https://www.chainalysis.com/blog/uk-sanctions-crypto-entities-russian-trade-blockade-evasion-may-2026/" target="_blank">Chainalysis: UK Sanctions Crypto Companies With Russia Ties (A7 network; 26 May 2026 package) : May 2026</a></li>
+    <li><a href="https://cointelegraph.com/news/crypto-firm-exmo-exits-russia-and-belarus-by-selling-part-of-its-business" target="_blank">Cointelegraph: Crypto firm Exmo exits Russia and Belarus by selling part of its business (Exmo.me to serve Russia/Belarus/Kazakhstan via Kazakhstan entity)</a></li>
+    <li><a href="https://www.ibtimes.com/exmo-says-it-sold-russian-crypto-business-new-owner-will-continue-use-company-name-3478357" target="_blank">IBTimes: Exmo Says It Sold Russian Crypto Business; New Owner Will Continue To Use Company Name</a></li>
+    <li><a href="https://finance.yahoo.com/news/crypto-exchange-exmo-exits-russia-173442783.html" target="_blank">CoinDesk via Yahoo: EXMO Exits Russia, Sells User Base There to Unnamed Buyer (Edward Bark, Russian founder, transferred 37.51% stake to Serhii Zhdanov)</a></li>
+    <li><a href="https://www.president.gov.ua/documents/4652025-55605" target="_blank">President of Ukraine: Decree enacting NSDC sanctions (Jul 2025) including the Kazakhstan-registered EXMO entity (operator of Exmo.me)</a></li>
+    <li><a href="https://news.liga.net/en/politics/news/zelenskyy-has-introduced-new-anti-russian-sanctions-which-among-other-things-affect-cryptocurrency" target="_blank">LIGA.net: Zelenskyy imposes new sanctions (EXMO RBC LTD, Kazakhstan, named as operator of EXMO.me cryptocurrency exchange involved in sanctions circumvention)</a></li>
+    <li><a href="https://cointelegraph.com/news/director-of-uk-based-crypto-exchange-kidnapped-in-kiev" target="_blank">Cointelegraph: Director of UK-Based Crypto Exchange Kidnapped in Kiev (Pavel Lerner, EXMO managing director, abducted Dec 2017)</a></li>
+    <li><a href="https://exmo.com/blog/en/notifications/official-statement-from-exmo-on-elliptic-allegations" target="_blank">EXMO: Official statement on Elliptic allegations (claims sanctions compliance as a core element; advanced blockchain-analytics screening)</a></li>
+    <li><a href="https://e-cryptonews.com/cryptocurrency-serves-as-a-bridge-between-the-virtual-and-physical-worlds-exmo-founder-serhii-zhdanov/" target="_blank">E-CryptoNews: Interview with EXMO CEO Serhii Zhdanov</a></li>
+    <li><a href="https://www.crunchbase.com/person/sergey-zhdanov-4f8c" target="_blank">Crunchbase: Sergey Zhdanov, Chief Executive Officer, EXMO</a></li>
+    <li><a href="https://www.coingecko.com/en/exchanges/exmo" target="_blank">CoinGecko: EXMO statistics, markets and trust score (established 2014; Poland)</a></li>
+    <li><a href="https://www.cybercriminal.com/132542/exmo-com-red-flags-legal-woes-and-consumer-risks" target="_blank">cybercriminal.com: EXMO red flags (REJECTED source for the false claim that Zhdanov = "Sergei Mendeleyev" and was OFAC-designated)</a></li>
+    <li><a href="https://ofac.treasury.gov/sanctions-list-search-tool" target="_blank">OFAC Sanctions List Search Tool (negative evidence: no EXMO or Zhdanov SDN designation as of June 2026)</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/the-imitation-game-following-garantexs-takedown-are-these-high-risk-exchanges-copying-its-playbook" target="_blank">TRM Labs: The Imitation Game (post-Garantex high-risk exchange ecosystem; Grinex/Chatex context; ABCeX tie to Sergey Mendeleev, distinct from Zhdanov)</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). Volume figures cited with source and methodology; figures from different vendors are presented separately, not averaged (TRM &gt;$19.5M EXMO direct with Garantex/Grinex/Chatex; Elliptic &gt;$1M Exmo.me&rarr;Garantex). Two-tier connected-entity model applied throughout Section 09 (Tier 1 transaction confidence plus Tier 2 facilitation assessment). Three jurisdictions documented separately per schema (registration UK / Kazakhstan / Poland; hosting unknown but custody shared; operator brand Zhdanov UK/Ukraine, Exmo.me control unattributed). Key corrections vs source draft: (1) the &gt;$19.5M figure and the shared-custodial-wallet finding are TRM's, not Elliptic's; (2) the UK sanctioned EXMO EXCHANGE LIMITED (UK entity, website exmo.com) while Ukraine sanctioned the separate Kazakhstan operator EXMO RBC Ltd, and the two should not be merged; (3) the claim that CEO Sergei Zhdanov is "Sergei Mendeleyev" and was OFAC-designated is false. Status: Sanctioned (UK FCDO 26 May 2026, RUS3602; Ukraine Jul 2025); not OFAC-designated; platform active; assessed Russian state nexus NONE.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

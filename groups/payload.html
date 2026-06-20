@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payload | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+.section-nav .sub { padding-left: 24px; font-size: 12px; }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* SCROLL BEHAVIOR */
+html { scroll-behavior: smooth; }
+
+/* PRINT */
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE BUTTON */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* VICTIM STRIP */
+.victim-strip {
+  margin: 20px 40px 0;
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.victim-strip-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gray-600);
+}
+.victim-strip-sub {
+  font-weight: 400; letter-spacing: 0; text-transform: none;
+  color: var(--gray-400); font-size: 10px; margin-left: 4px;
+}
+.victim-row {
+  display: flex; align-items: center; gap: 0;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 12px;
+}
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+
+/* CREDIT */
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .victim-meta { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .metric-label { color: #8b949e; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { background: #161b22; border-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+
+/* LIVE DATA INDICATORS */
+.topbar-live {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400);
+  letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse { position: relative; display: inline-block; width: 7px; height: 7px; flex-shrink: 0; }
+.live-pulse::before, .live-pulse::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60; }
+.live-pulse::after { background: transparent; border: 1.5px solid #27ae60; animation: pulse-ring 2s ease-out infinite; }
+
+.live-badge {
+  display: inline-block;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #27ae60;
+  border: 1px solid #27ae60;
+  border-radius: 3px;
+  padding: 1px 4px;
+  vertical-align: middle;
+  margin-left: 5px;
+  line-height: 1.4;
+}
+
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+
+/* RECENT REPORTING */
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+.feed-empty { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; font-style: italic; }
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
+    </a>
+    <a class="group-item" href="blackbasta.html">
+      <span class="group-dot dot-dim"></span>
+      Black Basta
+    </a>
+    <a class="group-item" href="thegentlemen.html">
+      <span class="group-dot dot-active"></span>
+      The Gentlemen
+    </a>
+    <a class="group-item" href="nightspire.html">
+      <span class="group-dot dot-active"></span>
+      NightSpire
+    </a>
+    <a class="group-item active" href="payload.html">
+      <span class="group-dot dot-active"></span>
+      Payload
+    </a>
+    <a class="group-item" href="worldleaks.html">
+      <span class="group-dot dot-active"></span>
+      World Leaks / Hunters Intl
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Executive Summary</a>
+    <a href="#origin">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Capabilities</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile</a>
+    <a href="#attribution">Law Enforcement</a>
+    <a href="#state">Attribution &amp; State Nexus</a>
+    <a href="#status">Cluster &amp; Trajectory</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &bull; Last updated <span id="hero-last-updated">June 2026</span></div>
+    <div class="hero-title">Payload</div>
+    <div class="hero-subtitle">Babuk-Derived Ransomware &bull; Double Extortion &bull; Windows + ESXi &bull; Emerged February 2026</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">High Threat</span>
+      <span class="badge badge-operational">Operational</span>
+      <span class="badge badge-raas">RaaS Unverified</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Feb 2026</div>
+        <div class="kpi-sub">Binary compiled 17 Feb 2026</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Leak Site Victims <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-victim-count">16+</div>
+        <div class="kpi-sub" id="kpi-victim-sub">Growing; 12 at first analysis (Mar 2026)</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Countries <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-country-count">7+</div>
+        <div class="kpi-sub" id="kpi-country-sub">Via ransomware.live</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Data Claimed Stolen</div>
+        <div class="kpi-value">2.6 TB</div>
+        <div class="kpi-sub">2,603 GB (Mar 2026 snapshot)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Revenue</div>
+        <div class="kpi-value">Unknown</div>
+        <div class="kpi-sub">No on-chain analysis published</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">No arrests, sanctions, takedowns</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Babuk</div>
+        <div class="kpi-sub">Leaked builder, Sep 2021</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary &amp; Group Overview</h2>
+      </div>
+      <p>Payload is a Babuk-derived ransomware operation that emerged in February 2026, running a classic double-extortion model against Windows and VMware ESXi environments. Data is exfiltrated before encryption, then victims are pressured through a Tor negotiation portal and a separate Tor leak blog with countdown timers. Encrypted files receive the <span class="mono">.payload</span> extension and a ransom note named <span class="mono">RECOVER_payload.txt</span> is dropped. The operation is technically mature from its first build: per-file Curve25519 plus ChaCha20 encryption, ETW patching, event-log wiping, NTFS Alternate Data Stream self-deletion, and partial encryption of large files for speed.</p>
+      <p>The group is small and recent. Its leak site went live within hours of the first build and reached roughly a dozen victims across seven countries inside its first month, growing to 16 or more by late March 2026 and remaining active through at least June 2026. No major incident-response vendor (CrowdStrike, Mandiant, Recorded Future, Microsoft, Unit 42, Secureworks) has issued a group-specific tracking codename; open sources track it generically as "Payload."</p>
+
+      <div class="conf conf-confirmed">Overall assessment confidence: the technical and lineage core is CONFIRMED; operational model and attribution carry larger gaps.</div>
+
+      <div class="subsection-title" style="margin-top:24px;">Key Performance Indicators</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Value</th><th>Confidence</th></tr></thead>
+          <tbody>
+            <tr><td>First observed</td><td>17 February 2026 (Windows binary compile date, first victim same week)</td><td>CONFIRMED</td></tr>
+            <tr><td>Leak-site victims</td><td>12 at first analysis (15 Mar 2026); 16+ by late March; active June 2026</td><td>CREDIBLE</td></tr>
+            <tr><td>Countries affected</td><td>7 (emerging markets emphasis)</td><td>CONFIRMED</td></tr>
+            <tr><td>Data claimed stolen</td><td>2,603 GB (~2.6 TB) at March 2026 snapshot</td><td>CREDIBLE</td></tr>
+            <tr><td>Platforms</td><td>Windows PE and Linux/ESXi ELF</td><td>CONFIRMED</td></tr>
+            <tr><td>Decryptor available</td><td>None (no implementation flaw identified; not listed on No More Ransom)</td><td>CONFIRMED</td></tr>
+            <tr><td>Confirmed revenue</td><td>Unknown (no published on-chain analysis; no wallet in note)</td><td>n/a, gap</td></tr>
+            <tr><td>LE disruption status</td><td>None (no arrests, indictments, sanctions, or takedowns)</td><td>CONFIRMED</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Quick-Reference Attributes</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Vendor tracking names</td><td>Tracked generically as "Payload" by SOC Prime, Ransomware.live, WatchGuard, Derp.ca. No group-specific codename from CrowdStrike, Mandiant, Recorded Future, Microsoft, Unit 42, or Secureworks as of June 2026.</td></tr>
+            <tr><td>Lineage</td><td>Babuk-derived (leaked September 2021 builder). 17 VirusTotal engines flag the binary as Babuk. Distinct family, not an announced rebrand of a named prior group.</td></tr>
+            <tr><td>Operational model</td><td>Double extortion. RaaS branding is repeated by some news outlets but UNVERIFIED: no affiliate panel or builder evidence in open source. Working assessment: closed crew or limited builder operation.</td></tr>
+            <tr><td>Extortion mechanic</td><td>Exfiltration before encryption; Tor negotiation portal with per-victim credentials; separate Tor leak blog with countdown timers.</td></tr>
+            <tr><td>File markers</td><td>Extension <span class="mono">.payload</span>; note <span class="mono">RECOVER_payload.txt</span>; mutex <span class="mono">MakeAmericaGreatAgain</span>; footer marker <span class="mono">payload\0</span>.</td></tr>
+            <tr><td>Encryption</td><td>Per-file Curve25519 ECDH + ChaCha20; shared secret used directly as key; no decryptor.</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Unestablished. Babuk heritage hints at Eastern European origin but is not attribution. No CIS kill-switch documented.</td></tr>
+            <tr><td>Named high-profile victim</td><td>Royal Bahrain Hospital (15 Mar 2026), 110 GB claimed, 23 Mar deadline.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: DLS + BRANDING + COVERAGE -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://securityaffairs.com/wp-content/uploads/2026/03/image-52.png"
+               alt="Payload data leak site post for Royal Bahrain Hospital with proof-of-breach images"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Victim Listing &amp; Proof of Breach</strong>
+            Payload's Tor leak-site entry for Royal Bahrain Hospital (claimed 15 March 2026), with proof-of-breach file images and a countdown to the 23 March publication deadline. The group lists victims by name with claimed data volume.
+            <span class="img-source">Source: Security Affairs / Dominic Alvieri, 2026</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.derp.ca/og/research/payload-ransomware-babuk-derivative.png"
+               alt="Derp.ca static analysis card for Payload ransomware, mutex MakeAmericaGreatAgain"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Branding &amp; Operator Fingerprint</strong>
+            Reference card from the primary static-analysis report. The Windows mutex <span class="mono">MakeAmericaGreatAgain</span> (versus Babuk's original <span class="mono">DoYouWantToHaveSexWithCuongDong</span>) is the clearest operator fingerprint and a reliable host-based indicator.
+            <span class="img-source">Source: Derp.ca (Kirk), March 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://i0.wp.com/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgyoQi4vdLIy0q-tcTH77Kg_tHG5YSGP7r8g7GZQnk72yzmZlOSx3HOdvMagYg-9s3c9bKXBToMNjoirET4gUAxZmYsmSCYO_bmEL8isDzI5Jkkdg-SjHup8cEu4_xF8MDV0FTJYL7dW98-56nuyewDBxfgyl1lJL-eLAxvIezqFeeBtmj22OGHdejalXw/s16000/New%20%E2%80%98Payload%E2%80%99%20Ransomware%20Uses%20Babuk-Style%20Encryption%20Against%20Windows%20and%20ESXi%20Systems.webp"
+               alt="Cyber Security News editorial graphic on Payload Babuk-style encryption"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Open-Source Coverage: Encryption</strong>
+            Editorial graphic accompanying broad open-source coverage of Payload's Babuk-style Curve25519 plus ChaCha20 scheme across Windows and ESXi.
+            <span class="img-source">Source: Cyber Security News, March 2026</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://i1.wp.com/blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh0xoQna0EfoeVpiBducgO6ZvAgz8hYFgoToYuDzNqek8X6r8dKsLCnFtSG5rCwg6MIRIRTTkpK36HuMehkucLbcPsuY7IjLhjKMMus4oP-kNBqGQRUgM9O_M93WDKwpA6X6Y6xGRlGIPruILUG8a6R-O4H5jqymIe7JIc4R0GG293ciPoTKWVzUiTVbPU3/s16000/Untitled%20design%20-%202026-03-17T124306.386.webp"
+               alt="GBHackers editorial graphic on Payload Windows and ESXi targeting"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Open-Source Coverage: Platforms</strong>
+            Editorial graphic from coverage highlighting Payload's dual-platform reach: a feature-rich Windows PE and a small stripped ELF targeting ESXi hosts.
+            <span class="img-source">Source: GBHackers, March 2026</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://i0.wp.com/securityaffairs.com/wp-content/uploads/2026/03/image-52.png?ssl=1"
+               alt="Payload leak-site entry full view"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Leak Site Entry (full view)</strong>
+            Full-resolution capture of the Payload leak-site entry shared at disclosure, showing the group's published listing format and proof-image layout.
+            <span class="img-source">Source: Security Affairs / Dominic Alvieri, 2026</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LINEAGE -->
+    <section class="section" id="origin">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage &amp; Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence</div>
+        <p>Payload was first observed in mid-February 2026. The analyzed Windows binary was compiled on 17 February 2026 (08:39 UTC), and the first victim appeared on the leak site within hours. Public technical write-ups followed in March 2026. Trackers (Ransomware.live, WatchGuard) and follow-on reporting continue to record active postings through at least June 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Babuk Code Heritage: Evidentiary Pillars</div>
+        <div class="conf conf-confirmed">Confirmed: code lineage to the leaked Babuk builder (September 2021)</div>
+        <p>The Babuk linkage is the best-supported claim in the profile. It rests on direct binary comparison against the leaked Babuk source, plus broad anti-virus consensus. No major vendor publicly disputes the Babuk-derived characterization.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 : Confirmed</div>
+            <div class="pillar-title">Character-Identical Code</div>
+            <div class="pillar-body">The service kill list and process kill list are character-identical to the leaked September 2021 Babuk builder. The Curve25519-donna implementation uses the same clamping logic and constant 121665. Shadow-copy deletion uses the same vssadmin command. (Derp.ca static analysis.)</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 : Confirmed</div>
+            <div class="pillar-title">AV/Signature Consensus</div>
+            <div class="pillar-body">Seventeen VirusTotal engines detect the Windows binary as Babuk. The ClamAV signature Win.Ransomware.Babuk-10032520-1 matches the sample, placing it inside a documented Babuk-derivative family.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 : Credible</div>
+            <div class="pillar-title">TTP Continuity</div>
+            <div class="pillar-body">Pre-encryption service killing, shadow-copy deletion, and cross-platform Windows/ESXi targeting mirror Babuk derivatives seen previously. Supports lineage, though these behaviors are common across the broader post-Babuk cluster.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillar 4 : Unconfirmed</div>
+            <div class="pillar-title">Personnel / Wallet Links</div>
+            <div class="pillar-body">No public reporting ties specific Babuk operators or wallets to Payload's operators. Any personnel-level lineage is unconfirmed. Code heritage from a public leak does not establish shared operators.</div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Operator modifications on top of Babuk:</strong> cipher swapped from HC-128 to ChaCha20; key derivation simplified (shared secret used directly, no SHA-512 step); footer reworked to 56 bytes with an RC4 "FBI" key and a <span class="mono">payload\0</span> marker; mutex changed to <span class="mono">MakeAmericaGreatAgain</span>; extension changed to <span class="mono">.payload</span>; note RC4-encrypted and base64-embedded; new anti-forensics (ETW patching, full event-log wipe, NTFS ADS self-deletion); a 12-switch command-line interface. The ChaCha20 swap may have been borrowed from Babuk's own NAS variant, which already used ChaCha20 in the leaked source.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <p>Payload inherits Babuk code, not Conti code. Accordingly, Conti-cluster parent designations do not apply to this profile. <strong>Wizard Spider</strong> (CrowdStrike) and <strong>Gold Ulrick</strong> (Secureworks) describe the parent Conti organization and are not relevant to Babuk-derived families. Babuk's own operators were tracked separately (for example Secureworks <strong>Gold Northfield</strong>); that designation attaches to the original Babuk crew, not to Payload.</p>
+        <p>For Payload itself, no group-specific vendor codename exists in open source as of June 2026. The Babuk-derivative assessment is made explicitly by Derp.ca and independent researchers and echoed by Ransomware.live; it is not yet framed as a formal lineage finding by large IR vendors such as Mandiant or CrowdStrike.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS vs Closed Crew</div>
+        <div class="conf conf-inference">Analyst inference: more likely a closed crew or limited builder operation than a mass-market RaaS</div>
+        <p>Several news outlets describe Payload as ransomware-as-a-service, but that label is repeated without supporting evidence. The primary static analysis is explicit that no public source shows an affiliate program, recruitment, revenue-share terms, or a builder panel. Treat RaaS branding as unverified.</p>
+        <p>The one ambiguous signal toward multiple operators is that the Windows and Linux/ESXi builds carry different embedded operator public keys, consistent with per-campaign or per-affiliate key generation. This is suggestive but not conclusive. On current evidence, the working assessment is a small closed crew or a limited builder-based operation rather than a broad RaaS marketplace.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Double-Extortion Mechanics</div>
+        <ul class="content-list">
+          <li><strong>Exfiltration first:</strong> data is stolen before encryption, creating two leverage points.</li>
+          <li><strong>Encryption:</strong> files locked with the <span class="mono">.payload</span> extension; recovery infeasible without the operator key.</li>
+          <li><strong>Negotiation portal:</strong> each victim receives unique credentials for a Tor portal. Up to 3 free file decryptions (15 MB each) are offered as proof of capability.</li>
+          <li><strong>Publication threat:</strong> a separate Tor leak blog publishes stolen data under countdown timers if payment is not made.</li>
+          <li><strong>Offline operation:</strong> the payload stage has no command-and-control traffic; the binary is fully self-contained.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <p>The decrypted ransom note frames a 72-hour initial pressure window (file-tree publication and naming of the company) and a 240-hour total negotiation window. No wallet address appears in the note; payment is arranged exclusively through the Tor portal. There is no public corpus of negotiation transcripts yet, so demand ranges, discounting behavior, and payment timing remain intelligence gaps.</p>
+        <div class="callout callout-warning">
+          <strong>Intelligence gap:</strong> ransom-demand amounts, discount behavior, and cryptocurrency type are not documented in open source. No chat-leak archive exists for Payload as of June 2026.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Service</th><th>Onion address</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Negotiation portal</td><td class="mono">payloadynyvabjacbun4uwhmxc7yvdzorycslzmnleguxjn7glahsvqd.onion</td><td>Per-victim credentials; exposes no Server header</td></tr>
+              <tr><td>Leak blog</td><td class="mono">payloadrz5yw227brtbvdqpnlhq3rdcdekdnn3rgucbcdeawq2v6vuyd.onion</td><td>nginx with hardened security headers; different backend from the portal</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Both sites were confirmed reachable as of mid-March 2026. The distinct backends (portal versus nginx leak blog) indicate deliberate separation of negotiation and publication infrastructure.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sample Overview</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Windows PE</th><th>Linux/ESXi ELF</th></tr></thead>
+            <tbody>
+              <tr><td>SHA-256</td><td class="mono">1ca67af9...12ffb71f</td><td class="mono">bed8d175...047a316</td></tr>
+              <tr><td>Type</td><td>PE32 console, MSVC (VS2019)</td><td>ELF 64-bit, stripped</td></tr>
+              <tr><td>Size</td><td>~395 KB</td><td>~40 KB</td></tr>
+              <tr><td>Compiled / first seen</td><td>2026-02-17 08:39 UTC</td><td>VT first seen 2026-02-17</td></tr>
+              <tr><td>Mutex</td><td class="mono">MakeAmericaGreatAgain</td><td>None</td></tr>
+              <tr><td>VT detection</td><td>57/76</td><td>8/76</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The Windows build is roughly ten times larger than the Linux build, mostly due to static MSVC runtime linking plus the service/process kill lists, event-log wiper, and ETW patcher, none of which exist in the ESXi build.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access</div>
+        <div class="conf conf-inference">Intelligence gap: no initial access vector or CVE documented</div>
+        <p>Public analysis focuses on the payload stage. No specific initial access vector (RDP, phishing, VPN/edge-device exploitation) and no exploited CVE have been documented for Payload. This is a primary gap. No Payload-specific CVE exists to verify against the NVD.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Scheme</div>
+        <div class="conf conf-confirmed">Confirmed: no cryptographic weakness, backdoor, or implementation flaw identified</div>
+        <ul class="content-list">
+          <li><strong>Per-file keypair:</strong> CryptGenRandom produces a 32-byte Curve25519 private key (clamped) and a 12-byte ChaCha20 nonce for each file.</li>
+          <li><strong>ECDH:</strong> the shared secret of the per-file private key and the embedded operator public key is used directly as the ChaCha20 key, with no key-derivation step.</li>
+          <li><strong>Cipher:</strong> ChaCha20 in 1 MB chunks. Files over 2 GB are partially encrypted (about 20%, in evenly spaced 1 MB chunks) for speed on large volumes.</li>
+          <li><strong>Footer:</strong> a 56-byte footer is appended, RC4-encrypted with the 3-byte key "FBI"; it holds the per-file public key, nonce, and a <span class="mono">payload\0</span> marker.</li>
+          <li><strong>Key hygiene:</strong> the per-file private key is zeroed from memory immediately after the footer is written and never touches disk.</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>The "FBI" key is mundane, not a message.</strong> The 3-byte RC4 key "FBI" sits next to the ChaCha20 sigma constant in the binary's data section, so they read together as <span class="mono">expand 32-byte kFBI</span>. The Linux build has the same accident: <span class="mono">FBIthread-pool-%d</span>. These are neighbouring strings, not modified cryptographic constants. They are valuable as detection signatures, not as operator intent.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Anti-Forensics &amp; Evasion</div>
+        <ul class="content-list">
+          <li><strong>ETW patching:</strong> patches four ntdll functions (EtwEventWrite, EtwEventWriteFull, EtwEventWriteTransfer, EtwRegister) to return immediately, blinding EDR that relies on ETW.</li>
+          <li><strong>Event-log wipe:</strong> loads wevtapi.dll at runtime and clears every Windows event-log channel via EvtClearLog.</li>
+          <li><strong>NTFS ADS self-deletion:</strong> renames its own data stream to an Alternate Data Stream (<span class="mono">:payload</span>), releasing the file lock so the executable deletes on close with no child process or temp batch file.</li>
+          <li><strong>Shadow copies and recycle bin:</strong> deletes shadow copies via <span class="mono">vssadmin.exe delete shadows /all /quiet</span> and empties the recycle bin.</li>
+          <li><strong>Kill lists:</strong> stops ~34 services (Veeam, Acronis, BackupExec, Symantec/Veritas, Sophos, Qihoo 360, Intuit QuickBooks) and ~31 processes (SQL, Oracle, Office suite, Thunderbird, Firefox, Steam).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Coverage and CIS Behavior</div>
+        <p>Payload ships a Windows PE and a Linux/ESXi ELF. The ESXi build links libxml2 and parses <span class="mono">/etc/vmware/hostd/vmInventory.xml</span> via XPath to locate VM disk paths for targeted encryption; it uses a C thread pool and /dev/urandom, and lacks the Windows anti-forensics. The core crypto is identical across builds, but the operator public keys differ, indicating per-campaign or per-affiliate key generation.</p>
+        <div class="conf conf-inference">CIS exclusion behavior: unknown</div>
+        <p>Public analyses do not confirm a hardcoded CIS locale or keyboard kill switch. In the absence of evidence, CIS-exclusion behavior should be treated as unknown rather than assumed.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Detection Pivots</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Indicator</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td><span class="mono">.payload</span> extension; <span class="mono">RECOVER_payload.txt</span> note</td><td>Host artifact</td></tr>
+              <tr><td>Mutex <span class="mono">MakeAmericaGreatAgain</span></td><td>Host artifact</td></tr>
+              <tr><td>Footer marker <span class="mono">payload\0</span> (last 8 bytes); strings <span class="mono">expand 32-byte kFBI</span> / <span class="mono">FBIthread-pool-%d</span></td><td>Signature</td></tr>
+              <tr><td>ETW patch bytes in ntdll; full EvtClearLog wipe</td><td>Behavioral</td></tr>
+              <tr><td><span class="mono">vssadmin delete shadows</span>; NTFS ADS rename to <span class="mono">:payload</span></td><td>Behavioral</td></tr>
+              <tr><td>YARA rules (Windows + Linux) published at github.com/kirkderp/yara</td><td>Detection content</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No practical cryptographic weakness or universal decryptor exists. Defense must rely on prevention, detection, and immutable offline backups.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 5: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+      <div class="callout callout-warning">
+        <strong>Major intelligence gap.</strong> Payload's financial infrastructure is essentially undocumented in open source. No wallet address appears in the ransom note; payment is arranged only through the Tor portal.
+      </div>
+      <ul class="content-list">
+        <li><strong>Cryptocurrency type:</strong> not specified in open source. Bitcoin is plausible given Babuk-line norms, but this is unconfirmed.</li>
+        <li><strong>On-chain analysis:</strong> no published TRM Labs, Chainalysis, or Elliptic report addresses Payload wallet clusters, mixers, or cash-out venues as of June 2026.</li>
+        <li><strong>Sanctioned addresses:</strong> none. No OFAC-designated addresses or wallet IOCs are publicly tied to Payload.</li>
+        <li><strong>Revenue and laundering evolution:</strong> insufficient data. The short operational window and absence of on-chain reporting preclude any laundering-phase reconstruction.</li>
+      </ul>
+      <p>Because the operation runs payment negotiation entirely off-chain-of-visibility (Tor portal, no note wallet), blockchain attribution opportunities are presently limited. This contrasts with established Babuk-line and Conti-diaspora groups, where centralized laundering has produced durable attribution.</p>
+    </section>
+
+    <!-- SECTION 6: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile &amp; Targeting</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card highlight">
+          <div class="metric-label">Victims (first analysis)</div>
+          <div class="metric-val">12</div>
+          <div class="metric-note">As of 15 Mar 2026 (Derp.ca)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Victims (late March)</div>
+          <div class="metric-val">16+</div>
+          <div class="metric-note">Per ransomware.live</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Countries</div>
+          <div class="metric-val">7</div>
+          <div class="metric-note">Emerging-market emphasis</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Data claimed</div>
+          <div class="metric-val">2.6 TB</div>
+          <div class="metric-note">2,603 GB (Mar 2026)</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Sectors Targeted</div>
+        <p>Primary reporting cites healthcare, real estate, energy, telecom, and agriculture, particularly in emerging markets. Ransomware.live's aggregate view (which includes later victims) lists manufacturing, business services, consumer services, healthcare, and financial services among top activity sectors. The range suggests opportunistic targeting guided by perceived ability to pay rather than strict ideological criteria.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>Seven countries affected at the March snapshot, weighted toward emerging-market regions. Documented or sampled locations include Bahrain (Royal Bahrain Hospital), the Philippines, Egypt, Mexico, and Thailand. No CIS-region victims are documented, but no explicit CIS exclusion has been confirmed either.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Size &amp; Notable Names</div>
+        <p>Targeting focuses on mid-size and large organizations (healthcare providers, real-estate firms, energy/telecom, agriculture). There is no evidence of consumer targeting. The most prominent named victim to date is <strong>Royal Bahrain Hospital</strong>, a 70-bed private facility, listed 15 March 2026 with 110 GB claimed stolen and a 23 March publication deadline. The group's low overall count and recency mean few brand-name enterprises have been named so far.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 7: LAW ENFORCEMENT -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement &amp; Regulatory Response</h2>
+      </div>
+      <div class="conf conf-confirmed">Confirmed: no public law-enforcement or regulatory action against Payload as of June 2026</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Action type</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Indictments / arrests</td><td>None. No named suspects in any jurisdiction.</td></tr>
+            <tr><td>OFAC / EU / UK sanctions</td><td>None. No designated individuals or wallets.</td></tr>
+            <tr><td>Infrastructure seizures</td><td>None. No reported takedown of Payload Tor infrastructure.</td></tr>
+            <tr><td>Joint operations</td><td>None. Payload has not featured in named Europol/FBI operations.</td></tr>
+            <tr><td>Informants / cooperators</td><td>None reported.</td></tr>
+            <tr><td>Decryptor availability</td><td>None. Not listed on No More Ransom; no vendor decryptor.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The absence of action is consistent with the group's very short operational history (roughly four months as of June 2026) rather than evidence of protection or resilience. There is no public information about insiders, flipped affiliates, or cooperating witnesses.</p>
+    </section>
+
+    <!-- SECTION 8: STATE NEXUS -->
+    <section class="section" id="state">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution &amp; State Nexus</h2>
+      </div>
+      <div class="conf conf-inference">Assessment: financially motivated criminal actor; state nexus unestablished (low confidence either way)</div>
+      <ul class="content-list">
+        <li><strong>No state attribution:</strong> no public reporting ties Payload to Russian or other state intelligence services (FSB, SVR, GRU).</li>
+        <li><strong>TTPs are not uniquely state-like:</strong> ETW patching, strong cryptography, and ADS cleanup are consistent with high-end financially motivated crews, not evidence of tasking.</li>
+        <li><strong>CIS behavior:</strong> no documented CIS kill switch or locale check. The usual Russia-safe-harbor pattern is not present in the available analysis, which actually weakens the typical Russian-nexus inference.</li>
+        <li><strong>Heritage hint only:</strong> Babuk code heritage is consistent with Eastern European origin, but heritage is not attribution and the code came from a public leak.</li>
+        <li><strong>Safe harbor:</strong> no public evidence of safe-harbor arrangements, non-prosecution, or intelligence-sharing relationships.</li>
+      </ul>
+      <div class="callout callout-alert">
+        <strong>Bottom line:</strong> treat Payload as a financially motivated criminal group with no confirmed state sponsorship or tasking. Any claim of direct state nexus would be low confidence on current evidence.
+      </div>
+    </section>
+
+    <!-- SECTION 9: CLUSTER & TRAJECTORY -->
+    <section class="section" id="status">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Connected Cluster &amp; Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Babuk-Derivative Cluster (two-tier confidence)</div>
+        <p>Payload sits inside a documented Babuk-derivative family. The ClamAV signature Win.Ransomware.Babuk-10032520-1 matches 154 samples across eight operations sharing the leaked codebase: RAWorld (143), Babuk original (4), Nitrogen (2), Payload (1), plus SchoolBoy, Neshta, and Cylan.</p>
+        <div class="conf-block confirmed" style="margin-bottom:12px">
+          <strong>CONFIRMED (anchor : shared-codebase relationship):</strong> Payload shares the leaked Babuk codebase with the cluster above, established by direct binary comparison and AV signature matching.
+        </div>
+        <div class="conf-block inference">
+          <strong>NOT ESTABLISHED (extension : shared-operator relationship):</strong> no open-source evidence ties Payload's operators, infrastructure (onion domains, servers), or affiliate roster to RAWorld, Nitrogen, or any other cluster member via TLS fingerprinting, hosting overlap, shared negotiation playbooks, or wallet clustering. Shared code does not imply shared operators. Neither Mandiant nor Recorded Future has published a formal cluster assessment for Payload.
+        </div>
+        <p>Current trackers (Ransomware.live, WatchGuard, SOC Prime) all treat Payload as an independent entry, acknowledging code heritage without merging it with Babuk or other families.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Stability &amp; Trajectory Signals</div>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">Observation window</div>
+            <div class="metric-val">~4 mo</div>
+            <div class="metric-note">Feb to Jun 2026</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Internal strife</div>
+            <div class="metric-val">None</div>
+            <div class="metric-note">No chat leaks or disputes</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Rebranding</div>
+            <div class="metric-val">None</div>
+            <div class="metric-note">Payload is itself the new derivative</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Capability baseline</div>
+            <div class="metric-val">Mature</div>
+            <div class="metric-note">Strong crypto + anti-forensics from day one</div>
+          </div>
+        </div>
+        <div class="conf conf-inference" style="margin-top:8px">Analyst inference: active and growing, but the window is too short for a firm volume trend</div>
+        <p>Payload ramped quickly from inception to roughly a dozen victims in its first month, reaching 16 or more by late March and remaining active through June 2026. It integrated strong crypto, ETW patching, ADS self-deletion, and partial encryption from the outset, indicating a relatively mature technical baseline, and ships Linux/ESXi variants with multi-platform YARA coverage, suggesting ongoing development. With no seizures or arrests reported, the group appears operationally intact, though its short history makes longer-term trajectory (rising versus plateauing) unclear.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>Initial access and intrusion ecosystem (access brokers, phishing kits, specific CVEs).</li>
+          <li>Negotiation and ransom-demand patterns; payment amounts.</li>
+          <li>Cryptocurrency types, wallet infrastructure, and laundering pathways.</li>
+          <li>Geographic base, language indicators, and any law-enforcement interest.</li>
+          <li>Whether the differing per-build operator keys reflect multiple affiliates or a single operator running separate campaigns.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Recent Reporting <span class="live-badge" style="font-size:10px;vertical-align:middle;">LIVE</span></h2>
+      </div>
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:4px;">
+        Open-source reporting from monitored threat-intelligence sources. Refreshed automatically via ransomware.live and major TI feeds when data files are present. Authored analysis above is unaffected by this feed.
+      </p>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? 'Hide sources' : 'Show all sources'">Show all sources</button>
+      <div class="source-list">
+        <div class="source-category">Primary Technical Analysis</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>Derp.ca (Kirk): Payload ransomware group, mutex MakeAmericaGreatAgain (full static analysis, 15 Mar 2026) &ndash; <a href="https://www.derp.ca/research/payload-ransomware-babuk-derivative/" target="_blank">derp.ca</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>SOC Prime: Payload Ransomware In-Depth Technical Analysis &ndash; <a href="https://socprime.com/active-threats/payload-ransomware-in-depth-technical-analysis/" target="_blank">socprime.com</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>Cyber Security News: New Payload Ransomware Uses Babuk-Style Encryption (17 Mar 2026) &ndash; <a href="https://cybersecuritynews.com/new-payload-ransomware-uses-babuk-style-encryption/" target="_blank">cybersecuritynews.com</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>GBHackers: Payload ransomware hits Windows and ESXi with Babuk-style encryption (17 Mar 2026) &ndash; <a href="https://gbhackers.com/payload-ransomware/" target="_blank">gbhackers.com</a></span></div>
+        <div class="source-category">Trackers &amp; Victim Data</div>
+        <div class="source-item"><span class="source-num">[5]</span><span>Ransomware.live: Payload group profile &ndash; <a href="https://www.ransomware.live/group/payload" target="_blank">ransomware.live</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>WatchGuard Ransomware Tracker: Payload &ndash; <a href="https://www.watchguard.com/wgrd-security-hub/ransomware-tracker/payload" target="_blank">watchguard.com</a></span></div>
+        <div class="source-category">Named Victim (Royal Bahrain Hospital)</div>
+        <div class="source-item"><span class="source-num">[7]</span><span>Security Affairs (Paganini): Payload Ransomware claims the hack of Royal Bahrain Hospital (15 Mar 2026) &ndash; <a href="https://securityaffairs.com/189467/cyber-crime/payload-ransomware-claims-the-hack-of-royal-bahrain-hospital.html" target="_blank">securityaffairs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>SC Media: Payload ransomware claims breach of Royal Bahrain Hospital &ndash; <a href="https://www.scworld.com/brief/payload-ransomware-claims-breach-of-royal-bahrain-hospital-threatens-data-leak" target="_blank">scworld.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>UpGuard: Payload Claims Data Breach on Royal Bahrain Hospital (17 Mar 2026) &ndash; <a href="https://www.upguard.com/news/royal-bahrain-hospital-data-breach-2026-03-17" target="_blank">upguard.com</a></span></div>
+        <div class="source-category">Detection Content</div>
+        <div class="source-item"><span class="source-num">[10]</span><span>YARA rules (Windows + Linux/ESXi), Kirk/Derp &ndash; <a href="https://github.com/kirkderp/yara" target="_blank">github.com/kirkderp/yara</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>No More Ransom (decryptor availability check, accessed Jun 2026) &ndash; <a href="https://www.nomoreransom.org/" target="_blank">nomoreransom.org</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled <span id="footer-last-updated">June 2026</span> &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DARK MODE
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// LIVE DATA LOADER (degrades gracefully if data files are absent)
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'payload.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-payload.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const countries = new Set(victims.map(v => v.country).filter(Boolean));
+        if (countries.size > 0) {
+          const cel = document.getElementById('kpi-country-count');
+          if (cel) cel.textContent = countries.size + '+';
+        }
+        const sorted = [...victims]
+          .filter(v => v.published || v.date || v.discovered || v.attackdate)
+          .sort((a, b) => new Date(b.published || b.date || b.discovered) - new Date(a.published || a.date || a.discovered))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.published || v.date || v.discovered || v.attackdate;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.post_title || v.victim || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now'
+          : diffH === 1 ? 'Intelligence data refreshed 1h ago'
+          : diffH < 24 ? `Intelligence data refreshed ${diffH}h ago`
+          : `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        document.getElementById('topbar-refresh-label').textContent = label;
+        document.getElementById('topbar-live').style.display = 'flex';
+        const subLabel = 'Via ransomware.live, ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const vs = document.getElementById('kpi-victim-sub');
+        const cs = document.getElementById('kpi-country-sub');
+        if (vs) vs.textContent = subLabel;
+        if (cs) cs.textContent = subLabel;
+        const dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        const hlu = document.getElementById('hero-last-updated');
+        const flu = document.getElementById('footer-last-updated');
+        if (hlu) hlu.textContent = dateLabel;
+        if (flu) flu.textContent = dateLabel;
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') + `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting feed connected. Add data/ti-feed-payload.json to populate this section.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+
+// Scroll spy
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
