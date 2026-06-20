@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapira (Rapira Group LLC): Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* STATUS BADGES */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-active     { background: #0d2b1a; color: #3fb950; border-color: #1a4731; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* HERO MODULE */
+.hero-module {
+  background: linear-gradient(135deg, #1a1208 0%, #1c1228 100%);
+  border: 1px solid #5a3a15; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-orange); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 240px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 62%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+.op-tag-gap { background: #2d2400; color: #e3b341; border: 1px solid #6b5600; }
+
+/* SECTION HEADERS */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* CONFIDENCE BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* KPI / ATTRIBUTE TABLES */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CONTENT TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* TIMELINE */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* CITATION */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* WALLET ADDRESSES */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* GAP FLAGS */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "\25C6 GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* GALLERY */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+.img-source { font-size: 10px; color: var(--text-muted); }
+
+/* SOURCES */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* TIER LABELS */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">Rapira</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-sanctioned">Sanctioned</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Tracked Exchanges</div>
+  <ul class="sidebar-nav">
+    <li><a href="garantex.html">Garantex / Grinex</a></li>
+    <li><a href="cryptex.html">Cryptex / PM2BTC</a></li>
+    <li><a href="exmo.html">EXMO</a></li>
+    <li><span style="font-weight:700">Rapira</span></li>
+    <li><a href="bitpapa.html">Bitpapa</a></li>
+    <li><a href="abcex.html">ABCeX</a></li>
+    <li><a href="audia6.html">AudiA6 / Dark2Web</a></li>
+    <li><a href="post-garantex-network.html">Post-Garantex Network</a></li>
+  </ul>
+  
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Status</span><span class="value" style="color:var(--accent-orange)">Sanctioned (UK); liquidating</span></div>
+    <div class="sidebar-meta-row"><span class="label">UK designation</span><span class="value">26 May 2026 (RUS3605)</span></div>
+    <div class="sidebar-meta-row"><span class="label">OFAC designation</span><span class="value">None</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">Tolerated Safe Harbor</span></div>
+    <div class="sidebar-meta-row"><span class="label">Operator location</span><span class="value">Moscow (assessed)</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : NAMED INDIVIDUALS, NONE INDIVIDUALLY SANCTIONED -->
+<div class="hero-module">
+  <div class="hero-label">&#9888; Named Operators, Nominee Structure : Hero Module</div>
+  <div class="hero-title">Rapira Group LLC is the designated entity (UK FCDO, 26 May 2026, RUS3605). Three individuals are named in open records, but none is individually sanctioned or indicted. The Georgian Ministry of Finance assesses the company was registered "by proxy" by a British national who served as a nominee, with the true operational nexus in Moscow. The controlling beneficial owners behind that nominee structure are unidentified, the profile's central intelligence gap.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Ilyas Ahaev / Ilias Ahaevi</div>
+      <div class="op-alias">Director, 100% owner, and liquidator of Rapira Group LLC</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">British</span></div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Registered owner; assessed nominee / proxy</span></div>
+      <div class="op-row"><span class="k">Georgian reg.</span><span class="v">Rapira Group LLC, 412771852</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; covered by entity designation (director disqualification)</span></div>
+      <div class="op-row"><span class="k">Location</span><span class="v">Unknown; not confirmed in Georgia or Russia</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (registry); proxy assessment CREDIBLE (Georgian MoF)</span></div>
+      <span class="op-tag op-tag-sanctioned">Entity Designated</span>
+      <span class="op-tag op-tag-gap">Assessed Nominee</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Gashim Guseinov</div>
+      <div class="op-alias">Director, Rapira Group Ltd (UK, Liverpool)</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian; resident UK</span></div>
+      <div class="op-row"><span class="k">DOB</span><span class="v">November 1984</span></div>
+      <div class="op-row"><span class="k">Entity</span><span class="v">Rapira Group Ltd, Co. No. 16618607</span></div>
+      <div class="op-row"><span class="k">Caveat</span><span class="v">UK entity SIC codes are construction/plumbing, not financial services; crypto link is inference, not confirmed</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; not individually sanctioned</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (Companies House); exchange linkage CREDIBLE at best</span></div>
+      <span class="op-tag op-tag-atlarge">Not Individually Sanctioned</span>
+      <span class="op-tag op-tag-gap">Linkage Disputed</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Vagharshak Nersisyan</div>
+      <div class="op-alias">WHOIS registrant, rapira.net</div>
+      <div class="op-row"><span class="k">Role</span><span class="v">Domain registrant (listed "Private Person")</span></div>
+      <div class="op-row"><span class="k">Registrar</span><span class="v">REG.RU LLC (Russia, +7)</span></div>
+      <div class="op-row"><span class="k">Identity</span><span class="v">Not further documented; operational role unknown</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; not sanctioned</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CREDIBLE (single WHOIS source)</span></div>
+      <span class="op-tag op-tag-gap">Identity Gap</span>
+      <span class="op-tag op-tag-atlarge">Single Source</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ============================================== -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Bilateral Volume</div>
+      <div class="kpi-value">&gt;$543M</div>
+      <div class="kpi-sub">With UK-targeted and pre-existing sanctioned network (TRM, May 2026)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Flow With Grinex</div>
+      <div class="kpi-value">$375.6M</div>
+      <div class="kpi-sub">Largest single relationship; began 10 Mar 2025, 3 days post-takedown (TRM)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Rapira&ndash;Grinex (Elliptic)</div>
+      <div class="kpi-value">&gt;$72M</div>
+      <div class="kpi-sub">Direct flows, Elliptic Feb 2026 (different method / window)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Huobi Inflow Growth</div>
+      <div class="kpi-value">$30M&rarr;$184M</div>
+      <div class="kpi-sub">Huobi flows to Rapira, pre vs post Garantex takedown (TRM)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">UK Designation</div>
+      <div class="kpi-value">26 May 2026</div>
+      <div class="kpi-sub">RUS3605; first Reg. 17A application to crypto exchanges</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">OFAC Designation</div>
+      <div class="kpi-value">None</div>
+      <div class="kpi-sub">Not designated by the US as of June 2026</div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Overall Assessment</div>
+    Rapira (Rapira Group LLC) is a Russia-oriented crypto-fiat exchange launched in late 2022, nominally incorporated in Georgia but assessed by Georgian, UK, and blockchain-analytics authorities as having no genuine Georgian presence. It became a primary absorber of volume displaced by the March 2025 Garantex takedown: TRM attributes more than $543 million in bilateral flows with the sanctioned Russia-linked network, including $375.6 million with Garantex's successor Grinex.io, a relationship that began on 10 March 2025, three days after the Garantex disruption. The UK designated Rapira Group LLC on 26 May 2026 (RUS3605) within the 18-entity A7 network package, the first application of UK Regulation 17A to cryptoasset exchanges. The exchange entered Georgian liquidation on 13 May 2026, and its Moscow offices were raided by Russian security forces in September 2025 in a capital-flight investigation. As of June 2026 it is not OFAC-designated, and infrastructure across five domains remains partially accessible. State nexus is assessed at TOLERATED SAFE HARBOR, with documented indicators pointing toward PROBABLE COOPERATION. Note two corrections to the source draft: (1) the UK entity Rapira Group Ltd (Liverpool) lists construction and plumbing as its registered activities, not financial services, which materially weakens the inference that it is a deliberate crypto-exchange shell; (2) the UK package imposes five measures, including a Trust Services Sanction not captured in the draft.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Service type</td><td>Russia-focused crypto-fiat exchange: order-book spot, zero-commission P2P desk, physical cash desks, OTC/merchant rails; ruble-to-crypto on/off ramp</td></tr>
+      <tr><td>Legal entity</td><td>Rapira Group LLC <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO RUS3605; Georgian registry]</span></td></tr>
+      <tr><td>Aliases / branding</td><td>Rapira; @rapira.team (Instagram); domains rapira.net / .io / .org / rapira24.ru / rapiras.ru</td></tr>
+      <tr><td>Entity registration jurisdiction</td><td>Georgia: registration code 412771852, registered 9 Nov 2022; assessed by Georgian MoF as purely formal (no assets, accounts, or offices) <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Russia: rapira.net via Russian registrar REG.RU; Moscow City offices. Secondary UK shell (Rapira Group Ltd, Liverpool) of disputed relevance <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Assessed operator location</td><td>Moscow, Russia (Moscow City offices; Russian-language interface; RUB-only fiat) <span class="badge badge-credible">Credible</span>. Controlling beneficial owners behind the nominee structure unidentified <span class="badge badge-inference">Analyst Inference</span></td></tr>
+      <tr><td>Operational period</td><td>Domain created 16 Sep 2022; corporate registration 9 Nov 2022; active through Garantex-successor surge (Mar 2025); Georgian liquidation 13 May 2026; infrastructure partially live June 2026</td></tr>
+      <tr><td>Volume (bilateral)</td><td>TRM: &gt;$543M total bilateral, $375.6M with Grinex (May 2026). Elliptic: &gt;$72M Rapira&ndash;Grinex direct (Feb 2026). Figures use different methods and windows; presented separately, not averaged <span class="badge badge-confirmed">Confirmed</span> (metrics); <span class="badge badge-single">Single Source</span> each</td></tr>
+      <tr><td>Geographic footprint</td><td>Russia-centric: Russian-language only, RUB-only fiat, offices in Moscow, Kazan, Rostov-on-Don, Yekaterinburg; exclusively Russian clientele per Georgian MoF</td></tr>
+      <tr><td>UK designation</td><td>Designated 26 May 2026, Russia (Sanctions) (EU Exit) Regulations 2019, RUS3605; asset freeze plus four further measures <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO]</span></td></tr>
+      <tr><td>OFAC designation</td><td>None as of June 2026 <span class="badge badge-confirmed">Confirmed</span> (negative evidence)</td></tr>
+      <tr><td>EU designation</td><td>No entity-specific Rapira listing. EU 20th package (adopted 23 Apr 2026; crypto measures from 24 May 2026) bans EU transactions with Russian CASPs broadly <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Designated digital address</td><td><span class="wallet-addr">bc1q72ud4m6zf5g37jkhc2ty95zm5vel9ufdxquqpm</span> (Bitcoin Bech32; UK RUS3605) <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>State nexus tier</td><td>TOLERATED SAFE HARBOR; documented indicators toward PROBABLE COOPERATION; no DIRECT CONTROL evidence</td></tr>
+      <tr><td>Status</td><td>Sanctioned (UK); in Georgian liquidation; infrastructure partially operational; no named successor brand observed</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>TRM Labs (bilateral figures, May 2026); Elliptic (entity-specific, Feb 2026, updated Mar 2026); Chainalysis (A7 package coverage, May 2026)</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://www.elliptic.co/hs-fs/hubfs/rapira.png?width=700&amp;height=517&amp;name=rapira.png"
+           alt="Elliptic graph: direct interactions between Rapira and sanctioned or high-risk Russia-linked entities"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Rapira Counterparty Flow Graph</div>
+        <div class="cap-source"><span class="img-source">Elliptic, 2026. Direct interactions between Rapira and sanctioned or high-risk Russia-linked entities.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c542b33fe189ca9e3d9_v2-pre-vs-post-garantex.png"
+           alt="TRM Labs chart: flows to Garantex-successor exchanges before and after the March 2025 takedown"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Post-Garantex Ecosystem Flows</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Flows to Garantex-successor exchanges (Rapira among them) before and after the 7 March 2025 takedown.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c8591cf78a405a225fc_v1-huobi-annual-flows.png"
+           alt="TRM Labs chart: Huobi outgoing flows to UK-designated and A7-network Russian entities by year"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">A7 / Successor Network Context</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Yearly flows into the UK-designated and A7-network set in which Rapira was co-designated on 26 May 2026.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.elliptic.co/hs-fs/hubfs/79_Blockchain-intelligence-is-the-highway_720x380-1.png?width=1000&amp;name=79_Blockchain-intelligence-is-the-highway_720x380-1.png"
+           alt="Elliptic report header: Russia-linked cryptocurrency services and sanctions evasion"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Russia-Linked Services Report</div>
+        <div class="cap-source"><span class="img-source">Elliptic, Feb 2026 (updated Mar 2026). Report naming Rapira among Russia-linked sanctions-evasion exchanges.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ============================================== -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>No Direct Predecessor; Garantex-Successor Absorber by Function</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    Rapira has no direct predecessor exchange. It was purpose-built in late 2022 for the Russian retail crypto-fiat market. Its lineage significance is functional, not corporate: it was one of two primary venues (alongside ABCeX) that TRM identified as absorbing volume after the 7 March 2025 Garantex takedown. Its $375.6 million relationship with Garantex's successor Grinex began on 10 March 2025, three days after the disruption, indicating a rapid, deliberate capacity build-up rather than incidental overlap. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM Labs, May 2026]</span>
+  </div>
+
+  <h4>Evidentiary Pillars</h4>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Pillar</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>No corporate predecessor</strong></td>
+          <td>No source identifies a prior brand Rapira rebranded from. Domain rapira.net created 16 Sep 2022; Georgian entity registered 9 Nov 2022, with the domain preceding registration by roughly seven weeks.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">WHOIS; Georgian registry; negative evidence</span></td>
+        </tr>
+        <tr>
+          <td><strong>Garantex / Grinex succession context</strong></td>
+          <td>Garantex (OFAC 2022, disrupted Mar 2025) reconstituted as Grinex using the same on-chain fingerprint (TRM). Rapira absorbed displaced volume; TRM noted Rapira's volume "continued to grow" into April 2025 even as ABCeX dropped off.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM Labs</span></td>
+        </tr>
+        <tr>
+          <td><strong>A7 network membership</strong></td>
+          <td>UK designation places Rapira within the A7 network, a centrally coordinated sanctions-evasion architecture the UK says moved over $90 billion in the prior year. TRM positions Rapira among the successor-exchange set (Rapira, Aifory Pro, Grinex.io, ABCex, A7, A7A5/Old Vector).</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">UK FCDO; TRM Labs</span></td>
+        </tr>
+        <tr>
+          <td><strong>No shared codebase / white-label evidence</strong></td>
+          <td>No open report states Rapira runs a shared or white-labeled codebase with Garantex/Grinex or other peers. Software-level lineage is unknown.</td>
+          <td><span class="tier-inference">UNKNOWN</span><br><span style="font-size:11px;color:var(--text-muted)">Negative evidence; investigative gap</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operator Profiles</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Ilyas Ahaev (Ilias Ahaevi), British national:</strong> director and 100% owner of Rapira Group LLC (Georgian reg. 412771852), and liquidator as of May 2026. The Georgian Ministry of Finance assesses the company was "registered in Georgia formally, by proxy, by a British citizen," a nominee/power-of-attorney structure designed to establish legal presence without actual presence. Assessed location unknown; no indictment or arrest. The entity designation applies a director disqualification measure to Ahaev in his directorial capacity, but he is not individually SDN-listed. <span class="cite">[Georgian MoF; Caucasus Watch; UK FCDO]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> <strong>Gashim Guseinov, Russian national resident in the UK (DOB Nov 1984):</strong> sole director and Person with Significant Control of Rapira Group Ltd (UK Companies House no. 16618607), incorporated in Liverpool on 31 July 2025 at 73 Sheil Road. <span class="badge badge-single">Single Source</span> Correction to the source draft: Companies House records list this entity's registered activities as electrical installation, plumbing/heat/air-conditioning, and other specialised construction, not financial services. The inference that the UK entity is a deliberate pre-positioned crypto-exchange shell is therefore weaker than the draft implies; the name match may be coincidental or the entity may be a separate nominee vehicle. Treat any Rapira-exchange linkage as CREDIBLE at best, not confirmed. <span class="cite">[Companies House; Endole]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> <strong>Vagharshak Nersisyan:</strong> WHOIS registrant for rapira.net as of mid-2025, listed as "Private Person," registered via Russian registrar REG.RU (+7). The Russian registrar corroborates the assessment that the platform's true operational nexus is Russia despite Georgian registration. Identity and operational role not further documented. <span class="badge badge-single">Single Source</span> <span class="cite">[WHOIS / Gridinsoft]</span></p>
+
+  <div class="gap-flag">No publicly documented founders, technical leads, compliance officers, or controlling beneficial owners have been identified beyond the three named individuals above. The identity of whoever directs the nominee structure is the profile's primary attribution gap.</div>
+
+  <h3>Disputed Assessments</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> The source draft treats the Liverpool entity's July 2025 incorporation (weeks before the September 2025 Moscow raids and months before the UK designation) as evidence of deliberate infrastructure migration in anticipation of regulatory pressure. Given the construction SIC codes and the absence of any financial-services registration, this timing inference is unresolved: it is equally consistent with an unrelated company or a nominee vehicle with no exchange function. Flagged as a single-source inference, not a finding. <span class="cite">[Analyst assessment]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ============================================== -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics and Product Set</h3>
+  <p><span class="badge badge-credible">Credible</span> Rapira operates a multi-channel Russian-market exchange: order-book spot trading in crypto-crypto and crypto-RUB pairs (BTC, ETH, USDT, TON); a zero-commission P2P desk supporting banks, payment systems, and physical cash; physical cash desks in Moscow (Moscow City / Federation area), Kazan, Rostov-on-Don, and Yekaterinburg with cash transactions reportedly from roughly 10,000 RUB, available 24/7; and an OTC/merchant component advertising "crypto merchant, auto-conversion and auto-payments." A documented API (rapira.apidog.io) indicates B2B/automated-trading infrastructure. <span class="cite">[rapira.io; review sources; cdn.rapira.net]</span></p>
+
+  <h3>KYC/AML Posture: Stated Policy vs Observed Behavior</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Stated Policy vs Observed Behavior (Schema Rule)</div>
+    <strong>Stated policy:</strong> Rapira markets an in-house AML address-screening tool at rapira.net/aml ("conduct analysis of addresses and transactions in the blockchain for connections with illegal activity"), implying compliance capability. Basic registration reportedly requires email plus identity-document submission. <span class="badge badge-credible">Credible</span> (from the exchange's own claims)<br><br>
+    <strong>Observed behavior (sourced to LE/intelligence framing, not the exchange's claims):</strong> Ukrainian sanctions intelligence states Rapira "allows cryptocurrency exchange without mandatory verification" and "actively uses P2P and cash transactions." A non-KYC withdrawal threshold of roughly $10,000/day was documented in a 2023&ndash;2024 review, calibrated below standard Travel Rule triggers. No Travel Rule compliance, transaction-monitoring alerts, or enhanced due diligence is documented. The clearest observed failure is the acceptance of $72M&ndash;$375.6M (Elliptic / TRM) in flows with Grinex, a publicly flagged Garantex continuation, without documented EDD. The gap between a self-marketed AML tool and observed high-risk counterparty acceptance is the primary analytical finding. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Ukrinform/Vlasiuk; Elliptic; TRM]</span>
+  </div>
+  <div class="gap-flag">No public law-enforcement charging document detailing specific Rapira KYC/AML thresholds, Travel Rule non-compliance, or monitoring gaps. The UK designation is administrative; its underlying evidentiary file is not public.</div>
+
+  <h3>Fiat Rails (Schema Rule: Must Be Addressed)</h3>
+  <p><span class="badge badge-credible">Credible</span> <strong>Bank relationships:</strong> Per Ukrainian sanctions intelligence, Rapira integrated payment rails to OFAC-sanctioned Russian banks including Sberbank, VTB, Gazprombank, and Promsvyazbank, enabling direct card/transfer on-ramps for Russian retail users. These integrations are sourced to Ukrainian intelligence (Vlasiuk / Ukrinform), not to a primary OFAC or charging document, so the specific bank list carries single-strong-source confidence. <span class="badge badge-single">Single Source</span> <span class="cite">[Ukrinform; MenaFN]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Cash desk:</strong> Physical Moscow City offices accepted and dispensed cash; the September 2025 raids seized more than $10 million, 100 million rubles, and 200,000 euros at exchange offices in the Moscow City area, with Rapira and Mosca the primary targets. <strong>P2P:</strong> the P2P desk enables informal buyer-seller matching outside standard banking rails; no documented bank partner for P2P settlement. <strong>De-risking:</strong> after the September 2025 raids, withdrawals were suspended while the app remained operational; Belarus-based Cifra Markets terminated operations with Rapira post-UK designation. <span class="cite">[Cryptopolitan; Binance Square; RBC]</span></p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Rapira advertises license "&#8470;0110/587, Financial Service &amp; Crypto Exchange." Georgian MoF investigators and independent review sources confirm this license corresponds to no recognized Georgian regulatory body, the stated regulator does not exist, and the company was not found in the registry of the National Bank of Georgia. The Georgian registration (412771852) is confirmed but assessed as purely formal, with no actual activity in Georgia. There is no Central Bank of Russia license and no FATF-aligned licensing in any documented jurisdiction. <span class="cite">[Georgian MoF; review sources]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 04 : TECHNICAL -->
+<!-- ============================================== -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domain Portfolio</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Domain</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>rapira.net</strong></td><td>REG.RU LLC (Russian registrar); created 16 Sep 2022; registrant Vagharshak Nersisyan</td></tr>
+        <tr><td><strong>rapira.io</strong></td><td>Active as of June 2026; listed in UK designation</td></tr>
+        <tr><td><strong>rapira.org</strong></td><td>Listed in UK designation; contact mail@rapira.org</td></tr>
+        <tr><td><strong>rapira24.ru</strong></td><td>Russian ccTLD; listed in UK designation</td></tr>
+        <tr><td><strong>rapiras.ru</strong></td><td>Russian ccTLD; listed in UK designation</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><span class="badge badge-confirmed">Confirmed</span> Support emails support@rapira.net, support@rapira.org, mail@rapira.org. The presence of two Russian ccTLD domains alongside the .net/.io/.org portfolio is structurally consistent with a Russia-primary operation maintaining offshore domain coverage for resilience. <span class="cite">[OpenSanctions; UK designation]</span></p>
+
+  <h3>Apps, API, and Channels</h3>
+  <p><span class="badge badge-credible">Credible</span> Rapira's Instagram (@rapira.team) references a mobile platform and app-based services. A documented API (rapira.apidog.io) supports automated order placement. No app-store removal event is documented as of June 2026, though the UK Internet Services Sanction may trigger removal requests for UK users. A Telegram presence is consistent with Russian-market norm but no specific channel identifier was documented. <span class="badge badge-single">Single Source</span> (Instagram only on social footprint) <span class="cite">[Instagram; rapira.apidog.io]</span></p>
+
+  <h3>Platform Architecture</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> No independent documentation of white-label versus proprietary architecture, cold/hot wallet structure, or blockchain node configuration was found. The in-house AML tool (rapira.net/aml) suggests some internal blockchain-analysis capability, but its depth is unverified. <span class="cite">[Inference from platform materials]</span></p>
+
+  <h3>Designated Bitcoin Address</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The UK designation (RUS3605) lists one designated digital address: <span class="wallet-addr">bc1q72ud4m6zf5g37jkhc2ty95zm5vel9ufdxquqpm</span> (Bitcoin Bech32/SegWit). Any VASP or compliance team encountering this address should treat it as a designated-entity address subject to UK asset-freeze obligations and as a high-risk indicator elsewhere. No OFAC-designated Rapira wallet addresses exist. <span class="cite">[UK FCDO RUS3605]</span></p>
+
+  <h3>Resilience After Disruption</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Following the 26 May 2026 UK designation, rapira.io remained accessible. The five-domain portfolio provides resilience: if one domain is blocked or removed, others remain. The UK Internet Services Sanction requires UK-facing ISPs and app stores to take "reasonable steps" to block access, which does not produce immediate global domain takedown. No customer-migration messaging following the designation has been documented. <span class="cite">[rapira.io; OpenSanctions]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ============================================== -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Volume (Cite Source and Methodology; Do Not Average)</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Volume Sourcing (Schema Rule)</div>
+    <strong>TRM Labs (May 2026):</strong> &gt;$543M total bilateral with the UK-targeted and pre-existing sanctioned Russian network; $375.6M with Grinex.io (largest single relationship), beginning 10 March 2025, three days after Garantex's 7 March 2025 takedown.<br>
+    <strong>TRM Labs (May 2026):</strong> Huobi (HTX) flows to Rapira grew from $30M (26 months pre-takedown) to $184M (14 months post-takedown).<br>
+    <strong>Elliptic (Feb 2026, updated Mar 2026):</strong> &gt;$72M in direct Rapira&ndash;Grinex flows.<br>
+    <strong>ABCeX &rarr; Rapira (TRM):</strong> $38.1M. <strong>Aifory Pro &harr; Rapira (TRM):</strong> $2.9M.<br>
+    These figures cover different windows and wallet-cluster thresholds and are presented separately, not combined or averaged.
+  </div>
+
+  <h3>Three-Phase On-Chain Flow (Rapira as Node)</h3>
+  <h4>Phase 1: Receipt</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> Primary inbound counterparty is Grinex ($375.6M TRM / $72M+ Elliptic). ABCeX sent $38.1M to Rapira (TRM); ABCeX is tied to Garantex co-founder Sergey Mendeleev and was Garantex's third-largest on-chain counterparty. Huobi/HTX is a persistent upstream source ($184M post-takedown). Indirect receipt via fiat on-ramps through sanctioned Russian banks is credible (Ukrainian intelligence). <span class="badge badge-credible">Credible</span> Ransomware/darknet receipt is inferential: no Rapira-specific actor-level attribution has been published by TRM, Elliptic, or Chainalysis; the inference rests on Grinex/Garantex's documented clientele and Rapira's role as a primary Grinex counterparty. <span class="cite">[TRM; Elliptic]</span></p>
+
+  <h4>Phase 2: Layering</h4>
+  <p><span class="badge badge-credible">Credible</span> RUB-to-crypto conversion via spot and P2P; funds enter USDT (TRON/Ethereum) and BTC. <span class="badge badge-single">Single Source</span> <span class="badge badge-inference">Analyst Inference</span> Whether Rapira's specific flows transited the A7A5 ruble-pegged stablecoin (a primary network layering instrument; the UK cites A7A5 processing $9.3 billion in four months) versus standard stablecoin forms is not documented at the Rapira-cluster level. No mixing, chain-hopping, or coinjoin specific to Rapira wallet clusters is documented in reviewed reports. <span class="cite">[TRM; UK FCDO]</span></p>
+
+  <h4>Phase 3: Extraction</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> Cash desks provided direct cash-out (estimated $10M+ in cash seized September 2025); the P2P desk enables OTC cash conversion. The Russian capital-flight investigation premise was that funds were moved to Dubai via crypto channels; Rapira denied a direct Dubai link, and the matter remained a procedural check (no criminal case opened as of late-2025 reporting). No specific downstream receiving exchange for Rapira-originating flows is documented. <span class="cite">[Cryptopolitan; RBC; Binance Square]</span></p>
+
+  <h3>Designated Addresses and Sanctions Summary</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Action</th><th>Date / Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UK FCDO (RUS3605)</strong></td><td>Asset freeze; Reg. 17A correspondent banking/payment ban; Internet Services; Director Disqualification; Trust Services. Designated BTC address bc1q72ud4m6zf5g37jkhc2ty95zm5vel9ufdxquqpm</td><td>26 May 2026; active</td></tr>
+        <tr><td><strong>OFAC</strong></td><td>No designation</td><td>Not designated as of June 2026</td></tr>
+        <tr><td><strong>EU</strong></td><td>No entity-specific Rapira listing; 20th package bans EU transactions with Russian CASPs broadly (A7A5/RUBx/digital ruble in Annex LIII)</td><td>Adopted 23 Apr 2026; crypto measures from 24 May 2026</td></tr>
+        <tr><td><strong>FATF</strong></td><td>No FATF-specific Rapira listing; Georgia is the registration jurisdiction</td><td>N/A</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ============================================== -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Actor type</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Russia sanctions-evasion entities</strong></td>
+          <td>Direct on-chain flows with Grinex ($72M&ndash;$375.6M); ABCeX $38.1M; Huobi $184M; integration with OFAC-sanctioned Russian banks; UK designation language.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Russian capital flight (individual/corporate)</strong></td>
+          <td>September 2025 Moscow raid context; Dubai-transfer investigation; physical cash-desk operations.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>A7 network participants</strong></td>
+          <td>UK designation places Rapira within the A7 network; TRM positions it in the successor-exchange set.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware proceeds (indirect)</strong></td>
+          <td>Role as primary Grinex counterparty; Garantex/Grinex's documented ransomware clientele (Conti, Black Basta, LockBit, NetWalker, Ryuk). No Rapira-specific ransomware-flow attribution published.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+        <tr>
+          <td><strong>Darknet market proceeds (indirect)</strong></td>
+          <td>Same inferential chain; Garantex served darknet markets as top clients; Rapira inherits the risk profile as a Grinex counterparty. No Rapira-specific DNM attribution published.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+        <tr>
+          <td><strong>Illicit Chinese-trade intermediation</strong></td>
+          <td>Moscow raid investigation referenced crypto payments to Chinese factories for drone/military components; no Rapira-specific attribution to this sub-category.</td>
+          <td><span class="tier-inference">POSSIBLE (INFERENCE)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Geographic Patterns</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> All documented activity is Russia-centric: Russian-language interface, RUB-only fiat, Russian bank integrations, physical offices exclusively in Russia, Russian-registrar domain, and Georgian registration confirmed as purely nominal with exclusively Russian clientele. No documented CIS exclusion or geo-IP restriction. <span class="cite">[Georgian MoF; review sources]</span></p>
+
+  <h3>High-Profile Flows</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> (aggregate) No Rapira-specific, individually named criminal-actor flows with attributed dollar amounts have been published. The $375.6M Grinex flow and $543M total (TRM) are aggregate counterparty-level attribution, not individual actor attribution. This is a documented intelligence gap (Section 10). <span class="cite">[TRM; Elliptic]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ============================================== -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <h3>Jurisdictional Separation (Schema Rule: Three Jurisdictions)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Assessment</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Entity registration</strong></td>
+          <td>Georgia: Rapira Group LLC, reg. 412771852, registered 9 Nov 2022. Assessed by Georgian MoF as purely nominal (no assets, accounts, or offices).</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>2. Infrastructure hosting</strong></td>
+          <td>Russia: rapira.net via Russian registrar REG.RU; Moscow City offices. Secondary UK shell (Rapira Group Ltd, Liverpool) of disputed relevance (construction SIC codes).</td>
+          <td><span class="tier-credible">CREDIBLE</span> (Russia) / <span class="tier-inference">DISPUTED</span> (UK shell)</td>
+        </tr>
+        <tr>
+          <td><strong>3. Assessed operator location</strong></td>
+          <td>Moscow, Russia: Moscow City offices; legal firm Mushailov, Uzdensky, Rybakov &amp; Partners represented owners during the raids. Controlling beneficial owners behind the nominee unidentified.</td>
+          <td><span class="tier-credible">CREDIBLE</span> (Moscow) / <span class="tier-inference">UNKNOWN</span> (beneficial owners)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>State Nexus Tier: TOLERATED SAFE HARBOR (indicators toward PROBABLE COOPERATION)</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">Assessment</div>
+    <strong>Indicators for Tolerated Safe Harbor:</strong> Rapira operated openly in Moscow City for years with RUB-only fiat and explicit Russian-bank integrations, in a jurisdiction where crypto trading sits largely outside the law except for a limited experimental legal regime. The September 2025 raids were framed as a capital-flight and Dubai-transfer investigation (potentially implicating officials), not enforcement against the exchange model itself; both Rapira and Mosca resumed operations within days, inconsistent with genuine enforcement intent.<br><br>
+    <strong>Indicators toward Probable Cooperation:</strong> Rapira began absorbing Garantex/Grinex volume within three days of the March 2025 takedown, suggesting advance knowledge or coordination; integration with state-controlled/linked banks (Sberbank, VTB, Gazprombank, Promsvyazbank) ties it to the state financial sector; and membership in the A7 network (which the UK valued at roughly half of Russia's annual military budget) is implausible at scale without state awareness.<br><br>
+    <strong>Evidence against Direct Control:</strong> no documented state ownership, operational control, or FSB/Rosfinmonitoring officer assignment; deliberate jurisdictional obscuration (Georgian nominal registration, British nominee owner) is inconsistent with a state-operated entity; and Russian security forces did raid Rapira (the state does not typically raid itself).
+  </div>
+
+  <h3>Negative Evidence (Expected if Higher Nexus Existed)</h3>
+  <p>If Rapira were under PROBABLE COOPERATION or DIRECT CONTROL, one would expect documented Rosfinmonitoring or FSB operational links, communications or coordination with Russian intelligence, or explicit state protection signaling. None are present. The September 2025 raid is the strongest single piece of evidence against the higher tiers. The assessment therefore holds at TOLERATED SAFE HARBOR, with the coordination and state-bank-integration indicators logged as escalation signals to monitor. <span class="badge badge-inference">Analyst Inference</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ============================================== -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+  <h3>UK Designation (Primary Action)</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">UK FCDO RUS3605 &mdash; 26 May 2026</div>
+    Designated under the Russia (Sanctions) (EU Exit) Regulations 2019 as an "involved person" for (1) obtaining a benefit from or supporting the Government of Russia by carrying on business in the Russian financial services sector, and (2) being involved in destabilising Ukraine by providing financial services or making available funds/economic resources to persons who do so. First application of Regulation 17A to cryptoasset exchanges. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO; UK Sanctions List]</span>
+  </div>
+  <p><strong>Five measures imposed:</strong> Asset Freeze; Correspondent Banking Sanctions and processing payments (Regulation 17A); Internet Services Sanctions; Director Disqualification Sanction; and Trust Services Sanctions. Designated digital address: <span class="wallet-addr">bc1q72ud4m6zf5g37jkhc2ty95zm5vel9ufdxquqpm</span>. The Regulation 17A measure prohibits UK credit/financial institutions from maintaining correspondent relationships with Rapira and from processing any payment where Rapira appears anywhere in the chain, transforming UK VASP compliance from name-screening to full transaction-chain tracing. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK Sanctions List; Elliptic]</span></p>
+
+  <h3>Sanctions and Enforcement Summary</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Action</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UK (FCDO / OFSI)</strong></td><td>RUS3605, 26 May 2026; five measures; within 18-entity A7/crypto package (incl. Huobi/HTX, Exmo, Bitpapa, Aifory, ABCeX/Nueva Cryptologia).</td><td><span class="tier-confirmed">CONFIRMED</span> (asset freeze in force)</td></tr>
+        <tr><td><strong>Russia (FSB-adjacent)</strong></td><td>September 2025 Moscow City raids; Rapira and Mosca primary targets; cash, hardware, documents seized; capital-flight/Dubai investigation; procedural check, no criminal case as of reporting.</td><td><span class="tier-confirmed">CONFIRMED</span> (raid); operations resumed</td></tr>
+        <tr><td><strong>Georgia (MoF Investigation Service)</strong></td><td>26 May 2026: ongoing investigation; determined Rapira registered formally by proxy by a British citizen, served only Russian citizens, no Georgian financial activity, no assets or offices. Co-designated Georgian entities (Aifory, Arvix/Arvira) produced criminal convictions; no parallel Rapira-specific conviction documented.</td><td><span class="tier-confirmed">CONFIRMED</span></td></tr>
+        <tr><td><strong>OFAC (U.S.)</strong></td><td>No designation of Rapira. OFAC's March 2025 action targeted Garantex; subsequent Russia actions focused on Grinex and stablecoin infrastructure.</td><td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td></tr>
+        <tr><td><strong>EU</strong></td><td>No entity-specific Rapira listing. 20th package (adopted 23 Apr 2026; crypto measures from 24 May 2026) bans EU transactions with Russia-based CASPs broadly.</td><td><span class="tier-confirmed">CONFIRMED</span> (no individual listing)</td></tr>
+        <tr><td><strong>FinCEN / DOJ</strong></td><td>No Section 311 action, advisory, indictment, or criminal complaint naming Rapira located in open sources.</td><td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Timeline</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">16 Sep / 9 Nov 2022</div><div class="timeline-text">rapira.net domain created (16 Sep, REG.RU); Rapira Group LLC registered in Georgia (9 Nov, reg. 412771852). <span class="badge badge-confirmed">Confirmed</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">7 Mar 2025</div><div class="timeline-text">International operation (DOJ, Germany, Finland) disrupts Garantex. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[DOJ; TRM]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">10 Mar 2025</div><div class="timeline-text">Rapira&ndash;Grinex flows begin, three days after the takedown; grow to $375.6M (TRM). Rapira volume "continued to grow" into April. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">31 Jul 2025</div><div class="timeline-text">Rapira Group Ltd incorporated in Liverpool (Co. 16618607; director Gashim Guseinov). Registered activities are construction/plumbing; exchange linkage disputed. <span class="badge badge-credible">Credible</span> <span class="cite">[Companies House]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Sep 2025</div><div class="timeline-text">Russian security forces raid Moscow City crypto offices; Rapira and Mosca primary targets; cash and hardware seized; capital-flight/Dubai investigation. Operations resume within days. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Cryptopolitan; RBC]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot blue"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">21 Feb 2026 (upd. 3 Mar)</div><div class="timeline-text">Elliptic names Rapira: &gt;$72M direct Rapira&ndash;Grinex flows; Moscow office raided over Dubai capital flight. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">13 May 2026</div><div class="timeline-text">Rapira enters Georgian liquidation (Ilyas Ahaev owner and liquidator), two weeks before the UK designation. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Georgian registry; Caucasus Watch]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div></div>
+      <div class="timeline-content"><div class="timeline-date">26 May 2026</div><div class="timeline-text">UK FCDO designates Rapira Group LLC (RUS3605) within the 18-entity A7/crypto package; five measures in force. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO; TRM]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Post-Sanction Reconstitution Assessment (Schema Rule)</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Reconstitution: Pre-Designation Hedging, No Named Successor Yet</div>
+    <strong>Pre-designation hedging:</strong> Rapira entered Georgian liquidation on 13 May 2026, two weeks before the UK action; the Liverpool entity was incorporated in July 2025. The draft reads these as anticipatory pre-positioning. Given the Liverpool entity's construction SIC codes, the liquidation timing is the stronger of the two hedging signals; the UK-shell inference is weak.<br><br>
+    <strong>Post-designation status:</strong> rapira.io remained accessible as of late June 2026; the five-domain portfolio and the non-immediate nature of Internet Services Sanctions sustain access for non-UK users.<br><br>
+    <strong>Displaced-funds trajectory:</strong> No named successor brand or customer-migration message is documented. Given the Garantex&rarr;Grinex precedent and the A7 architecture, displaced Rapira volume would be expected to shift to remaining venues, most of the named A7 set having been co-designated, leaving undesignated lower-profile Russia-market OTC brokers, Telegram-based P2P channels, and the A7A5 stablecoin ecosystem as the most probable near-term absorbers. <span class="badge badge-credible">Credible</span> <span class="cite">[UK FCDO; TRM]</span>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ============================================== -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-label">Two-Tier Model (Applied to Every Entry)</div>
+    <strong>Tier 1, Transaction confidence:</strong> how confident that funds transited Rapira (CONFIRMED / CREDIBLE / ANALYST INFERENCE), backed by on-chain evidence where available.<br>
+    <strong>Tier 2, Facilitation assessment:</strong> an analytical characterization of Rapira's role: Active facilitation, Structural enablement, or Incidental processing. The two tiers are independent and never collapsed.
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Entity</th><th>Tier 1: Transaction confidence</th><th>Tier 2: Facilitation</th><th>Vendor coverage</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Grinex</strong><br><span style="font-size:11px;color:var(--text-muted)">Garantex successor (disrupted/hacked Apr 2026)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">$375.6M (TRM) / $72M+ (Elliptic); flows began 10 Mar 2025, three days post-Grinex launch.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Beginning flows with a newly launched entity carrying Garantex's on-chain fingerprint three days after launch implies a knowing relationship, not incidental processing.</span></td>
+          <td>Corroborating: TRM, Elliptic, Chainalysis. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>A7 network / A7 LLC / A7A5</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated evasion architecture</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">UK designation places Rapira in the A7 network and successor-exchange set; on-chain flows with A7-ecosystem entities documented by TRM.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">RUB-only fiat, no KYC, P2P + cash desk, and sanctioned-bank integrations are structurally designed to enable A7-style ruble-to-crypto conversion at scale. Active facilitation is plausible but the Rapira-specific A7A5 transit is unquantified.</span></td>
+          <td>Corroborating: UK FCDO, TRM, Elliptic. No Rapira-specific A7A5 figure published.</td>
+        </tr>
+        <tr>
+          <td><strong>ABCeX / Nueva Cryptologia</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated Russia-based exchange</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">$38.1M from ABCeX to Rapira (TRM). Both co-designated in the same UK package.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Mutual high-risk counterparty relationship; no evidence of joint operations specific to Rapira.</span></td>
+          <td>Corroborating: TRM; UK FCDO. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Huobi / HTX</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated global exchange</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: Huobi flows to Rapira grew from $30M to $184M pre vs post Garantex takedown.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Large-exchange liquidity source upstream of Rapira; no evidence of direct operator coordination.</span></td>
+          <td>Corroborating: TRM. Huobi/HTX publicly disputes that the sanctioned entity equals its operating brand.</td>
+        </tr>
+        <tr>
+          <td><strong>Aifory Pro</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated ruble-to-crypto onramp</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">TRM: $2.9M bilateral Aifory&harr;Rapira (small relative to Aifory's ABCeX flows).</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Low-value bilateral exposure; no evidence of knowing per-actor coordination at this scale.</span></td>
+          <td>Corroborating: TRM. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Garantex (pre-disruption)</strong><br><span style="font-size:11px;color:var(--text-muted)">OFAC-sanctioned exchange (disrupted Mar 2025)</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">TRM identified Rapira as a primary post-disruption volume absorber; no specific pre-Mar 2025 direct Garantex&rarr;Rapira figure documented.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Absorbed former Garantex customers via Grinex succession; no evidence of knowing pre-disruption coordination with Garantex operators.</span></td>
+          <td>Corroborating: TRM. No direct bilateral figure published.</td>
+        </tr>
+        <tr>
+          <td><strong>Sanctioned Russian banks</strong><br><span style="font-size:11px;color:var(--text-muted)">Sberbank, VTB, Gazprombank, Promsvyazbank</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Ukrainian sanctions intelligence reports integrated payment rails; no primary OFAC or charging-document corroboration. <span class="badge badge-single">Single Source</span></span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Fiat on-ramps through these banks predictably enable Russia-market evasion at scale; from the banks' standpoint, processing is incidental.</span></td>
+          <td>Corroborating: Ukrinform/Vlasiuk. No vendor on-chain confirmation of the specific bank list.</td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware groups (Conti, LockBit, Black Basta, et al.)</strong><br><span style="font-size:11px;color:var(--text-muted)">Via Grinex/Garantex chain</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">No Rapira-specific attribution of named ransomware-actor flows in any published analytics report. <span class="badge badge-single">Single Source</span> on the underlying Garantex clientele claim (ICIJ/virtual-routes).</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">KYC/AML failures predictably enabled processing of funds from actors who previously used Garantex/Grinex; no evidence of knowing coordination with specific groups.</span></td>
+          <td>Corroborating (underlying Garantex clientele): TRM, Elliptic, ICIJ. No Rapira-specific actor attribution published.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ============================================== -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Rapira grew from a minor Russia-market exchange into one of the leading ruble-to-crypto venues absorbing the post-Garantex vacuum. TRM's $543M total bilateral attribution, Huobi inflows growing $30M&rarr;$184M, and Grinex flows beginning within three days of its launch indicate a rapid, deliberate capacity build-up. <span class="cite">[TRM]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    The UK designation is the only formal sanction; it is an administrative asset freeze plus four further measures, not an infrastructure seizure or operator arrest. Its bite is on UK-nexus financial access and counterparty exposure, sharpened by the novel Regulation 17A payment-chain prohibition, which will progressively degrade Rapira's access to compliant global infrastructure as exchanges and processors screen for the designated address and entity. The structural weaknesses this profile flags are: (1) the controlling beneficial owners behind the nominee structure are unidentified, so there is no human pressure point yet; (2) absent OFAC action, the dollar-clearing and secondary-sanctions pressure that bit Garantex is not yet applied; and (3) the five-domain portfolio plus Russia-resident operation make UK-only listing low-cost to survive. Degrading Rapira requires resolving operator attribution, OFAC/EU follow-on action to multilateralize the freeze, and mapping the designated and successor wallet clusters.
+  </div>
+
+  <h3>Reconstitution Status</h3>
+  <p>Brand: <strong>Sanctioned and liquidating, infrastructure partially live.</strong> Georgian liquidation since 13 May 2026; rapira.io accessible as of late June 2026; no named successor brand observed. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Pre-positioning: <strong>Mixed.</strong> Liquidation timing two weeks ahead of designation is a credible hedging signal; the Liverpool entity's relevance is disputed (construction SIC codes). <span class="badge badge-credible">Credible</span> / <span class="badge badge-single">Single Source</span></p>
+  <p>Future risk: <strong>Continuity over clean reconstitution.</strong> With no seizure, no arrests, and a Russia-resident operation, the service can persist for non-UK users; displaced volume most likely routes to undesignated OTC brokers, Telegram P2P, and the A7A5 ecosystem. <span class="badge badge-credible">Credible</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Identity of the controlling beneficial owners behind the Ilyas Ahaev nominee structure. Highest-priority gap.</div>
+  <div class="gap-flag">Whether Rapira Group Ltd (Liverpool) is actually connected to the exchange, given its construction registered activities. UK Companies House identity verification (due Aug 2026) may help resolve.</div>
+  <div class="gap-flag">Direct attribution of named ransomware/darknet actor flows to Rapira addresses: no Rapira-specific actor-level cluster attribution published.</div>
+  <div class="gap-flag">Whether Rapira's flows transited the A7A5 stablecoin specifically, and at what volume.</div>
+  <div class="gap-flag">Identity and operational role of Vagharshak Nersisyan (rapira.net WHOIS registrant).</div>
+  <div class="gap-flag">Rapira's relationship, if any, with Rosfinmonitoring or FSB: no documented communications or filings.</div>
+  <div class="gap-flag">Whether OFAC and/or the EU will follow the UK with entity-specific Rapira designations.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- RECENT REPORTING -->
+<!-- ============================================== -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[26 May 2026]</span> UK FCDO designates Rapira Group LLC (RUS3605) and 17 other entities/individuals in the A7/crypto package; TRM publishes accompanying analysis attributing &gt;$543M bilateral and $375.6M with Grinex to Rapira, and Huobi&rarr;Rapira growth of $30M to $184M. <span class="cite">[UK FCDO; TRM]</span></p>
+  <p><span class="cite">[26 May 2026]</span> Georgia's MoF Investigation Service confirms Rapira was registered formally by proxy by a British citizen, served only Russian citizens, and had no Georgian financial activity or assets. <span class="cite">[Georgian MoF; Caucasus Watch]</span></p>
+  <p><span class="cite">[13 May 2026]</span> Rapira enters Georgian liquidation (Ilyas Ahaev owner and liquidator), two weeks before the UK designation. <span class="cite">[Georgian registry]</span></p>
+  <p><span class="cite">[23 Apr 2026]</span> EU adopts its 20th sanctions package; crypto measures (broad ban on EU transactions with Russian CASPs; A7A5/RUBx/digital ruble added to Annex LIII) apply from 24 May 2026. No entity-specific Rapira listing. <span class="cite">[Council of the EU; TRM; Chainalysis]</span></p>
+  <p><span class="cite">[21 Feb 2026, updated 3 Mar 2026]</span> Elliptic names Rapira among Russia-linked sanctions-evasion exchanges: &gt;$72M direct Rapira&ndash;Grinex flows; Moscow office raided over suspected Dubai capital flight. <span class="cite">[Elliptic]</span></p>
+  <p><span class="cite">[Sep&ndash;Oct 2025]</span> Russian security forces raid Moscow City crypto offices (Rapira and Mosca primary targets); cash and hardware seized; operations resume within days. <span class="cite">[Cryptopolitan; RBC; Binance Square]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SOURCES -->
+<!-- ============================================== -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://search-uk-sanctions-list.service.gov.uk/designations/RUS3605/Entity" target="_blank">UK Sanctions List: RAPIRA GROUP LLC, designation RUS3605 (26 May 2026; asset freeze, Reg. 17A correspondent banking, internet services, director disqualification, trust services; designated BTC address)</a></li>
+    <li><a href="https://www.gov.uk/government/publications/list-of-russia-sanctions-designations-26-may-2026" target="_blank">UK Government: List of Russia sanctions designations, 26 May 2026 (18-entity A7/crypto package incl. Rapira Group LLC)</a></li>
+    <li><a href="https://www.gov.uk/government/news/uk-cracks-down-on-backdoor-russian-sanctions-evasion-with-tough-new-measures" target="_blank">UK FCDO: UK cracks down on backdoor Russian sanctions evasion with tough new measures (26 May 2026; A7 network ~$90B/year)</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/uk-designates-huobi-exmo-bitpapa-and-11-other-entities-for-russian-crypto-sanctions-evasion" target="_blank">TRM Labs: UK Designates Huobi, Exmo, Bitpapa, and 11 Other Entities (Rapira: &gt;$543M bilateral, $375.6M Grinex from 10 Mar 2025, Huobi $30M&rarr;$184M) : 26 May 2026</a></li>
+    <li><a href="https://www.elliptic.co/blog/russia-linked-cryptocurrency-services-and-sanctions-evasion" target="_blank">Elliptic: Russia-linked cryptocurrency services and sanctions evasion (Rapira: Georgia-incorporated, Moscow office, &gt;$72M Rapira&ndash;Grinex, Dubai capital-flight raid) : 21 Feb 2026 (upd. 3 Mar 2026)</a></li>
+    <li><a href="https://www.elliptic.co/blog/uk-designates-cryptoasset-exchanges-in-sweeping-new-sanctions-package" target="_blank">Elliptic: UK designates cryptoasset exchanges including HTX in sweeping new sanctions package (Regulation 17A extended to crypto; full-chain tracing) : 26 May 2026</a></li>
+    <li><a href="https://www.chainalysis.com/blog/uk-sanctions-crypto-entities-russian-trade-blockade-evasion-may-2026/" target="_blank">Chainalysis: UK Sanctions Crypto Companies With Russia Ties (A7 Network; Grinex direct Garantex successor) : May 2026</a></li>
+    <li><a href="https://cryptopotato.com/uk-sanctions-18-crypto-firms-tied-to-russias-90b-war-network/" target="_blank">CryptoPotato: UK Sanctions 18 Crypto Firms Tied to Russia's $90B War Network (Rapira $543M / $375.6M Grinex) : May 2026</a></li>
+    <li><a href="https://find-and-update.company-information.service.gov.uk/company/16618607" target="_blank">UK Companies House: RAPIRA GROUP LTD (16618607), Liverpool, incorporated 31 Jul 2025; registered activities construction/plumbing; director Gashim Guseinov</a></li>
+    <li><a href="https://find-and-update.company-information.service.gov.uk/company/16618607/officers" target="_blank">UK Companies House: RAPIRA GROUP LTD officers (Guseinov, Gashim; Russian national, resident UK; DOB Nov 1984; 73 Sheil Road, Liverpool)</a></li>
+    <li><a href="https://caucasuswatch.de/en/news/the-uk-sanctions-georgian-companies.html" target="_blank">Caucasus Watch: The UK Sanctions Georgian Companies (Rapira registered through a proxy by a British citizen; Ilias Ahaevi)</a></li>
+    <li><a href="https://www.businessinsider.ge/Society/uk-sanctions-prompt-ongoing-investigations-with-key-legal-outcomes-already-secured-investigative-service-36754?lng=eng" target="_blank">Business Insider Georgia: Georgian MoF Investigation Service (Rapira registered formally by proxy; served only Russian citizens; no Georgian activity)</a></li>
+    <li><a href="https://is.ge/en/n/news/sagamodziebo_samsakhuris_gantskhadeba" target="_blank">Georgia MoF Investigation Service: Statement on Rapira, Aifory, Arvix investigations</a></li>
+    <li><a href="https://www.cryptopolitan.com/russia-raids-crypto-exchange-offices-moscow/" target="_blank">Cryptopolitan: Russia raids crypto exchange offices in Moscow City (Rapira and Mosca; capital flight to Dubai; cash seized) : Sep 2025</a></li>
+    <li><a href="https://www.cryptopolitan.com/raided-russian-crypto-exchanges-resume/" target="_blank">Cryptopolitan: Raided Russian crypto exchanges resume operations (Mosca immediately; Rapira app operating, withdrawals inactive) : Oct 2025</a></li>
+    <li><a href="https://www.rbc.ru/finances/27/09/2025/68d7075f9a79473b747a1678" target="_blank">RBC: Rapira responds to reports of security-forces raids (denies Dubai-transfer link) : 27 Sep 2025</a></li>
+    <li><a href="https://www.ukrinform.net/rubric-economy/4127656-vlasiuk-new-british-sanctions-shut-down-key-russian-crypto-channels-used-to-evade-restrictions.html" target="_blank">Ukrinform (Vlasiuk): New British sanctions shut down key Russian crypto channels (Rapira no mandatory verification; Sberbank/VTB/Gazprombank/Promsvyazbank rails)</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/eu-adopts-20th-sanctions-package-on-russia----including-a-sweeping-ban-on-all-crypto-asset-transactions-with-russian-and-belarusian-providers" target="_blank">TRM Labs: EU adopts 20th sanctions package (broad ban on EU transactions with Russian/Belarusian CASPs; A7A5/RUBx/digital ruble in Annex LIII; crypto measures from 24 May 2026)</a></li>
+    <li><a href="https://www.opensanctions.org/entities/gb-fcdo-rus3605/" target="_blank">OpenSanctions: RAPIRA (UK FCDO RUS3605; domain portfolio rapira.net/.io/.org/rapira24.ru/rapiras.ru; support emails)</a></li>
+    <li><a href="https://gridinsoft.com/online-virus-scanner/url/rapira-net" target="_blank">Gridinsoft: rapira.net trust signals (WHOIS registrant Vagharshak Nersisyan; REG.RU; created 16 Sep 2022)</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/grinex-emerges-as-likely-garantex-rebrand" target="_blank">TRM Labs: Grinex Emerges as Likely Garantex Rebrand (shared on-chain fingerprint)</a></li>
+    <li><a href="https://www.icij.org/investigations/russia-archive/firm-related-to-sanctioned-crypto-exchange-garantex-is-a-partner-of-moscow-gang-leader-and-has-links-to-kremlin-controlled-rosneft/" target="_blank">ICIJ: Firm related to sanctioned crypto exchange Garantex (Garantex/Grinex ecosystem; ransomware and darknet clientele context)</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). Volume figures cited with source and methodology; figures from different vendors and authorities are presented separately, not averaged (TRM &gt;$543M total and $375.6M Grinex; Elliptic &gt;$72M Rapira&ndash;Grinex; TRM Huobi $30M&rarr;$184M; ABCeX&rarr;Rapira $38.1M; Aifory&harr;Rapira $2.9M). Two-tier connected-entity model applied throughout Section 09 (Tier 1 transaction confidence plus Tier 2 facilitation assessment). Three jurisdictions documented separately per schema (registration Georgia, nominal; hosting Russia; operator location Moscow, beneficial owners unknown). Key corrections vs source draft: (1) Rapira Group Ltd (Liverpool) lists construction/plumbing registered activities, not financial services, weakening the deliberate-shell inference; (2) the UK package imposes five measures including a Trust Services Sanction. Status: Sanctioned (UK FCDO 26 May 2026, RUS3605); not OFAC-designated; in Georgian liquidation; infrastructure partially operational; assessed state nexus TOLERATED SAFE HARBOR with indicators toward PROBABLE COOPERATION.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post-Garantex Sanctions-Evasion Network: Link Analysis</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --header-height: 56px;
+  --panel-width: 380px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary); color: var(--text-primary);
+  line-height: 1.55; font-size: 14px; overflow: hidden;
+}
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; z-index: 100; gap: 14px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; letter-spacing: 0.04em;
+}
+.header-meta { margin-left: auto; font-size: 11px; color: var(--text-muted); }
+
+/* LAYOUT */
+.stage {
+  position: fixed; top: var(--header-height); left: 0; right: var(--panel-width); bottom: 0;
+  overflow: hidden;
+}
+#graph { width: 100%; height: 100%; cursor: grab; }
+#graph.dragging { cursor: grabbing; }
+
+/* LEGEND */
+.legend {
+  position: absolute; left: 16px; bottom: 16px; z-index: 20;
+  background: rgba(22,27,34,0.92); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; font-size: 11px; max-width: 280px;
+}
+.legend h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 8px; }
+.legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: var(--text-secondary); }
+.lg-line { width: 30px; height: 0; border-top-style: solid; flex-shrink: 0; }
+.lg-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.25); }
+.legend .sep { height: 1px; background: var(--border-muted); margin: 8px 0; }
+
+.hint {
+  position: absolute; right: 16px; top: 16px; z-index: 20;
+  font-size: 11px; color: var(--text-muted); background: rgba(22,27,34,0.85);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+}
+
+/* SIDE PANEL */
+.panel {
+  position: fixed; top: var(--header-height); right: 0; bottom: 0; width: var(--panel-width);
+  background: var(--bg-secondary); border-left: 1px solid var(--border);
+  overflow-y: auto; padding: 20px; z-index: 50;
+}
+.panel-intro h2 { font-size: 16px; margin-bottom: 8px; }
+.panel-intro p { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 10px; }
+.panel-empty { color: var(--text-muted); font-size: 12px; font-style: italic; margin-top: 12px; }
+
+.node-detail .nd-name { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+.node-detail .nd-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border-muted); }
+.kv .k { color: var(--text-muted); }
+.kv .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 65%; }
+.nd-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin: 16px 0 8px; }
+
+.edge-item {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 10px 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s;
+}
+.edge-item:hover { border-color: var(--accent-blue); }
+.edge-item .ei-route { font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+.edge-item .ei-fig { font-size: 11.5px; color: var(--accent-yellow); margin-bottom: 6px; }
+.edge-item .ei-badges { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.edge-detail .ed-route { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.edge-detail .ed-fig { font-size: 13px; color: var(--accent-yellow); margin-bottom: 12px; }
+.edge-detail p { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 10px; }
+.tier-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; }
+.tier-box .tb-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 5px; }
+.src-line { font-size: 11px; color: var(--text-muted); margin-top: 10px; }
+.src-line strong { color: var(--text-secondary); }
+
+.btn-back {
+  display: inline-block; font-size: 11px; color: var(--accent-blue); cursor: pointer;
+  margin-bottom: 14px; background: none; border: none; padding: 0;
+}
+.btn-back:hover { text-decoration: underline; }
+
+/* BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 2px 6px; border-radius: 3px; border: 1px solid; white-space: nowrap;
+}
+.badge-confirmed { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-active { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.badge-struct { background: #172033; color: #58a6ff; border: 1px solid #1f4068; }
+.badge-incid  { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+
+.status-pill {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 2px 7px; border-radius: 3px; border: 1px solid;
+}
+.st-sanctioned { background: #2d1b00; color: #d29922; border-color: #78350f; }
+.st-disrupted  { background: #3b1f1f; color: #f85149; border-color: #7f1d1d; }
+.st-active     { background: #2d1b69; color: #bc8cff; border-color: #6e40c9; }
+.st-operator   { background: #172b4d; color: #58a6ff; border-color: #1f6feb; }
+
+/* SVG node text */
+.node-label { font-size: 11px; font-weight: 700; fill: var(--text-primary); pointer-events: none; }
+.node-sub { font-size: 9px; fill: var(--text-muted); pointer-events: none; }
+.node-g { cursor: pointer; }
+.node-g circle, .node-g rect, .node-g polygon { transition: stroke-width 0.12s, opacity 0.12s; }
+.dim { opacity: 0.12; }
+.edge-line { transition: opacity 0.12s; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="logo">Ransomware EDP</span>
+  <span class="divider">/</span>
+  <span class="profile-title">Post-Garantex Sanctions-Evasion Network</span>
+  <span class="node-type-tag">Network Link Analysis</span>
+  <span class="header-meta">Compiled June 2026 &middot; click any node or edge</span>
+</header>
+
+<div class="stage">
+  <svg id="graph"></svg>
+  <div class="hint">Drag nodes to reposition &middot; drag background to pan</div>
+  <div class="legend">
+    <h4>Edge weight = transaction confidence</h4>
+    <div class="legend-row"><span class="lg-line" style="border-top-width:4px;border-top-color:#3fb950;"></span> Confirmed (forensic / official)</div>
+    <div class="legend-row"><span class="lg-line" style="border-top-width:2.5px;border-top-color:#58a6ff;"></span> Credible (single strong source)</div>
+    <div class="legend-row"><span class="lg-line" style="border-top-width:1.5px;border-top-color:#bc8cff;"></span> Analyst inference (network-level)</div>
+    <div class="legend-row"><span class="lg-line" style="border-top-width:2px;border-top-color:#f85149;border-top-style:dashed;"></span> Dashed = single source</div>
+    <div class="sep"></div>
+    <h4>Node status</h4>
+    <div class="legend-row"><span class="lg-dot" style="background:#d29922;"></span> Sanctioned</div>
+    <div class="legend-row"><span class="lg-dot" style="background:#f85149;"></span> Disrupted</div>
+    <div class="legend-row"><span class="lg-dot" style="background:#bc8cff;"></span> Active / high-risk</div>
+    <div class="legend-row"><span class="lg-dot" style="background:#58a6ff;"></span> Operator (individual)</div>
+  </div>
+</div>
+
+<aside class="panel" id="panel">
+  <div class="panel-intro" id="panelIntro">
+    <h2>Post-Garantex Network</h2>
+    <p>Link analysis of the Russia / CIS sanctions-evasion exchange cluster that absorbed flows after the March 2025 Garantex takedown. Every edge shown is sourced; weight encodes transaction confidence and dashed lines flag single-source claims.</p>
+    <p>The center is the Garantex laundromat and its sanctioned successors. The first ring is the UK-designated five-pack (26 May 2026). Outer nodes are peripheral or single-source links.</p>
+    <div style="margin:14px 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;margin-bottom:8px">Tracked Exchanges</div><div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px"><a href="garantex.html">Garantex / Grinex</a> <a href="cryptex.html">Cryptex / PM2BTC</a> <a href="exmo.html">EXMO</a> <a href="rapira.html">Rapira</a> <a href="bitpapa.html">Bitpapa</a> <a href="abcex.html">ABCeX</a> <a href="audia6.html">AudiA6 / Dark2Web</a> <span style="font-weight:700">Post-Garantex Network</span></div></div>
+    <p class="panel-empty">Select a node to see its links, or an edge to see the two-tier assessment and source.</p>
+  </div>
+  <div id="panelDetail" style="display:none;"></div>
+</aside>
+
+<script>
+// ---------- DATA ----------
+const NODES = [
+  // core / sanctioned successors
+  { id:"garantex", label:"Garantex", sub:"OFAC 2022 / takedown Mar 2025", status:"disrupted", grp:"core",
+    facts:[["Registration","Estonia (revoked) / Russia ops"],["Hosting","Moscow City"],["Operators","Russia-based"],["Lifetime volume","~$96B (Apr 2019-Mar 2025)"],["Sanctions","OFAC Apr 2022; domain seizure Mar 6 2025"]],
+    note:"Original Moscow-City laundromat hub. Primary domain seized March 6 2025 (US Secret Service, FBI, Germany, Finland); ~$26M frozen. Operations continued via successor brands." },
+  { id:"grinex", label:"Grinex", sub:"Garantex successor / Sanctioned", status:"disrupted", grp:"core",
+    facts:[["Role","Direct Garantex successor"],["Sanctions","OFAC + UK + EU, Aug 2025"],["Status","Suspended Apr 2026 after $13.74M hack"]],
+    note:"Stood up immediately after the March 2025 takedown; Garantex customer deposits were migrated to Grinex. Suspended operations April 2026 following a $13.74M hack." },
+  { id:"exved", label:"Exved", sub:"Garantex successor / Sanctioned", status:"sanctioned", grp:"core",
+    facts:[["Role","Garantex successor brand"],["Sanctions","OFAC Aug 2025"],["Function","FX / cross-border settlement"]],
+    note:"Designated by OFAC August 2025 alongside InDeFi Bank and the A7 network as part of the Garantex/Grinex continuation infrastructure." },
+  { id:"a7a5", label:"A7A5 / Old Vector", sub:"Ruble stablecoin issuer / Sanctioned", status:"sanctioned", grp:"core",
+    facts:[["Registration","Kyrgyzstan"],["Asset","A7A5 ruble-backed stablecoin (ETH/TRON)"],["Sanctions","OFAC Aug 2025; UK 26 May 2026"]],
+    note:"Ruble-pegged stablecoin used as core settlement liquidity across the shadow network. Issuer Old Vector designated by OFAC (Aug 2025) and the UK (May 2026)." },
+  // UK-designated five-pack (26 May 2026)
+  { id:"abcex", label:"ABCeX", sub:"Nueva Cryptologia / UK 26 May 2026", status:"sanctioned", grp:"ring",
+    facts:[["Legal entity","Nueva Cryptologia S.A.S. de C.V."],["Registration","El Salvador"],["Hosting / office","Federation Tower, Moscow City"],["Operator (assessed)","Sergey Mendeleev (denies)"],["Volume","~$11B processed (Elliptic, Feb 2026)"],["Sanctions","UK 26 May 2026 (Reg 17A)"]],
+    note:"Largest node in the five-pack by volume. First UK use of the Reg 17A correspondent-banking/payment ban against a crypto exchange. Entity registered in El Salvador; the Tbilisi address was only an app-store veneer. Not on the OFAC SDN list as of June 2026; EU 21st package proposed." },
+  { id:"aifory", label:"Aifory Pro", sub:"Cash-to-crypto / UK 26 May 2026", status:"sanctioned", grp:"ring",
+    facts:[["Function","Cash-to-crypto; FEA payment agent"],["Footprint","Moscow / Dubai / Türkiye"],["Product","USDT virtual / Apple Pay cards"],["Sanctions","UK 26 May 2026"]],
+    note:"Cash-to-crypto and 'Foreign Economic Activity' payment agent (e.g. Russia-China trade). Issues USDT-backed virtual cards to bypass service blocks (Airbnb, ChatGPT). Sends funds onward to Iranian exchange Abantether." },
+  { id:"rapira", label:"Rapira", sub:"Georgia-reg / Moscow / UK 26 May 2026", status:"sanctioned", grp:"ring",
+    facts:[["Registration","Georgia"],["Office","Moscow City"],["Direct to Grinex",">$72M (Elliptic)"],["Sanctions","UK 26 May 2026"]],
+    note:"Georgia-incorporated with a Moscow office. Over $72M in direct cryptoasset transactions with sanctioned successor Grinex. Moscow offices reportedly raided over suspected capital flight to Dubai." },
+  { id:"exmo", label:"Exmo / Exmo.me", sub:"UK 26 May 2026", status:"sanctioned", grp:"ring",
+    facts:[["Markets","Russia / Belarus / Kazakhstan"],["Direct w/ sanctioned","$19.5M (Elliptic)"],["Infrastructure","Exmo.com & Exmo.me shared custody"],["Sanctions","UK 26 May 2026"]],
+    note:"Publicly claimed to exit Russia, but on-chain data shows Exmo.com and Exmo.me share custodial wallet infrastructure and co-mingled $19.5M in direct transactions with sanctioned entities." },
+  { id:"bitpapa", label:"Bitpapa", sub:"UAE P2P / OFAC + UK", status:"sanctioned", grp:"ring",
+    facts:[["Registration","UAE"],["Model","P2P"],["To sanctioned","9.7% of outgoing; ~5% to Garantex"],["Sanctions","OFAC 2024; UK 26 May 2026"]],
+    note:"UAE-registered P2P platform. The only one of the five-pack already OFAC-designated (2024) at the time of Elliptic's Feb 2026 report. Rotates wallet addresses to frustrate monitoring." },
+  { id:"huobi", label:"Huobi / HTX", sub:"Global exchange / UK 26 May 2026", status:"sanctioned", grp:"ring",
+    facts:[["Entity","Huobi Global S.A. (HTX)"],["Allegation","Suspected services to A7 and Garantex"],["Sanctions","UK 26 May 2026"]],
+    note:"One of the world's largest exchanges. UK designation cites suspected provision of services to the A7 payments network and Garantex." },
+  // peripheral / single-source / external
+  { id:"abantether", label:"Abantether", sub:"Iranian exchange (recipient)", status:"active", grp:"outer",
+    facts:[["Jurisdiction","Iran"],["Inbound from Aifory","~$2M (Elliptic)"]],
+    note:"Iranian exchange receiving ~$2M from Aifory Pro. Represents the Russia-to-Iran corridor within the cluster." },
+  { id:"aexbit", label:"AEXbit", sub:"Assessed ABCeX successor/clone", status:"active", grp:"outer",
+    facts:[["Relationship","Co-spending w/ ABCeX addresses"],["UI","Identical to ABCeX"],["Surfaced","Garantex-linked Telegram, mid-2025"]],
+    note:"TRM Labs found co-spending between addresses attributed with near certainty to AEXbit and ABCeX, indicating common control. Appeared in Garantex-linked channels with an identical UI. NOTE: TRM's 'ABCex' and Elliptic/UK's 'ABCeX' (Nueva Cryptologia) are assessed to be the same brand; treat AEXbit as a same-operator clone, not a separate cluster." },
+  { id:"uralex", label:"Ural.Ex", sub:"ABCeX white-label partner", status:"active", grp:"outer",
+    facts:[["Location","Yekaterinburg, Russia"],["Relationship","Runs ABCeX white-label tech; ABCeX + Rapira partner"],["Source","Kharon [SINGLE SOURCE]"]],
+    note:"Operates on ABCeX white-labeled technology. White-labeling functions as a reconstitution / distribution mechanism for the platform. Single-source (Kharon)." },
+  { id:"awx", label:"AWX Solutions", sub:"Dubai / ABCeX white-label", status:"active", grp:"outer",
+    facts:[["Location","Dubai (FZ LLC)"],["Lineage","Rebrand of US-sanctioned Crypto Explorer DMCC / AWEX"],["Source","Kharon [SINGLE SOURCE]"]],
+    note:"Dubai entity running ABCeX white-label tech; assessed rebrand of US-sanctioned Crypto Explorer DMCC (AWEX). Single-source (Kharon)." },
+  { id:"beribit", label:"Beribit", sub:"Co-located / shared raid", status:"active", grp:"outer",
+    facts:[["Location","Federation Tower, Moscow City"],["Link type","Co-location + shared 2024 investigation"],["On-chain","No published flows"]],
+    note:"Raided alongside ABCeX in March 2024 in connection with the Crocus City Hall attack financing investigation. Link is co-location and shared case context only; no on-chain relationship has been published." },
+  // operator
+  { id:"mendeleev", label:"Sergey Mendeleev", sub:"Operator / OFAC + UK", status:"operator", grp:"operator", shape:"diamond",
+    facts:[["Role","Garantex co-founder"],["Sanctions","OFAC 14 Aug 2025; UK 26 May 2026"],["ABCeX tie","UK-asserted; he denies"]],
+    note:"Garantex co-founder, OFAC-designated 14 Aug 2025 and UK-designated 26 May 2026. UK links him to ABCeX; he publicly denies founding it. His Garantex executive role is CONFIRMED; the ABCeX tie is CREDIBLE." },
+];
+
+const EDGES = [
+  { s:"garantex", t:"grinex", conf:"confirmed", facil:"active", single:false, fig:"Customer deposits migrated",
+    desc:"Garantex officers built Grinex infrastructure immediately after the March 2025 takedown and transferred Garantex customer deposits to it. Direct operational succession.",
+    src:"DOJ/OFAC; Chainalysis; TRM Labs" },
+  { s:"garantex", t:"exved", conf:"confirmed", facil:"active", single:false, fig:"Successor brand",
+    desc:"Exved designated by OFAC (Aug 2025) as part of the Garantex/Grinex continuation infrastructure.",
+    src:"OFAC designation, Aug 2025" },
+  { s:"grinex", t:"a7a5", conf:"confirmed", facil:"active", single:false, fig:"Core settlement liquidity",
+    desc:"The A7A5 ruble stablecoin (issuer Old Vector) provides settlement liquidity for Grinex and the wider network.",
+    src:"Chainalysis; TRM Labs; OFAC" },
+  { s:"abcex", t:"garantex", conf:"confirmed", facil:"struct", single:false, fig:"$133.4M (TRM); 'significant' (Elliptic)",
+    desc:"Internal/forensic on-chain data places ABCeX as Garantex's 3rd-largest counterparty, with flows beginning October 2023. Elliptic separately reports ABCeX sending 'significant amounts' to sanctioned Garantex. Deliberate KYC/AML deficiencies plus volume and operator overlap push this toward probable active facilitation.",
+    src:"TRM Labs (May 2026); Elliptic (Feb 2026)" },
+  { s:"abcex", t:"aifory", conf:"confirmed", facil:"struct", single:false, fig:"$175.2M (TRM)",
+    desc:"ABCeX accounts for ~96% of Aifory Pro's sanctioned-linked inflows per forensic data. Elliptic corroborates ABCeX sending significant amounts to Aifory Pro.",
+    src:"TRM Labs (May 2026); Elliptic (Feb 2026)" },
+  { s:"abcex", t:"rapira", conf:"confirmed", facil:"struct", single:false, fig:"$38.1M (TRM)",
+    desc:"Direct bilateral flow between ABCeX and Rapira documented in forensic on-chain data.",
+    src:"TRM Labs (May 2026)" },
+  { s:"rapira", t:"grinex", conf:"confirmed", facil:"struct", single:false, fig:">$72M (Elliptic)",
+    desc:"Rapira routed over $72M in direct cryptoasset transactions to sanctioned successor Grinex.",
+    src:"Elliptic (Feb 2026)" },
+  { s:"exmo", t:"garantex", conf:"confirmed", facil:"struct", single:false, fig:"$19.5M direct w/ sanctioned",
+    desc:"Exmo.com and Exmo.me share custodial infrastructure and co-mingled $19.5M in direct transactions with sanctioned entities including Garantex.",
+    src:"Elliptic (Feb 2026)" },
+  { s:"bitpapa", t:"garantex", conf:"confirmed", facil:"struct", single:false, fig:"~5% of outgoing to Garantex",
+    desc:"Approximately 9.7% of Bitpapa's outgoing transactions went to sanctioned entities, ~5% specifically to Garantex. Wallet rotation used to frustrate monitoring.",
+    src:"Elliptic (Feb 2026)" },
+  { s:"aifory", t:"abantether", conf:"confirmed", facil:"struct", single:false, fig:"~$2M (Elliptic)",
+    desc:"Aifory Pro sent nearly $2M to the Iranian exchange Abantether, evidencing a Russia-to-Iran corridor.",
+    src:"Elliptic (Feb 2026)" },
+  { s:"huobi", t:"a7a5", conf:"credible", facil:"struct", single:false, fig:"Suspected services to A7",
+    desc:"UK designation cites Huobi/HTX suspected of providing services to the A7 payments network and Garantex. Specific on-chain figures not public in the designation.",
+    src:"UK FCDO designation, 26 May 2026" },
+  { s:"mendeleev", t:"garantex", conf:"confirmed", facil:"active", single:false, fig:"Co-founder",
+    desc:"Mendeleev is a confirmed Garantex co-founder per OFAC. Basis for his August 2025 OFAC designation.",
+    src:"OFAC, 14 Aug 2025" },
+  { s:"mendeleev", t:"abcex", conf:"credible", facil:"active", single:false, fig:"UK-asserted operator tie",
+    desc:"UK ties ABCeX to Mendeleev in its designation; he publicly denies founding ABCeX. Tie is CREDIBLE (official assertion, contested by subject); his Garantex role is separately CONFIRMED.",
+    src:"UK FCDO designation, 26 May 2026" },
+  { s:"abcex", t:"aexbit", conf:"credible", facil:"active", single:false, fig:"Co-spending; identical UI",
+    desc:"TRM found co-spending between addresses attributed with near certainty to ABCeX and AEXbit, indicating common control; AEXbit surfaced in Garantex-linked channels with an identical UI. Treated as a same-operator clone (reconstitution), correcting the view that these are separate platforms.",
+    src:"TRM Labs ('Imitation Game')" },
+  { s:"abcex", t:"uralex", conf:"credible", facil:"active", single:true, fig:"White-label tech",
+    desc:"Ural.Ex runs ABCeX white-labeled technology and is described as an ABCeX + Rapira partner. White-labeling functions as a distribution/reconstitution mechanism.",
+    src:"Kharon [SINGLE SOURCE]" },
+  { s:"abcex", t:"awx", conf:"credible", facil:"active", single:true, fig:"White-label tech",
+    desc:"AWX Solutions (Dubai) runs ABCeX white-label tech and is assessed as a rebrand of US-sanctioned Crypto Explorer DMCC (AWEX).",
+    src:"Kharon [SINGLE SOURCE]" },
+  { s:"abcex", t:"beribit", conf:"inference", facil:"incid", single:false, fig:"Co-location / shared raid",
+    desc:"ABCeX and Beribit were raided together in March 2024 in the Crocus City Hall financing investigation. Link is co-location and shared case context; no on-chain relationship published. Not a financial edge.",
+    src:"RBC; Kommersant (Mar 2024)" },
+  // network-level co-membership (inference) among five-pack where no direct bilateral is published
+  { s:"abcex", t:"bitpapa", conf:"inference", facil:"struct", single:false, fig:"Co-membership (network-level)",
+    desc:"Co-members of Elliptic's five-platform shadow network. No direct ABCeX-Bitpapa bilateral flow is published; linkage is shared-corridor membership, not a documented transfer.",
+    src:"Elliptic (Feb 2026), network-level" },
+  { s:"abcex", t:"exmo", conf:"inference", facil:"struct", single:false, fig:"Co-membership (network-level)",
+    desc:"Co-members of Elliptic's five-platform shadow network operating the same ruble on/off-ramp corridors. No direct ABCeX-Exmo bilateral flow published.",
+    src:"Elliptic (Feb 2026), network-level" },
+];
+
+// ---------- RENDER ----------
+const svg = document.getElementById("graph");
+const SVGNS = "http://www.w3.org/2000/svg";
+let W = svg.clientWidth, H = svg.clientHeight;
+
+const statusColor = { sanctioned:"#d29922", disrupted:"#f85149", active:"#bc8cff", operator:"#58a6ff" };
+const statusFill  = { sanctioned:"#2d1b00", disrupted:"#3b1f1f", active:"#241b3a", operator:"#10233f" };
+
+// seeded deterministic layout
+let seed = 7;
+function rnd(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; }
+const nodeById = {};
+NODES.forEach(n => { nodeById[n.id] = n; n.x = W/2 + (rnd()-0.5)*W*0.6; n.y = H/2 + (rnd()-0.5)*H*0.6; n.vx=0; n.vy=0; });
+// seed core near center
+nodeById.garantex.x = W*0.50; nodeById.garantex.y = H*0.52;
+
+const links = EDGES.map(e => ({...e, source:nodeById[e.s], target:nodeById[e.t]}));
+
+// force simulation
+function simulate(iter){
+  for(let k=0;k<iter;k++){
+    // repulsion
+    for(let i=0;i<NODES.length;i++){
+      for(let j=i+1;j<NODES.length;j++){
+        const a=NODES[i], b=NODES[j];
+        let dx=a.x-b.x, dy=a.y-b.y; let d2=dx*dx+dy*dy||0.01; let d=Math.sqrt(d2);
+        const rep = 32000/d2;
+        const fx=dx/d*rep, fy=dy/d*rep;
+        a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+      }
+    }
+    // springs
+    links.forEach(l=>{
+      let dx=l.target.x-l.source.x, dy=l.target.y-l.source.y; let d=Math.sqrt(dx*dx+dy*dy)||0.01;
+      const target = l.conf==="confirmed"?150:(l.conf==="credible"?185:230);
+      const f=(d-target)*0.02;
+      const fx=dx/d*f, fy=dy/d*f;
+      l.source.vx+=fx; l.source.vy+=fy; l.target.vx-=fx; l.target.vy-=fy;
+    });
+    // centering + integrate
+    NODES.forEach(n=>{
+      n.vx += (W/2 - n.x)*0.004; n.vy += (H/2 - n.y)*0.004;
+      n.vx*=0.85; n.vy*=0.85;
+      n.x += n.vx; n.y += n.vy;
+      n.x = Math.max(70, Math.min(W-70, n.x));
+      n.y = Math.max(60, Math.min(H-50, n.y));
+    });
+  }
+}
+simulate(400);
+
+// defs (arrow markers)
+const defs = document.createElementNS(SVGNS,"defs");
+[["arrow-confirmed","#3fb950"],["arrow-credible","#58a6ff"],["arrow-inference","#bc8cff"]].forEach(([id,c])=>{
+  const m=document.createElementNS(SVGNS,"marker");
+  m.setAttribute("id",id); m.setAttribute("viewBox","0 0 10 10"); m.setAttribute("refX","9"); m.setAttribute("refY","5");
+  m.setAttribute("markerWidth","7"); m.setAttribute("markerHeight","7"); m.setAttribute("orient","auto-start-reverse");
+  const p=document.createElementNS(SVGNS,"path"); p.setAttribute("d","M0,0 L10,5 L0,10 z"); p.setAttribute("fill",c);
+  m.appendChild(p); defs.appendChild(m);
+});
+svg.appendChild(defs);
+
+const viewport = document.createElementNS(SVGNS,"g");
+svg.appendChild(viewport);
+const edgeLayer = document.createElementNS(SVGNS,"g"); viewport.appendChild(edgeLayer);
+const nodeLayer = document.createElementNS(SVGNS,"g"); viewport.appendChild(nodeLayer);
+
+const confColor = { confirmed:"#3fb950", credible:"#58a6ff", inference:"#bc8cff" };
+const confWidth = { confirmed:4, credible:2.5, inference:1.5 };
+
+const edgeEls = links.map(l=>{
+  const line=document.createElementNS(SVGNS,"line");
+  line.setAttribute("class","edge-line");
+  line.setAttribute("stroke",confColor[l.conf]);
+  line.setAttribute("stroke-width",confWidth[l.conf]);
+  line.setAttribute("opacity","0.55");
+  if(l.single) line.setAttribute("stroke-dasharray","6 4");
+  line.setAttribute("marker-end",`url(#arrow-${l.conf})`);
+  line.style.cursor="pointer";
+  line.addEventListener("click",ev=>{ ev.stopPropagation(); showEdge(l); });
+  edgeLayer.appendChild(line);
+  return {l, line};
+});
+
+const nodeEls = NODES.map(n=>{
+  const g=document.createElementNS(SVGNS,"g"); g.setAttribute("class","node-g");
+  let shape;
+  if(n.shape==="diamond"){
+    shape=document.createElementNS(SVGNS,"polygon");
+    shape.setAttribute("points","0,-16 16,0 0,16 -16,0");
+  } else {
+    shape=document.createElementNS(SVGNS,"circle");
+    const r = n.grp==="core"?22:(n.grp==="ring"?18:13);
+    shape.setAttribute("r", r); n._r=r;
+  }
+  shape.setAttribute("fill", statusFill[n.status]);
+  shape.setAttribute("stroke", statusColor[n.status]);
+  shape.setAttribute("stroke-width", n.id==="abcex"?3.5:2);
+  g.appendChild(shape);
+
+  const label=document.createElementNS(SVGNS,"text");
+  label.setAttribute("class","node-label"); label.setAttribute("text-anchor","middle");
+  label.setAttribute("dy", (n._r||16)+13); label.textContent=n.label;
+  g.appendChild(label);
+
+  g.addEventListener("click",ev=>{ ev.stopPropagation(); showNode(n); });
+  nodeLayer.appendChild(g);
+  return {n, g, shape, label};
+});
+
+function positionAll(){
+  edgeEls.forEach(({l,line})=>{
+    line.setAttribute("x1",l.source.x); line.setAttribute("y1",l.source.y);
+    // shorten to node edge for arrowhead
+    let dx=l.target.x-l.source.x, dy=l.target.y-l.source.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+    const tr=(l.target._r||16)+6;
+    line.setAttribute("x2", l.target.x-dx/d*tr); line.setAttribute("y2", l.target.y-dy/d*tr);
+  });
+  nodeEls.forEach(({n,g})=> g.setAttribute("transform",`translate(${n.x},${n.y})`));
+}
+positionAll();
+
+// ---------- INTERACTION: highlight ----------
+function clearHighlight(){
+  nodeEls.forEach(({g})=>g.classList.remove("dim"));
+  edgeEls.forEach(({line})=>{ line.classList.remove("dim"); line.setAttribute("opacity","0.55"); });
+}
+function highlightNode(n){
+  const connected=new Set([n.id]);
+  links.forEach(l=>{ if(l.s===n.id||l.t===n.id){ connected.add(l.s); connected.add(l.t); } });
+  nodeEls.forEach(({n:nn,g})=> g.classList.toggle("dim", !connected.has(nn.id)));
+  edgeEls.forEach(({l,line})=>{
+    const on = l.s===n.id||l.t===n.id;
+    line.classList.toggle("dim", !on);
+    line.setAttribute("opacity", on?"0.95":"0.06");
+  });
+}
+
+// ---------- PANEL ----------
+const intro=document.getElementById("panelIntro");
+const detail=document.getElementById("panelDetail");
+const confBadge={confirmed:'<span class="badge badge-confirmed">Confirmed</span>',credible:'<span class="badge badge-credible">Credible</span>',inference:'<span class="badge badge-inference">Analyst inference</span>'};
+const facilBadge={active:'<span class="badge badge-active">Active facilitation</span>',struct:'<span class="badge badge-struct">Structural enablement</span>',incid:'<span class="badge badge-incid">Incidental processing</span>'};
+const stPill={sanctioned:'<span class="status-pill st-sanctioned">Sanctioned</span>',disrupted:'<span class="status-pill st-disrupted">Disrupted</span>',active:'<span class="status-pill st-active">Active / high-risk</span>',operator:'<span class="status-pill st-operator">Operator</span>'};
+
+function showNode(n){
+  highlightNode(n);
+  intro.style.display="none"; detail.style.display="block";
+  const myEdges=links.filter(l=>l.s===n.id||l.t===n.id);
+  let edgesHtml=myEdges.map(l=>{
+    const other = l.s===n.id? nodeById[l.t].label : nodeById[l.s].label;
+    const dir = l.s===n.id? "&rarr; "+other : other+" &rarr;";
+    return `<div class="edge-item" data-eid="${l.s}_${l.t}">
+      <div class="ei-route">${dir}</div>
+      <div class="ei-fig">${l.fig}</div>
+      <div class="ei-badges">${confBadge[l.conf]} ${facilBadge[l.facil]} ${l.single?'<span class="badge badge-single">Single source</span>':''}</div>
+    </div>`;
+  }).join("");
+  detail.innerHTML=`
+    <button class="btn-back" onclick="resetPanel()">&larr; Back to overview</button>
+    <div class="node-detail">
+      <div class="nd-name">${n.label}</div>
+      <div class="nd-sub">${n.sub}</div>
+      <div style="margin-bottom:12px;">${stPill[n.status]}</div>
+      ${n.facts.map(f=>`<div class="kv"><span class="k">${f[0]}</span><span class="v">${f[1]}</span></div>`).join("")}
+      <div class="nd-section-label">Assessment</div>
+      <p style="font-size:12.5px;color:var(--text-secondary);">${n.note}</p>
+      <div class="nd-section-label">Links (${myEdges.length})</div>
+      ${edgesHtml}
+    </div>`;
+  detail.querySelectorAll(".edge-item").forEach(el=>{
+    el.addEventListener("click",()=>{
+      const [s,t]=el.getAttribute("data-eid").split("_");
+      const l=links.find(x=>x.s===s&&x.t===t); if(l) showEdge(l);
+    });
+  });
+  detail.scrollTop=0;
+}
+
+function showEdge(l){
+  clearHighlight();
+  edgeEls.forEach(({l:ll,line})=>{ const on=ll===l; line.classList.toggle("dim",!on); line.setAttribute("opacity",on?"1":"0.06"); });
+  const ids=new Set([l.s,l.t]);
+  nodeEls.forEach(({n,g})=>g.classList.toggle("dim",!ids.has(n.id)));
+  intro.style.display="none"; detail.style.display="block";
+  detail.innerHTML=`
+    <button class="btn-back" onclick="resetPanel()">&larr; Back to overview</button>
+    <div class="edge-detail">
+      <div class="ed-route">${nodeById[l.s].label} &rarr; ${nodeById[l.t].label}</div>
+      <div class="ed-fig">${l.fig}</div>
+      <div class="tier-box">
+        <div class="tb-label">Tier 1 &middot; Transaction confidence</div>
+        ${confBadge[l.conf]} ${l.single?'<span class="badge badge-single">Single source</span>':''}
+      </div>
+      <div class="tier-box">
+        <div class="tb-label">Tier 2 &middot; Facilitation assessment</div>
+        ${facilBadge[l.facil]}
+      </div>
+      <p>${l.desc}</p>
+      <div class="src-line"><strong>Source:</strong> ${l.src}</div>
+    </div>`;
+  detail.scrollTop=0;
+}
+
+function resetPanel(){ intro.style.display="block"; detail.style.display="none"; clearHighlight(); }
+window.resetPanel=resetPanel;
+
+// ---------- PAN + DRAG ----------
+let tx=0, ty=0, scale=1;
+function applyView(){ viewport.setAttribute("transform",`translate(${tx},${ty}) scale(${scale})`); }
+let panning=false, panStart=null, draggingNode=null;
+
+svg.addEventListener("mousedown",e=>{
+  if(e.target===svg || e.target===viewport){ panning=true; panStart={x:e.clientX-tx,y:e.clientY-ty}; svg.classList.add("dragging"); resetPanel(); }
+});
+window.addEventListener("mousemove",e=>{
+  if(panning){ tx=e.clientX-panStart.x; ty=e.clientY-panStart.y; applyView(); }
+  else if(draggingNode){
+    const pt=clientToSvg(e.clientX,e.clientY);
+    draggingNode.n.x=pt.x; draggingNode.n.y=pt.y; positionAll();
+  }
+});
+window.addEventListener("mouseup",()=>{ panning=false; draggingNode=null; svg.classList.remove("dragging"); });
+
+nodeEls.forEach(ne=>{
+  ne.g.addEventListener("mousedown",e=>{ e.stopPropagation(); draggingNode=ne; });
+});
+function clientToSvg(cx,cy){
+  const r=svg.getBoundingClientRect();
+  return { x:(cx-r.left-tx)/scale, y:(cy-r.top-ty)/scale };
+}
+svg.addEventListener("wheel",e=>{
+  e.preventDefault();
+  const r=svg.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top;
+  const ns=Math.max(0.4,Math.min(2.5, scale*(e.deltaY<0?1.1:0.9)));
+  tx=mx-(mx-tx)*(ns/scale); ty=my-(my-ty)*(ns/scale); scale=ns; applyView();
+},{passive:false});
+
+window.addEventListener("resize",()=>{ W=svg.clientWidth; H=svg.clientHeight; });
+</script>
+</body>
+</html>

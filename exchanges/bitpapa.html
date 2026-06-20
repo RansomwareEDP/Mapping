@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitpapa (Bitpapa IC FZC LLC): Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* STATUS BADGES */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-active     { background: #0d2b1a; color: #3fb950; border-color: #1a4731; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* HERO MODULE */
+.hero-module {
+  background: linear-gradient(135deg, #1a1208 0%, #1c1228 100%);
+  border: 1px solid #5a3a15; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-orange); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 240px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 62%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+.op-tag-gap { background: #2d2400; color: #e3b341; border: 1px solid #6b5600; }
+
+/* SECTION HEADERS */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* CONFIDENCE BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* KPI / ATTRIBUTE TABLES */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CONTENT TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* TIMELINE */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* CITATION */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* WALLET ADDRESSES */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* GAP FLAGS */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "\25C6 GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* GALLERY */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+.img-source { font-size: 10px; color: var(--text-muted); }
+
+/* SOURCES */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* TIER LABELS */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">Bitpapa</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-sanctioned">Sanctioned</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Tracked Exchanges</div>
+  <ul class="sidebar-nav">
+    <li><a href="garantex.html">Garantex / Grinex</a></li>
+    <li><a href="cryptex.html">Cryptex / PM2BTC</a></li>
+    <li><a href="exmo.html">EXMO</a></li>
+    <li><a href="rapira.html">Rapira</a></li>
+    <li><span style="font-weight:700">Bitpapa</span></li>
+    <li><a href="abcex.html">ABCeX</a></li>
+    <li><a href="audia6.html">AudiA6 / Dark2Web</a></li>
+    <li><a href="post-garantex-network.html">Post-Garantex Network</a></li>
+  </ul>
+  
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Status</span><span class="value" style="color:var(--accent-orange)">Sanctioned (3 regimes)</span></div>
+    <div class="sidebar-meta-row"><span class="label">OFAC designation</span><span class="value">25 Mar 2024</span></div>
+    <div class="sidebar-meta-row"><span class="label">UK designation</span><span class="value">26 May 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">Tolerated Safe Harbor</span></div>
+    <div class="sidebar-meta-row"><span class="label">Operator location</span><span class="value">Unknown (assessed RU/UAE)</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : TRIPLE-DESIGNATED ENTITY + OPERATOR GAP ABOVE FOLD -->
+<div class="hero-module">
+  <div class="hero-label">&#9888; Triple-Designated Entity, No Named Operators : Hero Module</div>
+  <div class="hero-title">Bitpapa is one of the few crypto services sanctioned under three separate national regimes: OFAC (25 March 2024), Ukraine (6 July 2025), and the United Kingdom (26 May 2026). The corporate entity, BITPAPA IC FZC LLC, is designated in all three. No founder, beneficial owner, or operator has been publicly named or designated by any authority, which is the profile's single most important intelligence gap and the reason no operator hero module appears here.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">BITPAPA IC FZC LLC</div>
+      <div class="op-alias">Sanctioned legal entity : the only designated node</div>
+      <div class="op-row"><span class="k">Type</span><span class="v">Custodial P2P crypto marketplace and wallet</span></div>
+      <div class="op-row"><span class="k">Registration</span><span class="v">Ajman Media City Free Zone, UAE (Reg. 5069)</span></div>
+      <div class="op-row"><span class="k">Established</span><span class="v">29 Apr 2022</span></div>
+      <div class="op-row"><span class="k">Websites</span><span class="v">bitpapa.com, bitpapa.org</span></div>
+      <div class="op-row"><span class="k">OFAC</span><span class="v">SDN 25 Mar 2024, E.O. 14024 (RUSSIA-EO14024)</span></div>
+      <div class="op-row"><span class="k">Ukraine / UK</span><span class="v">NSDC 6 Jul 2025; FCDO 26 May 2026</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (all three designations, primary sources)</span></div>
+      <span class="op-tag op-tag-sanctioned">OFAC / UK / UA Designated</span>
+      <span class="op-tag op-tag-custody">Operational</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Operators: UNATTRIBUTED</div>
+      <div class="op-alias">Critical intelligence gap</div>
+      <div class="op-row"><span class="k">Named founders</span><span class="v">None in any public source</span></div>
+      <div class="op-row"><span class="k">Beneficial owners</span><span class="v">Not disclosed in OFAC, UK, or Ukraine listings</span></div>
+      <div class="op-row"><span class="k">Indictments</span><span class="v">No DOJ or other criminal charges located</span></div>
+      <div class="op-row"><span class="k">Nationality / location</span><span class="v">Unknown (assessed Russia or UAE)</span></div>
+      <div class="op-row"><span class="k">Caution</span><span class="v">Do not conflate with Bukanov (TOEP / NetEx24, co-designated separate entity)</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED gap (negative evidence across regimes)</span></div>
+      <span class="op-tag op-tag-gap">Intelligence Gap</span>
+      <span class="op-tag op-tag-atlarge">No Designated Individuals</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ============================================== -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Outgoing Flow to Sanctioned Targets</div>
+      <div class="kpi-value">9.7%</div>
+      <div class="kpi-sub">Share of Bitpapa outgoing crypto to OFAC-sanctioned entities (Elliptic, Feb 2026)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Flow Specifically to Garantex</div>
+      <div class="kpi-value">5%</div>
+      <div class="kpi-sub">Of total outgoing flow, to the sanctioned exchange Garantex (Elliptic)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sanctions Regimes</div>
+      <div class="kpi-value">3</div>
+      <div class="kpi-sub">OFAC (2024), Ukraine (2025), UK (2026), same UAE entity</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">OFAC Designation</div>
+      <div class="kpi-value">25 Mar 2024</div>
+      <div class="kpi-sub">E.O. 14024; transactions with Hydra Market and Garantex</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">UK Designation</div>
+      <div class="kpi-value">26 May 2026</div>
+      <div class="kpi-sub">FCDO 18-entity A7 / crypto package</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Named Operators</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-sub">No founder or owner publicly named or designated</div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Overall Assessment</div>
+    Bitpapa is a UAE-registered, Russia-focused peer-to-peer crypto marketplace that combines a custodial exchange and wallet with a Telegram-driven P2P network and ruble-linked fiat rails. It was designated by OFAC on 25 March 2024 for facilitating millions of dollars in transactions with the sanctioned entities Hydra Market and Garantex, then added to Ukraine's NSDC sanctions list (6 July 2025) and the UK's Russia sanctions list (26 May 2026), making it one of the few crypto services under three separate national regimes. Elliptic's February 2026 analysis quantifies the core finding: approximately 9.7% of Bitpapa's outgoing crypto funds reach OFAC-sanctioned targets, including 5% to Garantex, and Bitpapa "manages its wallets specifically to evade sanctions enforcement by constantly rotating addresses." Despite three designations and two-plus years of continued operation, no founder, owner, or operator has been named by any authority, the profile's central intelligence gap. The service remains operational as of June 2026 (web, app, and Telegram). State nexus is assessed at TOLERATED SAFE HARBOR. Note a correction to the source draft: the Sberbank and Alfa-Bank ruble-rail linkage in the secondary literature attaches in the primary OFAC record to the co-designated entity NetEx24 (TOEP), not to Bitpapa.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Service type</td><td>Custodial peer-to-peer (P2P) cryptoasset marketplace with escrow, hosted wallet, and Telegram-coordinated trading; ruble-to-crypto on/off ramp</td></tr>
+      <tr><td>Legal entity</td><td>BITPAPA IC FZC LLC <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC SDN; UK FCDO]</span></td></tr>
+      <tr><td>Aliases / branding</td><td>Bitpapa; marketed as a "worldwide peer-to-peer cryptocurrency exchange" and "cryptobank" with escrow protection</td></tr>
+      <tr><td>Entity registration jurisdiction</td><td>United Arab Emirates: A-0059-652 Flamingo Villas, Ajman Media City Free Zone, Ajman (Reg. No. 5069); established 29 Apr 2022 <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Not publicly mapped. Primary domains bitpapa.com, bitpapa.org. Customer base anchored in Russia <span class="badge badge-credible">Credible</span> (Russia focus); <span class="badge badge-inference">Unknown</span> (specific hosting)</td></tr>
+      <tr><td>Assessed operator location</td><td>Unknown. No named operators; an informed hypothesis places controllers in Russia or the UAE, but this is inference, not evidenced <span class="badge badge-inference">Analyst Inference</span></td></tr>
+      <tr><td>Operational period</td><td>Entity established Apr 2022; active through three designation cycles; operational as of June 2026</td></tr>
+      <tr><td>Volume (total)</td><td>No total throughput figure published by any vendor. Elliptic reports concentration metrics, not totals: 9.7% of outgoing flow to OFAC-sanctioned targets, 5% to Garantex (Feb 2026). Do not present as total volume <span class="badge badge-confirmed">Confirmed</span> (metric); <span class="badge badge-single">Single Source</span> (Elliptic)</td></tr>
+      <tr><td>Geographic footprint</td><td>Primarily targets users in Russia, allowing rubles to be exchanged for cryptoassets; nominal UAE registration; Russia/CIS-centric user base</td></tr>
+      <tr><td>OFAC designation</td><td>Entity designated 25 Mar 2024, E.O. 14024, program RUSSIA-EO14024; secondary sanctions risk noted; SDN id 48096 <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Ukraine designation</td><td>NSDC sanctions, presidential decree 6 Jul 2025 (package of ~60 legal entities) <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>UK designation</td><td>Designated 26 May 2026, Russia (Sanctions) (EU Exit) Regulations 2019, category "supporting the Russian financial sector"; asset freeze <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO]</span></td></tr>
+      <tr><td>EU designation</td><td>Not individually listed as of June 2026; EU 21st sanctions package (proposed 9 Jun 2026) includes crypto-platform transaction bans, adoption pending <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>State nexus tier</td><td>TOLERATED SAFE HARBOR; no PROBABLE COOPERATION or DIRECT CONTROL evidence</td></tr>
+      <tr><td>Status</td><td>Sanctioned (OFAC, Ukraine, UK); operational; no rebrand observed</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>Elliptic (entity-specific, Feb 2026); TRM Labs (designation analysis; April 2026 deposit-wallet heuristic); Chainalysis (March 2024 designation coverage)</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://www.elliptic.co/hs-fs/hubfs/bitpapa.png?width=700&amp;height=590&amp;name=bitpapa.png"
+           alt="Elliptic graph: selected illicit and high-risk Russia-centric counterparties of Bitpapa"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Bitpapa Counterparty Flow Graph</div>
+        <div class="cap-source"><span class="img-source">Elliptic, 2026. Selected illicit and high-risk Russia-centric counterparties of Bitpapa.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://assets.publishing.service.gov.uk/media/6a1588949819be865f421d09/s960_Sanction_Evaders-02.png"
+           alt="UK FCDO announcement banner: crackdown on backdoor Russian sanctions evasion"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">UK Sanctions Announcement</div>
+        <div class="cap-source"><span class="img-source">UK FCDO, May 2026. Bitpapa IC FZC LLC among 18 designations in the package.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c542b33fe189ca9e3d9_v2-pre-vs-post-garantex.png"
+           alt="TRM Labs chart: flows to Garantex-successor exchanges before and after the March 2025 takedown"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Post-Garantex Ecosystem Flows</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. The Russia-linked evasion ecosystem (Bitpapa among the named set) reconstituted after the March 2025 Garantex takedown.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://cdn.prod.website-files.com/6082dc5b670562507b3587b4/6a160c8591cf78a405a225fc_v1-huobi-annual-flows.png"
+           alt="TRM Labs chart: Huobi outgoing flows to UK-designated and A7-network Russian entities by year"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">A7 / Successor Network Context</div>
+        <div class="cap-source"><span class="img-source">TRM Labs, 2026. Yearly flows into the UK-designated and A7-network set in which Bitpapa was co-designated on 26 May 2026.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ============================================== -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>No Predecessor Rebrand; Network Membership, Not Inheritance</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    Unlike clear lineage chains (BTC-e to WEX, or Garantex to Grinex), Bitpapa is not described in any open source as a rebrand or successor of a prior named exchange. It is best understood as an independent node within a network of Russia-linked services (Garantex, NetEx24, ABCeX, Rapira, Aifory Pro) that share function and counterparties rather than corporate parentage. Bitpapa is not described as inheriting customers, domains, or code from those entities. <span class="badge badge-credible">Credible</span> <span class="cite">[Elliptic, TRM, OFAC]</span>
+  </div>
+
+  <h4>Evidentiary Pillars</h4>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Pillar</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>No corporate predecessor</strong></td>
+          <td>No source identifies a prior brand that Bitpapa rebranded from. The entity BITPAPA IC FZC LLC was established 29 Apr 2022 in the UAE with no documented predecessor registration.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">OFAC SDN (establishment date); negative evidence</span></td>
+        </tr>
+        <tr>
+          <td><strong>Wallet-cluster continuity via rotation</strong></td>
+          <td>Elliptic reports Bitpapa "constantly rotating addresses" to defeat attribution. TRM (April 2026) released a new deposit-wallet heuristic for Bitpapa, indicating a stable underlying cluster despite address rotation, a continuity signal at the infrastructure (not brand) level.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Elliptic; TRM</span></td>
+        </tr>
+        <tr>
+          <td><strong>No shared codebase / white-label evidence</strong></td>
+          <td>No open report states Bitpapa runs a shared or white-labeled codebase with other Russian P2P services. Software-level lineage is unknown.</td>
+          <td><span class="tier-inference">UNKNOWN</span><br><span style="font-size:11px;color:var(--text-muted)">Negative evidence; investigative gap</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operator Profiles</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Mandatory Subsection: No Named Individuals (Schema Rule)</div>
+    As of June 2026, no DOJ indictment, OFAC individual designation, UK listing, or Ukrainian decree names a Bitpapa founder, beneficial owner, or operator. The OFAC, Ukraine, and UK actions all target the corporate entity only. Nationality and current location of any controller are unknown. This is a critical intelligence gap and the reason this profile carries no operator hero module. <span class="badge badge-confirmed">Confirmed</span> (negative evidence across three regimes) <span class="cite">[OFAC, UK FCDO, Ukraine NSDC]</span>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-label">Attribution Caution (Do Not Conflate)</div>
+    Secondary search results sometimes surface the name Timur Evgenyevich Bukanov in proximity to Bitpapa. Bukanov is the owner and director of TOEP (operator of NetEx24 / Netexchange) and of Bitfingroup OU (Estonia), both designated in the same 25 March 2024 OFAC action. He is not a Bitpapa operator. Likewise, the individuals named in the UK 26 May 2026 list (Igor Gorin, Irina Akopyan, Sergey Mendeleev, Liran Cohen) are grouped in the package but are not mapped by the FCDO to Bitpapa specifically; Mendeleev is the Garantex/ABCeX figure. No individual should be attributed to Bitpapa on current evidence. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC jy2204; UK FCDO list]</span>
+  </div>
+
+  <h3>Disputed Assessments</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> The only defensible operator-level inference is geographic: given Russia-focused operations and a UAE shell registration, controllers are plausibly located in Russia or the UAE. This is a hypothesis, not a finding, and is not supported by any named-individual evidence. <span class="cite">[Analyst assessment]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ============================================== -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics and Product Set</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Bitpapa operates a custodial P2P marketplace with escrow. Per TRM, it functions "as a typical cryptocurrency exchange, which offers custody solutions and hosts its own peer-to-peer marketplace." Self-presentation (2022) describes escrow mechanics: Bitpapa "ensures that the transaction is completed by holding the purchaser's coins in an account until the transaction is complete," with 24/7 availability. Trades are frequently coordinated through Telegram bots. <span class="cite">[TRM, Line A Geek, AML Network]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> Supported assets reported in 2026 reviews include Bitcoin, Ethereum, USDT, Monero, and TON, consistent with the USDT-centric Russia evasion ecosystem. Activity appears focused on spot P2P and custodial transfers; no leveraged-derivatives product is documented. <span class="cite">[TradersUnion, Bitget review]</span></p>
+
+  <h3>KYC/AML Posture: Stated Policy vs Observed Behavior</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Stated Policy vs Observed Behavior (Schema Rule)</div>
+    <strong>Stated policy:</strong> No preserved copy of Bitpapa's own KYC/AML statement appears in independent archives or secondary reporting. Marketing emphasizes ease of use, escrow protection, and global reach, not identity verification. The stated posture is effectively undocumented. <span class="badge badge-credible">Credible</span> (intelligence gap on the stated side)<br><br>
+    <strong>Observed behavior (sourced to vendor/government framing, not the exchange's claims):</strong> Elliptic reports Bitpapa "manages its wallets specifically to evade sanctions enforcement by constantly rotating addresses," designed to prevent monitoring systems from identifying Bitpapa as a counterparty and to hide the Russian origin of funds. OFAC designated the entity for transacting with Hydra Market and Garantex. TRM previously labeled it a high-risk exchange. The gap between an undocumented stated posture and observed obfuscation plus large flows to sanctioned counterparties is the primary analytical finding. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic, OFAC, TRM]</span>
+  </div>
+  <div class="gap-flag">No public law-enforcement charging document detailing specific Bitpapa KYC/AML failures (thresholds, Travel Rule non-compliance, monitoring gaps). The designations are administrative; their underlying evidentiary files are not public.</div>
+
+  <h3>Fiat Rails (Schema Rule: Must Be Addressed)</h3>
+  <p><span class="badge badge-credible">Credible</span> Bitpapa is a ruble-to-crypto on/off ramp: Elliptic notes it allows "rubles to be exchanged for a range of cryptoassets," which in the Russia/CIS context typically involves local bank-card transfers, cash deals, and domestic payment systems intermediated through its P2P book. <span class="cite">[Elliptic]</span></p>
+  <p><strong>Banking relationships:</strong> No specific bank or payment-processor relationship is documented for Bitpapa in primary sources. <span class="badge badge-single">Single Source</span> Correction to the source draft: the Sberbank and Alfa-Bank linkage attributed to Bitpapa in the AML Network write-up maps, in the primary OFAC record (jy2204), to NetEx24 (TOEP), which "enabled digital payments in rubles and virtual currencies to OFAC-designated entities such as Sberbank, Alfa-Bank, and Hydra Market." That ruble-rail tie should be assigned to NetEx24, not Bitpapa, absent independent Bitpapa-specific evidence. No documented de-risking or bank-termination events appear in open sources. This subsection is included per schema even though no named Bitpapa bank relationship is documented. <span class="badge badge-confirmed">Confirmed</span> (the correction); <span class="cite">[OFAC jy2204, AML Network]</span></p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> BITPAPA IC FZC LLC is an Ajman Media City Free Zone entity (Reg. 5069), established 29 Apr 2022. No UAE Virtual Asset Service Provider (VASP) license number or named regulator approval is cited in any source; the UAE registration reads as a free-zone shell for a Russia-centric operation rather than evidence of substantive licensed supervision. Inclusion on the OFAC SDN list, the Ukrainian NSDC list, and the UK Consolidated List indicates the platform holds no reputable Western-aligned licensing. <span class="cite">[OFAC SDN, UK FCDO]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 04 : TECHNICAL -->
+<!-- ============================================== -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domains and Brand Footprint</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The OFAC SDN entry lists two associated websites: bitpapa.com and bitpapa.org. Earlier promotional content referenced bitpapa.com/buy. AML-oriented profiles treat Bitpapa as a single brand; no large set of alternate domains or typosquat rebrands beyond .com/.org is evidenced. <span class="cite">[OFAC SDN, Line A Geek]</span></p>
+  <div class="gap-flag">Hosting providers, CDN, TLS-certificate history, and server locations for bitpapa.com/.org are not publicly reported. Passive-DNS and WHOIS mapping of the primary domains is an open investigative task.</div>
+
+  <h3>Client Platforms, Apps, and Bots</h3>
+  <p><span class="badge badge-credible">Credible</span> 2026 reviews describe access via iOS and Android apps, a Telegram bot, and a web interface under a single account. Non-technical explainers describe Bitpapa as a "program" or "app" available 24/7. No Google Play or App Store takedown is referenced in sanctions-related coverage. <span class="cite">[TradersUnion, Bitget review, Line A Geek]</span></p>
+  <p><span class="badge badge-credible">Credible</span> AML Network reports that Bitpapa's anonymous trades are "often coordinated through Telegram bots," consistent with dedicated trade-coordination channels mirroring the web marketplace, a pattern common to Russian OTC/P2P networks. <span class="cite">[AML Network]</span></p>
+
+  <h3>Architecture Hints</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> TRM's reference to a Bitpapa deposit-wallet heuristic implies a standard exchange model where individual deposit addresses forward into internal hot-wallet clusters. The constant address rotation Elliptic describes implies an internal wallet-management layer that separates user-facing deposit addresses from exchange hot wallets via intermediate hops. Whether Bitpapa runs its own blockchain nodes or uses third-party providers is not stated. <span class="cite">[TRM, Elliptic]</span></p>
+
+  <h3>Resilience After Disruption</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> After the 2024 OFAC designation, Bitpapa continued operating; ForkLog and Elliptic describe it as sanctioned but active. No U.S. law-enforcement domain seizure or forced rebranding is reported. TRM's April 2026 deposit-wallet heuristic update confirms ongoing operation under the same brand. Resilience to date has focused on wallet-level stealth (address rotation) rather than overt brand change. <span class="cite">[ForkLog, Elliptic, TRM]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ============================================== -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Overall Volume and Role</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Volume Sourcing (Schema Rule: Cite Source and Methodology; Do Not Average)</div>
+    <strong>Elliptic (Feb 2026):</strong> reports concentration metrics, not totals. Approximately 9.7% of Bitpapa's outgoing crypto funds are destined for OFAC-sanctioned targets, including 5% specifically to Garantex.<br>
+    <strong>TRM Labs (May 2026):</strong> describes Bitpapa qualitatively as a high-risk P2P platform and does NOT publish a Bitpapa-specific bilateral dollar figure, even though it published such figures for co-designated peers (Huobi $4.9B, ABCeX $355M, Rapira $543M, Aifory $189M). The absence of a Bitpapa bilateral figure is itself a reporting gap, not a zero.<br>
+    <strong>AML Network:</strong> "millions of dollars" in illicit transactions since 2022 (non-quantified, secondary).<br>
+    No total throughput (licit plus illicit) figure exists in any reviewed source. These figures measure different things and are presented separately, not combined.
+  </div>
+
+  <h3>Phase 1: Receipt (Who Deposits and From Where)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Inbound exposure includes darknet-market flows (Hydra Market), the sanctioned exchange Garantex, and ransomware-linked clusters, with Russia as the primary geography. OFAC: Bitpapa "conducted transactions worth millions of dollars with OFAC-designated Russian entities Hydra Market and Garantex." AML Network frames Bitpapa as "a critical conduit for laundering millions of dollars on behalf of notorious darknet markets and ransomware operators." Grounded in OFAC designation plus multiple vendor reports. <span class="cite">[OFAC, AML Network, Elliptic]</span></p>
+
+  <h3>Phase 2: Layering (Internal Mechanics, Obfuscation)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Elliptic: Bitpapa is "constantly rotating addresses" to "prevent transaction monitoring systems from identifying Bitpapa as a counterparty and to hide the Russian origin of the funds from services that subsequently receive them." Combined with escrow flows between buyer and seller accounts and Telegram-coordinated P2P orders that separate fiat counterparties from crypto origin, this functions as an off-exchange layering mechanism. <span class="cite">[Elliptic, AML Network]</span></p>
+  <p><span class="badge badge-inference">Analyst Inference</span> <span class="badge badge-single">Single Source</span> Cross-asset chain-hopping (between tokens or chains) is plausible given the USDT/BTC/ETH/TON/Monero support set but is not explicitly documented in the reviewed material. <span class="cite">[Inference from supported-asset reporting]</span></p>
+
+  <h3>Phase 3: Extraction (Where Funds Go)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Outbound: Elliptic quantifies the dominant extraction signal, 9.7% of outgoing flow to OFAC-sanctioned targets and 5% to Garantex specifically. <span class="badge badge-credible">Credible</span> Additional extraction via other Russia-linked exchanges and overseas OTC brokers for eventual fiat withdrawal is consistent with Elliptic's network framing but not separately quantified for Bitpapa. Domestic Russian banking cash-out is plausible but, per the Section 03 correction, the specific Sberbank/Alfa-Bank tie belongs to NetEx24, not Bitpapa. <span class="cite">[Elliptic, OFAC]</span></p>
+
+  <h3>Designated Addresses and Risk Status</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The OFAC SDN entry designates BITPAPA IC FZC LLC at the entity level under program RUSSIA-EO14024 with a secondary-sanctions-risk notation; the public Summary page does not enumerate specific designated crypto wallet addresses. TRM tracks Bitpapa as a distinct clustered entity (April 2026 deposit-wallet heuristic). The UAE registration jurisdiction is not on the FATF black or grey list; the relevant exposure is jurisdictional arbitrage, not host-country blacklisting. <span class="cite">[OFAC SDN, TRM, FATF]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ============================================== -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Vertical</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Darknet markets (Hydra)</strong></td>
+          <td>OFAC: transactions worth millions with Hydra Market. AML Network: Bitpapa acts as an on/off ramp for Hydra.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Sanctioned exchanges (Garantex)</strong></td>
+          <td>Elliptic: 5% of outbound flow to Garantex. OFAC: transactions with Garantex.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Sanctions-evasion / state-aligned ruble flows</strong></td>
+          <td>OFAC, Ukraine, and UK all designate Bitpapa for facilitating Russia-linked sanctions evasion.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware operators</strong></td>
+          <td>AML Network: laundering "millions" for ransomware operators aligned with Russian interests. No named ransomware family tied to Bitpapa as a specific cash-out venue in public reporting.</td>
+          <td><span class="tier-credible">CREDIBLE</span> <span class="badge badge-single">Single Source</span></td>
+        </tr>
+        <tr>
+          <td><strong>Retail fraud / withdrawal complaints</strong></td>
+          <td>2025 review video alleges withdrawal issues, delayed transactions, and "fake escrow" patterns, plus very low third-party trust scores. Anecdotal; not corroborated by formal LE action on retail fraud.</td>
+          <td><span class="tier-credible">CREDIBLE</span> <span class="badge badge-single">Single Source</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Geographic Patterns</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Elliptic: Bitpapa "primarily targets users in Russia, allowing rubles to be exchanged for a range of cryptoassets." TRM: it offers "services to Russian nationals." The Russia/CIS core is clear; the UAE registration may facilitate some Middle East access, but no meaningful US/EU retail targeting is evidenced. <span class="cite">[Elliptic, TRM]</span></p>
+
+  <h3>High-Profile Flows</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> (qualitative) Public materials cite "millions of dollars" with Hydra and Garantex but no case-by-case amounts tied to named criminal operations, and no DOJ indictment provides granular figures. This is a notable evidentiary gap relative to detailed BTC-e/WEX cases. The best-evidenced quantified signal remains Elliptic's 9.7%/5% outbound concentration. <span class="cite">[OFAC, AML Network, Elliptic]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ============================================== -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <h3>Jurisdictional Separation (Schema Rule: Three Jurisdictions)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Assessment</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Entity registration</strong></td>
+          <td>United Arab Emirates: BITPAPA IC FZC LLC, Flamingo Villas, Ajman Media City Free Zone, Ajman (Reg. 5069), established 29 Apr 2022.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>2. Infrastructure hosting</strong></td>
+          <td>Not publicly mapped. Domains bitpapa.com/.org; hosting provider and server location unknown. Customer base anchored in Russia.</td>
+          <td><span class="tier-inference">UNKNOWN</span> (specific hosting) / <span class="tier-credible">CREDIBLE</span> (Russia-anchored users)</td>
+        </tr>
+        <tr>
+          <td><strong>3. Assessed operator location</strong></td>
+          <td>Unknown. No named operators. Informed hypothesis: Russia or UAE. Explicitly stated as unresolved.</td>
+          <td><span class="tier-inference">UNKNOWN</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>State Nexus Tier: TOLERATED SAFE HARBOR</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">Assessment</div>
+    <strong>Indicators for Tolerated Safe Harbor:</strong> Bitpapa openly serves Russian users and sanctioned Russian counterparties (Hydra, Garantex) yet faces no reported Russian domestic enforcement and continues operating after three foreign designations. The state is, at minimum, aware of and not acting against the service.<br><br>
+    <strong>Why not Probable Cooperation:</strong> There is no evidence of state tasking, coordination, or active protection. No FSB, Rosfinmonitoring, or ministry link is documented; no procurement or defense-payment tasking is evidenced. Membership in the broader Russia-linked evasion ecosystem is network-level context, not direct tasking of Bitpapa.<br><br>
+    <strong>Evidence against Direct Control:</strong> No open source identifies state ownership, named official involvement, or state shareholders.
+  </div>
+
+  <h3>Negative Evidence (What Would Be Expected if Higher Nexus Existed)</h3>
+  <p>If Bitpapa were under PROBABLE COOPERATION or DIRECT CONTROL, one would expect documented state shareholding, named intelligence-officer involvement, procurement tasking, or explicit protection signaling. None of these are present. There is also no reported Russian government defense of Bitpapa, nor any domestic enforcement against it; the combination is most consistent with tolerated operation rather than active coordination. The assessment therefore stops at TOLERATED SAFE HARBOR. <span class="badge badge-inference">Analyst Inference</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ============================================== -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+  <h3>Sanctions</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority</th><th>Action</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>OFAC (U.S.)</strong></td>
+          <td>Designated BITPAPA IC FZC LLC on 25 Mar 2024 under E.O. 14024 (program RUSSIA-EO14024, press release JY2204; 13 entities and 2 individuals), for operating in the financial services sector of the Russian Federation economy and transacting millions with Hydra Market and Garantex. Secondary-sanctions-risk notation; websites bitpapa.com, bitpapa.org. Entity-level only; no individuals designated.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (asset block in force)</td>
+        </tr>
+        <tr>
+          <td><strong>Ukraine (NSDC)</strong></td>
+          <td>Designated by presidential decree on 6 Jul 2025 within a package of roughly 60 legal entities targeting crypto-enabled sanctions circumvention and financing of the Russian military-industrial complex.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>UK (FCDO / OFSI)</strong></td>
+          <td>Designated 26 May 2026 under the Russia (Sanctions) (EU Exit) Regulations 2019, category "entities and individuals involved in supporting the Russian financial sector," within an 18-designation A7/crypto package (incl. Huobi/HTX, Exmo, Rapira, Aifory, ABCeX/Nueva Cryptologia). Asset freeze; UK-regulated firms prohibited from making funds or economic resources available.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (asset freeze in force)</td>
+        </tr>
+        <tr>
+          <td><strong>EU</strong></td>
+          <td>Not individually listed as of June 2026. EU 21st sanctions package (proposed 9 Jun 2026) includes transaction bans on Russia-linked crypto platforms; adoption and entity-specific scope pending.</td>
+          <td><span class="tier-credible">CREDIBLE</span> (proposed, not adopted)</td>
+        </tr>
+        <tr>
+          <td><strong>FinCEN</strong></td>
+          <td>No Section 311 action or Bitpapa-specific advisory in open sources; grouped within broader Russia-evasion advisories.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td>
+        </tr>
+        <tr>
+          <td><strong>DOJ / criminal</strong></td>
+          <td>No public DOJ indictment or criminal complaint names Bitpapa or its operators as of June 2026.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Timeline</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">29 Apr 2022</div><div class="timeline-text">BITPAPA IC FZC LLC established in Ajman Media City Free Zone, UAE. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC SDN]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">25 Mar 2024</div><div class="timeline-text">OFAC designates Bitpapa (with NetEx24/TOEP, Bukanov, and others) under E.O. 14024 for Russia-linked virtual-asset sanctions evasion. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[OFAC, Chainalysis, Elliptic]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">6 Jul 2025</div><div class="timeline-text">Ukraine (NSDC) sanctions Bitpapa within a ~60-entity crypto/sanctions-evasion decree. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[President of Ukraine]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">21 Feb 2026 (upd. 3 Mar 2026)</div><div class="timeline-text">Elliptic publishes Russia-linked sanctions-evasion analysis: 9.7% of Bitpapa outgoing flow to sanctioned targets, 5% to Garantex; constant address rotation. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Apr 2026</div><div class="timeline-text">TRM releases a new deposit-wallet heuristic for Bitpapa, indicating continued activity sufficient to warrant improved attribution. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[TRM]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div></div>
+      <div class="timeline-content"><div class="timeline-date">26 May 2026</div><div class="timeline-text">UK FCDO designates Bitpapa and 17 other entities/individuals in the A7/crypto package; asset freeze in force. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[UK FCDO, TRM]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Post-Sanction Reconstitution Assessment (Schema Rule)</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Reconstitution: No Rebrand, Brand-Level Continuity</div>
+    Bitpapa shows continuity rather than reconstitution: there is no observed rebrand, successor brand, domain migration, or takedown banner. The same UAE entity has operated through three designation cycles (OFAC 2024, Ukraine 2025, UK 2026) under the same name and domains (bitpapa.com/.org), accessible via web, app, and Telegram as of June 2026. Adaptation is at the wallet layer (constant address rotation) rather than the brand layer. The relevant indicators to monitor are new deposit-wallet clusters (TRM is actively expanding coverage), any future domain or Telegram migration, and whether post-Garantex displaced flows route through Bitpapa as they have through ABCeX, Rapira, and Aifory. <span class="badge badge-confirmed">Confirmed</span> (continuity); <span class="cite">[Elliptic, TRM, ForkLog]</span>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ============================================== -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-label">Two-Tier Model (Applied to Every Entry)</div>
+    <strong>Tier 1, Transaction confidence:</strong> how confident that funds transited Bitpapa (CONFIRMED / CREDIBLE / ANALYST INFERENCE), backed by on-chain evidence where available.<br>
+    <strong>Tier 2, Facilitation assessment:</strong> an analytical characterization of Bitpapa's role: Active facilitation, Structural enablement, or Incidental processing. The two tiers are independent and never collapsed.
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Entity</th><th>Tier 1: Transaction confidence</th><th>Tier 2: Facilitation</th><th>Vendor coverage</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Hydra Market</strong><br><span style="font-size:11px;color:var(--text-muted)">Sanctioned darknet market (defunct since 2022)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">OFAC: Bitpapa transacted millions with Hydra. AML Network: Bitpapa on/off ramp for Hydra.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Deliberate KYC/AML deficiencies predictably enabled this at scale; no evidence of direct operator coordination.</span></td>
+          <td>Corroborating: OFAC, TRM, AML Network. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>Garantex</strong><br><span style="font-size:11px;color:var(--text-muted)">Sanctioned Russia-linked exchange (disrupted Mar 2025)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Elliptic: 5% of Bitpapa outgoing flow to Garantex (on-chain). OFAC: transactions with Garantex.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Persistent, concentrated outbound exposure plus address rotation exceed incidental overlap; no evidence of joint operations.</span></td>
+          <td>Corroborating: Elliptic, OFAC, TRM. None disagreeing.</td>
+        </tr>
+        <tr>
+          <td><strong>NetEx24 / TOEP</strong><br><span style="font-size:11px;color:var(--text-muted)">Co-designated Moscow fintech (OFAC 25 Mar 2024)</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Co-designated in the same OFAC action; no public direct Bitpapa-to-NetEx24 on-chain flow figure. Relationship is ecosystemal, not evidenced as transactional.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Parallel high-risk P2P/fintech behavior; no evidence of joint active facilitation. NetEx24 (not Bitpapa) carries the Sberbank/Alfa-Bank ruble-rail tie.</span></td>
+          <td>Corroborating (co-designation only): OFAC. No on-chain vendor link published.</td>
+        </tr>
+        <tr>
+          <td><strong>Russian banks (Sberbank, Alfa-Bank)</strong><br><span style="font-size:11px;color:var(--text-muted)">Ruble fiat endpoints</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE (re-attributed)</span><br><span style="font-size:11px;color:var(--text-muted)">Primary OFAC record assigns the Sberbank/Alfa ruble-payment tie to NetEx24, not Bitpapa. The Bitpapa-specific bank linkage in AML Network is a likely conflation. <span class="badge badge-single">Single Source</span> for any Bitpapa-direct claim.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">From the banks' standpoint; no evidence of a knowing Bitpapa-bank arrangement.</span></td>
+          <td>Disagreeing/primary: OFAC jy2204 (ties banks to NetEx24). Secondary: AML Network (attributes to Bitpapa).</td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware operators</strong><br><span style="font-size:11px;color:var(--text-muted)">Unnamed Russia-aligned groups</span></td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">AML Network: laundering "millions" for ransomware operators. No named family or on-chain case published. <span class="badge badge-single">Single Source</span></span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Weak controls predictably enable cash-out; no evidence of knowing per-actor coordination.</span></td>
+          <td>Corroborating: AML Network only. No on-chain vendor has published a named case. <span class="badge badge-single">Single Source</span></td>
+        </tr>
+        <tr>
+          <td><strong>ABCeX, Rapira, Aifory Pro, NetEx24 (ecosystem)</strong><br><span style="font-size:11px;color:var(--text-muted)">Russia-linked exchange network</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Bitpapa is analyzed within the same Elliptic/UK network, but direct Bitpapa-to-peer bilateral figures are not published. Relationships are ecosystemal.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Co-participant in the ruble-to-crypto evasion corridor; no evidence of coordinated operations with Bitpapa specifically.</span></td>
+          <td>Corroborating (network-level): Elliptic, TRM, UK FCDO. No direct bilateral figures published.</td>
+        </tr>
+        <tr>
+          <td><strong>Huobi / HTX</strong><br><span style="font-size:11px;color:var(--text-muted)">UK-sanctioned global exchange (same package)</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Co-designated 26 May 2026; TRM names Huobi as a persistent counterparty to the broader set, but no Bitpapa-specific Huobi bilateral is isolated.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">Large-exchange liquidity bridge for the network; Bitpapa-specific role unquantified.</span></td>
+          <td>Corroborating: TRM (network-level). Huobi/HTX publicly disputes that the sanctioned entity equals its operating brand.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ============================================== -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Bitpapa is a persistent node in Russia's P2P sanctions-evasion ecosystem, distinguished by an unusually high outbound concentration to sanctioned entities (9.7% overall, 5% to Garantex per Elliptic). It is one of the few services in the Elliptic/UK network sanctioned across multiple regimes. No total-volume trend line is published; the available signal is concentration, not throughput. <span class="cite">[Elliptic, UK FCDO]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    All three designations are administrative asset freezes and listings, not infrastructure seizures or operator arrests. Their bite is on foreign-nexus financial access and counterparty risk, not on Bitpapa's domestic Russian operations or its servers. The structural weakness this profile flags is twofold: (1) the operator layer is entirely unattributed, so there is no human-capital pressure point to target, and (2) resilience is achieved cheaply through wallet address rotation rather than costly brand migration. Degrading Bitpapa requires resolving operator attribution, mapping and blocking its rotating deposit-wallet clusters (TRM coverage is the lever here), and pressuring its fiat off-ramp and counterparty network, not additional single-jurisdiction listings alone.
+  </div>
+
+  <h3>Reconstitution Status</h3>
+  <p>Brand: <strong>Operational, no rebrand.</strong> Same entity, name, and domains across three designation cycles; accessible via web, app, and Telegram as of June 2026. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Wallet layer: <strong>Adaptive.</strong> Constant address rotation; TRM expanding deposit-wallet attribution (Apr 2026). <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[Elliptic, TRM]</span></p>
+  <p>Future risk: <strong>Continuity over reconstitution.</strong> With no seizure and no named operators, the service can persist indefinitely under the same brand; a future forced rebrand would most likely follow a domain seizure or app-store removal, neither of which has occurred. <span class="badge badge-credible">Credible</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Identities, nationalities, and locations of founders/operators: entirely unattributed across OFAC, Ukraine, and UK actions. Highest-priority gap.</div>
+  <div class="gap-flag">Total trading volume (licit vs. illicit) and case-linked dollar amounts: no vendor publishes a Bitpapa total or a TRM-style bilateral figure.</div>
+  <div class="gap-flag">Full wallet-cluster and designated-address lists: only Elliptic concentration metrics and TRM internal heuristics exist publicly; no OFAC-listed wallet addresses.</div>
+  <div class="gap-flag">Hosting providers, CDN, and server locations for bitpapa.com/.org are not publicly mapped.</div>
+  <div class="gap-flag">Confirmed bank, payment-processor, or P2P cash-agent fiat off-ramps for Bitpapa specifically (distinct from NetEx24's Sberbank/Alfa tie).</div>
+  <div class="gap-flag">Stated KYC/AML policy text: no preserved copy of Bitpapa's own compliance statement located.</div>
+  <div class="gap-flag">EU 21st-package adoption and whether Bitpapa is individually listed remains unresolved as of June 2026.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- RECENT REPORTING -->
+<!-- ============================================== -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[26 May 2026]</span> UK FCDO designates Bitpapa and 17 other entities/individuals (Huobi/HTX, Exmo, Rapira, Aifory, ABCeX/Nueva Cryptologia, Eurasian Savings Bank, A7 infrastructure) under the Russia (Sanctions) (EU Exit) Regulations 2019; TRM publishes accompanying analysis noting Bitpapa is now under a third national regime. <span class="cite">[UK FCDO, TRM]</span></p>
+  <p><span class="cite">[Apr 2026]</span> TRM releases a new deposit-wallet heuristic for Bitpapa, the sanctioned P2P marketplace, indicating ongoing activity and expanded attribution. <span class="cite">[TRM]</span></p>
+  <p><span class="cite">[21 Feb 2026, updated 3 Mar 2026]</span> Elliptic names Bitpapa in its Russia-linked sanctions-evasion report: 9.7% of outgoing flow to OFAC-sanctioned targets, 5% to Garantex, constant address rotation. <span class="cite">[Elliptic]</span></p>
+  <p><span class="cite">[6 Jul 2025]</span> Ukraine (NSDC) sanctions Bitpapa within a ~60-entity decree targeting crypto-enabled circumvention. <span class="cite">[President of Ukraine]</span></p>
+  <p><span class="cite">[25 Mar 2024]</span> OFAC designates Bitpapa (with NetEx24/TOEP and Bukanov) under E.O. 14024 for facilitating Russia-linked sanctions evasion involving Hydra Market and Garantex. <span class="cite">[OFAC, Chainalysis, Elliptic]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SOURCES -->
+<!-- ============================================== -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://www.elliptic.co/blog/russia-linked-cryptocurrency-services-and-sanctions-evasion" target="_blank">Elliptic: Russia-linked cryptocurrency services and sanctions evasion (Bitpapa: 9.7% outgoing to sanctioned, 5% to Garantex; address rotation) : 21 February 2026 (updated 3 March 2026)</a></li>
+    <li><a href="https://home.treasury.gov/news/press-releases/jy2204" target="_blank">U.S. Treasury / OFAC: Treasury Designates Russian Companies Supporting Sanctions Evasion Through Virtual Asset Services and Technology Procurement (JY2204; Bitpapa, NetEx24/TOEP, Bukanov) : 25 March 2024</a></li>
+    <li><a href="https://ofac.treasury.gov/recent-actions/20240325" target="_blank">OFAC Recent Actions: Russia-related and Cyber-related Designations (Bitpapa IC FZC LLC; SDN id 48096; RUSSIA-EO14024) : 25 March 2024</a></li>
+    <li><a href="https://www.gov.uk/government/publications/list-of-russia-sanctions-designations-26-may-2026" target="_blank">UK Government: List of Russia sanctions designations, 26 May 2026 (BITPAPA IC FZC LLC, supporting the Russian financial sector)</a></li>
+    <li><a href="https://www.gov.uk/government/news/uk-cracks-down-on-backdoor-russian-sanctions-evasion-with-tough-new-measures" target="_blank">UK FCDO: UK cracks down on backdoor Russian sanctions evasion with tough new measures (18-designation A7/crypto package) : 26 May 2026</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/uk-designates-huobi-exmo-bitpapa-and-11-other-entities-for-russian-crypto-sanctions-evasion" target="_blank">TRM Labs: UK Designates Huobi, Exmo, Bitpapa, and 11 Other Entities for Russian Crypto Sanctions Evasion (Bitpapa under three regimes: OFAC 2024, Ukraine 2025, UK 2026) : 26 May 2026</a></li>
+    <li><a href="https://www.trmlabs.com/resources/blog/us-treasurys-ofac-sanctioned-russia-based-crypto-exchanges-and-fintechs-for-facilitating-sanctions-evasion" target="_blank">TRM Labs: US Treasury's OFAC sanctions Russia-based crypto exchanges and fintechs (Bitpapa custody + P2P; high-risk label) : March 2024</a></li>
+    <li><a href="https://www.trmlabs.com/blockchain-intelligence-platform/blockchain-intelligence-releases-april-2026" target="_blank">TRM Labs: Blockchain Intelligence Releases, April 2026 (new deposit-wallet heuristic for Bitpapa)</a></li>
+    <li><a href="https://www.chainalysis.com/blog/ofac-sanctions-russia-blockchain-companies-netex24-bitpapa/" target="_blank">Chainalysis: OFAC Sanctions Netex24 and Bitpapa, Plus Other Russian Crypto Companies : March 2024</a></li>
+    <li><a href="https://www.president.gov.ua/documents/4652025-55605" target="_blank">President of Ukraine: NSDC sanctions decree (package including Bitpapa) : 6 July 2025</a></li>
+    <li><a href="https://amlnetwork.org/watchdog-database/cryptocurrency-laundering/bitpapa/" target="_blank">AML Network: Bitpapa watchdog profile (weak AML/KYC; Telegram-coordinated trades; Hydra on/off ramp; note: Sberbank/Alfa attribution disputed, see OFAC jy2204)</a></li>
+    <li><a href="https://forklog.com/en/us-imposes-sanctions-on-atomyze-and-bitpapa-platforms/" target="_blank">ForkLog: US Imposes Sanctions on Atomyze and Bitpapa Platforms : March 2024</a></li>
+    <li><a href="https://virtual-routes.org/ransomware-countermeasures-tracker/cryptocurrency-exchanges-bitpapa-toep-and-crypto-explore-sanctioned/" target="_blank">Virtual Routes: Cryptocurrency exchanges Bitpapa, TOEP, and Crypto Explore sanctioned (financial-services-sector designation language)</a></li>
+    <li><a href="https://sanctionssearch.ofac.treas.gov/Details.aspx?id=48096" target="_blank">OFAC Sanctions List Search: BITPAPA IC FZC LLC (entity detail; established 29 Apr 2022; Ajman Media City Free Zone; websites bitpapa.com, bitpapa.org)</a></li>
+    <li><a href="https://tradersunion.com/reviews/bitpapa-com/" target="_blank">Traders Union: Bitpapa Review (April 2026) (continued operation; web/app/Telegram access; supported assets)</a></li>
+    <li><a href="https://www.lineageek.com/an-in-depth-guide-to-bitpapa-and-cryptocurrency/" target="_blank">Line A Geek: An In-Depth Guide to Bitpapa and Cryptocurrency (escrow self-presentation; 24/7) : 2022</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). Volume figures cited with source and methodology; figures from different vendors and authorities are presented separately, not averaged. Two-tier connected entity model applied throughout Section 09 (Tier 1 transaction confidence plus Tier 2 facilitation assessment). Three jurisdictions documented separately per schema (registration UAE; hosting unknown; operator location unknown). Key correction vs. source draft: the Sberbank/Alfa-Bank ruble-rail tie belongs in the primary OFAC record to NetEx24 (TOEP), not Bitpapa. Status: Sanctioned (OFAC 25 Mar 2024; Ukraine 6 Jul 2025; UK 26 May 2026); operational; assessed state nexus TOLERATED SAFE HARBOR.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
