@@ -1258,4 +1258,28 @@ sections.forEach(section => observer.observe(section));
       const items = feedRaw.value.slice(0, 10);
       if (loadingEl) loadingEl.remove();
       items.forEach(item => {
-        const card = document.createElement('div')
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+</script>
+
+</body>
+</html>
