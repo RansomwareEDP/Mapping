@@ -4,7 +4,7 @@ fetch_ti_feeds.py
 -----------------
 Pulls RSS feeds from major threat intelligence sources, filters each feed
 for articles relevant to tracked ransomware groups, and writes results to
-groups/data/ti-feed.json.
+groups/data/ti-feed.json plus per-group ti-feed-<group>.json files.
 
 Run by GitHub Actions on schedule. Also safe to run locally.
 
@@ -14,7 +14,6 @@ Output format (groups/data/ti-feed.json):
 """
 
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,27 +23,57 @@ except ImportError:
     print("feedparser not installed. Run: pip install feedparser")
     raise
 
+# Some sites reject the default feedparser user agent; present a browser UA.
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+)
+
 # -------------------------------------------------------
-# RSS FEEDS TO MONITOR
-# Add or remove feeds here as needed.
+# RSS FEEDS TO MONITOR (all free / no API key)
+# Add or remove feeds here as needed. A feed that fails or
+# returns nothing is skipped with a warning; it never
+# breaks the run.
 # -------------------------------------------------------
 FEEDS = [
+    # Vendor research blogs
     "https://unit42.paloaltonetworks.com/feed/",
-    "https://www.bleepingcomputer.com/feed/",
+    "https://blog.talosintelligence.com/rss/",
+    "https://feeds.trendmicro.com/TrendMicroResearch",
+    "https://research.checkpoint.com/feed/",
+    "https://news.sophos.com/en-us/feed/",
+    "https://www.welivesecurity.com/en/rss/feed/",
+    "https://securelist.com/feed/",
+    "https://www.microsoft.com/en-us/security/blog/feed/",
+    "https://www.sentinelone.com/blog/feed/",
+    "https://www.crowdstrike.com/blog/feed/",
+    "https://www.rapid7.com/blog/rss/",
+    "https://www.group-ib.com/blog/feed/",
     "https://socradar.io/feed/",
     "https://www.darktrace.com/blog/rss",
     "https://thedfirreport.com/feed/",
-    "https://www.rapid7.com/blog/rss/",
-    "https://www.group-ib.com/blog/feed/",
-    "https://www.sentinelone.com/blog/feed/",
-    "https://www.crowdstrike.com/blog/feed/",
     "https://decoded.avast.io/feed/",
+    "https://www.malwarebytes.com/blog/feed/index.xml",
+    # News outlets
+    "https://www.bleepingcomputer.com/feed/",
+    "https://therecord.media/feed",
+    "https://feeds.feedburner.com/TheHackersNews",
+    "https://www.securityweek.com/feed/",
+    "https://www.darkreading.com/rss.xml",
+    "https://www.infosecurity-magazine.com/rss/news/",
+    "https://www.helpnetsecurity.com/feed/",
+    "https://cybernews.com/feed/",
+    "https://krebsonsecurity.com/feed/",
+    # Ransomware / breach-focused independents
+    "https://databreaches.net/feed/",
+    "https://suspectfile.com/feed/",
+    "https://redpacketsecurity.com/feed/",
 ]
 
 # -------------------------------------------------------
 # KEYWORD MAPPING PER GROUP
 # All strings are matched case-insensitively against the
-# article title + summary combined.
+# article title + summary + content combined.
 # -------------------------------------------------------
 KEYWORDS = {
     "lynx": [
@@ -116,9 +145,30 @@ KEYWORDS = {
         "readme-gentlemen",
         "ransom:win64/gentlemen",
     ],
+    "blackbasta": [
+        "black basta",
+        "blackbasta",
+        "storm-1811",
+        "cardinal cybercrime",
+    ],
+    "nightspire": [
+        "nightspire",
+        "night spire",
+    ],
+    "payload": [
+        "payload ransomware",
+        "recover_payload",
+        "payload ransom gang",
+        "payload ransom group",
+    ],
+    "worldleaks": [
+        "world leaks",
+        "worldleaks",
+        "hunters international",
+    ],
 }
 
-MAX_PER_GROUP = 10      # max articles to keep per group
+MAX_PER_GROUP = 10          # max articles to keep per group
 MAX_ENTRIES_PER_FEED = 50   # how many entries to scan per feed fetch
 
 
@@ -135,28 +185,50 @@ def parse_date(entry):
     return ""
 
 
+def entry_text(entry):
+    """Combine title, summary, and content into one lowercase string.
+
+    NOTE: this replaces an earlier version whose conditional expression
+    silently discarded title and summary whenever an entry had no
+    content attribute, which made every keyword match fail.
+    """
+    parts = [
+        getattr(entry, "title", "") or "",
+        getattr(entry, "summary", "") or "",
+    ]
+    content = getattr(entry, "content", None)
+    if content:
+        try:
+            parts.append(content[0].get("value", "") or "")
+        except (IndexError, AttributeError, TypeError):
+            pass
+    return " ".join(parts).lower()
+
+
+def match_group(entry, keywords):
+    """Return True if the entry text contains any of the keywords."""
+    text = entry_text(entry)
+    return any(kw in text for kw in keywords)
+
+
 def fetch_feeds():
     """Fetch and parse all configured RSS feeds. Returns list of raw entries."""
     all_entries = []
     for url in FEEDS:
         try:
-            feed = feedparser.parse(url)
+            feed = feedparser.parse(url, agent=USER_AGENT)
             feed_title = getattr(feed.feed, "title", url)
+            count = 0
             for entry in feed.entries[:MAX_ENTRIES_PER_FEED]:
                 all_entries.append((feed_title, entry))
+                count += 1
+            status = getattr(feed, "status", "n/a")
+            print(f"  [{count:>3} entries, http {status}] {url}")
+            if count == 0:
+                print(f"    WARNING: no entries from {url}")
         except Exception as e:
-            print(f"Warning: could not fetch {url}: {e}")
+            print(f"  WARNING: could not fetch {url}: {e}")
     return all_entries
-
-
-def match_group(entry, keywords):
-    """Return True if the entry text contains any of the keywords."""
-    text = (
-        getattr(entry, "title", "") + " " +
-        getattr(entry, "summary", "") + " " +
-        getattr(entry, "content", [{}])[0].get("value", "") if hasattr(entry, "content") and entry.content else ""
-    ).lower()
-    return any(kw in text for kw in keywords)
 
 
 def main():
@@ -171,15 +243,21 @@ def main():
 
     for group, keywords in KEYWORDS.items():
         matches = []
+        seen_urls = set()
         for feed_title, entry in raw_entries:
-            if match_group(entry, keywords):
-                matches.append({
-                    "group":  group,
-                    "title":  getattr(entry, "title", "Untitled"),
-                    "url":    getattr(entry, "link",  "#"),
-                    "source": feed_title,
-                    "date":   parse_date(entry),
-                })
+            if not match_group(entry, keywords):
+                continue
+            url = getattr(entry, "link", "#")
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            matches.append({
+                "group":  group,
+                "title":  getattr(entry, "title", "Untitled"),
+                "url":    url,
+                "source": feed_title,
+                "date":   parse_date(entry),
+            })
 
         # Sort newest first, cap at max
         matches.sort(key=lambda x: x["date"], reverse=True)
