@@ -2,7 +2,7 @@
 
 Structural analysis of Russia and CIS-linked ransomware networks, mapping the financial, infrastructure, and jurisdictional leverage points across the full criminal ecosystem.
 
-This repository serves the research site at **https://ransomwareedp.github.io/Mapping/**.
+This repository serves the research site at **https://research.therenoproject.org/**.
 
 ## What is here
 
