@@ -610,6 +610,8 @@ const CORS_PROXY  = 'https://corsproxy.io/?';
 
 async function apiFetch(endpoint) {
   const attempts = [
+    // 0. Same-origin relay (Cloudflare Pages function; not present on github.io, falls through)
+    { url: '/rl-api' + endpoint, headers: {} },
     // 1. Free API direct (public, CORS likely enabled, no key needed)
     { url: FREE_API + endpoint, headers: {} },
     // 2. PRO API direct
