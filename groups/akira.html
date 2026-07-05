@@ -572,6 +572,10 @@ html { scroll-behavior: smooth; }
       <span class="group-dot dot-conti"></span>
       Conti
     </a>
+    <a class="group-item" href="alphv.html">
+      <span class="group-dot dot-inactive"></span>
+      ALPHV / BlackCat
+    </a>
     <a class="group-item active" href="akira.html">
       <span class="group-dot dot-active"></span>
       Akira
@@ -595,6 +599,10 @@ html { scroll-behavior: smooth; }
     <a class="group-item" href="lockbit.html">
       <span class="group-dot dot-dim"></span>
       LockBit
+    </a>
+    <a class="group-item" href="scatteredspider.html">
+      <span class="group-dot dot-active"></span>
+      Scattered Spider
     </a>
     <a class="group-item" href="silentransom.html">
       <span class="group-dot dot-active"></span>
@@ -648,7 +656,7 @@ html { scroll-behavior: smooth; }
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-eyebrow">Threat Actor Profile &mdash; Last updated <span id="hero-last-updated">May 2026</span></div>
+    <div class="hero-eyebrow">Threat Actor Profile: Last updated <span id="hero-last-updated">May 2026</span></div>
     <div class="hero-title">Akira</div>
     <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Conti Diaspora</div>
     <div class="hero-badges">
@@ -801,7 +809,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Assessed Origin</div>
-        <div class="conf conf-credible">Credible &mdash; multiple independent source types converge</div>
+        <div class="conf conf-credible">Credible, multiple independent source types converge</div>
         <p>TRM Labs assesses Akira's developers are located in Russia or the broader post-Soviet region, citing non-VPN IP observations tied to Russia and Russian-language operator communications on dark web forums. S-RM Intelligence corroborates this assessment. The Canadian Centre for Cyber Security assessed Akira as "very likely connected" to former Conti personnel. No founding member or leadership identity has been publicly confirmed.</p>
       </div>
 
@@ -810,28 +818,28 @@ html { scroll-behavior: smooth; }
         <p>Attribution to former Conti / Wizard Spider personnel rests on four independent evidentiary pillars. <strong>Wizard Spider</strong> is CrowdStrike's tracking designation for the Russia-based eCrime group that operated TrickBot, Ryuk, and Conti as sequential campaigns. Secureworks tracks the same core cluster as <strong>Gold Ulrick</strong>.</p>
         <div class="pillar-grid">
           <div class="pillar-card confirmed">
-            <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+            <div class="pillar-num">Pillar 1: Confirmed</div>
             <div class="pillar-title">Blockchain Forensics</div>
             <div class="pillar-body">Arctic Wolf Labs traced three separate Bitcoin transactions in which Akira operators sent proceeds totaling over $600,000 directly to wallet addresses previously associated with Conti/Wizard Spider leadership. TRM Labs confirmed overlapping on-chain infrastructure. This is the strongest evidentiary pillar.</div>
           </div>
           <div class="pillar-card credible">
-            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-num">Pillar 2: Credible</div>
             <div class="pillar-title">Code and Behavioral Signatures</div>
             <div class="pillar-body">Avast Threat Labs concluded Akira's encryptor creators were "at least inspired by" leaked Conti sources, noting similarities in string obfuscation, encryption routines, and extension exclusion lists. Caveat: because Conti source code was publicly leaked February 2022, code overlap alone does not prove personnel continuity.</div>
           </div>
           <div class="pillar-card confirmed">
-            <div class="pillar-num">Pillar 3 &mdash; Confirmed (presence) / Credible (interpretation)</div>
+            <div class="pillar-num">Pillar 3: Confirmed (presence) / Credible (interpretation)</div>
             <div class="pillar-title">Language Artifacts</div>
-            <div class="pillar-body">Akira affiliates communicate in Russian on dark web forums. The binary contains a hard-coded check for Russian keyboard layout but does <em>not</em> halt execution when detected &mdash; a deliberate deviation from standard CIS-exclusion behavior that may be intended to obscure attribution.</div>
+            <div class="pillar-body">Akira affiliates communicate in Russian on dark web forums. The binary contains a hard-coded check for Russian keyboard layout but does <em>not</em> halt execution when detected, a deliberate deviation from standard CIS-exclusion behavior that may be intended to obscure attribution.</div>
           </div>
           <div class="pillar-card credible">
-            <div class="pillar-num">Pillar 4 &mdash; Credible</div>
+            <div class="pillar-num">Pillar 4: Credible</div>
             <div class="pillar-title">Temporal &amp; Operational Context</div>
             <div class="pillar-body">Akira emerged in March 2023 &mdash; precisely when Conti affiliates required new infrastructure post-dissolution. Analyst1 (February 2026) describes the post-Conti network as "a loose federation of rebranded cells sharing tooling and infrastructure rather than a unified hierarchy."</div>
           </div>
         </div>
         <div class="callout callout-info">
-          <strong>Overall assessment:</strong> Akira is most accurately described as part of the Conti/Wizard Spider diaspora &mdash; a separate operational entity staffed by former Conti-affiliated operators carrying shared TTPs, laundering infrastructure, and operational playbook. It is not Conti rebranded in the formal sense. The Wizard Spider core operator tier is assessed as having moved primarily into Royal/BlackSuit; Akira represents affiliate and mid-tier operator continuity with leadership-level financial linkage through the blockchain evidence.
+          <strong>Overall assessment:</strong> Akira is most accurately described as part of the Conti/Wizard Spider diaspora, a separate operational entity staffed by former Conti-affiliated operators carrying shared TTPs, laundering infrastructure, and operational playbook. It is not Conti rebranded in the formal sense. The Wizard Spider core operator tier is assessed as having moved primarily into Royal/BlackSuit; Akira represents affiliate and mid-tier operator continuity with leadership-level financial linkage through the blockchain evidence.
         </div>
       </div>
 
@@ -863,9 +871,9 @@ html { scroll-behavior: smooth; }
           <li><strong>Exfiltration first:</strong> Data is exfiltrated prior to encryption. In some 2025 incidents, exfiltration completed within two hours of initial access.</li>
           <li><strong>Encryption extortion:</strong> Victims must pay for decryption keys to restore systems.</li>
           <li><strong>Publication threat:</strong> Victims must pay separately to prevent data publication on Akira's Tor-based Dedicated Leak Site (DLS).</li>
-          <li><strong>Disaggregated payment option:</strong> Akira uniquely offers victims the ability to pay for decryption or data deletion separately &mdash; a tactic to lower the payment threshold for victims with functional backups.</li>
+          <li><strong>Disaggregated payment option:</strong> Akira uniquely offers victims the ability to pay for decryption or data deletion separately, a tactic to lower the payment threshold for victims with functional backups.</li>
         </ul>
-        <p>Beginning in early 2024, Akira temporarily abandoned encryption entirely, focusing on exfiltration-only extortion &mdash; assessed by Cisco Talos as reflecting developer retooling time for a new encryptor. Full double extortion resumed by mid-to-late 2024.</p>
+        <p>Beginning in early 2024, Akira temporarily abandoned encryption entirely, focusing on exfiltration-only extortion, assessed by Cisco Talos as reflecting developer retooling time for a new encryptor. Full double extortion resumed by mid-to-late 2024.</p>
       </div>
 
       <div class="subsection">
@@ -885,7 +893,7 @@ html { scroll-behavior: smooth; }
           <div class="metric-card">
             <div class="metric-label">Avg. Days to Payment <span class="internal-badge">Internal</span></div>
             <div class="metric-val">22 days</div>
-            <div class="metric-note">Median: 21 days &mdash; min 1, max 63</div>
+            <div class="metric-note">Median: 21 days, min 1, max 63</div>
           </div>
           <div class="metric-card">
             <div class="metric-label">Attack to Publication</div>
@@ -894,7 +902,7 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
         <div class="callout callout-warning">
-          <strong>Analytical note:</strong> Internal data from Q4 2023 shows negotiation reductions ranging from 37.5% to 96.0% off initial demand &mdash; including a $10M initial demand settled at $400K (96% reduction) and a $3M demand settled at $250K (91.7% reduction). This data challenges the claim that "operators maintain tight control over the floor." In practice, the floor is highly flexible under sustained negotiation pressure.
+          <strong>Analytical note:</strong> Internal data from Q4 2023 shows negotiation reductions ranging from 37.5% to 96.0% off initial demand, including a $10M initial demand settled at $400K (96% reduction) and a $3M demand settled at $250K (91.7% reduction). This data challenges the claim that "operators maintain tight control over the floor." In practice, the floor is highly flexible under sustained negotiation pressure.
         </div>
         <ul class="content-list">
           <li>Negotiations begin promptly, often within hours of encryption deployment</li>
@@ -1134,7 +1142,7 @@ html { scroll-behavior: smooth; }
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Payment Profile <span class="internal-badge">Internal Data &mdash; 85 cases</span></div>
+        <div class="subsection-title">Payment Profile <span class="internal-badge">Internal Data: 85 cases</span></div>
         <div class="metric-grid">
           <div class="metric-card highlight">
             <div class="metric-label">Median Payment</div>
@@ -1191,13 +1199,13 @@ html { scroll-behavior: smooth; }
             <div class="phase-num">III</div>
             <div class="phase-body">
               <div class="phase-title">Late 2024 &mdash; Defiway Bridge</div>
-              <div class="phase-desc">Transition to Defiway bridge. Critically, Fog ransomware used the same Defiway approach during this period &mdash; providing on-chain evidence of infrastructure sharing or operational cooperation between Akira and Fog.</div>
+              <div class="phase-desc">Transition to Defiway bridge. Critically, Fog ransomware used the same Defiway approach during this period, providing on-chain evidence of infrastructure sharing or operational cooperation between Akira and Fog.</div>
             </div>
           </div>
           <div class="phase-item">
             <div class="phase-num">IV</div>
             <div class="phase-body">
-              <div class="phase-title">August 2025&ndash;Present &mdash; Per-Victim Addresses + HTX</div>
+              <div class="phase-title">August 2025&ndash;Present: Per-Victim Addresses + HTX</div>
               <div class="phase-desc">Each payment passes through a unique intermediary address, then aggregates across two consolidation addresses, before off-ramping at HTX (formerly Huobi). Admin-affiliate revenue split occurs only after funds reach the shared VASP cash-out address, keeping the split opaque on-chain.</div>
             </div>
           </div>
@@ -1217,14 +1225,14 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Assessed Jurisdiction</div>
-        <div class="conf conf-credible">Credible &mdash; Russia or broader post-Soviet region</div>
+        <div class="conf conf-credible">Credible, Russia or broader post-Soviet region</div>
         <p>Evidence basis: Russian-language operator communications on dark web forums; non-VPN IP observations tied to Russia; wallet infrastructure overlapping with Conti-affiliated addresses tied to formally sanctioned Russia-based operators. No contradicting evidence in open source.</p>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">CIS Exclusion Behavior</div>
-        <div class="conf conf-confirmed">Confirmed &mdash; No keyboard-layout kill switch present in binary</div>
-        <p>The Akira binary does <strong>not</strong> contain the standard kill switch that halts execution when a Russian keyboard layout is detected &mdash; a deliberate deviation from virtually all other Russian-linked ransomware families. Despite the absence of the technical safeguard, no CIS-region victims appear in any open-source database.</p>
+        <div class="conf conf-confirmed">Confirmed, No keyboard-layout kill switch present in binary</div>
+        <p>The Akira binary does <strong>not</strong> contain the standard kill switch that halts execution when a Russian keyboard layout is detected, a deliberate deviation from virtually all other Russian-linked ransomware families. Despite the absence of the technical safeguard, no CIS-region victims appear in any open-source database.</p>
         <div class="conf-block inference">
           <strong>ANALYST INFERENCE:</strong> Operator-level targeting guidance to affiliates produces the same CIS-exclusion outcome through a different mechanism. The absence of the technical kill switch may be a deliberate choice to obscure Russia-origin attribution while achieving the same practical result.
         </div>
@@ -1255,7 +1263,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Russian Intelligence Services Nexus Assessment</div>
-        <div class="conf conf-inference">Analyst Inference &mdash; No confirmed direct RIS nexus. Ecosystem-level intelligence-adjacent relationships documented at organizational level.</div>
+        <div class="conf conf-inference">Analyst Inference, No confirmed direct RIS nexus. Ecosystem-level intelligence-adjacent relationships documented at organizational level.</div>
         <p>No publicly confirmed direct tasking or control relationship between Akira's operators and Russian state intelligence services (FSB, SVR, or GRU) exists as of May 2026. However, the post-Conti/Wizard Spider ecosystem has documented intelligence-adjacent relationships:</p>
         <ul class="content-list">
           <li><strong>Recorded Future Dark Covenant 3.0 (October 2025):</strong> Leaked Conti communications show senior Conti figures provided data to both GRU and SVR. One operator ("Professor") maintained a paid informant or bribery relationship with SVR contacts.</li>
@@ -1263,7 +1271,7 @@ html { scroll-behavior: smooth; }
           <li><strong>DOJ sentencing documents (Zolotarjovs):</strong> Organization described as including "multiple former Russian law enforcement officers" who "co-opted Russian government databases."</li>
         </ul>
         <div class="conf-block inference">
-          <strong>Framework assessment (Recorded Future):</strong> Russia's posture toward groups like this is characterized as "conditional controlled impunity" &mdash; not uniform protection, but a managed market where groups useful to the state are insulated while peripheral facilitators are sacrificed under Western pressure. Given Akira's financial scale ($244M+) and Wizard Spider heritage, it fits the category that would receive insulation rather than exposure. A protection relationship should be treated as <strong>likely but unconfirmed</strong> pending source-level intelligence.
+          <strong>Framework assessment (Recorded Future):</strong> Russia's posture toward groups like this is characterized as "conditional controlled impunity", not uniform protection, but a managed market where groups useful to the state are insulated while peripheral facilitators are sacrificed under Western pressure. Given Akira's financial scale ($244M+) and Wizard Spider heritage, it fits the category that would receive insulation rather than exposure. A protection relationship should be treated as <strong>likely but unconfirmed</strong> pending source-level intelligence.
         </div>
       </div>
     </section>
@@ -1274,6 +1282,10 @@ html { scroll-behavior: smooth; }
         <span class="section-num">09</span>
         <h2 class="section-title">Disruption History &amp; Known Vulnerabilities</h2>
       </div>
+
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="groups/akira.html" defer></script>
+
 
       <div class="subsection">
         <div class="subsection-title">Avast Decryptor (June 2023)</div>
@@ -1310,7 +1322,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">No Infrastructure Takedown</div>
-        <div class="conf conf-confirmed">Confirmed &mdash; Zero law enforcement disruption events as of May 2026</div>
+        <div class="conf conf-confirmed">Confirmed, Zero law enforcement disruption events as of May 2026</div>
         <p>Akira has operated for over 39 months without a direct law enforcement disruption event, making it one of the most durable major ransomware operations in the post-Conti period. No WAIS-scoreable events on record.</p>
       </div>
 
@@ -1319,7 +1331,7 @@ html { scroll-behavior: smooth; }
         <ul class="content-list">
           <li><strong>Geographic exposure:</strong> Zolotarjovs arrest in Georgia demonstrates that travel outside Russia to non-extradition-treaty countries is an exploitable exposure point.</li>
           <li><strong>On-chain attribution:</strong> Centralized laundering infrastructure (Defiway, WanChain, HTX) creates durable attribution opportunities. TRM Labs has successfully grouped affiliate payment flows through wallet cluster analysis and identified the primary cash-out exchange.</li>
-          <li><strong>Affiliate trust fragmentation:</strong> Recorded Future documented increasing affiliate disputes across the RaaS ecosystem post-Operation Endgame, including non-payment scams &mdash; a pattern affecting Akira's peer groups and a potential OPSEC exposure vector.</li>
+          <li><strong>Affiliate trust fragmentation:</strong> Recorded Future documented increasing affiliate disputes across the RaaS ecosystem post-Operation Endgame, including non-payment scams, a pattern affecting Akira's peer groups and a potential OPSEC exposure vector.</li>
         </ul>
       </div>
     </section>
@@ -1332,7 +1344,7 @@ html { scroll-behavior: smooth; }
       </div>
 
       <div class="callout callout-alert">
-        <strong>Fully Operational.</strong> Akira's leak site was last accessed May 23, 2026 with victims posted as recently as May 22, 2026. In April 2026, Qilin surpassed Akira as the most active group for that month &mdash; Akira remains closely behind at roughly the same activity level as March.
+        <strong>Fully Operational.</strong> Akira's leak site was last accessed May 23, 2026 with victims posted as recently as May 22, 2026. In April 2026, Qilin surpassed Akira as the most active group for that month, Akira remains closely behind at roughly the same activity level as March.
       </div>
 
       <div class="metric-grid" style="margin-top:20px">
@@ -1360,14 +1372,14 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection" style="margin-top:24px">
         <div class="subsection-title">Trajectory Assessment</div>
-        <div class="conf conf-inference">Analyst Inference &mdash; Continued high-tempo operations at or above 2025 levels</div>
+        <div class="conf conf-inference">Analyst Inference, Continued high-tempo operations at or above 2025 levels</div>
         <p>All trajectory indicators are uniformly expansionary: volume rising, revenue rising, geographic expansion continuing, capability expanding (Nutanix AHV added June 2025, kill chain accelerating to sub-4 hours per Halcyon April 2026), and laundering sophistication increasing through four phase rotations in three years.</p>
-        <p>The absence of any law enforcement disruption event combined with rising revenue and victim volume suggests Akira has established a durable operational posture. The broader TRM-identified cluster (Fog, Frag, Anubis sharing laundering infrastructure) suggests Akira may function as an <strong>operational hub</strong> anchoring a wider affiliate ecosystem &mdash; consistent with a mature RaaS structure where high-trust affiliates work across multiple brands simultaneously.</p>
+        <p>The absence of any law enforcement disruption event combined with rising revenue and victim volume suggests Akira has established a durable operational posture. The broader TRM-identified cluster (Fog, Frag, Anubis sharing laundering infrastructure) suggests Akira may function as an <strong>operational hub</strong> anchoring a wider affiliate ecosystem, consistent with a mature RaaS structure where high-trust affiliates work across multiple brands simultaneously.</p>
         <div class="conf-block confirmed" style="margin-bottom:12px">
-          <strong>CONFIRMED &mdash; Akira-Fog cluster:</strong> Arctic Wolf shared IP infrastructure; TRM Defiway bridge sharing; Sophos STAC 5881 designation. Evidence is multi-source and independent.
+          <strong>CONFIRMED, Akira-Fog cluster:</strong> Arctic Wolf shared IP infrastructure; TRM Defiway bridge sharing; Sophos STAC 5881 designation. Evidence is multi-source and independent.
         </div>
         <div class="conf-block credible">
-          <strong>CREDIBLE &mdash; Frag-Akira relationship:</strong> TRM Labs assessed Frag as a potential Akira extension based on shared wallet clusters and identical bridge infrastructure. Sophos X-Ops and Agger Labs characterize Frag as a technique-sharing actor rather than a direct Akira extension. BlackFog tracks Frag as independent. Neither Mandiant nor Recorded Future have published a formal assessment. TRM on-chain evidence supports affiliation-level overlap; organizational integration is not established.
+          <strong>CREDIBLE, Frag-Akira relationship:</strong> TRM Labs assessed Frag as a potential Akira extension based on shared wallet clusters and identical bridge infrastructure. Sophos X-Ops and Agger Labs characterize Frag as a technique-sharing actor rather than a direct Akira extension. BlackFog tracks Frag as independent. Neither Mandiant nor Recorded Future have published a formal assessment. TRM on-chain evidence supports affiliation-level overlap; organizational integration is not established.
         </div>
       </div>
     </section>
@@ -1404,7 +1416,7 @@ html { scroll-behavior: smooth; }
         <div class="source-item"><span class="source-num">[6]</span><span>TRM Labs: Akira Ransomware Threat Profile (March 2026) &mdash; <a href="https://www.trmlabs.com/resources/intel-library/akira" target="_blank">trmlabs.com</a></span></div>
         <div class="source-item"><span class="source-num">[7]</span><span>TRM Labs: New Disruption Opportunities in the Evolving Ransomware Ecosystem (April 2026) &mdash; <a href="https://www.trmlabs.com/resources/blog/new-disruption-opportunities-in-the-evolving-ransomware-ecosystem" target="_blank">trmlabs.com</a></span></div>
         <div class="source-item"><span class="source-num">[8]</span><span>Recorded Future: Dark Covenant 3.0 (October 2025) &mdash; <a href="https://www.recordedfuture.com/research/dark-covenant-3-controlled-impunity-and-russias-cybercriminals" target="_blank">recordedfuture.com</a></span></div>
-        <div class="source-item"><span class="source-num">[9]</span><span>CybelAngel: Akira Ransomware &mdash; The Conti Successor Targeting the West (April 2026) &mdash; <a href="https://cybelangel.com/blog/akira-ransomware-conti-successor-russian-threat-actor-profile/" target="_blank">cybelangel.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>CybelAngel: Akira Ransomware: The Conti Successor Targeting the West (April 2026) &mdash; <a href="https://cybelangel.com/blog/akira-ransomware-conti-successor-russian-threat-actor-profile/" target="_blank">cybelangel.com</a></span></div>
         <div class="source-item"><span class="source-num">[10]</span><span>Palo Alto Unit 42: Threat Assessment Howling Scorpius (December 2024) &mdash; <a href="https://unit42.paloaltonetworks.com/threat-assessment-howling-scorpius-akira-ransomware/" target="_blank">unit42.paloaltonetworks.com</a></span></div>
         <div class="source-item"><span class="source-num">[11]</span><span>Cisco Talos: Akira Ransomware Continues to Evolve (October 2024) &mdash; <a href="https://blog.talosintelligence.com/akira-ransomware-continues-to-evolve/" target="_blank">talosintelligence.com</a></span></div>
         <div class="source-item"><span class="source-num">[12]</span><span>S-RM Intelligence: Ransomware in Focus: Meet Akira (October 2024) &mdash; <a href="https://www.s-rminform.com/latest-thinking/ransomware-in-focus-meet-akira" target="_blank">s-rminform.com</a></span></div>
@@ -1414,7 +1426,7 @@ html { scroll-behavior: smooth; }
         <div class="source-item"><span class="source-num">[16]</span><span>Arete: Ransomware Trends and Data Insights March 2026 &mdash; <a href="https://areteir.com/resources/ransomware-trends-data-insights-march-2026" target="_blank">areteir.com</a></span></div>
         <div class="source-category">Victim and Financial Data</div>
         <div class="source-item"><span class="source-num">[17]</span><span>Ransomware.live: Akira Group Profile (accessed May 2026) &mdash; <a href="https://www.ransomware.live/group/akira" target="_blank">ransomware.live</a></span></div>
-        <div class="source-item"><span class="source-num">[18]</span><span>Internal data &mdash; 85 confirmed case records, 2023 Q2 through 2026 Q1</span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Internal data: 85 confirmed case records, 2023 Q2 through 2026 Q1</span></div>
       </div>
     </section>
 
@@ -1536,7 +1548,7 @@ html { scroll-behavior: smooth; }
         document.getElementById('topbar-refresh-label').textContent = label;
         document.getElementById('topbar-live').style.display = 'flex';
 
-        const subLabel = 'Via ransomware.live Pro — ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const subLabel = 'Via ransomware.live Pro: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const vs = document.getElementById('kpi-victim-sub');
         const cs = document.getElementById('kpi-country-sub');
         if (vs) vs.textContent = subLabel;
