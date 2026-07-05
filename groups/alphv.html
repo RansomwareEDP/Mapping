@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALPHV / BlackCat | Ransomware EDP Threat Actor Library</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--navy-mid); position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h)); overflow-y: auto;
+  display: flex; flex-direction: column; padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: background 0.15s;
+  color: var(--gray-400); margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-inactive { background: #6b7280; }
+.dot-conti { background: #c0392b; }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: #6b7280; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE LABELS */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUTS */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+@media print { .sidebar, .topbar { display: none; } .main { padding: 0; } .content { padding: 0 24px; } }
+
+/* DARK MODE TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+    <nav class="group-list">
+    <a class="group-item" href="conti.html">
+      <span class="group-dot dot-conti"></span>
+      Conti
+    </a>
+    <a class="group-item active" href="alphv.html">
+      <span class="group-dot dot-inactive"></span>
+      ALPHV / BlackCat
+    </a>
+    <a class="group-item" href="akira.html">
+      <span class="group-dot dot-active"></span>
+      Akira
+    </a>
+    <a class="group-item" href="clop.html">
+      <span class="group-dot dot-active"></span>
+      Cl0p
+    </a>
+    <a class="group-item" href="qilin.html">
+      <span class="group-dot dot-dim"></span>
+      Qilin
+    </a>
+    <a class="group-item" href="lynx.html">
+      <span class="group-dot dot-dim"></span>
+      INC / Lynx
+    </a>
+    <a class="group-item" href="dragonforce.html">
+      <span class="group-dot dot-dim"></span>
+      DragonForce
+    </a>
+    <a class="group-item" href="lockbit.html">
+      <span class="group-dot dot-dim"></span>
+      LockBit
+    </a>
+    <a class="group-item" href="scatteredspider.html">
+      <span class="group-dot dot-active"></span>
+      Scattered Spider
+    </a>
+    <a class="group-item" href="silentransom.html">
+      <span class="group-dot dot-active"></span>
+      Luna Moth / SRG
+    </a>
+    <a class="group-item" href="royal.html">
+      <span class="group-dot dot-active"></span>
+      Royal / BlackSuit / Chaos
+    </a>
+    <a class="group-item" href="blackbasta.html">
+      <span class="group-dot dot-dim"></span>
+      Black Basta
+    </a>
+    <a class="group-item" href="thegentlemen.html">
+      <span class="group-dot dot-active"></span>
+      The Gentlemen
+    </a>
+    <a class="group-item" href="nightspire.html">
+      <span class="group-dot dot-active"></span>
+      NightSpire
+    </a>
+    <a class="group-item" href="payload.html">
+      <span class="group-dot dot-active"></span>
+      Payload
+    </a>
+    <a class="group-item" href="worldleaks.html">
+      <span class="group-dot dot-active"></span>
+      World Leaks / Hunters Intl
+    </a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Executive Summary &amp; Overview</a>
+    <a href="#origin">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Capabilities</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile &amp; Targeting</a>
+    <a href="#disruption">Law Enforcement Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#status">Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &nbsp;&bull;&nbsp; Profile currency July 2026</div>
+    <div class="hero-title">ALPHV / BlackCat</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Triple Extortion &nbsp;&bull;&nbsp; DarkSide / BlackMatter Lineage &nbsp;&bull;&nbsp; Defunct (exit scam, March 2024)</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical (Historic)</span>
+      <span class="badge badge-defunct">Defunct: Exit Scam</span>
+      <span class="badge badge-raas">RaaS</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Active Period</div>
+        <div class="kpi-value">Nov 2021</div>
+        <div class="kpi-sub">to Mar 2024 (~28 months)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Leak-Site Victims</div>
+        <div class="kpi-value">~700</div>
+        <div class="kpi-sub">1,000+ cited by DOJ</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Largest Payment</div>
+        <div class="kpi-value">$22M</div>
+        <div class="kpi-sub">Change Healthcare (BTC)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Revenue Split</div>
+        <div class="kpi-value">80 / 20</div>
+        <div class="kpi-sub">up to 90/10 for top affiliates</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Decryptor Reach</div>
+        <div class="kpi-value">500+</div>
+        <div class="kpi-sub">$68M to $99M avoided</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Core Operators Charged</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">no indictments or sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">DarkSide</div>
+        <div class="kpi-sub">to BlackMatter to ALPHV</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Executive Summary &amp; Group Overview</h2></div>
+      <p>ALPHV/BlackCat was a Russian-speaking Ransomware-as-a-Service operation that ran continuously from November 2021 to March 2024. It is widely assessed as the third-generation evolution of a single core criminal operation: DarkSide, then BlackMatter, then ALPHV/BlackCat. At its peak it was the second most prolific RaaS variant globally by victim count and is credited by the U.S. Department of Justice with extorting hundreds of millions of dollars.</p>
+      <p>The operation ended in a self-inflicted collapse. In December 2023 the FBI disclosed a months-long infiltration of ALPHV's backend and distributed a decryption tool to more than 500 victims. In February 2024 an affiliate breached Change Healthcare (UnitedHealth Group); in early March 2024 UnitedHealth paid approximately $22 million in Bitcoin, and the ALPHV operators kept the entire payment, defrauding the responsible affiliate and ceasing operations. RansomHub subsequently absorbed the displaced affiliate base.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Performance Indicators</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Metric</th><th>Value</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Active period</td><td>Nov 2021 to Mar 2024 (~28 months)</td><td>CONFIRMED</td></tr>
+              <tr><td>Leak-site victims</td><td>~700 published (Nov 2021 to Nov 2023, Secureworks); 1,000+ cited by DOJ</td><td>CONFIRMED</td></tr>
+              <tr><td>Aggregate proceeds</td><td>Hundreds of millions USD (DOJ); no confirmed single total</td><td>CREDIBLE</td></tr>
+              <tr><td>Largest single payment</td><td>$22M (Change Healthcare, Mar 2024)</td><td>CONFIRMED</td></tr>
+              <tr><td>Revenue split</td><td>80% affiliate / 20% operator (up to 90/10 for top affiliates)</td><td>CONFIRMED</td></tr>
+              <tr><td>LE decryptor reach</td><td>500+ victims; $68M to $99M in avoided ransoms</td><td>CONFIRMED</td></tr>
+              <tr><td>Named core operators</td><td>Zero indicted or sanctioned as of profile date</td><td>CONFIRMED</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Quick-Reference Attributes</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Self-designation</td><td>ALPHV (also AlphaV / AlphaVM) on criminal forums</td></tr>
+              <tr><td>Common name</td><td>BlackCat, coined by MalwareHunterTeam after the black-cat payment-page icon</td></tr>
+              <tr><td>Malware family alias</td><td>Noberus (Symantec / Broadcom)</td></tr>
+              <tr><td>Vendor designations</td><td>ALPHA SPIDER (CrowdStrike), GOLD BLAZER (Secureworks), ALPHV / UNC4466 (Mandiant), affiliate-level Pistachio Tempest / Velvet Tempest / Octo Tempest (Microsoft)</td></tr>
+              <tr><td>Operational model</td><td>Closed-recruit RaaS: core developers plus vetted affiliates (adverts)</td></tr>
+              <tr><td>Extortion mechanic</td><td>Triple extortion: encryption + data publication + DDoS</td></tr>
+              <tr><td>Encryptor language</td><td>Rust (first major ransomware written in Rust)</td></tr>
+              <tr><td>Signature innovation</td><td>Public, searchable stolen-data portal to amplify victim pressure</td></tr>
+              <tr><td>Assessed jurisdiction</td><td>Russia / CIS (CREDIBLE)</td></tr>
+              <tr><td>LE disruption</td><td>FBI infiltration and decryptor, December 2023</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout callout-info"><strong>Overall assessment:</strong> ALPHV was a mature, commercially run RaaS whose operators most likely carried DarkSide/BlackMatter continuity. Its collapse was driven less by external disruption than by an internal trust breach (the exit scam), demonstrating the structural fragility of trust-dependent criminal ecosystems.</div>
+
+      <!-- IMAGE GALLERY -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://www.bleepstatic.com/content/hl-images/2021/12/09/blackcat-alphv.jpg" alt="BlackCat / ALPHV branding" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>BlackCat / ALPHV Branding</strong>
+            The black-cat imagery displayed on every victim Tor payment page. MalwareHunterTeam coined the BlackCat name from this icon; the operators called themselves ALPHV.
+            <span class="img-source">Source: BleepingComputer, 2022</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.bleepstatic.com/images/news/ransomware/b/blackcat-alphv/law-enforcement-operation/alphv-seizure-page.jpg" alt="FBI seizure banner on ALPHV data leak site" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS Seizure Banner (Dec 2023)</strong>
+            The FBI seizure notice placed on ALPHV's darknet leak site after law enforcement obtained the Tor private keys. ALPHV briefly reclaimed the URL in a public back-and-forth.
+            <span class="img-source">Source: BleepingComputer, 2023</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.bleepstatic.com/images/news/ransomware/b/blackcat-alphv/searchable-extortion-site/email-to-customer.jpg" alt="ALPHV searchable stolen-data extortion notification" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Searchable Stolen-Data Portal</strong>
+            ALPHV pioneered a public, indexable site letting a victim's employees and customers check whether their own records were stolen, sharply increasing pressure to pay.
+            <span class="img-source">Source: BleepingComputer, 2022</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.bleepstatic.com/images/news/ransomware/b/blackcat-alphv/blackcat.gif" alt="BlackCat / ALPHV encryptor running" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Rust Encryptor in Action</strong>
+            The BlackCat/ALPHV encryptor executing on a host. The Rust-based, highly configurable payload was the first major ransomware written in Rust.
+            <span class="img-source">Source: BleepingComputer, 2022</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://www.bleepstatic.com/content/hl-images/2022/12/16/FBI_headpic.jpg" alt="FBI law enforcement operation" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>December 2023 FBI Operation</strong>
+            The multinational disruption in which the FBI ran a confidential source as an affiliate, seized 946 Tor key pairs, and built a decryptor for 500+ victims.
+            <span class="img-source">Source: BleepingComputer / DOJ, 2023</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Vendor Tracking Designations (listed separately per vendor)</div>
+        <p>Vendor designations for ALPHV diverge. Parent-organization designations are not conflated with group-specific ones; each is attributed to the operators, an affiliate, or the malware family as the vendor intends.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>Scope / Notes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>CrowdStrike</strong></td><td>ALPHA SPIDER</td><td>Adversary that developed and operated the ALPHV RaaS. Affiliate tracked separately as SCATTERED SPIDER.</td></tr>
+              <tr><td><strong>Secureworks CTU</strong></td><td>GOLD BLAZER</td><td>Attributed to the BlackCat RaaS operators; active since late 2021.</td></tr>
+              <tr><td><strong>Microsoft</strong></td><td>Affiliate-level</td><td>DEV-0237 (Pistachio Tempest) and DEV-0504 (Velvet Tempest); Octo Tempest = Scattered Spider affiliate.</td></tr>
+              <tr><td><strong>Mandiant (Google)</strong></td><td>ALPHV / UNC4466</td><td>ALPHV used descriptively; UNC4466 is the Veritas Backup Exec exploitation affiliate cluster.</td></tr>
+              <tr><td><strong>Symantec (Broadcom)</strong></td><td>Noberus</td><td>Malware family name in Symantec/Broadcom telemetry.</td></tr>
+              <tr><td><strong>Palo Alto Unit 42</strong></td><td>Descriptive</td><td>No distinct named cluster for the operators; tracked descriptively as BlackCat/ALPHV.</td></tr>
+              <tr><td><strong>Recorded Future</strong></td><td>No public designation</td><td>No confirmed public group designation identified. Intelligence gap.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block credible"><strong>Correction to source draft:</strong> the originating research stated CrowdStrike had no primary designation for the ALPHV core operators. This is incorrect: CrowdStrike publishes an ALPHA SPIDER adversary profile defining the operator of the ALPHV RaaS. Secureworks GOLD BLAZER is the other most specific operator-level cluster; Microsoft designations describe affiliates, not the operator core.</div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LINEAGE -->
+    <section class="section" id="origin">
+      <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Lineage &amp; Organizational Heritage</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Predecessor Chain: DarkSide to BlackMatter to ALPHV</div>
+        <div class="conf conf-credible">Credible to Confirmed &bull; multi-vendor and government consensus</div>
+        <p>The consensus assessment across multiple vendors and government advisories is that ALPHV/BlackCat represents the third generation of a single core operation. DarkSide launched August 2020 and shut down May 2021 after the Colonial Pipeline attack drew international law-enforcement pressure. BlackMatter relaunched 31 July 2021 and closed in November 2021 after Emsisoft exploited a cryptographic weakness to build a decryptor and servers were seized. ALPHV/BlackCat emerged in November 2021, immediately after BlackMatter's closure.</p>
+        <p>The Canadian Centre for Cyber Security assessed that ALPHV users and source code are related to BlackMatter and DarkSide. Secureworks CTU assessed with moderate confidence that BlackCat was a rebrand of BlackMatter, which in turn evolved from DarkSide.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &bull; High</div>
+            <div class="pillar-title">Timing</div>
+            <div class="pillar-body">ALPHV emerged within weeks of BlackMatter's November 2021 shutdown, filling the gap left by the seized operation.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2 &bull; High</div>
+            <div class="pillar-title">Self-Admission</div>
+            <div class="pillar-body">ALPHV told The Record they were adverts of darkmatter (DarkSide/BlackMatter) who suffered from Emsisoft's decryptor. A direct statement, though operators may be distancing from core membership.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &bull; Moderate</div>
+            <div class="pillar-title">Operational Continuity</div>
+            <div class="pillar-body">Feature and configuration-file overlap despite an entirely new Rust codebase. Emsisoft's Fabian Wosar noted structural similarity even though the language change erased code-level similarity.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 4 &bull; Moderate</div>
+            <div class="pillar-title">Affiliate Continuity</div>
+            <div class="pillar-body">DEV-0237 and DEV-0504 previously deployed BlackMatter and immediately adopted ALPHV. LockBit's representative publicly called ALPHV a DarkSide/BlackMatter rebrand (competitor claim).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Disputed Position: Operators versus Affiliates</div>
+        <div class="conf conf-credible">Credible &bull; single-vendor assessment (Emsisoft)</div>
+        <p>Brett Callow (Emsisoft) argued ALPHV is more likely the DarkSide/BlackMatter operators, not merely former affiliates, who rebuilt under a new brand after the decryptor loss damaged BlackMatter and cost affiliates millions. ALPHV publicly claimed to be only former affiliates. Callow's read is assessed as more likely given timing and behavioral continuity, but it cannot be proven absent attribution of specific individuals. Broader vendor consensus does not definitively resolve the affiliate-versus-operator distinction.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <p>ALPHV has no Conti lineage, so the Wizard Spider (CrowdStrike) and Gold Ulrick (Secureworks) parent-Conti designations do not apply. For ALPHV specifically: CrowdStrike uses ALPHA SPIDER (operators) and SCATTERED SPIDER (a key affiliate); Secureworks uses GOLD BLAZER; Microsoft names affiliates (Pistachio Tempest, Velvet Tempest, Octo Tempest); Symantec uses the Noberus malware family name; Mandiant uses ALPHV plus UNC4466 for the Veritas-exploitation affiliate.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Operational Model</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <p>ALPHV operated a classic RaaS model. Core developers maintained the malware, infrastructure, negotiation panels, and leak site. Affiliates (internally, adverts) conducted intrusions, lateral movement, data exfiltration, and payload deployment.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Recruitment &amp; Revenue Split</div>
+        <ul class="content-list">
+          <li>Recruitment via private forums XSS, Exploit, and RAMP5. A high technical bar is implied by the caliber of participating affiliates (Scattered Spider, FIN12/DEV-0237).</li>
+          <li>Standard split: 80% affiliate / 20% operator; raised to 90% for affiliates after the December 2023 disruption to retain them.</li>
+          <li>The DOJ prosecution of affiliates Goldberg, Martin, and Martino confirmed the 20% operator share in exchange for access to the ransomware and extortion platform.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dimension</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Initial demands</td><td>$300,000 (smaller victims) to tens of millions (enterprise); DOJ noted a $300K to $10M range across five victims</td></tr>
+              <tr><td>Payment rail</td><td>Bitcoin (primary); see Section 05</td></tr>
+              <tr><td>Comms channels</td><td>TOR negotiation portal; also Tox, email, and encrypted apps (AA23-353A)</td></tr>
+              <tr><td>Leverage</td><td>Countdown timers; post-payment vulnerability reports offered as an incentive</td></tr>
+              <tr><td>Extortion tiers</td><td>Triple extortion: encryption + publication threat + DDoS (among the first to formalize it)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Data Publication &amp; the Searchable Portal</div>
+        <p>ALPHV published stolen data from non-paying victims on a dedicated leak site and pioneered a searchable stolen-data portal that let anyone (including a victim's customers and partners) query their own exposed information, sharply increasing pressure. Releases were staged around negotiation leverage points. After the December 2023 disruption, ALPHV explicitly removed policies restricting hospital and critical-infrastructure targeting as retaliation.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Technical Capabilities</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Detail</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Compromised credentials</td><td>Primary access for most affiliates; credential markets, prior breaches, phishing</td><td>FBI FLASH; AA23-353A</td></tr>
+              <tr><td>Social engineering / vishing</td><td>Helpdesk impersonation via phone/SMS; associated with Scattered Spider (MGM, Caesars)</td><td>AA23-353A; Microsoft</td></tr>
+              <tr><td>Unpatched Exchange</td><td>BlackCat affiliate exploited unpatched Exchange servers (no specific CVE named)</td><td>Microsoft, Jun 2022</td></tr>
+              <tr><td>Internet-facing RDP</td><td>RDP with compromised credentials</td><td>Microsoft, Jun 2022</td></tr>
+              <tr><td>Veritas Backup Exec</td><td>UNC4466 exploited three Backup Exec Agent flaws (see CVE table)</td><td>Mandiant; CISA KEV</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Exploited CVEs (verified against NVD / CISA KEV)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">CVE-2021-27876</td><td>Veritas Backup Exec Agent</td><td>8.1</td><td>Arbitrary file access (SHA auth flaw)</td></tr>
+              <tr><td class="mono">CVE-2021-27877</td><td>Veritas Backup Exec Agent</td><td>9.8</td><td>Improper authentication / remote access</td></tr>
+              <tr><td class="mono">CVE-2021-27878</td><td>Veritas Backup Exec Agent</td><td>8.8</td><td>Arbitrary command execution</td></tr>
+              <tr><td class="mono">CVE-2021-44529</td><td>Ivanti EPM Cloud Services Appliance</td><td>9.8</td><td>Code injection (unauth RCE)</td></tr>
+              <tr><td class="mono">CVE-2021-21972</td><td>VMware vCenter Server</td><td>9.8</td><td>Unauthenticated RCE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block confirmed"><strong>CVE verification:</strong> NVD and vendor scoring confirm CVE-2021-27877 carries CVSS 9.8, not 8.2 as stated in the source draft. All three Veritas Backup Exec CVEs (27876, 27877, 27878) are in the CISA Known Exploited Vulnerabilities catalog and were tied by Mandiant to ALPHV affiliate UNC4466.</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence, Lateral Movement &amp; Tooling</div>
+        <ul class="content-list">
+          <li>Rogue accounts (e.g. aadmin) for persistent domain access; Windows Task Scheduler plus malicious GPOs for deployment.</li>
+          <li>Lateral movement via PsExec self-propagation, SMB, RDP, and ADRecon; Kerberos token generation (T1558).</li>
+          <li>Offensive tooling: Cobalt Strike, Brute Ratel C4, Metasploit, Mimikatz, LaZagne, Nanodump.</li>
+          <li>Remote access: AnyDesk, Splashtop, ScreenConnect/ConnectWise, Plink, Ngrok; Evilginx2 for MFA and session-cookie theft.</li>
+          <li>POORTRY / STONESTOP drivers for EDR termination (linked to Scattered Spider / UNC3944).</li>
+          <li>Exfiltration: MEGAsync, Rclone (renamed as legitimate Windows processes), MEGA.nz, Dropbox.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <ul class="content-list">
+          <li><strong>Language:</strong> Rust, purpose-built. The first major ransomware written in Rust.</li>
+          <li><strong>Algorithms:</strong> AES (hardware-accelerated) with ChaCha20 fallback where AES-NI is unavailable.</li>
+          <li><strong>Modes:</strong> four configurable options (full, fast, auto, smart), set per affiliate.</li>
+          <li><strong>Cross-platform:</strong> Windows, Linux (Debian, Ubuntu, ReadyNAS, Synology), VMware ESXi.</li>
+          <li><strong>Recovery inhibition:</strong> vssadmin/wmic shadow-copy deletion; wevtutil log clearing; UAC bypass via dllhost.exe.</li>
+          <li><strong>Ransom note:</strong> RECOVER-[7-digit extension]-FILES.txt (AA23-353A).</li>
+          <li><strong>Sphynx (v2.0), Feb 2023:</strong> improved defense evasion, embedded lateral-movement tooling, enhanced cross-platform reach.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-inference">Analyst Inference &bull; Intelligence gap</div>
+        <p>The Canadian Centre for Cyber Security assessed ALPHV operators are very likely CIS-based, and CIS-country victims were nominally excluded. Public technical reporting does <strong>not</strong> confirm a binary-level CIS keyboard-layout kill switch in the ALPHV encryptor (unlike DarkSide/BlackMatter). The exclusion appears to be an affiliate-management policy rather than a hard-coded restriction. Analysts should consult Symantec (Noberus) and Emsisoft analyses for definitive confirmation.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Decryptors</div>
+        <p>The FBI built a decryption tool during the December 2023 operation, derived from 946 public/private key pairs obtained via covert access, and distributed it to 500+ victims, avoiding an estimated $68M (initial reporting) to $99M (DOJ final figure) in ransoms. The tool was distributed through FBI field offices rather than posted publicly; no third-party decryptor for post-Sphynx variants is documented on No More Ransom or vendor sites as of the profile date.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 5: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Financial Infrastructure</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <ul class="content-list">
+          <li>Bitcoin is the confirmed rail for all major documented payments: $22M (Change Healthcare), $1.27M (Goldberg/Martin case), and others.</li>
+          <li>Monero: some reporting suggests possible acceptance for anonymity-sensitive transactions, but ALPHV-specific Monero usage is unconfirmed in reviewed primary sources and should be verified against TRM Labs / Chainalysis private reporting.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering</div>
+        <p>DOJ filings confirm that after a $1.27M payment, affiliates split their 80% share three ways and laundered it through various means; specific techniques (mixers, bridges, exchanges) were not detailed in public court documents. Chainalysis identified ALPHV/BlackCat among 2023's top-grossing strains and noted its early-2024 exit scam left a void in the ransomware payment landscape. Detailed ALPHV-specific wallet tracing has not been published in reviewed public Chainalysis reports.</p>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Change Healthcare Payment</div>
+            <div class="metric-val">$22M</div>
+            <div class="metric-note">Bitcoin, early March 2024</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Affiliate Share Owed</div>
+            <div class="metric-val">~$17.6M</div>
+            <div class="metric-note">80% withheld in exit scam</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Documented Affiliate Case</div>
+            <div class="metric-val">$1.27M</div>
+            <div class="metric-note">Goldberg / Martin extortion</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Reported Code Sale Ask</div>
+            <div class="metric-val">$5M</div>
+            <div class="metric-note">Post-exit source-code offer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Successor Signal: Embargo</div>
+        <div class="conf-block credible"><strong>CREDIBLE (TRM Labs, Aug 2025):</strong> TRM traced roughly $34.2M in crypto to Embargo, a RaaS that surfaced in 2024, and assessed Embargo may be a rebrand or successor of BlackCat/ALPHV. Anchor evidence: historical BlackCat-linked addresses funneled funds into wallet clusters tied to Embargo victims. Laundering routes through intermediary wallets, high-risk exchanges, and the sanctioned platform Cryptex.net, with roughly $18.8M held dormant in unattributed wallets. See Section 09.</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">OFAC Sanctions</div>
+        <p>No OFAC designations against ALPHV/BlackCat wallets or named operators appear in reviewed public SDN entries as of the profile date. Sealed or undisclosed designations, and private analytics data, cannot be excluded. Intelligence gap.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header"><span class="section-num">06</span><h2 class="section-title">Victim Profile &amp; Targeting</h2></div>
+
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">Leak-Site Victims</div><div class="metric-val">~700</div><div class="metric-note">Secureworks, Nov 2021 to Nov 2023</div></div>
+        <div class="metric-card highlight"><div class="metric-label">DOJ-Cited Victims</div><div class="metric-val">1,000+</div><div class="metric-note">At Dec 2023 disruption</div></div>
+        <div class="metric-card"><div class="metric-label">Largest Payment</div><div class="metric-val">$22M</div><div class="metric-note">Change Healthcare</div></div>
+        <div class="metric-card"><div class="metric-label">Primary Geography</div><div class="metric-val">U.S.</div><div class="metric-note">then Canada, AU, W. Europe</div></div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector, Geography &amp; Size</div>
+        <p>Victim selection was assessed as almost certainly opportunity-based (Canadian Centre for Cyber Security). High-frequency sectors: healthcare (most heavily targeted after the December 2023 disruption), finance and insurance, technology, legal, energy, manufacturing, hospitality/gaming, government, and education. Geography: the large majority of confirmed victims were in the United States, followed by Canada, Australia, and Western Europe; Microsoft observed additional impact across Africa, Asia, and Latin America. Size: most victims were small and medium organizations, though large enterprises (MGM, Caesars, Change Healthcare) were compromised.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Date</th><th>Impact</th><th>Ransom</th></tr></thead>
+            <tbody>
+              <tr><td>Change Healthcare (UnitedHealth)</td><td>Feb 2024</td><td>~190M Americans affected; largest U.S. healthcare ransomware incident</td><td>$22M paid (BTC)</td></tr>
+              <tr><td>MGM Resorts</td><td>Sep 2023</td><td>~$100M operational impact; systems offline</td><td>Reportedly unpaid</td></tr>
+              <tr><td>Caesars Entertainment</td><td>Sep 2023</td><td>Data theft; disruption</td><td>~$15M reportedly paid</td></tr>
+              <tr><td>Lehigh Valley Health Network</td><td>Feb 2023</td><td>Patient medical images published</td><td>Not disclosed</td></tr>
+              <tr><td>Henry Schein</td><td>Oct 2023</td><td>Multiple disruptions</td><td>Not disclosed</td></tr>
+              <tr><td>Western Digital</td><td>Mar 2023</td><td>Data exfiltration</td><td>Not disclosed</td></tr>
+              <tr><td>Reddit</td><td>Feb 2023</td><td>Source code and internal data stolen</td><td>Not disclosed</td></tr>
+              <tr><td>Est&eacute;e Lauder</td><td>Jul 2023</td><td>~130GB stolen</td><td>Not disclosed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Targeting Exclusions (policy level)</div>
+        <p>ALPHV's stated affiliate policy nominally prohibited attacks on government, healthcare, and education. These restrictions were violated in practice and were explicitly removed by the operators in December 2023 in retaliation for the FBI disruption.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 7: DISRUPTION -->
+    <section class="section" id="disruption">
+      <div class="section-header"><span class="section-num">07</span><h2 class="section-title">Law Enforcement &amp; Regulatory Response</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure Disruption, December 2023</div>
+        <ul class="content-list">
+          <li>FBI signed up a confidential source as an ALPHV affiliate, obtaining backend panel access and silently monitoring for months.</li>
+          <li>FBI seized 946 public/private key pairs operating ALPHV's Tor infrastructure (affiliate panels, breach sites, victim comms).</li>
+          <li>Decryption tool distributed to 500+ victims; seizure banner placed on the leak site. Partners: Europol and agencies in Denmark, Germany, Australia, Spain, Austria, Netherlands, and the UK; coordinated with USAO SDFL and DOJ CCIPS.</li>
+          <li>ALPHV response: within hours claimed to unseize its domain, moved infrastructure, and threatened attacks on hospitals and critical infrastructure, demonstrating rapid reconstitution.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Criminal Charges: Affiliate Prosecution (S.D. Florida)</div>
+        <div class="conf-block confirmed"><strong>Post-cutoff update (2026):</strong> the originating draft listed sentencing as pending (scheduled 12 March 2026, 20-year maximum) and the third co-conspirator as unnamed. Updated status: Ryan Clifford Goldberg and Kevin Tyler Martin were each sentenced to four years in federal prison. The third co-conspirator is Angelo Martino, 41, of Land O' Lakes, Florida, a former DigitalMint negotiator, who pleaded guilty in April 2026 with sentencing set for 9 July 2026. Total losses across the affiliate group's victims exceeded $9.5M.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Defendant</th><th>Role</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Ryan C. Goldberg, 40 (GA)</td><td>Incident-response manager, Sygnia</td><td>Guilty plea; sentenced to 4 years</td></tr>
+              <tr><td>Kevin T. Martin, 36 (TX)</td><td>Ransomware negotiator, DigitalMint</td><td>Guilty plea; sentenced to 4 years</td></tr>
+              <tr><td>Angelo Martino, 41 (FL)</td><td>Ransomware negotiator, DigitalMint</td><td>Guilty plea Apr 2026; sentencing 9 Jul 2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Charge: conspiracy to obstruct commerce by extortion (Hobbs Act, 18 U.S.C. 1951(a)). Between April and December 2023 the three obtained an ALPHV affiliate account and attacked U.S. victims (a California doctor's office and engineering firm, a Florida medical-device company, a Maryland pharmaceutical company, and a Virginia drone manufacturer), extorting $1.27M in Bitcoin from one victim. DOJ highlighted that the defendants were working cybersecurity professionals who weaponized specialized knowledge.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scattered Spider (separate affiliate prosecution)</div>
+        <p>In November 2024 DOJ charged five individuals tied to Scattered Spider (Tyler Buchanan, Noah Urban, Ahmed Elbadawy, Evans Osiebo, Joel Evans) with hacking, fraud, and identity theft. These are affiliate-level charges, not ALPHV operator charges.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">No Named Core Operators; Sanctions</div>
+        <div class="callout callout-alert"><strong>As of profile date:</strong> no ALPHV core operator (developer or administrator) has been publicly named or charged, and no OFAC sanctions target named ALPHV operators or wallets. The exit-scam destination of the $22M is undisclosed. DOJ noted potential eligibility for the State Department Transnational Organized Crime Rewards and Rewards for Justice programs.</div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header"><span class="section-num">08</span><h2 class="section-title">Attribution &amp; State Nexus</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Jurisdiction</div>
+        <div class="conf conf-credible">Credible &bull; Russia / CIS</div>
+        <p>The Canadian Centre for Cyber Security assessed ALPHV as almost certainly a financially motivated, Russian-speaking RaaS group very likely based in a CIS country. This is a geographic and linguistic assessment, corroborated by FBI/CISA/HHS descriptions of the group as Russian-speaking. It is not a state-direction assessment.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Services Nexus</div>
+        <div class="conf conf-inference">Analyst Inference &bull; No confirmed RIS nexus</div>
+        <p>No confirmed nexus to Russian state intelligence (FSB, SVR, GRU) is established in public reporting. The no-nexus assessment rests on absence of positive evidence rather than confirmed negative evidence: no court documents, declassified assessments, or vetted vendor reports reviewed allege state direction of the ALPHV core operators.</p>
+        <ul class="content-list">
+          <li>The nominal (non-binary-enforced) CIS exclusion is consistent with informal safe-harbor norms for CIS-based cybercrime, but is not evidence of state coordination.</li>
+          <li>Operational behavior (RaaS commercialization, exit scam, affiliate disputes) is consistent with a purely financially motivated enterprise. The exit scam, defrauding its own affiliates of $22M, is inconsistent with a state-directed operation where reputational stability matters.</li>
+        </ul>
+        <div class="conf-block inference"><strong>Confidence:</strong> moderate confidence in no confirmed state nexus. This does not preclude passive tolerance, non-prosecution safe harbor, or incidental intelligence sharing that has not been publicly documented.</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <p>None at the operator level. All named, charged individuals to date are affiliates (Goldberg, Martin, Martino) or affiliate-collective members (Scattered Spider defendants). Operator identities remain unconfirmed.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 9: STATUS / TRAJECTORY -->
+    <section class="section" id="status">
+      <div class="section-header"><span class="section-num">09</span><h2 class="section-title">Trajectory Assessment</h2></div>
+
+      <div class="callout callout-alert"><strong>Defunct.</strong> ALPHV/BlackCat ceased operations in March 2024 via an exit scam. Continuity persists at two layers: the affiliate base (absorbed largely by RansomHub) and possibly the operator/tooling layer (Embargo, CREDIBLE).</div>
+
+      <div class="subsection" style="margin-top:20px">
+        <div class="subsection-title">Collapse Sequence</div>
+        <div class="phase-list">
+          <div class="phase-item"><div class="phase-num">I</div><div class="phase-body"><div class="phase-title">Dec 2023 &bull; FBI Infiltration</div><div class="phase-desc">Severe OPSEC failure; decryptor distribution damaged revenue and affiliate confidence despite rapid reconstitution within hours.</div></div></div>
+          <div class="phase-item"><div class="phase-num">II</div><div class="phase-body"><div class="phase-title">Dec 2023 &bull; Healthcare-Targeting Escalation</div><div class="phase-desc">Post-disruption removal of hospital-targeting restrictions was reputationally destabilizing and increased law-enforcement attention without commensurate revenue.</div></div></div>
+          <div class="phase-item"><div class="phase-num">III</div><div class="phase-body"><div class="phase-title">Mar 2024 &bull; Exit Scam</div><div class="phase-desc">Operators kept the full $22M Change Healthcare payment, withholding the ~$17.6M (80%) owed to the responsible affiliate and breaking the core RaaS trust mechanism. A self-authored fake FBI seizure notice was placed on the site to mask the exit.</div></div></div>
+          <div class="phase-item"><div class="phase-num">IV</div><div class="phase-body"><div class="phase-title">Mar 2024 &bull; Dissolution</div><div class="phase-desc">Reported attempt to sell the ransomware source code for ~$5M as a final monetization play. The defrauded affiliate passed Change Healthcare's data to RansomHub, which mounted a second extortion attempt.</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster (two-tier confidence)</div>
+        <p>Per method, the anchor relationship is assessed separately from extension and interpretation claims.</p>
+
+        <div class="conf-block confirmed"><strong>RansomHub (successor ecosystem) &bull; Anchor CONFIRMED:</strong> RansomHub emerged February 2024 as ALPHV collapsed, listed Change Healthcare's stolen data, and its administrators confirmed to Vx-Underground that former BlackCat affiliates were joining. Its affiliate-first 90/10 model appears designed to remedy the trust deficit ALPHV's exit scam created. SOCRadar and others assess RansomHub as a distinct operation that absorbed the affiliate base rather than an ALPHV rebrand (its leak site predated ALPHV's exit).</div>
+
+        <div class="conf-block confirmed"><strong>Scattered Spider (affiliate) &bull; Anchor CONFIRMED:</strong> documented by CrowdStrike (SCATTERED SPIDER), Microsoft (Octo Tempest), Mandiant (UNC3944), Trend Micro, and GuidePoint. Executed the September 2023 MGM and Caesars attacks using ALPHV; shared POORTRY/STONESTOP drivers. GuidePoint assessed with high confidence that some members migrated to RansomHub after the collapse.</div>
+
+        <div class="conf-block confirmed"><strong>Pistachio Tempest (DEV-0237 / FIN12) &amp; Velvet Tempest (DEV-0504) &bull; Anchor CONFIRMED (Microsoft):</strong> DEV-0237 adopted BlackCat from March 2022 (prior: Ryuk, Conti, Hive); DEV-0504 adopted BlackCat from December 2021 (prior: BlackMatter, Conti, LockBit 2.0, REvil, Ryuk).</div>
+
+        <div class="conf-block credible"><strong>Embargo (rebrand candidate) &bull; Anchor CREDIBLE; rebrand interpretation ANALYST INFERENCE:</strong> TRM Labs (Aug 2025) assessed Embargo (surfaced 2024, ~$34.2M traced) may be a rebrand or successor of BlackCat, citing on-chain overlap (historical BlackCat addresses funneling into Embargo-linked clusters) plus off-chain similarity (Rust, similar encryption toolkits, similar leak-site design). Neither Mandiant nor Recorded Future has published a formal Embargo/ALPHV assessment; the rebrand interpretation is not yet corroborated.</div>
+
+        <div class="conf-block credible"><strong>DarkSide / BlackMatter (predecessors) &bull; Lineage moderate-to-high; operator identity overlap likely but unproven:</strong> see Section 02. Assessments span Secureworks (moderate, rebrand), Emsisoft (high, same operators), Canadian Centre for Cyber Security (high, code and user relationship), and Symantec (successor).</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators</div>
+        <div class="conf conf-inference">Analyst Inference &bull; Forward monitoring</div>
+        <p>ALPHV grew rapidly through 2023 to become the second most prolific RaaS by victim count before the FBI disruption. The disruption, followed immediately by the exit scam, effectively zeroed the operation; Chainalysis noted the exit left a void in the 2024 ransomware landscape. Monitoring priorities: Embargo on-chain corroboration by a second vendor; any operator-level indictment or OFAC action; and resurfacing of ALPHV source code or the searchable-portal innovation in successor operations.</p>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header"><span class="section-num"></span><h2 class="section-title">Sources</h2></div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? 'Hide sources' : 'Show all sources'">Show all sources</button>
+      <div class="source-list">
+        <div class="source-category">Primary Government Sources</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>DOJ: Justice Department Disrupts Prolific ALPHV/Blackcat Ransomware Variant (19 Dec 2023) &bull; <a href="https://www.justice.gov/archives/opa/pr/justice-department-disrupts-prolific-alphvblackcat-ransomware-variant" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>FBI/CISA/HHS Joint Advisory AA23-353A: #StopRansomware ALPHV Blackcat (Dec 2023, updated Feb 2024) &bull; <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-353a" target="_blank">cisa.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>FBI FLASH CU-000167-MW: BlackCat/ALPHV Ransomware IOCs (Apr 2022)</span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>DOJ: Two Americans Plead Guilty to Targeting Multiple U.S. Victims Using ALPHV BlackCat Ransomware (Dec 2025) &bull; <a href="https://www.justice.gov/opa/pr/two-americans-plead-guilty-targeting-multiple-us-victims-using-alphv-blackcat-ransomware" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>CISA Known Exploited Vulnerabilities Catalog: Veritas Backup Exec CVEs (Apr 2023) &bull; <a href="https://www.cisa.gov/news-events/alerts/2023/04/07/cisa-adds-five-known-exploited-vulnerabilities-catalog" target="_blank">cisa.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>NVD: CVE-2021-27876 (8.1), CVE-2021-27877 (9.8), CVE-2021-27878 (8.8) &bull; <a href="https://nvd.nist.gov" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-category">Threat Intelligence &amp; Vendor Reporting</div>
+        <div class="source-item"><span class="source-num">[5]</span><span>Secureworks CTU: GOLD BLAZER Threat Profile; Law Enforcement Takes Action Against ALPHV/BlackCat (Dec 2023) &bull; <a href="https://www.secureworks.com/research/threat-profiles/gold-blazer" target="_blank">secureworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>CrowdStrike: ALPHA SPIDER Adversary Profile; The Anatomy of an ALPHA SPIDER Ransomware Attack &bull; <a href="https://www.crowdstrike.com/en-us/adversaries/alpha-spider/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>Microsoft Security: The Many Lives of BlackCat Ransomware (Jun 2022, updated Apr 2023) &bull; <a href="https://www.microsoft.com/en-us/security/blog/2022/06/13/the-many-lives-of-blackcat-ransomware/" target="_blank">microsoft.com</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Microsoft Security: Octo Tempest Crosses Boundaries to Facilitate Extortion (Oct 2023) &bull; <a href="https://www.microsoft.com/en-us/security/blog/2023/10/25/octo-tempest-crosses-boundaries-to-facilitate-extortion-encryption-and-destruction/" target="_blank">microsoft.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Canadian Centre for Cyber Security: Profile ALPHV/BlackCat Ransomware (Aug 2023) &bull; <a href="https://www.cyber.gc.ca" target="_blank">cyber.gc.ca</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Mandiant / Google Cloud: ALPHV Ransomware Affiliate Targets Vulnerable Backup Environments (UNC4466, 2023)</span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Symantec / Broadcom: Noberus Technical Analysis (Dec 2021)</span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>Palo Alto Unit 42: Threat Assessment BlackCat Ransomware (Jan 2022) &bull; <a href="https://unit42.paloaltonetworks.com" target="_blank">unit42.paloaltonetworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Chainalysis: Examining the Impact of Ransomware Disruptions: Qakbot, LockBit, ALPHV-BlackCat (May 2024) &bull; <a href="https://www.chainalysis.com/blog/ransomware-disruptions-impact/" target="_blank">chainalysis.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>Chainalysis: Crypto / Ransomware Crime Report (Feb 2025)</span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>TRM Labs: Unmasking Embargo Ransomware, A Deep Dive Into the Group's TTPs and BlackCat Links (Aug 2025) &bull; <a href="https://www.trmlabs.com/resources/blog/unmasking-embargo-ransomware-a-deep-dive-into-the-groups-ttps-and-blackcat-links" target="_blank">trmlabs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Krebs on Security: BlackCat Ransomware Group Implodes After Apparent $22M Change Healthcare Payment (Mar 2024) &bull; <a href="https://krebsonsecurity.com/2024/03/blackcat-ransomware-group-implodes-after-apparent-22m-ransom-payment-by-change-healthcare/" target="_blank">krebsonsecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>GuidePoint Security: Scattered Spider / RansomHub affiliation assessment (Jun 2024)</span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>The Record (Recorded Future News): ALPHV affiliate guilty pleas and sentencing; Embargo as BlackCat/ALPHV successor &bull; <a href="https://therecord.media/embargo-ransomware-gang-blackcat-alphv-successor" target="_blank">therecord.media</a></span></div>
+        <div class="source-category">Image Provenance</div>
+        <div class="source-item"><span class="source-num">[G]</span><span>Gallery images: BleepingComputer ALPHV/BlackCat coverage (2022, 2023). All images carry an onerror fallback.</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a> &nbsp;&bull;&nbsp; <a href="https://endkrysha.com" style="color:var(--blue)">endkrysha.com</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DARK MODE
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// Scroll spy for sidebar section nav
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

@@ -503,6 +503,10 @@ html { scroll-behavior: smooth; }
       <span class="group-dot dot-conti"></span>
       Conti
     </a>
+    <a class="group-item" href="alphv.html">
+      <span class="group-dot dot-inactive"></span>
+      ALPHV / BlackCat
+    </a>
     <a class="group-item" href="akira.html">
       <span class="group-dot dot-active"></span>
       Akira
@@ -526,6 +530,10 @@ html { scroll-behavior: smooth; }
     <a class="group-item" href="lockbit.html">
       <span class="group-dot dot-dim"></span>
       LockBit
+    </a>
+    <a class="group-item" href="scatteredspider.html">
+      <span class="group-dot dot-active"></span>
+      Scattered Spider
     </a>
     <a class="group-item active" href="silentransom.html">
       <span class="group-dot dot-active"></span>
@@ -760,22 +768,22 @@ html { scroll-behavior: smooth; }
         <p>Multiple independent vendors assess SRG as having emerged from the Conti ecosystem's BazarCall operator cluster. The confidence level varies by evidence type and vendor. No single piece of evidence is universally confirmed; the strongest indicators are TTP continuity and timing.</p>
         <div class="pillar-grid">
           <div class="pillar-card credible">
-            <div class="pillar-num">Pillar 1 &mdash; Credible</div>
+            <div class="pillar-num">Pillar 1: Credible</div>
             <div class="pillar-title">TTP Continuity: BazarCall Heritage</div>
             <div class="pillar-body">SRG's callback phishing methodology is functionally identical to BazarCall campaigns previously run by Conti-affiliated operators. BazarCall was a Conti-era initial access technique in which victims were directed to call fake support lines, leading to malware installation. SRG adapted this pattern for data extortion without a malware payload. Multiple independent vendors (ADVIntel, Unit 42, Sygnia, Halcyon) note the overlap. <strong>Confidence: CREDIBLE</strong> (behavioral, not technical code-level evidence).</div>
           </div>
           <div class="pillar-card credible">
-            <div class="pillar-num">Pillar 2 &mdash; Credible</div>
+            <div class="pillar-num">Pillar 2: Credible</div>
             <div class="pillar-title">Emergence Timing</div>
             <div class="pillar-body">SRG/Luna Moth's operational debut in March 2022 coincides precisely with Conti's public collapse. ADVIntel, which had insider visibility into Conti, explicitly attributed early SRG campaigns to a "Silent Ransom" cluster with ties to Conti operators. Halcyon describes SRG as "former Conti ransomware syndicate operators" who pivoted to data extortion. <strong>Confidence: CREDIBLE</strong> (circumstantial-temporal plus source-based attribution).</div>
           </div>
           <div class="pillar-card inference">
-            <div class="pillar-num">Pillar 3 &mdash; Analyst Inference</div>
+            <div class="pillar-num">Pillar 3: Analyst Inference</div>
             <div class="pillar-title">Personnel Continuity</div>
             <div class="pillar-body">No public reporting has named specific former Conti operators as SRG principals. Attribution to former Conti personnel is inferred from behavioral continuity, timing, and ADVIntel's source-based claims. Unit 42 explicitly notes it is "monitoring attribution closely" without fully endorsing the Conti lineage. <strong>Confidence: ANALYST INFERENCE</strong> (extrapolated from confirmed facts; not directly evidenced with named individuals or handles).</div>
           </div>
           <div class="pillar-card inference">
-            <div class="pillar-num">Pillar 4 &mdash; Analyst Inference</div>
+            <div class="pillar-num">Pillar 4: Analyst Inference</div>
             <div class="pillar-title">Blockchain/Code Overlap</div>
             <div class="pillar-body">Unlike Akira (which has documented on-chain Bitcoin transfers linking back to Conti wallets), SRG/Luna Moth has not produced publicly available blockchain forensics evidence of wallet-level continuity with Conti. Because SRG does not deploy a ransomware binary, there is also no code overlap. <strong>Confidence: ANALYST INFERENCE</strong> (plausible given ecosystem context; not directly evidenced in open-source blockchain analysis).</div>
           </div>
@@ -784,7 +792,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Connected Group Cluster Assessment</div>
-        <p>SRG is most directly connected to the Conti parent entity through the BazarCall operator cluster. The anchor relationship (SRG &lt;&mdash;&gt; Conti/BazarCall) is assessed as <span class="conf conf-credible">Credible</span> based on multi-vendor TTP corroboration, timing, and ADVIntel source-based attribution.</p>
+        <p>SRG is most directly connected to the Conti parent entity through the BazarCall operator cluster. The anchor relationship (SRG &lt;, &gt; Conti/BazarCall) is assessed as <span class="conf conf-credible">Credible</span> based on multi-vendor TTP corroboration, timing, and ADVIntel source-based attribution.</p>
         <p>Extension claims (SRG sharing infrastructure or personnel with other active ransomware groups beyond the Conti heritage) are <span class="conf conf-inference">Analyst Inference</span> only. No public reporting documents operational infrastructure overlap between SRG and other currently active ransomware groups. Functional categorizations grouping SRG with other "extortion-only" outfits are descriptive, not evidentiary.</p>
         <p>Note: Mandiant has not published a formal named-group assessment for SRG as of May 2026 (UNC3753 remains an unclassified cluster). Recorded Future has not published a formal APT designation. CrowdStrike's Chatty Spider designation is the most formally published group-specific tracking name available in open sources.</p>
       </div>
@@ -825,7 +833,7 @@ html { scroll-behavior: smooth; }
             <div class="phase-num">3</div>
             <div class="phase-body">
               <div class="phase-title">In-Person Physical Intrusion (April 2025, CONFIRMED)</div>
-              <div class="phase-desc">The FBI's May 2025 PIN and May 2026 FLASH document a confirmed tactic evolution: SRG operators first call a law firm's staff posing as IT support, then send an individual physically to the office claiming to be an IT technician. Per FBI FLASH-20260526-01, the in-person actor specifically tells the victim they need to "image the device or create a backup file to address potential impacts from the phishing email" — a social engineering pretext designed to justify inserting a physical storage device into a network-connected computer for direct data exfiltration. The FBI confirmed this tactic "has been highly effective and resulted in multiple compromises." This is the highest-risk and most novel element of SRG's tradecraft as of May 2026. [1, 16]</div>
+              <div class="phase-desc">The FBI's May 2025 PIN and May 2026 FLASH document a confirmed tactic evolution: SRG operators first call a law firm's staff posing as IT support, then send an individual physically to the office claiming to be an IT technician. Per FBI FLASH-20260526-01, the in-person actor specifically tells the victim they need to "image the device or create a backup file to address potential impacts from the phishing email", a social engineering pretext designed to justify inserting a physical storage device into a network-connected computer for direct data exfiltration. The FBI confirmed this tactic "has been highly effective and resulted in multiple compromises." This is the highest-risk and most novel element of SRG's tradecraft as of May 2026. [1, 16]</div>
             </div>
           </div>
         </div>
@@ -1039,6 +1047,10 @@ html { scroll-behavior: smooth; }
         <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
       </div>
 
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="groups/silentransom.html" defer></script>
+
+
       <div class="subsection">
         <div class="subsection-title">FBI FLASH-20260526-01 (May 2026)</div>
         <div class="conf conf-confirmed">Confirmed</div>
@@ -1204,26 +1216,26 @@ html { scroll-behavior: smooth; }
         <div class="source-category">Law Enforcement</div>
         <div class="source-item"><span class="source-num">[16]</span><span>FBI FLASH-20260526-01 &mdash; "Silent Ransom Group Impersonating IT Personnel through Social Engineering" (TLP:CLEAR), May 26, 2026</span></div>
         <div class="source-item"><span class="source-num">[1]</span><span><a href="https://www.ic3.gov/CSA/2025/250523.pdf" target="_blank">FBI IC3 PIN 20250523-001 &mdash; Silent Ransom Group Targeting Law Firms (TLP:CLEAR), May 23, 2025</a></span></div>
-        <div class="source-item"><span class="source-num">[8]</span><span><a href="https://www.facebook.com/FBIAlbuquerque/posts/122244321176018671/" target="_blank">FBI Albuquerque &mdash; SRG Social Media Advisory, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span><a href="https://www.facebook.com/FBIAlbuquerque/posts/122244321176018671/" target="_blank">FBI Albuquerque: SRG Social Media Advisory, 2025</a></span></div>
 
         <div class="source-category">Vendor Threat Intelligence</div>
-        <div class="source-item"><span class="source-num">[2]</span><span><a href="https://unit42.paloaltonetworks.com/luna-moth-callback-phishing/" target="_blank">Palo Alto Unit 42 &mdash; Threat Assessment: Luna Moth Callback Phishing Campaign, 2022</a></span></div>
-        <div class="source-item"><span class="source-num">[3]</span><span><a href="https://www.sygnia.co/blog/luna-moth-false-subscription-scams/" target="_blank">Sygnia &mdash; Luna Moth: False Subscription Scams, 2022</a></span></div>
-        <div class="source-item"><span class="source-num">[4]</span><span><a href="https://www.halcyon.ai/threat-group/silent" target="_blank">Halcyon &mdash; Silent (Threat Group Profile), 2024&ndash;2025</a></span></div>
-        <div class="source-item"><span class="source-num">[5]</span><span><a href="https://socradar.io/blog/dark-web-profile-silent-ransom-group-leakeddata/" target="_blank">SOCRadar &mdash; Dark Web Profile: Silent Ransom Group (LeakedData), May 2025 (updated April 2026)</a></span></div>
-        <div class="source-item"><span class="source-num">[14]</span><span><a href="https://www.bleepingcomputer.com/news/security/luna-moth-extortion-hackers-pose-as-it-help-desks-to-breach-us-firms/" target="_blank">BleepingComputer / EclecticIQ &mdash; Luna Moth Extortion Hackers Pose as IT Help Desks, 2025</a></span></div>
-        <div class="source-item"><span class="source-num">[15]</span><span><a href="https://www.crowdstrike.com/en-us/adversaries/chatty-spider/" target="_blank">CrowdStrike &mdash; Chatty Spider Adversary Profile</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span><a href="https://unit42.paloaltonetworks.com/luna-moth-callback-phishing/" target="_blank">Palo Alto Unit 42: Threat Assessment: Luna Moth Callback Phishing Campaign, 2022</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span><a href="https://www.sygnia.co/blog/luna-moth-false-subscription-scams/" target="_blank">Sygnia: Luna Moth: False Subscription Scams, 2022</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span><a href="https://www.halcyon.ai/threat-group/silent" target="_blank">Halcyon: Silent (Threat Group Profile), 2024&ndash;2025</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span><a href="https://socradar.io/blog/dark-web-profile-silent-ransom-group-leakeddata/" target="_blank">SOCRadar: Dark Web Profile: Silent Ransom Group (LeakedData), May 2025 (updated April 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span><a href="https://www.bleepingcomputer.com/news/security/luna-moth-extortion-hackers-pose-as-it-help-desks-to-breach-us-firms/" target="_blank">BleepingComputer / EclecticIQ: Luna Moth Extortion Hackers Pose as IT Help Desks, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span><a href="https://www.crowdstrike.com/en-us/adversaries/chatty-spider/" target="_blank">CrowdStrike: Chatty Spider Adversary Profile</a></span></div>
 
         <div class="source-category">Industry and Incident Response</div>
-        <div class="source-item"><span class="source-num">[6]</span><span><a href="https://www.pivotpointsecurity.com/silent-ransom-group-phishing-attacks/" target="_blank">PivotPoint Security &mdash; Silent Ransom Group Hammers Law Firms with Targeted Phishing Attacks, 2025</a></span></div>
-        <div class="source-item"><span class="source-num">[7]</span><span><a href="https://technijian.com/desktop-support/luna-moth-hackers-masquerade-as-it-helpdesks-to-breach-u-s-firms/" target="_blank">Technijian &mdash; Luna Moth Hackers Masquerade as IT Helpdesks, 2025</a></span></div>
-        <div class="source-item"><span class="source-num">[9]</span><span><a href="https://cypfer.com/when-luna-moth-targets-attorneys-cypfer-delivers-cyber-certainty/" target="_blank">CYPFER &mdash; When Luna Moth Targets Attorneys, 2025</a></span></div>
-        <div class="source-item"><span class="source-num">[10]</span><span><a href="https://www.darkreading.com/endpoint-security/fbi-silent-ransom-group-vishing-law-firms" target="_blank">Dark Reading &mdash; FBI: Silent Ransom Group Using Vishing Against Law Firms, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span><a href="https://www.pivotpointsecurity.com/silent-ransom-group-phishing-attacks/" target="_blank">PivotPoint Security: Silent Ransom Group Hammers Law Firms with Targeted Phishing Attacks, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span><a href="https://technijian.com/desktop-support/luna-moth-hackers-masquerade-as-it-helpdesks-to-breach-u-s-firms/" target="_blank">Technijian: Luna Moth Hackers Masquerade as IT Helpdesks, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span><a href="https://cypfer.com/when-luna-moth-targets-attorneys-cypfer-delivers-cyber-certainty/" target="_blank">CYPFER: When Luna Moth Targets Attorneys, 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span><a href="https://www.darkreading.com/endpoint-security/fbi-silent-ransom-group-vishing-law-firms" target="_blank">Dark Reading: FBI: Silent Ransom Group Using Vishing Against Law Firms, 2025</a></span></div>
 
         <div class="source-category">Victim / Breach Reporting</div>
-        <div class="source-item"><span class="source-num">[11]</span><span><a href="https://www.abajournal.com/news/article/jones-day-latest-big-law-firm-to-fall-victim-to-cyber-phishing-incident" target="_blank">ABA Journal &mdash; Jones Day Latest BigLaw Firm to Fall Victim to Cyber Phishing Incident, April 2026</a></span></div>
-        <div class="source-item"><span class="source-num">[12]</span><span><a href="https://databreaches.net/2026/04/10/silent-ransom-group-leaked-another-big-law-firm-orrick-herrington-sutcliffe/" target="_blank">DataBreaches.net &mdash; SRG Leaked Orrick, Herrington &amp; Sutcliffe, April 10, 2026</a></span></div>
-        <div class="source-item"><span class="source-num">[13]</span><span><a href="https://databreaches.net/2026/04/13/a-silent-threat-loud-consequences-ransom-group-hits-law-firms-hard/" target="_blank">DataBreaches.net &mdash; A Silent Threat, Loud Consequences, April 13, 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span><a href="https://www.abajournal.com/news/article/jones-day-latest-big-law-firm-to-fall-victim-to-cyber-phishing-incident" target="_blank">ABA Journal: Jones Day Latest BigLaw Firm to Fall Victim to Cyber Phishing Incident, April 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span><a href="https://databreaches.net/2026/04/10/silent-ransom-group-leaked-another-big-law-firm-orrick-herrington-sutcliffe/" target="_blank">DataBreaches.net: SRG Leaked Orrick, Herrington &amp; Sutcliffe, April 10, 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span><a href="https://databreaches.net/2026/04/13/a-silent-threat-loud-consequences-ransom-group-hits-law-firms-hard/" target="_blank">DataBreaches.net: A Silent Threat, Loud Consequences, April 13, 2026</a></span></div>
       </div>
     </section>
 
@@ -1265,7 +1277,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-30% 0px -65% 0px' });
 sections.forEach(s => observer.observe(s));
 
-// LIVE DATA — victims + TI feed
+// LIVE DATA, victims + TI feed
 (async function loadLiveData() {
   const BASE = './data/';
   try {

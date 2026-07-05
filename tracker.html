@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanctions and Indictment Tracker: Enforcement Actions Across the Ecosystem</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --chip-red-bg: #3b1f1f; --chip-red-border: #7f1d1d;
+  --chip-amber-bg: #2d1b00; --chip-amber-border: #78350f;
+  --chip-green-bg: #0d4429; --chip-green-border: #238636;
+  --chip-blue-bg: #172b4d; --chip-blue-border: #1f6feb;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary); color: var(--text-primary);
+  line-height: 1.6; font-size: 14px;
+}
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100; gap: 16px;
+}
+.site-header .logo { font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+.site-header .divider { color: var(--border); }
+.site-header .profile-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.site-header .node-type-tag { font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; letter-spacing: 0.04em; }
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+.status-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; border: 1px solid; }
+.badge-live { background: var(--chip-blue-bg); color: var(--accent-blue); border-color: var(--chip-blue-border); }
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px; }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a { display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.15s; }
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+.main-content { margin-left: var(--sidebar-width); margin-top: var(--header-height); padding: 32px 40px 80px; max-width: 1080px; }
+.section { margin-bottom: 48px; }
+.section-header { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px; }
+.section-num { font-size: 12px; color: var(--text-muted); font-weight: 700; }
+.section-title { font-size: 18px; font-weight: 600; }
+.section-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+.stat-card .num { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 12px; border: 1px solid; white-space: nowrap; }
+.chip-red { background: var(--chip-red-bg); color: var(--accent-red); border-color: var(--chip-red-border); }
+.chip-amber { background: var(--chip-amber-bg); color: var(--accent-orange); border-color: var(--chip-amber-border); }
+.chip-green { background: var(--chip-green-bg); color: var(--accent-green); border-color: var(--chip-green-border); }
+.chip-blue { background: var(--chip-blue-bg); color: var(--accent-blue); border-color: var(--chip-blue-border); }
+.chip-gray { background: var(--bg-tertiary); color: var(--text-secondary); border-color: var(--border); }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.filter-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
+.fchip { font-size: 12px; padding: 3px 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.15s; }
+.fchip:hover { color: var(--text-primary); border-color: var(--text-muted); }
+.fchip.on { background: rgba(88,166,255,0.12); color: var(--accent-blue); border-color: var(--accent-blue); }
+.search-box { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 12px; padding: 5px 10px; width: 220px; }
+.search-box:focus { outline: none; border-color: var(--accent-blue); }
+.count-note { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+.tbl-wrap { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg-tertiary); white-space: nowrap; }
+table.data th.sortable { cursor: pointer; }
+table.data th.sortable:hover { color: var(--text-primary); }
+table.data td { padding: 8px 12px; border-bottom: 1px solid var(--border-muted); vertical-align: top; }
+table.data tr:last-child td { border-bottom: none; }
+table.data tr:hover td { background: rgba(88,166,255,0.03); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; white-space: nowrap; }
+.dim { color: var(--text-secondary); }
+.mut { color: var(--text-muted); }
+.mark-yes { color: var(--accent-green); font-weight: 700; }
+.mark-no { color: var(--text-muted); }
+.gap-note { font-size: 12px; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent-red); border-radius: 0; padding: 10px 14px; margin-bottom: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); align-items: center; }
+.src-link { font-size: 11px; }
+.footer-note { font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 24px; }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 24px 16px 60px; }
+  .site-header .node-type-tag { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">Sanctions and Indictment Tracker</span>
+  <span class="node-type-tag">Disruption Pillar</span>
+  <div class="header-badges">
+    <span class="status-badge badge-live" id="hdr-asof">As of 2026-07-03</span>
+  </div>
+</header>
+
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#matrix"><span class="nav-num">02</span>Pressure Matrix</a></li>
+    <li><a href="#actions"><span class="nav-num">03</span>Actions Log</a></li>
+    <li><a href="#individuals"><span class="nav-num">04</span>Individuals</a></li>
+    <li><a href="#entities"><span class="nav-num">05</span>Entities</a></li>
+    <li><a href="#gaps"><span class="nav-num">06</span>Gaps and Method</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Related</div>
+  <ul class="sidebar-nav">
+    <li><a href="index.html">Ecosystem Hub</a></li>
+    <li><a href="most-wanted.html">Most Wanted</a></li>
+    <li><a href="groups/index.html">Group Profiles</a></li>
+    <li><a href="exchanges/index.html">Exchange Profiles</a></li>
+    <li><a href="bphs/index.html">BPH Profiles</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Version</span><span class="value" id="meta-version">1.0</span></div>
+    <div class="sidebar-meta-row"><span class="label">As of</span><span class="value" id="meta-asof">2026-07-03</span></div>
+    <div class="sidebar-meta-row"><span class="label">Actions</span><span class="value" id="meta-actions"></span></div>
+    <div class="sidebar-meta-row"><span class="label">Individuals</span><span class="value" id="meta-individuals"></span></div>
+    <div class="sidebar-meta-row"><span class="label">Entities</span><span class="value" id="meta-entities"></span></div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <section class="section" id="overview">
+    <div class="section-header"><span class="section-num">01</span><span class="section-title">Overview</span></div>
+    <p class="section-sub">Every OFAC, EU, UK, and AU designation, DOJ indictment, and Europol/NCA action against the RU/CIS ransomware ecosystem, mapped to entity profiles on this site, with current status per target. Source of truth: <span class="mono">data/enforcement.json</span>.</p>
+    <div class="stat-grid" id="stat-grid"></div>
+  </section>
+
+  <section class="section" id="matrix">
+    <div class="section-header"><span class="section-num">02</span><span class="section-title">Pressure Matrix</span></div>
+    <p class="section-sub">Which enforcement levers have touched each entity. A row of empty cells on an active entity is an unexploited leverage point.</p>
+    <div class="filter-bar" id="matrix-filters">
+      <span class="filter-label">Show</span>
+      <span class="fchip on" data-f="all">All</span>
+      <span class="fchip" data-f="Ransomware">Groups</span>
+      <span class="fchip" data-f="Exchange">Exchanges / Laundering</span>
+      <span class="fchip" data-f="hosting">BPH</span>
+      <span class="fchip" data-f="gap">Gaps only</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data" id="matrix-table">
+        <thead><tr>
+          <th>Entity</th><th>Type</th>
+          <th title="OFAC or FinCEN designation">OFAC</th>
+          <th title="EU, UK, or AU sanctions designation">EU/UK/AU</th>
+          <th title="US criminal process: indictment, plea, extradition, sentencing">US charges</th>
+          <th title="Takedowns, seizures, arrests, raids">LE ops</th>
+          <th>Operational status</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><span class="mark-yes">&#10003;</span> action on record</span>
+      <span><span class="mark-no">&#183;</span> none found</span>
+      <span><span class="chip chip-red">Gap</span> active entity with no meaningful enforcement pressure</span>
+    </div>
+  </section>
+
+  <section class="section" id="actions">
+    <div class="section-header"><span class="section-num">03</span><span class="section-title">Actions Log</span></div>
+    <p class="section-sub">Chronological record of enforcement actions, 2016 to present. Click a column header to sort. Every row links to its primary source.</p>
+    <div class="filter-bar">
+      <span class="filter-label">Type</span>
+      <span class="fchip on" data-g="type" data-f="all">All</span>
+      <span class="fchip" data-g="type" data-f="sanction">Sanctions</span>
+      <span class="fchip" data-g="type" data-f="criminal">Criminal process</span>
+      <span class="fchip" data-g="type" data-f="takedown">Takedowns / ops</span>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Authority</span>
+      <span class="fchip on" data-g="auth" data-f="all">All</span>
+      <span class="fchip" data-g="auth" data-f="OFAC">OFAC</span>
+      <span class="fchip" data-g="auth" data-f="DOJ">DOJ</span>
+      <span class="fchip" data-g="auth" data-f="intl">EU / UK / AU</span>
+      <span class="fchip" data-g="auth" data-f="europol">Europol / NCA</span>
+      <span class="fchip" data-g="auth" data-f="Russia">Russia (domestic)</span>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Period</span>
+      <span class="fchip on" data-g="year" data-f="all">All</span>
+      <span class="fchip" data-g="year" data-f="pre">2016-2024</span>
+      <span class="fchip" data-g="year" data-f="2025">2025</span>
+      <span class="fchip" data-g="year" data-f="2026">2026</span>
+      <input class="search-box" id="action-search" type="text" placeholder="Search targets, operations, summaries">
+      <span class="count-note" id="action-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data" id="actions-table">
+        <thead><tr>
+          <th class="sortable" data-sort="date">Date &#8597;</th>
+          <th>Authority</th><th>Action</th><th class="sortable" data-sort="targets">Target &#8597;</th>
+          <th>Page</th><th>Outcome</th><th>Conf.</th><th>Src</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="individuals">
+    <div class="section-header"><span class="section-num">04</span><span class="section-title">Individuals</span></div>
+    <p class="section-sub">Tracked persons across the ecosystem: operators, initial access and malware suppliers, launderers, hosters, facilitators. Statuses current to the as-of date.</p>
+    <div class="filter-bar">
+      <span class="filter-label">Status</span>
+      <span class="fchip on" data-g="istat" data-f="all">All</span>
+      <span class="fchip" data-g="istat" data-f="red">At large / fugitive</span>
+      <span class="fchip" data-g="istat" data-f="amber">In custody / arrested</span>
+      <span class="fchip" data-g="istat" data-f="green">Judicial outcome</span>
+      <span class="fchip" data-g="istat" data-f="blue">Sanctioned only</span>
+      <input class="search-box" id="ind-search" type="text" placeholder="Search names, aliases, groups">
+      <span class="count-note" id="ind-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data" id="ind-table">
+        <thead><tr>
+          <th>Name</th><th>Aliases</th><th>Affiliation</th><th>Reward</th><th>Status</th><th>Page</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="entities">
+    <div class="section-header"><span class="section-num">05</span><span class="section-title">Entities</span></div>
+    <p class="section-sub">Entity-level rollup: designations, operations, prosecutions, and operational status.</p>
+    <div class="tbl-wrap">
+      <table class="data" id="ent-table">
+        <thead><tr>
+          <th>Entity</th><th>Type</th><th>Designations</th><th>Operations / prosecutions</th><th>Status</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="gaps">
+    <div class="section-header"><span class="section-num">06</span><span class="section-title">Gaps and Method</span></div>
+    <p class="section-sub">Where no lever has been pulled, and how this dataset is maintained.</p>
+    <div id="gap-list"></div>
+    <div class="gap-note" style="border-left-color: var(--accent-orange);">
+      <strong>Docket follow-ups:</strong> Astamirov and Vasiliev sentences (D.N.J.), Panev trial docket, Vardanyan trial (D. Or.), Besciokov extradition from India, Stryzhak sentence (E.D.N.Y.). Confirmed actions with no publicly reported disposition.
+    </div>
+    <div class="legend">
+      <span class="filter-label">Confidence</span>
+      <span class="chip chip-green">Confirmed</span><span class="dim">official source or multiple major outlets</span>
+      <span class="chip chip-blue">Credible</span><span class="dim">reputable single source or self-reported claims</span>
+    </div>
+    <p class="footer-note">
+      Part of the Disruption Pillar. Master dataset maintained in the tracker workbook; this page renders <span class="mono">data/enforcement.json</span>. To update: edit the workbook, regenerate the JSON, redeploy. Status categories: at large / fugitive (red), in custody or arrested or extradited (amber), pleaded guilty or convicted or sentenced (green), sanctioned only (blue).
+    </p>
+  </section>
+
+</main>
+
+<script src="data/enforcement-data.js"></script>
+<script>
+(function () {
+  var D = window.ENFORCEMENT;
+  if (!D) { document.getElementById("stat-grid").innerHTML = "<p class='dim'>Data file not found: data/enforcement-data.js</p>"; return; }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function statusClass(s) {
+    var t = String(s).toLowerCase();
+    if (/sentenced|convicted|guilty|released for time served/.test(t)) return "green";
+    if (/custody|arrested|detention|detained|extradited|pretrial|charged/.test(t)) return "amber";
+    if (/at large|fugitive/.test(t)) return "red";
+    if (/sanctioned/.test(t)) return "blue";
+    return "gray";
+  }
+  function chip(s) { return "<span class='chip chip-" + statusClass(s) + "'>" + esc(s) + "</span>"; }
+  function confChip(c) {
+    var cls = /^confirmed/i.test(c) ? "chip-green" : "chip-blue";
+    var short = /^confirmed/i.test(c) ? "C" : "Cr";
+    return "<span class='chip " + cls + "' title='" + esc(c) + "'>" + short + "</span>";
+  }
+  function pageLinks(p) {
+    var s = String(p || "");
+    if (!s || s.indexOf("None") === 0) {
+      return "<span class='mut' title='" + esc(s) + "'>" + (s.indexOf("candidate") >= 0 ? "candidate" : "none") + "</span>";
+    }
+    return s.split(",").map(function (x) {
+      x = x.trim();
+      if (!/\.html$/.test(x)) return esc(x);
+      var label = x.replace(/\.html$/, "").split("/").pop();
+      return "<a href='" + esc(x) + "'>" + esc(label) + "</a>";
+    }).join("<br>");
+  }
+  function mark(b) { return b ? "<span class='mark-yes'>&#10003;</span>" : "<span class='mark-no'>&#183;</span>"; }
+
+  document.getElementById("meta-version").textContent = D.meta.version;
+  document.getElementById("meta-asof").textContent = D.meta.asOf;
+  document.getElementById("hdr-asof").textContent = "As of " + D.meta.asOf;
+  document.getElementById("meta-actions").textContent = D.meta.counts.actions;
+  document.getElementById("meta-individuals").textContent = D.meta.counts.individuals;
+  document.getElementById("meta-entities").textContent = D.meta.counts.entities;
+
+  var c = D.meta.counts;
+  var gapCount = D.matrix.filter(function (m) { return m.gap; }).length;
+  document.getElementById("stat-grid").innerHTML =
+    "<div class='stat-card'><div class='num'>" + c.actions + "</div><div class='lbl'>Actions logged</div></div>" +
+    "<div class='stat-card'><div class='num'>" + c.actions2526 + "</div><div class='lbl'>Actions 2025-2026</div></div>" +
+    "<div class='stat-card'><div class='num'>" + c.individuals + "</div><div class='lbl'>Individuals tracked</div></div>" +
+    "<div class='stat-card'><div class='num' style='color: var(--accent-red)'>" + c.atLarge + "</div><div class='lbl'>At large / fugitive</div></div>" +
+    "<div class='stat-card'><div class='num' style='color: var(--accent-green)'>" + c.outcomes + "</div><div class='lbl'>Judicial outcomes</div></div>" +
+    "<div class='stat-card'><div class='num' style='color: var(--accent-orange)'>" + gapCount + "</div><div class='lbl'>Entities with gaps</div></div>";
+
+  var matrixFilter = "all";
+  function renderMatrix() {
+    var tb = document.querySelector("#matrix-table tbody");
+    var rows = D.matrix.filter(function (m) {
+      if (matrixFilter === "all") return true;
+      if (matrixFilter === "gap") return m.gap;
+      if (matrixFilter === "hosting") return /hosting/i.test(m.type);
+      if (matrixFilter === "Exchange") return /exchange|launder|mixer|payment/i.test(m.type);
+      if (matrixFilter === "Ransomware") return /ransomware|extortion|cybercrime group/i.test(m.type);
+      return true;
+    });
+    function entityCell(m) {
+      var mt = /[\w\-/]+\.html/.exec(String(m.page));
+      if (mt) return "<a href='" + mt[0] + "'>" + esc(m.entity) + "</a>";
+      return esc(m.entity) + " <span class='mut'>(no page)</span>";
+    }
+    tb.innerHTML = rows.map(function (m) {
+      return "<tr><td>" + entityCell(m) +
+        "</td><td class='dim'>" + esc(m.type) + "</td>" +
+        "<td>" + mark(m.ofac) + "</td><td>" + mark(m.intl) + "</td><td>" + mark(m.doj) + "</td><td>" + mark(m.takedown) + "</td>" +
+        "<td class='dim'>" + (m.gap ? "<span class='chip chip-red'>Gap</span> " : "") + esc(m.opStatus) + "</td></tr>";
+    }).join("");
+  }
+  document.getElementById("matrix-filters").addEventListener("click", function (e) {
+    if (!e.target.dataset.f) return;
+    this.querySelectorAll(".fchip").forEach(function (x) { x.classList.remove("on"); });
+    e.target.classList.add("on");
+    matrixFilter = e.target.dataset.f;
+    renderMatrix();
+  });
+
+  var af = { type: "all", auth: "all", year: "all", q: "" };
+  var sortKey = "date", sortDir = -1;
+  function classifyType(a) {
+    var t = (a.type + " " + a.authority).toLowerCase();
+    var out = [];
+    if (/sanction|designation|delisting|311/.test(t)) out.push("sanction");
+    if (/indict|plea|sentenc|extradit|charges|arrest/.test(t)) out.push("criminal");
+    if (/takedown|seizure|raid|red notice|hack-and-leak|drained|suspension/.test(t)) out.push("takedown");
+    return out;
+  }
+  function authMatch(a, f) {
+    var s = a.authority;
+    if (f === "OFAC") return /OFAC|FinCEN/.test(s);
+    if (f === "DOJ") return /DOJ|FBI|USSS|ICE/.test(s);
+    if (f === "intl") return /UK|EU|AU |DFAT|OFSI|NCA/.test(s);
+    if (f === "europol") return /Europol|NCA|BKA|police|Eurojust/i.test(s);
+    if (f === "Russia") return /Russia/.test(s);
+    return true;
+  }
+  function renderActions() {
+    var tb = document.querySelector("#actions-table tbody");
+    var rows = D.actions.filter(function (a) {
+      if (af.type !== "all" && classifyType(a).indexOf(af.type) < 0) return false;
+      if (af.auth !== "all" && !authMatch(a, af.auth)) return false;
+      var y = String(a.date).slice(0, 4);
+      if (af.year === "pre" && y >= "2025") return false;
+      if ((af.year === "2025" || af.year === "2026") && y !== af.year) return false;
+      if (af.q) {
+        var hay = (a.targets + " " + a.operation + " " + a.summary + " " + a.authority).toLowerCase();
+        if (hay.indexOf(af.q) < 0) return false;
+      }
+      return true;
+    });
+    rows.sort(function (x, y) {
+      var a = String(x[sortKey]).toLowerCase(), b = String(y[sortKey]).toLowerCase();
+      return a < b ? -sortDir : a > b ? sortDir : 0;
+    });
+    document.getElementById("action-count").textContent = rows.length + " of " + D.actions.length + " actions";
+    tb.innerHTML = rows.map(function (a) {
+      var op = a.operation ? "<div class='mut' style='font-size:11px'>" + esc(a.operation) + "</div>" : "";
+      return "<tr><td class='mono'>" + esc(a.date) + "</td>" +
+        "<td class='dim'>" + esc(a.authority) + "</td>" +
+        "<td>" + esc(a.type) + op + "</td>" +
+        "<td title='" + esc(a.summary) + "'>" + esc(a.targets) + "</td>" +
+        "<td>" + pageLinks(a.pages) + "</td>" +
+        "<td>" + chip(a.outcome) + "</td>" +
+        "<td>" + confChip(a.confidence) + "</td>" +
+        "<td class='src-link'>" + (a.source ? "<a href='" + esc(a.source) + "' target='_blank' rel='noopener'>&#8599;</a>" : "") + "</td></tr>";
+    }).join("");
+  }
+  document.querySelectorAll("#actions .fchip").forEach(function (ch) {
+    ch.addEventListener("click", function () {
+      var g = this.dataset.g;
+      document.querySelectorAll("#actions .fchip[data-g='" + g + "']").forEach(function (x) { x.classList.remove("on"); });
+      this.classList.add("on");
+      af[g === "istat" ? "istat" : g] = this.dataset.f;
+      renderActions();
+    });
+  });
+  document.getElementById("action-search").addEventListener("input", function () {
+    af.q = this.value.toLowerCase().trim(); renderActions();
+  });
+  document.querySelectorAll("#actions-table th.sortable").forEach(function (th) {
+    th.addEventListener("click", function () {
+      var k = this.dataset.sort;
+      if (sortKey === k) sortDir = -sortDir; else { sortKey = k; sortDir = k === "date" ? -1 : 1; }
+      renderActions();
+    });
+  });
+
+  var istat = "all", iq = "";
+  function renderInd() {
+    var tb = document.querySelector("#ind-table tbody");
+    var rows = D.individuals.filter(function (p) {
+      if (istat !== "all" && statusClass(p.status) !== istat) return false;
+      if (iq) {
+        var hay = (p.name + " " + p.aliases + " " + p.affiliation + " " + p.category).toLowerCase();
+        if (hay.indexOf(iq) < 0) return false;
+      }
+      return true;
+    });
+    document.getElementById("ind-count").textContent = rows.length + " of " + D.individuals.length + " individuals";
+    tb.innerHTML = rows.map(function (p) {
+      return "<tr><td><strong>" + esc(p.name) + "</strong><div class='mut' style='font-size:11px'>" + esc(p.category) + "</div></td>" +
+        "<td class='dim'>" + esc(p.aliases || "") + "</td>" +
+        "<td class='dim' title='" + esc(p.sources) + "'>" + esc(p.affiliation) + "</td>" +
+        "<td class='dim'>" + (p.reward && p.reward !== "None" ? esc(p.reward) : "<span class='mut'>&#183;</span>") + "</td>" +
+        "<td>" + chip(p.status) + "</td>" +
+        "<td>" + pageLinks(p.pages) + "</td></tr>";
+    }).join("");
+  }
+  document.querySelectorAll("#individuals .fchip").forEach(function (ch) {
+    ch.addEventListener("click", function () {
+      document.querySelectorAll("#individuals .fchip").forEach(function (x) { x.classList.remove("on"); });
+      this.classList.add("on");
+      istat = this.dataset.f;
+      renderInd();
+    });
+  });
+  document.getElementById("ind-search").addEventListener("input", function () {
+    iq = this.value.toLowerCase().trim(); renderInd();
+  });
+
+  document.querySelector("#ent-table tbody").innerHTML = D.entities.map(function (e) {
+    return "<tr><td><strong>" + esc(e.entity) + "</strong><div style='font-size:11px'>" + pageLinks(e.page) + "</div></td>" +
+      "<td class='dim'>" + esc(e.type) + "</td>" +
+      "<td class='dim'>" + esc(e.sanctions) + "</td>" +
+      "<td class='dim'>" + esc(e.leActions) + (e.prosecutions && e.prosecutions !== "None" ? "<div class='mut' style='font-size:11px; margin-top:4px'>" + esc(e.prosecutions) + "</div>" : "") + "</td>" +
+      "<td class='dim'>" + esc(e.opStatus) + "</td></tr>";
+  }).join("");
+
+  var gaps = D.matrix.filter(function (m) { return m.gap; });
+  document.getElementById("gap-list").innerHTML =
+    "<div class='gap-note'><strong>" + gaps.length + " entities with no meaningful enforcement pressure:</strong> " +
+    gaps.map(function (g) {
+      var m = /[\w\-/]+\.html/.exec(String(g.page));
+      return m ? "<a href='" + m[0] + "'>" + esc(g.entity) + "</a>" : esc(g.entity);
+    }).join(", ") +
+    ". These are the structural argument of this tracker: active nodes with unexploited financial, criminal, and infrastructure levers.</div>";
+
+  renderMatrix();
+  renderActions();
+  renderInd();
+})();
+</script>
+</body>
+</html>

@@ -437,10 +437,14 @@ html { scroll-behavior: smooth; }
 
 <aside class="sidebar">
   <div class="sidebar-section-label">Threat Actor Groups</div>
-  <nav class="group-list">
+    <nav class="group-list">
     <a class="group-item" href="conti.html">
       <span class="group-dot dot-conti"></span>
       Conti
+    </a>
+    <a class="group-item" href="alphv.html">
+      <span class="group-dot dot-inactive"></span>
+      ALPHV / BlackCat
     </a>
     <a class="group-item" href="akira.html">
       <span class="group-dot dot-active"></span>
@@ -465,6 +469,10 @@ html { scroll-behavior: smooth; }
     <a class="group-item" href="lockbit.html">
       <span class="group-dot dot-dim"></span>
       LockBit
+    </a>
+    <a class="group-item" href="scatteredspider.html">
+      <span class="group-dot dot-active"></span>
+      Scattered Spider
     </a>
     <a class="group-item" href="silentransom.html">
       <span class="group-dot dot-active"></span>
@@ -658,7 +666,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Overall Assessment</div>
-        <div class="conf conf-credible">Credible &mdash; multi-source convergence, not yet universally corroborated</div>
+        <div class="conf conf-credible">Credible, multi-source convergence, not yet universally corroborated</div>
         <p>S-RM Intelligence assessed in March 2025 that it is "highly likely" NightSpire operators are associated with the Rbfs ransomware group. Barracuda Networks (May 2026) and multiple open-source outlets corroborate this assessment through independent observation of the same three evidentiary pillars. ASEC (August 2025) characterized the rebrand question as "unclear," but did not dispute the Rbfs evidence directly. No major TI vendor (CrowdStrike, Secureworks, Unit 42, Mandiant, Recorded Future) has published a formal connected-cluster assessment as of May 2026, leaving the Rbfs connection at credible but not universally accepted.</p>
       </div>
 
@@ -666,22 +674,22 @@ html { scroll-behavior: smooth; }
         <div class="subsection-title">Rbfs to NightSpire: Evidentiary Pillars</div>
         <div class="pillar-grid">
           <div class="pillar-card confirmed">
-            <div class="pillar-num">Pillar 1 &mdash; Confirmed (multiple independent sources)</div>
+            <div class="pillar-num">Pillar 1: Confirmed (multiple independent sources)</div>
             <div class="pillar-title">Shared Operator Handles</div>
             <div class="pillar-body">Handles "xdragon128" and "cuteliyuan" promoted both Rbfs victim data and NightSpire operations on crime forums and Telegram. The hostname "XDRAGON-SERVER1" appeared in early NightSpire incident infrastructure, directly linking the xdragon128 persona to operational infrastructure. Consistent across S-RM, Barracuda, and multiple secondary sources.</div>
           </div>
           <div class="pillar-card confirmed">
-            <div class="pillar-num">Pillar 2 &mdash; Confirmed (documented by S-RM with screenshots)</div>
+            <div class="pillar-num">Pillar 2: Confirmed (documented by S-RM with screenshots)</div>
             <div class="pillar-title">Victim Overlap</div>
             <div class="pillar-body">At least two organizations previously claimed by Rbfs (via xdragon128 forum posts) later appeared on NightSpire's DLS victim listing, with matching victim names shown in side-by-side screenshots published by S-RM. This is the strongest single evidentiary element supporting the lineage assessment.</div>
           </div>
           <div class="pillar-card credible">
-            <div class="pillar-num">Pillar 3 &mdash; Credible</div>
+            <div class="pillar-num">Pillar 3: Credible</div>
             <div class="pillar-title">Temporal Substitution</div>
             <div class="pillar-body">Public references to Rbfs ceased at precisely the same time NightSpire emerged in early March 2025. Rbfs's short operational lifespan and the abrupt timing are consistent with rebranding behavior documented in other ransomware group transitions. No competing explanation for the simultaneous disappearance is documented in available sources.</div>
           </div>
           <div class="pillar-card credible">
-            <div class="pillar-num">Pillar 4 &mdash; Credible</div>
+            <div class="pillar-num">Pillar 4: Credible</div>
             <div class="pillar-title">Infrastructure Continuity</div>
             <div class="pillar-body">The WinSCP exfiltration server IP (14.139.185.60, assigned to Kerala Agricultural University's NKN block) was identified in early NightSpire incidents. While IP reuse is not definitive on its own, combined with operator handle and hostname continuity it supports a consistent operational infrastructure thread across the Rbfs-to-NightSpire transition.</div>
           </div>
@@ -891,7 +899,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">CIS / Regional Exclusion Checks</div>
-        <div class="conf conf-inference">Analyst Inference &mdash; absence of documented evidence</div>
+        <div class="conf conf-inference">Analyst Inference, absence of documented evidence</div>
         <p>Open sources do not document any hard-coded checks for Russian, Ukrainian, or other CIS keyboard layouts or system locales in the NightSpire binary. No analyst has confirmed that the encryptor aborts on CIS-region systems, unlike some established Russian-aligned crews. The absence of a CIS exclusion, combined with the India/China attribution indicators, is weakly consistent with a non-Russian operator profile. However, this should be treated as an outstanding collection requirement rather than a confident conclusion.</p>
       </div>
 
@@ -1020,9 +1028,13 @@ html { scroll-behavior: smooth; }
         <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
       </div>
 
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="groups/nightspire.html" defer></script>
+
+
       <div class="subsection">
         <div class="subsection-title">Status Summary</div>
-        <div class="conf conf-confirmed">Confirmed &mdash; absence verified across multiple sources</div>
+        <div class="conf conf-confirmed">Confirmed, absence verified across multiple sources</div>
         <p>As of May 1, 2026, there are no public indictments, criminal charges, arrests, or named suspects tied specifically to NightSpire in U.S. or European court records, law enforcement advisories, or Europol/FBI press releases. No CISA/FBI joint advisory focused specifically on NightSpire has been published. No successful infrastructure seizure or DLS takedown has been reported. This distinguishes NightSpire clearly from more established groups such as LockBit, BlackCat/ALPHV, and Hive, which have all been subjects of major multinational LE operations.</p>
       </div>
 
@@ -1058,7 +1070,7 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Overall Assessment</div>
-        <div class="conf conf-credible">Credible &mdash; medium confidence, competing geographic indicators</div>
+        <div class="conf conf-credible">Credible, medium confidence, competing geographic indicators</div>
         <p>NightSpire is assessed as a financially motivated cybercriminal enterprise. All reviewed sources treat the group as criminal rather than state-directed. The geographic attribution picture is contested, with evidence pointing toward South or East Asia rather than the Russia/Eastern Europe origin suggested in earlier Spanish-language reporting. No formal government attribution has been published by any national intelligence or law enforcement agency as of May 2026.</p>
       </div>
 
