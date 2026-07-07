@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ransomware Lineage Explorer | The Observatory</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root {
+  --bg: #090d12;
+  --panel: #0f1923;
+  --panel2: #162030;
+  --border: #1e2f42;
+  --text: #e8f0f8;
+  --muted: #7a93ad;
+  --accent: #ff8c00;
+  --accent2: #ffa940;
+  --active: #22c55e;
+  --defunct: #64748b;
+  --le: #ef4444;
+  --unknown: #8b949e;
+  --group-fill: #ff8c00;
+  --group-stroke: #ffa940;
+  --op-fill: #1e3a5f;
+  --op-stroke: #3d6a9e;
+  --edge-rebrand: #ff8c00;
+  --edge-derived: #3b82f6;
+  --edge-code: #a855f7;
+  --edge-variant: #22d3ee;
+  --edge-relationship: #64748b;
+  --edge-unconfirmed: #4b5563;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* HEADER */
+header { padding: 10px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; background: rgba(9,13,18,.97); backdrop-filter: blur(8px); z-index: 20; flex-shrink: 0; }
+header h1 { font-size: 16px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+header .sub { font-size: 11px; color: var(--muted); }
+.header-stats { display: flex; gap: 14px; margin-left: auto; }
+.hstat { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.hstat span { color: var(--accent); font-weight: 700; }
+
+/* LAYOUT */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* LEFT PANEL */
+.left-panel { width: 260px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--panel); overflow: hidden; }
+.panel-section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.panel-section label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 6px; }
+input[type=text], select { width: 100%; background: #0a131d; border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 9px; font-size: 12px; outline: none; }
+input[type=text]:focus, select:focus { border-color: var(--accent); }
+select option { background: #0f1923; }
+
+/* TIME SLIDER */
+.slider-wrap { display: flex; align-items: center; gap: 8px; }
+.slider-wrap input[type=range] { flex: 1; accent-color: var(--accent); }
+.slider-val { font-size: 12px; color: var(--accent); font-weight: 700; min-width: 36px; text-align: right; }
+
+/* FILTER CHECKBOXES */
+.filter-group { display: flex; flex-direction: column; gap: 5px; }
+.filter-row { display: flex; align-items: center; gap: 7px; font-size: 12px; cursor: pointer; }
+.filter-row input[type=checkbox] { accent-color: var(--accent); width: 13px; height: 13px; flex-shrink: 0; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* SEARCH RESULTS */
+.search-results { flex: 1; overflow-y: auto; padding: 6px 8px; }
+.search-item { padding: 7px 9px; border-radius: 7px; cursor: pointer; font-size: 12px; border: 1px solid transparent; margin-bottom: 3px; }
+.search-item:hover { background: var(--panel2); border-color: var(--border); }
+.search-item.selected { background: var(--panel2); border-color: var(--accent); }
+.search-item .si-name { font-weight: 600; }
+.search-item .si-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+.status-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
+.badge-active { background: rgba(34,197,94,.15); color: var(--active); }
+.badge-defunct { background: rgba(100,116,139,.15); color: var(--defunct); }
+.badge-le { background: rgba(239,68,68,.15); color: var(--le); }
+.badge-unknown { background: rgba(139,148,158,.1); color: var(--unknown); }
+
+/* TIMELINE AREA */
+.graph-area { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+#axis-wrap { flex-shrink: 0; background: rgba(9,13,18,.98); border-bottom: 1px solid var(--border); overflow: hidden; position: relative; z-index: 5; }
+#scroll-wrap { flex: 1; overflow: auto; position: relative; }
+#axis-svg { display: block; }
+#tl-svg { display: block; }
+
+.lane-band { fill: rgba(15,25,35,.45); }
+.lane-band.alt { fill: rgba(22,32,48,.30); }
+.lane-label { fill: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.lane-count { fill: #4a6076; font-size: 9px; font-weight: 600; }
+.year-grid { stroke: #14202e; stroke-width: 1; }
+.year-grid.major { stroke: #1b2b3d; }
+.axis-year { fill: var(--muted); font-size: 10px; font-weight: 600; }
+
+.bar { cursor: pointer; }
+.bar rect.lifespan { rx: 3.5; }
+.bar text.bar-label { font-size: 10.5px; font-weight: 600; pointer-events: none; }
+.bar.dimmed { opacity: .12; }
+.bar.selected rect.lifespan { stroke-width: 2.5; filter: drop-shadow(0 0 6px rgba(255,140,0,.7)); }
+.edge-path { fill: none; pointer-events: stroke; cursor: pointer; }
+.edge-path.dimmed { opacity: .05 !important; }
+.edge-path.highlight { opacity: 1 !important; }
+.event-mark { cursor: pointer; }
+.event-mark.dimmed { opacity: .1; }
+.ongoing-cap { pointer-events: none; }
+
+/* RIGHT PANEL */
+.right-panel { width: 280px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--panel); overflow-y: auto; display: flex; flex-direction: column; }
+.detail-header { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); }
+.detail-header h2 { font-size: 15px; font-weight: 700; }
+.detail-header .dtype { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .06em; }
+.detail-section { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.detail-section h3 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.kv-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; gap: 8px; }
+.kv-row .k { color: var(--muted); flex-shrink: 0; }
+.kv-row .v { text-align: right; font-weight: 500; word-break: break-word; }
+.rel-item { font-size: 12px; padding: 6px 0; border-top: 1px solid var(--border); display: flex; align-items: flex-start; gap: 7px; }
+.rel-item:first-child { border-top: none; }
+.rel-arrow { color: var(--muted); flex-shrink: 0; font-size: 14px; line-height: 1.2; }
+.rel-name { font-weight: 600; cursor: pointer; color: var(--accent2); }
+.rel-name:hover { text-decoration: underline; }
+.rel-type { font-size: 10px; color: var(--muted); display: block; margin-top: 1px; }
+.event-item { font-size: 12px; padding: 5px 0; border-top: 1px solid var(--border); }
+.event-item:first-child { border-top: none; }
+.event-year { color: var(--accent); font-weight: 700; font-size: 11px; }
+.empty-state { padding: 24px 14px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* LEGEND */
+.legend { position: absolute; bottom: 12px; left: 12px; background: rgba(15,25,35,.94); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; font-size: 11px; backdrop-filter: blur(6px); z-index: 8; max-height: 45vh; overflow-y: auto; }
+.legend h4 { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; font-size: 10px; }
+.legend-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+.legend-line { width: 22px; height: 2px; flex-shrink: 0; }
+.legend-node { width: 16px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+.legend-toggle { position: absolute; bottom: 12px; left: 12px; z-index: 9; }
+
+/* TOOLTIP */
+#tooltip { position: fixed; background: rgba(15,25,35,.97); border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; font-size: 12px; pointer-events: none; max-width: 230px; z-index: 50; display: none; }
+#tooltip .tt-name { font-weight: 700; margin-bottom: 3px; }
+#tooltip .tt-meta { color: var(--muted); font-size: 11px; }
+
+/* CONTROLS BAR */
+.controls-bar { position: absolute; top: 40px; right: 10px; display: flex; gap: 6px; z-index: 8; }
+.ctrl-btn { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px; cursor: pointer; }
+.ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+.ctrl-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255,140,0,.08); }
+
+/* TRACE MODE BANNER */
+.trace-banner { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); background: rgba(255,140,0,.12); border: 1px solid rgba(255,140,0,.4); border-radius: 7px; padding: 5px 14px; font-size: 12px; color: var(--accent); display: none; z-index: 10; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 7px; height: 7px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Ransomware Lineage Explorer</h1>
+    <div class="sub">OCD WorldWatch v29 · Jan 2026 · Timeline genealogy view</div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat">Actors: <span id="stat-nodes">0</span></div>
+    <div class="hstat">Relationships: <span id="stat-edges">0</span></div>
+    <div class="hstat">Visible: <span id="stat-visible">0</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="panel-section">
+      <label>Search</label>
+      <input type="text" id="search-input" placeholder="LockBit, Conti, BlackCat…">
+    </div>
+
+    <div class="panel-section">
+      <label>Time Range</label>
+      <div class="slider-wrap" style="margin-bottom:6px">
+        <span style="font-size:10px;color:var(--muted)">FROM</span>
+        <input type="range" id="year-start" min="2012" max="2026" value="2012" step="1">
+        <div class="slider-val" id="yr-start-val">2012</div>
+      </div>
+      <div class="slider-wrap">
+        <span style="font-size:10px;color:var(--muted)">TO</span>
+        <input type="range" id="year-end" min="2012" max="2026" value="2026" step="1">
+        <div class="slider-val" id="yr-end-val">2026</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <label>Status Filter</label>
+      <div class="filter-group">
+        <label class="filter-row"><input type="checkbox" class="status-filter" value="active" checked><div class="dot" style="background:var(--active)"></div>Active</label>
+        <label class="filter-row"><input type="checkbox" class="status-filter" value="le_disrupted" checked><div class="dot" style="background:var(--le)"></div>LE Disrupted</label>
+        <label class="filter-row"><input type="checkbox" class="status-filter" value="defunct" checked><div class="dot" style="background:var(--defunct)"></div>Defunct</label>
+        <label class="filter-row"><input type="checkbox" class="status-filter" value="unknown" checked><div class="dot" style="background:var(--unknown)"></div>Unknown</label>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <label>Edge Types</label>
+      <div class="filter-group">
+        <label class="filter-row"><input type="checkbox" class="edge-filter" value="rebrand" checked><div class="dot" style="background:var(--edge-rebrand)"></div>Rebrand / Successor</label>
+        <label class="filter-row"><input type="checkbox" class="edge-filter" value="derived" checked><div class="dot" style="background:var(--edge-derived)"></div>Derived From</label>
+        <label class="filter-row"><input type="checkbox" class="edge-filter" value="code_reuse" checked><div class="dot" style="background:var(--edge-code)"></div>Code Reuse</label>
+        <label class="filter-row"><input type="checkbox" class="edge-filter" value="variant" checked><div class="dot" style="background:var(--edge-variant)"></div>Variant</label>
+        <label class="filter-row"><input type="checkbox" class="edge-filter" value="relationship"><div class="dot" style="background:var(--edge-relationship)"></div>Relationship</label>
+        <label class="filter-row"><input type="checkbox" class="edge-filter" value="unconfirmed" checked><div class="dot" style="background:var(--edge-unconfirmed);border:1px solid #4b5563"></div>Unconfirmed</label>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <label>Ecosystem</label>
+      <select id="eco-filter">
+        <option value="">All ecosystems</option>
+      </select>
+    </div>
+
+    <div class="panel-section" style="border-bottom:none;padding-bottom:4px">
+      <label>Results (<span id="result-count">0</span>)</label>
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="graph-area">
+    <div id="axis-wrap"><svg id="axis-svg" height="26"></svg></div>
+    <div id="scroll-wrap"><svg id="tl-svg"></svg></div>
+    <div class="controls-bar">
+      <button class="ctrl-btn" id="btn-trace" title="Trace full lineage of selected actor">Trace Lineage</button>
+      <button class="ctrl-btn" id="btn-reset-view">Reset View</button>
+      <button class="ctrl-btn" id="btn-reset-filters">Clear Filters</button>
+    </div>
+    <div class="trace-banner" id="trace-banner">Lineage Trace Mode — click an actor to trace, press Escape to exit</div>
+    <div class="legend" id="legend">
+      <h4>Bar Fill = Type</h4>
+      <div class="legend-row"><div class="legend-node" style="background:var(--group-fill)"></div>Threat Group</div>
+      <div class="legend-row"><div class="legend-node" style="background:var(--op-fill);border:1px solid var(--op-stroke)"></div>Operation / Variant</div>
+      <h4 style="margin-top:8px">Bar Outline = Status</h4>
+      <div class="legend-row"><div class="legend-node" style="background:transparent;border:2px solid var(--active)"></div>Active</div>
+      <div class="legend-row"><div class="legend-node" style="background:transparent;border:2px solid var(--le)"></div>LE Disrupted</div>
+      <div class="legend-row"><div class="legend-node" style="background:transparent;border:2px solid var(--defunct)"></div>Defunct</div>
+      <h4 style="margin-top:8px">Connector = Link Type</h4>
+      <div class="legend-row"><div class="legend-line" style="background:var(--edge-rebrand)"></div>Rebrand</div>
+      <div class="legend-row"><div class="legend-line" style="background:var(--edge-derived)"></div>Derived</div>
+      <div class="legend-row"><div class="legend-line" style="background:var(--edge-code)"></div>Code Reuse</div>
+      <div class="legend-row"><div class="legend-line" style="background:var(--edge-variant)"></div>Variant</div>
+      <div class="legend-row"><div class="legend-line" style="background:var(--edge-relationship)"></div>Relationship</div>
+      <div class="legend-row"><div class="legend-line" style="border-top:2px dashed var(--edge-unconfirmed);height:0;background:none"></div>Unconfirmed</div>
+      <h4 style="margin-top:8px">Marker</h4>
+      <div class="legend-row"><span style="color:var(--le);font-size:12px">◆</span>Key event (LE action, leak, shutdown)</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" id="right-panel">
+    <div class="empty-state" id="detail-empty">
+      <div style="font-size:28px;margin-bottom:10px">🔍</div>
+      Click any bar to see<br>its details and lineage
+    </div>
+    <div id="detail-content" style="display:none"></div>
+  </div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-meta" id="tt-meta"></div>
+</div>
+
+<script src="../data/lineage-data.js"></script>
+<script>
+// ── CONSTANTS ───────────────────────────────────────────────────────────────
+const EDGE_COLORS = {
+  rebrand: "#ff8c00", derived: "#3b82f6", code_reuse: "#a855f7",
+  variant: "#22d3ee", relationship: "#64748b", unconfirmed: "#4b5563"
+};
+const STATUS_COLORS = { active: "#22c55e", le_disrupted: "#ef4444", defunct: "#64748b", unknown: "#8b949e" };
+const EVENT_COLORS = { le_action: "#ef4444", code_leak: "#a855f7", shutdown: "#64748b", rebrand: "#ff8c00", hacktivist: "#22d3ee" };
+const EDGE_LABELS = { rebrand: "Rebrand / Successor", derived: "Derived From", code_reuse: "Code Reuse", variant: "Variant", relationship: "Relationship", unconfirmed: "Unconfirmed" };
+const ECO_LABELS = {
+  nk_apt: "Lazarus / DPRK", vice_society: "Vice Society", stop: "STOP / DJVU",
+  money_message: "Money Message", lukaLocker: "LukaLocker", unknown: "Unattributed"
+};
+const YEAR_MIN = 2012, YEAR_MAX = 2026;
+const ROW_H = 24, BAR_H = 14, LANE_HEAD = 30, LANE_PAD = 8, TOP_PAD = 6, LEFT_PAD = 10, RIGHT_PAD = 46;
+
+const allNodes = RW_DATA.nodes;
+const allEdges = RW_DATA.edges;
+const allEvents = RW_DATA.events || [];
+const nodeById = new Map(allNodes.map(n => [n.id, n]));
+
+let selectedId = null;
+let traceMode = false;
+let traceIds = new Set();
+let traceEdgeKeys = new Set();
+let rowPos = new Map();   // id -> {y, x0, x1}
+let xScale = null;
+
+let state = {
+  search: "", yearStart: YEAR_MIN, yearEnd: YEAR_MAX,
+  statusFilters: new Set(["active","le_disrupted","defunct","unknown"]),
+  edgeFilters: new Set(["rebrand","derived","code_reuse","variant","unconfirmed"]),
+  ecosystem: ""
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+function ecoLabel(e) {
+  if (!e) return "Unattributed";
+  if (ECO_LABELS[e]) return ECO_LABELS[e];
+  return e.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+function endYear(n) { return n.last === null || n.last === undefined ? YEAR_MAX : n.last; }
+function statusBadge(s) {
+  const map = { active: ["badge-active","ACTIVE"], le_disrupted: ["badge-le","LE DISRUPTED"], defunct: ["badge-defunct","DEFUNCT"], unknown: ["badge-unknown","UNKNOWN"] };
+  const [cls, txt] = map[s] || map.unknown;
+  return `<span class="status-badge ${cls}">${txt}</span>`;
+}
+function edgeKey(e) { return e.source + "→" + e.target + ":" + e.type; }
+
+function getVisibleNodes() {
+  const s = state;
+  return allNodes.filter(n => {
+    if (!s.statusFilters.has(n.status)) return false;
+    const start = n.first || YEAR_MIN, end = endYear(n);
+    if (end < s.yearStart || start > s.yearEnd) return false;
+    if (s.ecosystem && n.ecosystem !== s.ecosystem) return false;
+    if (s.search) {
+      const q = s.search.toLowerCase();
+      if (!n.label.toLowerCase().includes(q) && !n.id.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+function getVisibleEdges(nodeIds) {
+  return allEdges.filter(e => state.edgeFilters.has(e.type) && nodeIds.has(e.source) && nodeIds.has(e.target));
+}
+
+// ── LANE LAYOUT ─────────────────────────────────────────────────────────────
+function buildLanes(visNodes) {
+  const byEco = d3.group(visNodes, n => n.ecosystem || "unknown");
+  const named = [], single = [];
+  for (const [eco, nodes] of byEco) {
+    if (nodes.length >= 2) named.push({ eco, nodes });
+    else single.push(...nodes);
+  }
+  named.sort((a, b) => b.nodes.length - a.nodes.length || a.eco.localeCompare(b.eco));
+  const lanes = named.map(l => ({
+    label: ecoLabel(l.eco), eco: l.eco,
+    nodes: l.nodes.slice().sort((a, b) => (a.first || YEAR_MIN) - (b.first || YEAR_MIN) || (a.type === "group" ? -1 : 1) || a.label.localeCompare(b.label))
+  }));
+  if (single.length) {
+    lanes.push({
+      label: "Standalone Operations", eco: null,
+      nodes: single.sort((a, b) => (a.first || YEAR_MIN) - (b.first || YEAR_MIN) || a.label.localeCompare(b.label))
+    });
+  }
+  return lanes;
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+function build() {
+  const visNodes = getVisibleNodes();
+  const nodeIds = new Set(visNodes.map(n => n.id));
+  const visEdges = getVisibleEdges(nodeIds);
+  const lanes = buildLanes(visNodes);
+
+  document.getElementById("stat-nodes").textContent = allNodes.length;
+  document.getElementById("stat-edges").textContent = allEdges.length;
+  document.getElementById("stat-visible").textContent = visNodes.length;
+
+  renderSearchResults(visNodes);
+
+  const scrollWrap = document.getElementById("scroll-wrap");
+  const width = Math.max(1150, scrollWrap.clientWidth - 2);
+  xScale = d3.scaleLinear().domain([YEAR_MIN - 0.25, YEAR_MAX + 0.75]).range([LEFT_PAD, width - RIGHT_PAD]);
+
+  // total height
+  let y = TOP_PAD;
+  const laneMeta = [];
+  lanes.forEach((lane, i) => {
+    const h = LANE_HEAD + lane.nodes.length * ROW_H + LANE_PAD;
+    laneMeta.push({ ...lane, y0: y, h, alt: i % 2 === 1 });
+    y += h;
+  });
+  const totalH = y + 20;
+
+  const svg = d3.select("#tl-svg").attr("width", width).attr("height", totalH);
+  svg.selectAll("*").remove();
+
+  // defs: arrowheads per edge type
+  const defs = svg.append("defs");
+  Object.entries(EDGE_COLORS).forEach(([t, c]) => {
+    defs.append("marker").attr("id", "tl-arr-" + t).attr("markerWidth", 7).attr("markerHeight", 7)
+      .attr("refX", 6).attr("refY", 3).attr("orient", "auto")
+      .append("path").attr("d", "M0,0 L0,6 L7,3 z").attr("fill", c);
+  });
+
+  // lane bands
+  const laneG = svg.append("g");
+  laneMeta.forEach(l => {
+    laneG.append("rect").attr("class", "lane-band" + (l.alt ? " alt" : ""))
+      .attr("x", 0).attr("y", l.y0).attr("width", width).attr("height", l.h);
+    laneG.append("text").attr("class", "lane-label").attr("x", LEFT_PAD).attr("y", l.y0 + 18).text(l.label);
+    laneG.append("text").attr("class", "lane-count").attr("x", LEFT_PAD + l.label.length * 7.5 + 10).attr("y", l.y0 + 18)
+      .text(l.nodes.length + (l.nodes.length === 1 ? " actor" : " actors"));
+  });
+
+  // year gridlines
+  const gridG = svg.append("g");
+  for (let yr = YEAR_MIN; yr <= YEAR_MAX + 1; yr++) {
+    gridG.append("line").attr("class", "year-grid" + (yr % 5 === 0 ? " major" : ""))
+      .attr("x1", xScale(yr)).attr("x2", xScale(yr)).attr("y1", 0).attr("y2", totalH);
+  }
+
+  // row positions
+  rowPos = new Map();
+  laneMeta.forEach(l => {
+    l.nodes.forEach((n, i) => {
+      const ry = l.y0 + LANE_HEAD + i * ROW_H + (ROW_H - BAR_H) / 2;
+      rowPos.set(n.id, { y: ry + BAR_H / 2, x0: xScale(n.first || YEAR_MIN), x1: xScale(endYear(n) + (n.last === null || n.last === undefined ? 0.75 : 0.6)), barY: ry, node: n });
+    });
+  });
+
+  // edges (under bars)
+  const edgeG = svg.append("g");
+  visEdges.forEach(e => {
+    const s = rowPos.get(e.source), t = rowPos.get(e.target);
+    if (!s || !t) return;
+    const tx = Math.max(t.x0, LEFT_PAD);
+    // anchor on source bar: at target's first-seen x if inside source bar span, else source bar end
+    const sx = Math.min(Math.max(tx, s.x0 + 6), s.x1 - 2);
+    const sy = s.y, ty = t.y;
+    const targetEntry = tx - 4;
+    const midY = (sy + ty) / 2;
+    const path = `M${sx},${sy} C${sx},${midY} ${targetEntry},${midY} ${targetEntry},${ty}`;
+    edgeG.append("path")
+      .attr("class", "edge-path")
+      .attr("d", path)
+      .attr("data-key", edgeKey(e))
+      .attr("data-src", e.source).attr("data-tgt", e.target)
+      .attr("stroke", EDGE_COLORS[e.type] || "#64748b")
+      .attr("stroke-width", e.type === "rebrand" ? 2.2 : e.type === "unconfirmed" ? 1.1 : 1.4)
+      .attr("stroke-dasharray", e.type === "unconfirmed" ? "4,3" : null)
+      .attr("opacity", e.type === "rebrand" ? 0.9 : e.type === "relationship" ? 0.35 : 0.55)
+      .attr("marker-end", `url(#tl-arr-${e.type})`)
+      .on("mouseover", (event) => showTooltipRaw(event, (nodeById.get(e.source)?.label || e.source) + " → " + (nodeById.get(e.target)?.label || e.target), (EDGE_LABELS[e.type] || e.type) + (e.label ? " · " + e.label : "")))
+      .on("mousemove", moveTooltip)
+      .on("mouseout", hideTooltip);
+  });
+
+  // bars
+  const barG = svg.append("g");
+  laneMeta.forEach(l => {
+    l.nodes.forEach(n => {
+      const p = rowPos.get(n.id);
+      const ongoing = n.last === null || n.last === undefined;
+      const g = barG.append("g").attr("class", "bar").attr("data-id", n.id)
+        .on("click", (event) => { event.stopPropagation(); selectNode(n); })
+        .on("mouseover", (event) => showTooltip(event, n))
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip);
+      const barW = Math.max(p.x1 - p.x0, 8);
+      g.append("rect").attr("class", "lifespan")
+        .attr("x", p.x0).attr("y", p.barY).attr("width", barW).attr("height", BAR_H)
+        .attr("fill", n.type === "group" ? "var(--group-fill)" : "var(--op-fill)")
+        .attr("fill-opacity", n.type === "group" ? 0.85 : 0.9)
+        .attr("stroke", STATUS_COLORS[n.status] || "#8b949e")
+        .attr("stroke-width", 1.5);
+      if (ongoing) {
+        g.append("path").attr("class", "ongoing-cap")
+          .attr("d", `M${p.x0 + barW},${p.barY} l7,${BAR_H / 2} l-7,${BAR_H / 2} z`)
+          .attr("fill", n.type === "group" ? "var(--group-fill)" : "var(--op-fill)")
+          .attr("fill-opacity", 0.5);
+      }
+      // label placement
+      const est = n.label.length * 6.3 + 10;
+      let lx, anchor, fill;
+      if (barW >= est) { lx = p.x0 + 6; anchor = "start"; fill = n.type === "group" ? "#0a0f14" : "#dce8f5"; }
+      else if (p.x1 + est < width - 6) { lx = p.x1 + (ongoing ? 12 : 6); anchor = "start"; fill = "#b9cbdd"; }
+      else { lx = p.x0 - 6; anchor = "end"; fill = "#b9cbdd"; }
+      g.append("text").attr("class", "bar-label")
+        .attr("x", lx).attr("y", p.barY + BAR_H - 3.5)
+        .attr("text-anchor", anchor).attr("fill", fill)
+        .text(n.label);
+    });
+  });
+
+  // event markers
+  const evG = svg.append("g");
+  allEvents.forEach(ev => {
+    ev.actor_ids.forEach(aid => {
+      const p = rowPos.get(aid);
+      if (!p) return;
+      const ex = xScale(Math.min(Math.max(ev.year, YEAR_MIN), YEAR_MAX) + 0.5);
+      evG.append("path").attr("class", "event-mark").attr("data-id", aid)
+        .attr("d", `M${ex},${p.y - 6.5} l5,6.5 l-5,6.5 l-5,-6.5 z`)
+        .attr("fill", EVENT_COLORS[ev.type] || "#ff8c00")
+        .attr("stroke", "#090d12").attr("stroke-width", 1)
+        .on("mouseover", (event) => showTooltipRaw(event, ev.label, ev.year + " · " + ev.type.replace(/_/g, " ")))
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip);
+    });
+  });
+
+  // axis (sticky)
+  const axisSvg = d3.select("#axis-svg").attr("width", width);
+  axisSvg.selectAll("*").remove();
+  for (let yr = YEAR_MIN; yr <= YEAR_MAX; yr++) {
+    axisSvg.append("text").attr("class", "axis-year").attr("x", xScale(yr + 0.5)).attr("y", 17).attr("text-anchor", "middle").text(yr);
+    axisSvg.append("line").attr("x1", xScale(yr)).attr("x2", xScale(yr)).attr("y1", 20).attr("y2", 26).attr("stroke", "#1b2b3d");
+  }
+
+  svg.on("click", () => { if (!traceMode) clearSelection(); });
+
+  applyHighlight();
+}
+
+// ── SEARCH RESULTS LIST ─────────────────────────────────────────────────────
+function renderSearchResults(visNodes) {
+  const wrap = document.getElementById("search-results");
+  document.getElementById("result-count").textContent = visNodes.length;
+  const sorted = visNodes.slice().sort((a, b) => a.label.localeCompare(b.label));
+  wrap.innerHTML = sorted.map(n =>
+    `<div class="search-item${n.id === selectedId ? " selected" : ""}" data-id="${n.id}">
+      <div class="si-name">${n.label}${statusBadge(n.status)}</div>
+      <div class="si-meta">${n.type === "group" ? "Threat group" : "Operation"} · ${ecoLabel(n.ecosystem)} · ${n.first || "?"}–${n.last === null || n.last === undefined ? "present" : n.last}</div>
+    </div>`).join("");
+  wrap.querySelectorAll(".search-item").forEach(el => {
+    el.addEventListener("click", () => { const n = nodeById.get(el.dataset.id); if (n) { selectNode(n); scrollToNode(n.id); } });
+  });
+}
+
+// ── SELECTION / DETAIL ──────────────────────────────────────────────────────
+function selectNode(n) {
+  if (traceMode) { runTrace(n.id); }
+  selectedId = n.id;
+  try { history.replaceState(null, "", "#actor=" + n.id); } catch (err) {}
+  renderDetail(n);
+  applyHighlight();
+  document.querySelectorAll(".search-item").forEach(el => el.classList.toggle("selected", el.dataset.id === n.id));
+}
+function clearSelection() {
+  selectedId = null;
+  exitTrace();
+  document.getElementById("detail-empty").style.display = "";
+  document.getElementById("detail-content").style.display = "none";
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (err) {}
+  applyHighlight();
+  document.querySelectorAll(".search-item").forEach(el => el.classList.remove("selected"));
+}
+function scrollToNode(id) {
+  const p = rowPos.get(id);
+  if (!p) return;
+  const wrap = document.getElementById("scroll-wrap");
+  wrap.scrollTo({ top: Math.max(0, p.y - wrap.clientHeight / 2), behavior: "smooth" });
+}
+function renderDetail(n) {
+  document.getElementById("detail-empty").style.display = "none";
+  const c = document.getElementById("detail-content");
+  c.style.display = "";
+  const rels = allEdges.filter(e => e.source === n.id || e.target === n.id);
+  const relHtml = rels.length ? rels.map(e => {
+    const outbound = e.source === n.id;
+    const otherId = outbound ? e.target : e.source;
+    const other = nodeById.get(otherId);
+    const tc = EDGE_COLORS[e.type] || "#64748b";
+    return `<div class="rel-item">
+      <span class="rel-arrow">${outbound ? "→" : "←"}</span>
+      <div><span class="rel-name" data-id="${otherId}">${other ? other.label : otherId}</span>
+      <span class="rel-type" style="color:${tc}">${EDGE_LABELS[e.type] || e.type}${e.label ? " · " + e.label : ""}</span></div>
+    </div>`;
+  }).join("") : `<div style="font-size:12px;color:var(--muted)">No recorded relationships</div>`;
+  const evs = allEvents.filter(ev => ev.actor_ids.includes(n.id));
+  const evHtml = evs.length ? evs.map(ev => `<div class="event-item"><span class="event-year">${ev.year}</span> ${ev.label}</div>`).join("") : "";
+  c.innerHTML = `
+    <div class="detail-header">
+      <h2>${n.label}</h2>
+      <div class="dtype">${n.type === "group" ? "Threat Group" : "Operation / Variant"}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Profile</h3>
+      <div class="kv-row"><span class="k">Status</span><span class="v">${statusBadge(n.status)}</span></div>
+      <div class="kv-row"><span class="k">Ecosystem</span><span class="v">${ecoLabel(n.ecosystem)}</span></div>
+      <div class="kv-row"><span class="k">First seen</span><span class="v">${n.first || "Unknown"}</span></div>
+      <div class="kv-row"><span class="k">Last seen</span><span class="v">${n.last === null || n.last === undefined ? "Ongoing" : n.last}</span></div>
+      ${n.notes ? `<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">${n.notes}</div>` : ""}
+    </div>
+    <div class="detail-section">
+      <h3>Relationships (${rels.length})</h3>
+      ${relHtml}
+    </div>
+    ${evHtml ? `<div class="detail-section"><h3>Key Events</h3>${evHtml}</div>` : ""}
+    <div class="detail-section" style="border-bottom:none">
+      <button class="ctrl-btn" id="btn-detail-trace" style="width:100%">Trace Full Lineage</button>
+    </div>`;
+  c.querySelectorAll(".rel-name").forEach(el => {
+    el.addEventListener("click", () => { const o = nodeById.get(el.dataset.id); if (o) { selectNode(o); scrollToNode(o.id); } });
+  });
+  const bt = document.getElementById("btn-detail-trace");
+  if (bt) bt.addEventListener("click", () => { runTrace(n.id); });
+}
+
+// ── TRACE ───────────────────────────────────────────────────────────────────
+function runTrace(startId) {
+  traceMode = true;
+  traceIds = new Set([startId]);
+  traceEdgeKeys = new Set();
+  const active = allEdges.filter(e => state.edgeFilters.has(e.type));
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const e of active) {
+      if (traceIds.has(e.source) || traceIds.has(e.target)) {
+        if (!traceIds.has(e.source)) { traceIds.add(e.source); grew = true; }
+        if (!traceIds.has(e.target)) { traceIds.add(e.target); grew = true; }
+        traceEdgeKeys.add(edgeKey(e));
+      }
+    }
+  }
+  document.getElementById("trace-banner").style.display = "block";
+  document.getElementById("btn-trace").classList.add("active");
+  applyHighlight();
+}
+function exitTrace() {
+  traceMode = false;
+  traceIds = new Set();
+  traceEdgeKeys = new Set();
+  document.getElementById("trace-banner").style.display = "none";
+  document.getElementById("btn-trace").classList.remove("active");
+  applyHighlight();
+}
+
+// ── HIGHLIGHT STATE ─────────────────────────────────────────────────────────
+function applyHighlight() {
+  const tracing = traceMode && traceIds.size > 0;
+  d3.selectAll(".bar").each(function () {
+    const id = this.dataset.id;
+    const dim = tracing ? !traceIds.has(id) : false;
+    this.classList.toggle("dimmed", dim);
+    this.classList.toggle("selected", id === selectedId);
+  });
+  d3.selectAll(".edge-path").each(function () {
+    const key = this.dataset.key;
+    const touches = this.dataset.src === selectedId || this.dataset.tgt === selectedId;
+    const dim = tracing ? !traceEdgeKeys.has(key) : false;
+    this.classList.toggle("dimmed", dim);
+    this.classList.toggle("highlight", !dim && (touches || (tracing && traceEdgeKeys.has(key))));
+  });
+  d3.selectAll(".event-mark").each(function () {
+    this.classList.toggle("dimmed", tracing ? !traceIds.has(this.dataset.id) : false);
+  });
+}
+
+// ── TOOLTIP ─────────────────────────────────────────────────────────────────
+const tooltip = document.getElementById("tooltip");
+function showTooltip(event, n) {
+  showTooltipRaw(event, n.label, `${n.type === "group" ? "Threat group" : "Operation"} · ${ecoLabel(n.ecosystem)} · ${n.first || "?"}–${n.last === null || n.last === undefined ? "present" : n.last}`);
+}
+function showTooltipRaw(event, name, meta) {
+  document.getElementById("tt-name").textContent = name;
+  document.getElementById("tt-meta").textContent = meta;
+  tooltip.style.display = "block";
+  moveTooltip(event);
+}
+function moveTooltip(event) {
+  const px = event.clientX, py = event.clientY;
+  tooltip.style.left = Math.min(px + 14, window.innerWidth - 250) + "px";
+  tooltip.style.top = Math.min(py + 12, window.innerHeight - 80) + "px";
+}
+function hideTooltip() { tooltip.style.display = "none"; }
+
+// ── CONTROLS ────────────────────────────────────────────────────────────────
+document.getElementById("search-input").addEventListener("input", e => { state.search = e.target.value.trim(); build(); });
+document.getElementById("year-start").addEventListener("input", e => {
+  state.yearStart = +e.target.value;
+  if (state.yearStart > state.yearEnd) { state.yearEnd = state.yearStart; document.getElementById("year-end").value = state.yearEnd; document.getElementById("yr-end-val").textContent = state.yearEnd; }
+  document.getElementById("yr-start-val").textContent = state.yearStart;
+  build();
+});
+document.getElementById("year-end").addEventListener("input", e => {
+  state.yearEnd = +e.target.value;
+  if (state.yearEnd < state.yearStart) { state.yearStart = state.yearEnd; document.getElementById("year-start").value = state.yearStart; document.getElementById("yr-start-val").textContent = state.yearStart; }
+  document.getElementById("yr-end-val").textContent = state.yearEnd;
+  build();
+});
+document.querySelectorAll(".status-filter").forEach(cb => cb.addEventListener("change", () => {
+  state.statusFilters = new Set([...document.querySelectorAll(".status-filter:checked")].map(c => c.value));
+  build();
+}));
+document.querySelectorAll(".edge-filter").forEach(cb => cb.addEventListener("change", () => {
+  state.edgeFilters = new Set([...document.querySelectorAll(".edge-filter:checked")].map(c => c.value));
+  build();
+}));
+document.getElementById("eco-filter").addEventListener("change", e => { state.ecosystem = e.target.value; build(); });
+document.getElementById("btn-trace").addEventListener("click", () => {
+  if (traceMode) { exitTrace(); return; }
+  if (selectedId) runTrace(selectedId);
+  else { traceMode = true; document.getElementById("trace-banner").style.display = "block"; document.getElementById("btn-trace").classList.add("active"); }
+});
+document.getElementById("btn-reset-view").addEventListener("click", () => {
+  document.getElementById("scroll-wrap").scrollTo({ top: 0, behavior: "smooth" });
+  clearSelection();
+});
+document.getElementById("btn-reset-filters").addEventListener("click", () => {
+  state = { search: "", yearStart: YEAR_MIN, yearEnd: YEAR_MAX,
+    statusFilters: new Set(["active","le_disrupted","defunct","unknown"]),
+    edgeFilters: new Set(["rebrand","derived","code_reuse","variant","unconfirmed"]),
+    ecosystem: "" };
+  document.getElementById("search-input").value = "";
+  document.getElementById("year-start").value = YEAR_MIN; document.getElementById("yr-start-val").textContent = YEAR_MIN;
+  document.getElementById("year-end").value = YEAR_MAX; document.getElementById("yr-end-val").textContent = YEAR_MAX;
+  document.querySelectorAll(".status-filter").forEach(cb => cb.checked = true);
+  document.querySelectorAll(".edge-filter").forEach(cb => cb.checked = cb.value !== "relationship");
+  document.getElementById("eco-filter").value = "";
+  build();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") { exitTrace(); } });
+document.getElementById("scroll-wrap").addEventListener("scroll", function () {
+  document.getElementById("axis-wrap").scrollLeft = this.scrollLeft;
+});
+window.addEventListener("resize", () => build());
+
+// ── ECOSYSTEM SELECT ────────────────────────────────────────────────────────
+(function () {
+  const counts = d3.rollup(allNodes, v => v.length, n => n.ecosystem || "unknown");
+  const ecos = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const sel = document.getElementById("eco-filter");
+  ecos.forEach(([e, c]) => {
+    const o = document.createElement("option");
+    o.value = e; o.textContent = `${ecoLabel(e)} (${c})`;
+    sel.appendChild(o);
+  });
+})();
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+build();
+// deep link: #actor=<id>
+(function () {
+  const m = location.hash.match(/actor=([a-z0-9_]+)/i);
+  if (m && nodeById.has(m[1])) {
+    const n = nodeById.get(m[1]);
+    selectNode(n);
+    setTimeout(() => scrollToNode(n.id), 150);
+  }
+})();
+</script>
+</body>
+</html>
