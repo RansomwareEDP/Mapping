@@ -376,7 +376,8 @@ function build() {
 
   const scrollWrap = document.getElementById("scroll-wrap");
   const width = Math.max(680, scrollWrap.clientWidth - 2);
-  xScale = d3.scaleLinear().domain([YEAR_MIN - 0.25, YEAR_MAX + 0.75]).range([LEFT_PAD, width - RIGHT_PAD]);
+  const y0dom = state.yearStart, y1dom = state.yearEnd;
+  xScale = d3.scaleLinear().domain([y0dom - 0.25, y1dom + 0.75]).range([LEFT_PAD, width - RIGHT_PAD]);
 
   // total height
   let y = TOP_PAD;
@@ -411,7 +412,7 @@ function build() {
 
   // year gridlines
   const gridG = svg.append("g");
-  for (let yr = YEAR_MIN; yr <= YEAR_MAX + 1; yr++) {
+  for (let yr = y0dom; yr <= y1dom + 1; yr++) {
     gridG.append("line").attr("class", "year-grid" + (yr % 5 === 0 ? " major" : ""))
       .attr("x1", xScale(yr)).attr("x2", xScale(yr)).attr("y1", 0).attr("y2", totalH);
   }
@@ -421,7 +422,8 @@ function build() {
   laneMeta.forEach(l => {
     l.nodes.forEach((n, i) => {
       const ry = l.y0 + LANE_HEAD + i * ROW_H + (ROW_H - BAR_H) / 2;
-      rowPos.set(n.id, { y: ry + BAR_H / 2, x0: xScale(Math.max(n.first || YEAR_MIN, YEAR_MIN)), x1: xScale(Math.min(endYear(n), YEAR_MAX) + (n.last === null || n.last === undefined ? 0.75 : 0.6)), barY: ry, node: n });
+      const eC = Math.min(endYear(n), y1dom);
+      rowPos.set(n.id, { y: ry + BAR_H / 2, x0: xScale(Math.max(n.first || y0dom, y0dom)), x1: xScale(eC + (endYear(n) >= y1dom ? 0.75 : 0.6)), barY: ry, node: n });
     });
   });
 
@@ -470,23 +472,11 @@ function build() {
         .attr("fill-opacity", n.type === "group" ? 0.85 : 0.9)
         .attr("stroke", STATUS_COLORS[n.status] || "#8b949e")
         .attr("stroke-width", 1.5);
-      if (ongoing) {
-        g.append("path").attr("class", "ongoing-cap")
-          .attr("d", `M${p.x0 + barW},${p.barY} l7,${BAR_H / 2} l-7,${BAR_H / 2} z`)
-          .attr("fill", n.type === "group" ? "var(--group-fill)" : "var(--op-fill)")
-          .attr("fill-opacity", 0.5);
-      }
-      if ((n.first || YEAR_MIN) < YEAR_MIN) {
-        g.append("path").attr("class", "ongoing-cap")
-          .attr("d", `M${p.x0},${p.barY} l-7,${BAR_H / 2} l7,${BAR_H / 2} z`)
-          .attr("fill", n.type === "group" ? "var(--group-fill)" : "var(--op-fill)")
-          .attr("fill-opacity", 0.5);
-      }
       // label placement
       const est = n.label.length * 6.3 + 10;
       let lx, anchor, fill;
       if (barW >= est) { lx = p.x0 + 6; anchor = "start"; fill = n.type === "group" ? "#0a0f14" : "#dce8f5"; }
-      else if (p.x1 + est < width - 6) { lx = p.x1 + (ongoing ? 12 : 6); anchor = "start"; fill = "#b9cbdd"; }
+      else if (p.x1 + est < width - 6) { lx = p.x1 + 6; anchor = "start"; fill = "#b9cbdd"; }
       else { lx = p.x0 - 6; anchor = "end"; fill = "#b9cbdd"; }
       g.append("text").attr("class", "bar-label")
         .attr("x", lx).attr("y", p.barY + BAR_H - 3.5)
@@ -498,10 +488,11 @@ function build() {
   // event markers
   const evG = svg.append("g");
   allEvents.forEach(ev => {
+    if (ev.year < y0dom || ev.year > y1dom) return;
     ev.actor_ids.forEach(aid => {
       const p = rowPos.get(aid);
       if (!p) return;
-      const ex = xScale(Math.min(Math.max(ev.year, YEAR_MIN), YEAR_MAX) + 0.5);
+      const ex = xScale(ev.year + 0.5);
       evG.append("path").attr("class", "event-mark").attr("data-id", aid)
         .attr("d", `M${ex},${p.y - 6.5} l5,6.5 l-5,6.5 l-5,-6.5 z`)
         .attr("fill", EVENT_COLORS[ev.type] || "#ff8c00")
@@ -515,7 +506,7 @@ function build() {
   // axis (sticky)
   const axisSvg = d3.select("#axis-svg").attr("width", width);
   axisSvg.selectAll("*").remove();
-  for (let yr = YEAR_MIN; yr <= YEAR_MAX; yr++) {
+  for (let yr = y0dom; yr <= y1dom; yr++) {
     axisSvg.append("text").attr("class", "axis-year").attr("x", xScale(yr + 0.5)).attr("y", 17).attr("text-anchor", "middle").text(yr);
     axisSvg.append("line").attr("x1", xScale(yr)).attr("x2", xScale(yr)).attr("y1", 20).attr("y2", 26).attr("stroke", "#1b2b3d");
   }
