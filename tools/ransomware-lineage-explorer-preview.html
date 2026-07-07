@@ -125,7 +125,9 @@ select option { background: #0f1923; }
 .empty-state { padding: 24px 14px; text-align: center; color: var(--muted); font-size: 13px; }
 
 /* LEGEND */
-.legend { position: absolute; bottom: 12px; left: 12px; background: rgba(15,25,35,.94); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; font-size: 11px; backdrop-filter: blur(6px); z-index: 8; max-height: 45vh; overflow-y: auto; }
+.legend { display: none; position: absolute; bottom: 46px; left: 12px; background: rgba(15,25,35,.94); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; font-size: 11px; backdrop-filter: blur(6px); z-index: 8; max-height: 45vh; overflow-y: auto; }
+.legend.open { display: block; }
+#legend-btn { position: absolute; bottom: 12px; left: 12px; z-index: 9; }
 .legend h4 { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; font-size: 10px; }
 .legend-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
 .legend-line { width: 22px; height: 2px; flex-shrink: 0; }
@@ -178,12 +180,12 @@ select option { background: #0f1923; }
       <label>Time Range</label>
       <div class="slider-wrap" style="margin-bottom:6px">
         <span style="font-size:10px;color:var(--muted)">FROM</span>
-        <input type="range" id="year-start" min="2012" max="2026" value="2012" step="1">
-        <div class="slider-val" id="yr-start-val">2012</div>
+        <input type="range" id="year-start" min="2015" max="2026" value="2015" step="1">
+        <div class="slider-val" id="yr-start-val">2015</div>
       </div>
       <div class="slider-wrap">
         <span style="font-size:10px;color:var(--muted)">TO</span>
-        <input type="range" id="year-end" min="2012" max="2026" value="2026" step="1">
+        <input type="range" id="year-end" min="2015" max="2026" value="2026" step="1">
         <div class="slider-val" id="yr-end-val">2026</div>
       </div>
     </div>
@@ -233,6 +235,7 @@ select option { background: #0f1923; }
       <button class="ctrl-btn" id="btn-reset-filters">Clear Filters</button>
     </div>
     <div class="trace-banner" id="trace-banner">Lineage Trace Mode — click an actor to trace, press Escape to exit</div>
+    <button class="ctrl-btn" id="legend-btn">Legend</button>
     <div class="legend" id="legend">
       <h4>Bar Fill = Type</h4>
       <div class="legend-row"><div class="legend-node" style="background:var(--group-fill)"></div>Threat Group</div>
@@ -282,7 +285,7 @@ const ECO_LABELS = {
   nk_apt: "Lazarus / DPRK", vice_society: "Vice Society", stop: "STOP / DJVU",
   money_message: "Money Message", lukaLocker: "LukaLocker", unknown: "Unattributed"
 };
-const YEAR_MIN = 2012, YEAR_MAX = 2026;
+const YEAR_MIN = 2015, YEAR_MAX = 2026;
 const ROW_H = 24, BAR_H = 14, LANE_HEAD = 30, LANE_PAD = 8, TOP_PAD = 6, LEFT_PAD = 10, RIGHT_PAD = 46;
 
 const allNodes = RW_DATA.nodes;
@@ -372,7 +375,7 @@ function build() {
   renderSearchResults(visNodes);
 
   const scrollWrap = document.getElementById("scroll-wrap");
-  const width = Math.max(1150, scrollWrap.clientWidth - 2);
+  const width = Math.max(680, scrollWrap.clientWidth - 2);
   xScale = d3.scaleLinear().domain([YEAR_MIN - 0.25, YEAR_MAX + 0.75]).range([LEFT_PAD, width - RIGHT_PAD]);
 
   // total height
@@ -418,7 +421,7 @@ function build() {
   laneMeta.forEach(l => {
     l.nodes.forEach((n, i) => {
       const ry = l.y0 + LANE_HEAD + i * ROW_H + (ROW_H - BAR_H) / 2;
-      rowPos.set(n.id, { y: ry + BAR_H / 2, x0: xScale(n.first || YEAR_MIN), x1: xScale(endYear(n) + (n.last === null || n.last === undefined ? 0.75 : 0.6)), barY: ry, node: n });
+      rowPos.set(n.id, { y: ry + BAR_H / 2, x0: xScale(Math.max(n.first || YEAR_MIN, YEAR_MIN)), x1: xScale(Math.min(endYear(n), YEAR_MAX) + (n.last === null || n.last === undefined ? 0.75 : 0.6)), barY: ry, node: n });
     });
   });
 
@@ -470,6 +473,12 @@ function build() {
       if (ongoing) {
         g.append("path").attr("class", "ongoing-cap")
           .attr("d", `M${p.x0 + barW},${p.barY} l7,${BAR_H / 2} l-7,${BAR_H / 2} z`)
+          .attr("fill", n.type === "group" ? "var(--group-fill)" : "var(--op-fill)")
+          .attr("fill-opacity", 0.5);
+      }
+      if ((n.first || YEAR_MIN) < YEAR_MIN) {
+        g.append("path").attr("class", "ongoing-cap")
+          .attr("d", `M${p.x0},${p.barY} l-7,${BAR_H / 2} l7,${BAR_H / 2} z`)
           .attr("fill", n.type === "group" ? "var(--group-fill)" : "var(--op-fill)")
           .attr("fill-opacity", 0.5);
       }
@@ -716,6 +725,11 @@ document.getElementById("btn-reset-filters").addEventListener("click", () => {
   build();
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { exitTrace(); } });
+document.getElementById("legend-btn").addEventListener("click", () => {
+  const lg = document.getElementById("legend");
+  lg.classList.toggle("open");
+  document.getElementById("legend-btn").classList.toggle("active", lg.classList.contains("open"));
+});
 document.getElementById("scroll-wrap").addEventListener("scroll", function () {
   document.getElementById("axis-wrap").scrollLeft = this.scrollLeft;
 });
