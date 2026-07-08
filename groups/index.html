@@ -4,387 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ransomware Variant Profiles | The Observatory</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --red: #e63946;
-      --red-dark: #c1121f;
-      --white: #ffffff;
-      --light-gray: #d4d4d0;
-      --mid-gray: #6b6b68;
-      --dark: #0d0d0d;
-      --dark-2: #141414;
-      --dark-3: #1c1c1c;
-      --border: rgba(255,255,255,0.08);
-
-      /* Group accent colors */
-      --akira-color: #e63946;
-      --basta-color: #7d1e1e;
-      --clop-color: #00897b;
-      --conti-color: #9b59b6;
-      --dragon-color: #e67e22;
-      --gentlemen-color: #c9a84c;
-      --lockbit-color: #2ecc71;
-      --lynx-color: #3498db;
-      --qilin-color: #f1c40f;
-      --silentransom-color: #8b5cf6;
-      --nightspire-color: #0ea5e9;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Space Grotesk', sans-serif;
-      background: var(--dark);
-      color: var(--white);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
-    }
-
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 3rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(13,13,13,0.9);
-      backdrop-filter: blur(12px);
-    }
-
-    .nav-brand {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: var(--red);
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--light-gray);
-      text-decoration: none;
-      letter-spacing: 0.05em;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--white); }
-    .nav-links a.active { color: var(--white); }
-
-    .nav-links .coming {
-      color: var(--mid-gray);
-      cursor: default;
-      font-style: italic;
-      font-size: 0.8rem;
-    }
-
-    /* PAGE HEADER */
-    .page-header {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 8rem 3rem 3rem;
-    }
-
-    .page-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      color: var(--red);
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .page-label::before {
-      content: '';
-      display: block;
-      width: 2rem;
-      height: 1px;
-      background: var(--red);
-    }
-
-    .page-title {
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--white);
-      margin-bottom: 1rem;
-    }
-
-    .page-title em {
-      font-style: normal;
-      color: var(--red);
-    }
-
-    .page-sub {
-      font-size: 1rem;
-      color: var(--mid-gray);
-      max-width: 60ch;
-      line-height: 1.6;
-    }
-
-    /* GROUP GRID */
-    .group-section {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 3rem 6rem;
-    }
-
-    .group-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-    }
-
-    /* MASCOT CARD */
-    .mascot-card {
-      position: relative;
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      overflow: hidden;
-      aspect-ratio: 3/4;
-      background: var(--dark-2);
-      cursor: pointer;
-    }
-
-    .mascot-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      transition: transform 0.5s ease, filter 0.4s ease;
-      filter: grayscale(30%) brightness(0.75);
-    }
-
-    .mascot-card:hover .mascot-img {
-      transform: scale(1.05);
-      filter: grayscale(0%) brightness(0.85);
-    }
-
-    .mascot-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(13,13,13,0.0) 0%,
-        rgba(13,13,13,0.15) 40%,
-        rgba(13,13,13,0.75) 70%,
-        rgba(13,13,13,0.95) 100%
-      );
-      transition: opacity 0.3s ease;
-    }
-
-    .mascot-accent {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      transition: height 0.3s ease;
-    }
-
-    .mascot-card:hover .mascot-accent {
-      height: 4px;
-    }
-
-    .mascot-status {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 0.25rem 0.55rem;
-      border: 1px solid;
-      backdrop-filter: blur(6px);
-    }
-
-    .status-active {
-      color: #4ade80;
-      border-color: rgba(74,222,128,0.4);
-      background: rgba(74,222,128,0.08);
-    }
-
-    .status-disrupted {
-      color: #fb923c;
-      border-color: rgba(251,146,60,0.4);
-      background: rgba(251,146,60,0.08);
-    }
-
-    .status-defunct {
-      color: var(--mid-gray);
-      border-color: rgba(107,107,104,0.4);
-      background: rgba(107,107,104,0.08);
-    }
-
-    .mascot-content {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 1.5rem;
-      transform: translateY(0);
-    }
-
-    .mascot-group-id {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      color: var(--mid-gray);
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }
-
-    .mascot-name {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--white);
-      line-height: 1.1;
-      margin-bottom: 0.5rem;
-    }
-
-    .mascot-meta {
-      font-size: 0.75rem;
-      color: var(--light-gray);
-      line-height: 1.5;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.3s ease 0.05s, transform 0.3s ease 0.05s;
-    }
-
-    .mascot-card:hover .mascot-meta {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .mascot-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.9rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--mid-gray);
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s, color 0.2s;
-    }
-
-    .mascot-card:hover .mascot-cta {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .mascot-placeholder {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .placeholder-glyph {
-      font-size: 6rem;
-      opacity: 0.08;
-      font-weight: 700;
-      letter-spacing: -0.05em;
-      font-family: 'Space Mono', monospace;
-    }
-
-    /* FOOTER */
-    footer {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2.5rem 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--border);
-    }
-
-    .footer-brand {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--mid-gray);
-      letter-spacing: 0.1em;
-    }
-
-    .footer-brand span { color: var(--red); }
-
-    .footer-meta {
-      font-size: 0.72rem;
-      color: var(--mid-gray);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .group-grid { grid-template-columns: repeat(2, 1fr); }
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .page-header { padding: 7rem 1.5rem 2rem; }
-      .group-section { padding: 1.5rem 1.5rem 4rem; }
-    }
-
-    @media (max-width: 560px) {
-      .group-grid { grid-template-columns: 1fr 1fr; }
-      .mascot-name { font-size: 1.1rem; }
-    }
-  </style>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Ransomware Variant Profiles | The Observatory">
-  <meta property="og:description" content="16 structural ransomware group profiles: lineage, operations, affiliates, live victim data, and disruption timelines.">
-  <meta property="og:url" content="https://research.therenoproject.org/groups/">
-  <meta property="og:image" content="https://research.therenoproject.org/og-card.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="description" content="16 structural ransomware group profiles: lineage, operations, affiliates, live victim data, and disruption timelines.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --red:#e63946;--white:#fff;--light-gray:#d4d4d0;--mid-gray:#6b6b68;
+      --dark:#0d0d0d;--panel:#141418;--panel-2:#1b1b21;--line:#2a2a31;
+    }
+    body{font-family:'Space Grotesk',system-ui,sans-serif;background:var(--dark);color:var(--light-gray);line-height:1.5;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
+    .nav-brand{font-weight:700;letter-spacing:.02em;color:#fff;font-size:15px}
+    .nav-links{list-style:none;display:flex;gap:20px;flex-wrap:wrap;font-size:13px}
+    .nav-links a{color:var(--mid-gray);transition:color .15s}
+    .nav-links a:hover,.nav-links a.active{color:#fff}
+    .nav-links .coming{color:#3a3a40}
+
+    .page-header{padding:40px 32px 8px;max-width:1320px;margin:0 auto}
+    .page-label{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--red)}
+    .page-title{font-size:2.1rem;font-weight:700;color:#fff;margin-top:8px}
+    .page-title em{font-style:normal;color:var(--red)}
+    .page-sub{color:var(--mid-gray);margin-top:10px;max-width:780px;font-size:14px}
+    .preview-flag{max-width:1320px;margin:14px auto 0;padding:0 32px}
+    .preview-flag div{background:rgba(241,196,64,.08);border:1px solid rgba(241,196,64,.4);color:#e9d27a;font-size:12.5px;padding:10px 14px;border-radius:8px;font-family:'Space Mono',monospace}
+
+    .controls{position:sticky;top:0;z-index:20;background:rgba(13,13,13,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 32px;margin-top:22px}
+    .controls-inner{max-width:1320px;margin:0 auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .controls input,.controls select{background:var(--panel-2);border:1px solid var(--line);color:var(--light-gray);padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px}
+    .controls input{flex:1;min-width:200px}
+    .controls input::placeholder{color:#55555c}
+    .count-tag{font-family:'Space Mono',monospace;font-size:12px;color:var(--mid-gray);margin-left:auto}
+
+    main{max-width:1320px;margin:0 auto;padding:20px 32px 70px}
+    .status-section{margin-top:34px}
+    .status-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .status-head h2{font-size:15px;font-weight:600;color:#fff;letter-spacing:.03em;display:flex;align-items:center;gap:9px}
+    .status-head .dot{width:9px;height:9px;border-radius:50%}
+    .status-head .n{font-family:'Space Mono',monospace;font-size:12px;color:var(--mid-gray)}
+    .status-head .rule{flex:1;height:1px;background:var(--line)}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s}
+    .card:hover{transform:translateY(-4px);border-color:var(--cardc);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+    .card-top{height:3px;background:var(--cardc)}
+    .banner{position:relative;height:148px;overflow:hidden;background:var(--panel-2)}
+    .banner img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:saturate(.92)}
+    .banner .mono-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:rgba(255,255,255,.82);background:
+      radial-gradient(120% 120% at 30% 20%, color-mix(in srgb, var(--cardc) 55%, #0d0d0d) 0%, #101014 70%)}
+    .banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,13,0) 45%,rgba(13,13,13,.72) 100%)}
+    .badge{position:absolute;top:10px;right:10px;z-index:2;padding:4px 10px;border-radius:20px;font-size:10.5px;font-family:'Space Mono',monospace;letter-spacing:.04em;backdrop-filter:blur(3px)}
+    .b-active{background:rgba(46,204,113,.22);color:#7be7a6;border:1px solid rgba(46,204,113,.45)}
+    .b-disrupted{background:rgba(241,196,64,.2);color:#f0d071;border:1px solid rgba(241,196,64,.45)}
+    .b-inactive{background:rgba(155,161,171,.2);color:#c3c8d0;border:1px solid rgba(155,161,171,.4)}
+    .b-defunct{background:rgba(224,82,82,.2);color:#f0908f;border:1px solid rgba(224,82,82,.45)}
+    .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+    .g-id{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:#55555c;text-transform:uppercase}
+    .g-name{font-size:1.08rem;font-weight:700;color:#fff;margin-top:3px;line-height:1.2}
+    .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .tag{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--light-gray);background:var(--panel-2);border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+    .g-note{color:var(--mid-gray);font-size:12.5px;margin-top:11px;flex:1}
+    .g-cta{margin-top:13px;font-family:'Space Mono',monospace;font-size:11px;color:var(--cardc);display:flex;align-items:center;gap:5px}
+    .empty{color:var(--mid-gray);padding:50px 0;text-align:center}
+    footer{border-top:1px solid var(--line);padding:26px 32px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--mid-gray)}
+    footer .footer-brand span{color:#fff;font-weight:600}
+  </style>
 </head>
 <body>
 
-  <!-- Navigation -->
   <nav>
     <a href="https://therenoproject.org/" class="nav-brand">The Observatory</a>
     <ul class="nav-links">
@@ -399,266 +90,111 @@
     </ul>
   </nav>
 
-  <!-- Page header -->
   <div class="page-header">
     <div class="page-label">Threat Actor Library</div>
     <h1 class="page-title">Ransomware <em>Variant Profiles</em></h1>
-    <p class="page-sub">Structural profiles of Russia/CIS-linked ransomware operations covering lineage, operational patterns, affiliate relationships, and disruption timelines.</p>
+    <p class="page-sub">Structural profiles of Russia/CIS-linked ransomware operations, grouped by operational status. Search or filter, then open any card for the full profile.</p>
   </div>
 
-  <!-- Group grid -->
-  <div class="group-section">
-    <div class="group-grid">
-
-      <!-- AKIRA -->
-      <a class="mascot-card" href="akira.html">
-        <div class="mascot-accent" style="background: var(--akira-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">A</div></div>
-        <img class="mascot-img" src="https://socradar.io/wp-content/uploads/2024/04/akira-movie.jpg.webp" alt="Akira 1988 cyberpunk anime, the cultural reference for the Akira ransomware group" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 01 / RaaS</div>
-          <div class="mascot-name">Akira</div>
-          <div class="mascot-meta">Active since 2023. Double-extortion RaaS targeting SMBs and enterprise. Retro terminal DLS aesthetic. Linked to former Conti affiliates.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- CONTI -->
-      <a class="mascot-card" href="conti.html">
-        <div class="mascot-accent" style="background: var(--conti-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">C</div></div>
-        <img class="mascot-img" src="https://cdn.prod.website-files.com/64e50cbe2b6f932c04238c14/6747194cb685f541ee4439a2_Conti-ransomware.webp" alt="Conti ransomware group logo and branding" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-defunct">Defunct</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 02 / RaaS</div>
-          <div class="mascot-name">Conti</div>
-          <div class="mascot-meta">Dissolved 2022 following internal leaks. Russia-linked, FSB-connected. Parent organization to multiple successor groups including Black Basta, Royal, and Akira affiliates.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- BLACK BASTA -->
-      <a class="mascot-card" href="blackbasta.html">
-        <div class="mascot-accent" style="background: var(--basta-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">BB</div></div>
-        <img class="mascot-img" src="https://socradar.io/wp-content/uploads/2022/12/3-1.png.webp" alt="Black Basta data leak site victim listing page showing victim names and countdown timers" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status" style="background: rgba(99,110,114,0.85);">Inactive</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 08 / Closed RaaS</div>
-          <div class="mascot-name">Black Basta</div>
-          <div class="mascot-meta">Conti Team 3 direct successor. Active Apr 2022-Jan 2025. $107M+ confirmed revenue, 500+ victims. Collapsed following internal chat leak and leadership conflict.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- DRAGONFORCE -->
-      <a class="mascot-card" href="dragonforce.html">
-        <div class="mascot-accent" style="background: var(--dragon-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">D</div></div>
-        <img class="mascot-img" src="https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--77be2c48-93a6-4b47-9d78-5f977242aa15/dragonforce-cartel-announcement-post.jpg?preferwebp=true&quality=95" alt="DragonForce cartel model announcement, the group's shift to a ransomware cartel structure" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 03 / RaaS Cartel</div>
-          <div class="mascot-name">DragonForce</div>
-          <div class="mascot-meta">Active since 2023. Pioneered a ransomware cartel model offering white-label infrastructure to affiliates. Malaysia-linked leadership. Expanding rapidly in 2025.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- LOCKBIT -->
-      <a class="mascot-card" href="lockbit.html">
-        <div class="mascot-accent" style="background: var(--lockbit-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">LB</div></div>
-        <img class="mascot-img" src="https://techcrunch.com/wp-content/uploads/2024/02/LockBit-takedown.png" alt="LockBit infrastructure seized, Operation Cronos NCA takedown notice, February 2024" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-disrupted">Disrupted</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 04 / RaaS</div>
-          <div class="mascot-name">LockBit</div>
-          <div class="mascot-meta">Largest RaaS operation globally. Infrastructure seized Feb 2024 (Operation Cronos). Administrator indicted. Attempted reconstitution under LockBit 4.0.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- LYNX / INC -->
-      <a class="mascot-card" href="lynx.html">
-        <div class="mascot-accent" style="background: var(--lynx-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">L</div></div>
-        <img class="mascot-img" src="https://socradar.io/wp-content/uploads/2025/08/lynx-logo.png.webp" alt="Lynx ransomware logo, stylized shield bearing a lynx head silhouette in white on black, as used on the group's data leak site" style="object-fit: contain; object-position: center; background: #000; filter: grayscale(0%) brightness(0.9);" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 05 / RaaS</div>
-          <div class="mascot-name">Lynx / INC</div>
-          <div class="mascot-meta">Emerged 2024, absorbed INC Ransom operations. Double-extortion model with aggressive victim naming. Targeting critical infrastructure sectors.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- QILIN -->
-      <a class="mascot-card" href="qilin.html">
-        <div class="mascot-accent" style="background: var(--qilin-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">Q</div></div>
-        <img class="mascot-img" src="https://cdn.prod.website-files.com/64e50cbe2b6f932c04238c14/68ef8e79b6ea897332a26c6e_qilin-logo.jpg" alt="Qilin ransomware group logo" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 06 / RaaS</div>
-          <div class="mascot-name">Qilin</div>
-          <div class="mascot-meta">Active since 2022. GoLang-based encryptor. Aggressive healthcare sector targeting. Claimed NHS vendor breach (2024) exposing 300M+ patient records.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- ROYAL / BLACKSUIT / CHAOS -->
-      <a class="mascot-card" href="royal.html">
-        <div class="mascot-accent" style="background: #7d1128;"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">R</div></div>
-        <img class="mascot-img" src="https://businessinsights.bitdefender.com/hubfs/blacksuit-ransomware-seized.jpg" alt="Operation Checkmate seizure banner on the BlackSuit ransomware data leak site" style="object-fit: cover; object-position: center;" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status" style="background: rgba(192,57,43,0.85);">Disrupted / Rebranded</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 07 / Private &rarr; RaaS</div>
-          <div class="mascot-name">Royal / BlackSuit / Chaos</div>
-          <div class="mascot-meta">Conti Team One lineage. $500M+ in demands. Disrupted by Operation Checkmate (Jul 2025). Assessed rebranded as Chaos RaaS (Feb 2025). Three-generation rebrand chain with no public arrests.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- CL0P -->
-      <a class="mascot-card" href="clop.html">
-        <div class="mascot-accent" style="background: var(--clop-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">C</div></div>
-        <img class="mascot-img" src="https://www.sentinelone.com/wp-content/uploads/2023/02/Cl0p-Ransomware-Targets-Linux-Systems-with-Flawed-Encryption-Decryptor-Available-8.jpg" alt="Cl0p Linux ELF ransomware variant, SentinelOne Labs technical analysis header image" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 09 / Data Extortion</div>
-          <div class="mascot-name">Cl0p</div>
-          <div class="mascot-meta">Active since 2019. FIN11/TA505 core. Mass MFT exploitation specialist: GoAnywhere, MOVEit, Cleo, Oracle EBS. 1,000+ victims. No confirmed arrests of core leadership.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- SILENT RANSOM GROUP / LUNA MOTH -->
-      <a class="mascot-card" href="silentransom.html">
-        <div class="mascot-accent" style="background: var(--silentransom-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">SR</div></div>
-        <img class="mascot-img" src="https://socradar.io/wp-content/uploads/2024/07/silent-ransom-group-luna-moth.jpg.webp" alt="Silent Ransom Group Luna Moth branding — SOCRadar 2024" style="object-fit: contain; object-position: center; background: #0d0d0d;" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 10 / Callback Phishing</div>
-          <div class="mascot-name">Luna Moth / SRG</div>
-          <div class="mascot-meta">Active since 2021. No encryption, pure data extortion via callback phishing. Rebranded as Luna Moth (2022). Targets legal, financial, and professional services sectors.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- THE GENTLEMEN -->
-      <a class="mascot-card" href="thegentlemen.html">
-        <div class="mascot-accent" style="background: var(--gentlemen-color);"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">TG</div></div>
-        <img class="mascot-img" src="https://research.checkpoint.com/wp-content/uploads/2026/04/gentlemen.png" alt="The Gentlemen ransomware group branding and data leak site, Check Point Research, April 2026" style="object-fit: cover; object-position: center top;" onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 11 / RaaS</div>
-          <div class="mascot-name">The Gentlemen</div>
-          <div class="mascot-meta">Qilin splinter, active since mid-2025. 420+ claimed victims across 50+ countries. 90/10 affiliate split. Go-based encryptor. Tracked by Microsoft as Storm-2697.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- NIGHTSPIRE -->
-      <a class="mascot-card" href="nightspire.html">
-        <div class="mascot-accent" style="background: #0ea5e9;"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">NS</div></div>
-        <img class="mascot-img"
-          src="https://image.ahnlab.com/atip/content/image/20250827/ObxkIz4DbujJmr8DDWd4KC3iZ7Fd0SWytZqDnPL0.png"
-          alt="NightSpire team logo, AhnLab ASEC threat intelligence observation, 2025"
-          style="object-fit: contain; object-position: center; background: #0d0d0d;"
-          onerror="this.style.display='none'">
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 12 / RaaS</div>
-          <div class="mascot-name">NightSpire</div>
-          <div class="mascot-meta">Active since Feb 2025. Double extortion, transitioning to full RaaS. 259+ victims across 30+ countries. Predecessor to Rbfs. No confirmed law enforcement action.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-
-      <!-- PAYLOAD -->
-      <a class="mascot-card" href="payload.html">
-        <div class="mascot-accent" style="background: #dc2626;"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">PL</div></div>
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 13 / RaaS (unverified)</div>
-          <div class="mascot-name">Payload</div>
-          <div class="mascot-meta">Babuk-derived ransomware that emerged February 2026. Double extortion against Windows and VMware ESXi; data exfiltrated before encryption, victims pressured via a Tor negotiation portal. Claimed the Royal Bahrain Hospital breach.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <!-- WORLD LEAKS / HUNTERS INTL -->
-      <a class="mascot-card" href="worldleaks.html">
-        <div class="mascot-accent" style="background: #06b6d4;"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">WL</div></div>
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 14 / Data Extortion (EaaS)</div>
-          <div class="mascot-name">World Leaks / Hunters Intl</div>
-          <div class="mascot-meta">Launched on or about 1 January 2025 as the rebrand of Hunters International (Hive lineage). Pure data-extortion / extortion-as-a-service model; Group-IB assesses Hunters as a Hive successor with moderate confidence.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <a class="mascot-card" href="alphv.html">
-        <div class="mascot-accent" style="background: #dc2626;"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">AV</div></div>
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-defunct">Defunct</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 15 / RaaS</div>
-          <div class="mascot-name">ALPHV / BlackCat</div>
-          <div class="mascot-meta">Active November 2021 to March 2024. DarkSide / BlackMatter lineage. First major Rust-based RaaS. Ended in the Change Healthcare exit scam: took the $22M ransom, stiffed the affiliate, faked a seizure banner, and dissolved.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <a class="mascot-card" href="scatteredspider.html">
-        <div class="mascot-accent" style="background: #8b5cf6;"></div>
-        <div class="mascot-placeholder"><div class="placeholder-glyph">SP</div></div>
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status status-active">Active</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">Group 16 / Extortion Collective (The Com)</div>
-          <div class="mascot-name">Scattered Spider</div>
-          <div class="mascot-meta">Native English-speaking social-engineering collective out of The Com. Deployed ALPHV, RansomHub, Qilin, and DragonForce lockers. Multiple arrests 2024 to 2025; the federated brand keeps regenerating.</div>
-          <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
+  <div class="controls">
+    <div class="controls-inner">
+      <input id="q" type="text" placeholder="Search name, model, lineage...">
+      <select id="fStatus">
+        <option value="">All statuses</option>
+        <option value="Active">Active</option>
+        <option value="Disrupted">Disrupted</option>
+        <option value="Inactive">Inactive</option>
+        <option value="Defunct">Defunct</option>
+      </select>
+      <select id="fModel">
+        <option value="">All models</option>
+        <option value="RaaS">RaaS</option>
+        <option value="Data Extortion">Data Extortion</option>
+        <option value="Botnet">Botnet / Access</option>
+      </select>
+      <span class="count-tag" id="count"></span>
     </div>
   </div>
 
-  <!-- Footer -->
+  <main id="main"></main>
+
   <footer>
-    <div class="footer-brand">
-      <span>The Observatory</span> // Ransomware Ecosystem Network Observatory // Open Research
-    </div>
-    <div class="footer-meta">Author: Reno &nbsp;&middot;&nbsp; Updated July 2026</div>
+    <div class="footer-brand"><span>The Observatory</span> // Ransomware Ecosystem Network Observatory // Open Research</div>
+    <div class="footer-meta">Author: Reno &middot; Updated July 2026</div>
   </footer>
 
+  <script>
+    const STATUS_ORDER=[['Active','#2ecc71'],['Disrupted','#f1c40f'],['Inactive','#9ba1ab'],['Defunct','#e05252']];
+    const badgeCls={Active:'b-active',Disrupted:'b-disrupted',Inactive:'b-inactive',Defunct:'b-defunct'};
+    const D=[
+      {slug:'akira',name:'Akira',id:'01',status:'Active',model:'RaaS',active:'2023 to present',color:'#e63946',img:'https://socradar.io/wp-content/uploads/2024/04/akira-movie.jpg.webp',note:'Double-extortion RaaS targeting SMBs and enterprise; linked to former Conti affiliates.'},
+      {slug:'clop',name:'Cl0p',id:'09',status:'Active',model:'Data Extortion',active:'2019 to present',color:'#00897b',img:'https://www.sentinelone.com/wp-content/uploads/2023/02/Cl0p-Ransomware-Targets-Linux-Systems-with-Flawed-Encryption-Decryptor-Available-8.jpg',note:'FIN11/TA505 core. Mass MFT exploitation: GoAnywhere, MOVEit, Cleo. 1,000+ victims.'},
+      {slug:'dragonforce',name:'DragonForce',id:'03',status:'Active',model:'RaaS',active:'2023 to present',color:'#e67e22',img:'https://blog.barracuda.com/adobe/dynamicmedia/deliver/dm-aid--77be2c48-93a6-4b47-9d78-5f977242aa15/dragonforce-cartel-announcement-post.jpg?preferwebp=true&quality=95',note:'Ransomware cartel model with white-label affiliate infrastructure; deployed by Scattered Spider.'},
+      {slug:'lynx',name:'Lynx / INC',id:'05',status:'Active',model:'RaaS',active:'2024 to present',color:'#3498db',img:'https://socradar.io/wp-content/uploads/2025/08/lynx-logo.png.webp',note:'Absorbed INC Ransom operations; shared code base. Double extortion; critical-infrastructure targeting.'},
+      {slug:'silentransom',name:'Luna Moth / SRG',id:'10',status:'Active',model:'Data Extortion',active:'2021 to present',color:'#8b5cf6',img:'photos/silentransom.jpg',note:'No encryption; pure data extortion via callback phishing. Targets legal and financial sectors.'},
+      {slug:'nightspire',name:'NightSpire',id:'12',status:'Active',model:'RaaS',active:'2025 to present',color:'#0ea5e9',img:'photos/nightspire.png',note:'Go-based double extortion transitioning to full RaaS; 259+ victims across 30+ countries.'},
+      {slug:'payload',name:'Payload',id:'13',status:'Active',model:'RaaS',active:'2026 to present',color:'#e056fd',img:'photos/payload.jpg',note:'Babuk-derived; emerged Feb 2026. Double extortion against Windows and VMware ESXi. Emerging.'},
+      {slug:'qilin',name:'Qilin',id:'06',status:'Active',model:'RaaS',active:'2022 to present',color:'#f1c40f',img:'https://cdn.prod.website-files.com/64e50cbe2b6f932c04238c14/68ef8e79b6ea897332a26c6e_qilin-logo.jpg',note:'Go/Rust encryptor; aggressive healthcare targeting. Absorbed former RansomHub affiliates in 2025.'},
+      {slug:'scatteredspider',name:'Scattered Spider',id:'16',status:'Active',model:'Data Extortion',active:'2022 to present',color:'#e67e22',img:'photos/scatteredspider.jpg',note:'English-speaking social-engineering collective (The Com). Deploys ALPHV, RansomHub, Qilin, DragonForce.'},
+      {slug:'thegentlemen',name:'The Gentlemen',id:'11',status:'Active',model:'RaaS',active:'2025 to present',color:'#c9a84c',img:'https://research.checkpoint.com/wp-content/uploads/2026/04/gentlemen.png',note:'Qilin splinter; 420+ victims across 50+ countries. Self-propagating Go encryptor; GPO propagation.'},
+      {slug:'worldleaks',name:'World Leaks / Hunters Intl',id:'14',status:'Active',model:'Data Extortion',active:'2025 to present',color:'#16a085',img:'photos/worldleaks.jpg',note:'Jan 2025 rebrand of Hunters International (Hive lineage). Extortion-as-a-service; no encryption.'},
+      {slug:'lockbit',name:'LockBit',id:'04',status:'Disrupted',model:'RaaS',active:'2019 to present',color:'#2ecc71',img:'https://techcrunch.com/wp-content/uploads/2024/02/LockBit-takedown.png',note:'Largest RaaS globally. Infrastructure seized Feb 2024 (Operation Cronos); admin indicted; attempted reconstitution.'},
+      {slug:'royal',name:'Royal / BlackSuit / Chaos',id:'07',status:'Disrupted',model:'RaaS',active:'2022 to 2025',color:'#8e44ad',img:'https://businessinsights.bitdefender.com/hubfs/blacksuit-ransomware-seized.jpg',note:'Conti Team One lineage; $500M+ demands. Disrupted by Operation Checkmate (Jul 2025); assessed rebrand to Chaos.'},
+      {slug:'blackbasta',name:'Black Basta',id:'08',status:'Inactive',model:'RaaS',active:'2022 to 2025',color:'#7d1e1e',img:'https://socradar.io/wp-content/uploads/2022/12/3-1.png.webp',note:'Conti Team 3 successor; $107M+ revenue, 500+ victims. Collapsed Jan 2025 after internal chat leaks.'},
+      {slug:'alphv',name:'ALPHV / BlackCat',id:'15',status:'Defunct',model:'RaaS',active:'2021 to 2024',color:'#c0392b',img:'photos/alphv.jpg',note:'DarkSide/BlackMatter lineage; first major Rust-based RaaS. Ended in the Change Healthcare exit scam.'},
+      {slug:'conti',name:'Conti',id:'02',status:'Defunct',model:'RaaS',active:'2020 to 2022',color:'#9b59b6',img:'https://cdn.prod.website-files.com/64e50cbe2b6f932c04238c14/6747194cb685f541ee4439a2_Conti-ransomware.webp',note:'Russia-linked, FSB-connected. Dissolved 2022 after leaks; parent to Black Basta, Royal, Akira affiliates.'},
+      {slug:'darkside',name:'DarkSide / BlackMatter',id:'19',status:'Defunct',model:'RaaS',active:'2020 to 2021',color:'#5b6b86',img:'https://www.bleepstatic.com/content/hl-images/2020/08/21/darkside.jpg',note:'Closed-operator RaaS behind Colonial Pipeline; $90M+ from 47 victims. Anchor of the DarkSide to ALPHV lineage.'},
+      {slug:'revil',name:'REvil / Sodinokibi',id:'20',status:'Defunct',model:'RaaS',active:'2019 to 2021',color:'#b03a2e',img:'https://www.bleepstatic.com/content/hl-images/2020/06/08/REvil.jpg',note:'GandCrab successor behind Kaseya and JBS; first $70M ransom demand. FSB arrests Jan 2022, most later released.'},
+      {slug:'ryuk',name:'Ryuk',id:'17',status:'Defunct',model:'RaaS',active:'2018 to 2021',color:'#94a3b8',img:'https://www.bleepstatic.com/content/hl-images/2018/08/21/Ryuk.png',note:'TrickBot-delivered big-game hunting pioneer; $150M+ traced. Wizard Spider; retooled into Conti.'},
+      {slug:'trickbot',name:'TrickBot',id:'18',status:'Defunct',model:'Botnet',active:'2016 to 2022',color:'#d35400',img:'https://www.bleepstatic.com/content/hl-images/2020/11/20/trickbot-header.jpg',note:'Banking trojan turned access broker for Ryuk and Conti; 1M+ infections. Named in Operation Endgame.'},
+    ];
+    const main=document.getElementById('main'),q=document.getElementById('q'),fStatus=document.getElementById('fStatus'),fModel=document.getElementById('fModel'),count=document.getElementById('count');
+    function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function initials(n){return n.replace(/\/.*/,'').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+    function matchModel(d,v){return !v||d.model===v||(v==='Botnet'&&d.model==='Botnet');}
+    function banner(d){
+      const mono=`<div class="mono-fallback">${initials(d.name)}</div>`;
+      if(!d.img){
+        return `<div class="banner">${mono}<span class="badge ${badgeCls[d.status]}">${d.status}</span></div>`;
+      }
+      const cands=JSON.stringify([d.img,'photos/'+d.slug+'.png','photos/'+d.slug+'.jpg','photos/'+d.slug+'.webp']);
+      return `<div class="banner"><img src="${d.img}" data-srcs='${cands}' data-i="0" alt="${esc(d.name)} branding" loading="lazy" onerror="stepImg(this)"><span class="badge ${badgeCls[d.status]}">${d.status}</span></div>`;
+    }
+    function stepImg(img){
+      const arr=JSON.parse(img.getAttribute('data-srcs'));let i=+img.getAttribute('data-i')+1;
+      if(i<arr.length){img.setAttribute('data-i',i);img.src=arr[i];}
+      else{img.onerror=null;const ini=img.alt.replace(/\/.*/,'').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();const d=document.createElement('div');d.className='mono-fallback';d.textContent=ini;img.replaceWith(d);}
+    }
+    window.stepImg=stepImg;
+    function card(d){
+      return `<div class="card" style="--cardc:${d.color}" onclick="location.href='${d.slug}.html'">
+        <div class="card-top"></div>
+        ${banner(d)}
+        <div class="card-body">
+          <div class="g-id">Group ${d.id}</div>
+          <div class="g-name">${esc(d.name)}</div>
+          <div class="tags"><span class="tag">${esc(d.model)}</span><span class="tag">${esc(d.active)}</span></div>
+          <div class="g-note">${esc(d.note)}</div>
+          <div class="g-cta">View Profile &#8599;</div>
+        </div>
+      </div>`;
+    }
+    function render(){
+      const qq=q.value.toLowerCase(),st=fStatus.value,md=fModel.value;
+      main.innerHTML='';let shown=0;
+      STATUS_ORDER.forEach(([s,color])=>{
+        if(st&&st!==s)return;
+        const items=D.filter(d=>d.status===s&&matchModel(d,md)&&(!qq||(d.name+' '+d.model+' '+d.note+' '+d.active).toLowerCase().includes(qq)));
+        if(!items.length)return;shown+=items.length;
+        const sec=document.createElement('div');sec.className='status-section';
+        sec.innerHTML=`<div class="status-head"><h2><span class="dot" style="background:${color}"></span>${s}</h2><span class="n">${items.length}</span><span class="rule"></span></div><div class="grid">${items.map(card).join('')}</div>`;
+        main.appendChild(sec);
+      });
+      count.textContent=shown+' of '+D.length+' groups';
+      if(!shown)main.innerHTML='<p class="empty">No groups match the current filters.</p>';
+    }
+    [q,fStatus,fModel].forEach(el=>el.addEventListener('input',render));
+    render();
+  </script>
 </body>
 </html>

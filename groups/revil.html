@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REvil / Sodinokibi | Ransomware EDP Threat Actor Library</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--text); background: var(--gray-100); line-height: 1.6; }
+.topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--header-h); background: var(--navy); display: flex; align-items: center; padding: 0 24px; border-bottom: 2px solid var(--accent); }
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+.sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--navy-mid); position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+.group-list { padding: 0 12px 8px; }
+.group-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.15s; color: var(--gray-400); margin-bottom: 2px; }
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.dot-inactive { background: #6b7280; }
+.section-nav { padding: 0 12px; }
+.section-nav a { display: block; padding: 7px 12px; border-radius: 6px; font-size: 12.5px; color: var(--gray-400); text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px; }
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: #4b5563; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+html { scroll-behavior: smooth; }
+@media print { .sidebar, .topbar { display: none; } .main { padding: 0; } .content { padding: 0 24px; } }
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.85) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background:#161b22; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">Ransomware <span>EDP</span> &nbsp;&bull;&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">therenoproject.org &nbsp;&bull;&nbsp; Analytical Profiles</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 &nbsp;Executive Summary</a>
+    <a href="#lineage">02 &nbsp;Lineage &amp; Heritage</a>
+    <a href="#operations">03 &nbsp;Operational Model</a>
+    <a href="#technical">04 &nbsp;Technical Capabilities</a>
+    <a href="#financial">05 &nbsp;Financial Infrastructure</a>
+    <a href="#victims">06 &nbsp;Victim Profile</a>
+    <a href="#disruption">07 &nbsp;Law Enforcement Response</a>
+    <a href="#attribution">08 &nbsp;Attribution &amp; State Nexus</a>
+    <a href="#trajectory">09 &nbsp;Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item active" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
+</aside>
+
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile: Compiled July 2026</div>
+    <div class="hero-title">REvil <span style="font-size:22px;color:var(--gray-400);font-weight:500;">(Sodinokibi)</span></div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; GandCrab Lineage &nbsp;&bull;&nbsp; Disrupted</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Critical (Historical)</span>
+      <span class="badge badge-defunct">Disrupted / Defunct</span>
+      <span class="badge badge-raas">RaaS</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Apr 2019</div>
+        <div class="kpi-sub">Oracle WebLogic (CVE-2019-2725)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Operational Status</div>
+        <div class="kpi-value">Defunct</div>
+        <div class="kpi-sub">Since Jan 2022</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Systems Affected</div>
+        <div class="kpi-value">~175,000</div>
+        <div class="kpi-sub">OFAC / Treasury</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ransom Collected</div>
+        <div class="kpi-value">$200M+</div>
+        <div class="kpi-sub">BTC and XMR (OFAC)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Peak Share</div>
+        <div class="kpi-value">~42%</div>
+        <div class="kpi-sub">Post-Kaseya (Recorded Future)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Decryptor</div>
+        <div class="kpi-value">Available</div>
+        <div class="kpi-sub">Bitdefender / No More Ransom</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">GandCrab</div>
+        <div class="kpi-sub">GOLD GARDEN predecessor</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01 -->
+    <section class="section" id="overview">
+      <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Executive Summary and Group Overview</h2></div>
+      <p>REvil, tracked in the antivirus industry as Sodinokibi (abbreviated Sodin), was one of the most prolific and financially damaging ransomware-as-a-service (RaaS) operations of the 2019 to 2021 period. The malware first appeared on April 17, 2019, deployed against Oracle WebLogic servers through CVE-2019-2725, and reached its peak with the July 2021 Kaseya VSA supply-chain attack, which pushed ransomware to roughly 1,500 downstream businesses simultaneously behind a 70 million US dollar universal-decryptor demand.</p>
+      <p>The operation is assessed as a direct continuation of GandCrab (Secureworks GOLD GARDEN) by the same or a substantially overlapping core developer set. REvil ran a closed, vetted affiliate program with an advertised 70/30 split, pioneered systematized double extortion, and from June 2020 added data auctions. As of July 2026 it is effectively defunct following FBI-led technical disruption in 2021 and Russian FSB arrests in January 2022, with legal proceedings concluding in Russia across 2024 and 2025.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Tracking designations</td><td>PINCHY SPIDER (CrowdStrike), GOLD SOUTHFIELD (Secureworks), G0115 (MITRE ATT&amp;CK), Ransom:Win32/Sodinokibi (Microsoft); REvil / Sodinokibi (Unit 42, Recorded Future)</td></tr>
+            <tr><td>Predecessor</td><td>GandCrab, operated by GOLD GARDEN (Secureworks). PINCHY SPIDER references GOLD GARDEN as the GandCrab antecedent</td></tr>
+            <tr><td>Operational model</td><td>Closed, vetted RaaS; limited number of affiliate accounts</td></tr>
+            <tr><td>Extortion mechanic</td><td>Encryption + data-leak threat (Happy Blog) + data auction (from June 2020)</td></tr>
+            <tr><td>Variants</td><td>REvil / Sodinokibi (Windows); REvix (Linux/ESXi, June 2021)</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russian Federation, safe-harbor model (CONFIRMED behavior; no confirmed state tasking)</td></tr>
+            <tr><td>LE disruption status</td><td>FBI key compromise (2021); FSB raids, 25 sites, 14 detained (Jan 2022)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="callout callout-info" style="margin-top:0;">
+        <strong>Imagery note:</strong> REvil's Tor "Happy Blog" leak site and victim portal were dismantled in 2021 to 2022 and are not live. Data-leak-site and ransom-note screenshots are held by vendor reporting (BleepingComputer, SOCRadar, Trellix) on client-rendered pages that could not be retrieved with source provenance in this session. The panels below use confirmed public-domain U.S. Government imagery of the named, indicted operators. Vendor DLS and ransom-note screenshots can be added when a browser session is connected or the fetch service recovers.
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.fbi.gov/wanted/cyber/yevgeniy-igorevich-polyanin/@@images/image/large" alt="FBI Cyber Most Wanted photo of Yevgeniy Polyanin" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Named Operator: Yevgeniy Polyanin</strong>
+            Russian national indicted November 2021 for deploying Sodinokibi/REvil against U.S. entities. Remains a fugitive on the FBI Cyber Most Wanted list (believed to be in Barnaul, Russia) as of March 2026.
+            <span class="img-source">Source: FBI Cyber Most Wanted, public domain, 2021</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.fbi.gov/wanted/cyber/yevgeniy-igorevich-polyanin/polyanin4.jpg/@@images/image/large" alt="Second FBI wanted photograph of Yevgeniy Polyanin" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Wanted Poster Imagery</strong>
+            Additional FBI-published photograph of Polyanin. The Bureau offered a reward and issued the poster in English and Russian, underscoring the extradition barrier posed by Russian citizenship.
+            <span class="img-source">Source: FBI Cyber Most Wanted, public domain, 2021</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.fbi.gov/wanted/cyber/yevgeniy-igorevich-polyanin/polyanin5.jpg/@@images/image/large" alt="Third FBI wanted photograph of Yevgeniy Polyanin" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Enforcement Record</strong>
+            REvil is one of few ransomware brands to generate named U.S. indictments. Co-defendant Yaroslav Vasinskyi ("Rabotnik") was extradited and sentenced to 13 years 7 months in May 2024.
+            <span class="img-source">Source: FBI Cyber Most Wanted, public domain, 2021</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section class="section" id="lineage">
+      <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Lineage and Organizational Heritage</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Connection to GandCrab</div>
+        <div class="conf conf-confirmed">Confirmed: four vendors independently corroborate</div>
+        <p>The prevailing cross-vendor assessment is that REvil's core developers are the same individuals, or a substantially overlapping set, who operated the GandCrab RaaS (Secureworks GOLD GARDEN). GandCrab was among the most prolific operations of 2018 to 2019, with operator-claimed revenue exceeding 2 billion US dollars before its announced retirement on May 31, 2019. REvil emerged two months earlier and accelerated immediately afterward. Secureworks, CrowdStrike, McAfee ATR, and Sophos independently corroborate the lineage; Brian Krebs first posited it publicly in June 2019.</p>
+        <div class="callout callout-info">
+          <strong>Vendor framing nuance:</strong> CrowdStrike frames the transition as a single actor evolving from GandCrab into REvil (the PINCHY SPIDER adversary). Secureworks frames it more narrowly as GOLD GARDEN transferring the GandCrab source code to GOLD SOUTHFIELD in April 2019. Both support continuity; the distinction (identical personnel versus a source-code handoff between related groups) is not fully resolved in open sources.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1: High</div>
+            <div class="pillar-title">Code Overlap</div>
+            <div class="pillar-body">Secureworks CTU identified a near-identical string-decoding function shared by GandCrab and REvil. URL-building logic was specific enough that reproducing it would require access to GandCrab source code.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2: High</div>
+            <div class="pillar-title">Beta Code Artifacts</div>
+            <div class="pillar-body">Early REvil beta samples contained strings "gcfin" (assessed: GandCrab Final) and "gc6" (GandCrab 6), suggesting REvil began development as GandCrab version 6 before rebranding.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3: High</div>
+            <div class="pillar-title">Timing Correlation</div>
+            <div class="pillar-body">REvil shipped as an additional payload alongside GandCrab on April 17, 2019. GandCrab retired May 31, 2019. REvil activity accelerated and expanded delivery methods immediately post-retirement.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 4: Moderate</div>
+            <div class="pillar-title">CIS Exclusion Fingerprint</div>
+            <div class="pillar-body">Both implement near-identical keyboard/locale checks to avoid CIS hosts. A common practice in isolation, but the implementation specifics match, reinforcing the other pillars.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <p><strong>GOLD GARDEN</strong> (Secureworks) designates the GandCrab operators. <strong>GOLD SOUTHFIELD</strong> (Secureworks) and <strong>PINCHY SPIDER</strong> (CrowdStrike) designate the REvil operators; MITRE tracks the group as <strong>G0115</strong>. Microsoft tracks the malware family as <strong>Ransom:Win32/Sodinokibi</strong>. Unit 42 and Recorded Future track by the common name REvil / Sodinokibi without a distinct group codename. These are operator-group designations and should not be conflated with malware-family names.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section class="section" id="operations">
+      <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Operational Model</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure</div>
+        <p>REvil operated a closed, vetted RaaS with a limited-partnership affiliate model. The core GOLD SOUTHFIELD / PINCHY SPIDER team controlled malware development, backend infrastructure, payment processing, and the leak site; affiliates conducted intrusions, deployed the ransomware, and handled initial victim communications. CrowdStrike characterizes this as a "partnership program with a limited number of accounts," distinct from open-recruitment RaaS. Affiliates were recruited on high-tier Russian-language forums (XSS and Exploit) requiring reputation and vetting.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Revenue Split and the Affiliate Backdoor</div>
+        <div class="conf conf-credible">Credible: AdvIntel / Flashpoint, corroborated by forum disputes</div>
+        <p>The standard advertised split was 70/30 in favor of the affiliate. AdvIntel and Flashpoint research (September 2021) revealed a cryptographic backdoor in affiliate builds that let core operators hijack victim negotiations, pose as the victim abandoning talks (the "double chat" technique), then resume directly and collect the full ransom, cutting the affiliate out.</p>
+        <div class="callout callout-alert">
+          <strong>Structural weakness:</strong> An affiliate publicly sought 21.5 million US dollars in stolen commissions from REvil on the Exploit forum in May 2021. LockBit representatives later stated former REvil affiliates confirmed being defrauded. The revelation left REvil having victimized both external targets and its own criminal partners, a durable reputational liability. The April 2022 reappearance advertised an improved 80/20 split, plausibly to rebuild affiliate trust.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Avg. Ransom (H1 2021)</div>
+            <div class="metric-val">$2.25M</div>
+            <div class="metric-note">Industry avg. then: ~$850K (Unit 42)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Demand Range</div>
+            <div class="metric-val">$25K&ndash;$70M</div>
+            <div class="metric-note">SMB floor to Kaseya universal demand</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Bitcoin Surcharge</div>
+            <div class="metric-val">10%</div>
+            <div class="metric-note">Monero preferred for traceability</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Deadline Effect</div>
+            <div class="metric-val">2x demand</div>
+            <div class="metric-note">On countdown-timer expiry</div>
+          </div>
+        </div>
+        <ul class="content-list">
+          <li>Countdown timer displayed on the victim portal; failure to pay by the deadline doubled the demand.</li>
+          <li>Proof of decryption offered: victims could upload two encrypted sample files for free decryption before payment.</li>
+          <li>Reduction behavior was standard: Elliptic documented a 50,000 demand negotiated to 25,000 (50% reduction).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Double and Triple Extortion</div>
+        <p>REvil systematized double extortion: data exfiltration prior to encryption, then threatened publication on the "Happy Blog" (a deliberately taunting name). From June 2020 it introduced data auctions, offering stolen data to third-party buyers if the victim refused to pay, a primitive third-extortion vector. In the Grubman Shire Meiselas &amp; Sacks breach, operators threatened to sell data to political opponents of then-President Trump, a high-visibility leverage threat that ultimately did not materialize.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section class="section" id="technical">
+      <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Technical Capabilities</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="conf conf-confirmed">Confirmed: all three CVEs verified against NVD</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Detail</th><th>CVE / specifics</th></tr></thead>
+            <tbody>
+              <tr><td>Oracle WebLogic</td><td>First deployment vector (Apr 2019); unauthenticated deserialization RCE, CVSS 9.8</td><td class="mono">CVE-2019-2725</td></tr>
+              <tr><td>Win32k privilege escalation</td><td>Use-after-free to SYSTEM in early samples; 32-bit added in v1.00</td><td class="mono">CVE-2018-8453</td></tr>
+              <tr><td>Kaseya VSA (MSP abuse)</td><td>Credential-leak zero-day (versions &le; 9.5.6); ransomware pushed via legitimate admin channels</td><td class="mono">CVE-2021-30116</td></tr>
+              <tr><td>RDP brute force</td><td>Publicly exposed RDP servers targeted directly</td><td>n/a</td></tr>
+              <tr><td>Backdoored installers</td><td>Compromised Italian WinRAR distribution site; weaponized update packages</td><td>Supply chain</td></tr>
+              <tr><td>ConnectWise Control</td><td>Cloud RMM abused to deploy REvil on compromised hosts</td><td>n/a</td></tr>
+              <tr><td>Phishing / malvertising</td><td>Malspam and exploit-kit drive-by delivery</td><td>n/a</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Scheme</div>
+        <p><strong>Hybrid design:</strong> Salsa20 symmetric stream cipher for file content, Curve25519 (elliptic-curve Diffie-Hellman) for key encapsulation, with SHA-3 and CRC32 hashing and RC4 for runtime string decryption. API resolution uses 32-bit hashes for anti-analysis, and I/O completion ports enable fast asynchronous multithreaded encryption. Shadow copies are deleted via PowerShell/WMI (legacy vssadmin on Windows XP).</p>
+        <div class="callout callout-warning">
+          <strong>Backdoor foundation:</strong> Each file is encrypted with a unique key derived from a victim-specific public key, but the attacker's master public key is embedded in every binary. This let the REvil core decrypt any victim independently of affiliates, the cryptographic basis of the double-chat backdoor.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-confirmed">Confirmed: Malpedia, Intel 471</div>
+        <p>REvil implements a CIS keyboard/locale kill switch using <span class="mono">GetKeyboardLayoutList</span>, <span class="mono">GetUserDefaultUILanguage</span>, and <span class="mono">GetSystemDefaultUILanguage</span>. On Russian or other CIS-region layouts or languages, the malware halts without encrypting. This is a deliberate operational-security and legal safe-harbor mechanism consistent with operation from Russian Federation territory, present from early versions.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Decryptor Availability</div>
+        <div class="conf conf-confirmed">Confirmed: Bitdefender, No More Ransom</div>
+        <p>A Bitdefender universal decryptor (released September 2021 with an undisclosed law enforcement partner) recovers files for all REvil victims encrypted before July 13, 2021, and is distributed free via Bitdefender and the No More Ransom project. By November 2021 more than 1,400 companies in 83 countries had used it, saving an estimated 550 million US dollars. Some later variants are not decryptable. Separately, a REvil developer accidentally generated a master key during the Kaseya response; the FBI obtained it and shared it with Kaseya on July 21, 2021. The Washington Post reported the FBI had secretly accessed REvil servers weeks earlier and withheld keys to protect a planned operation that was never executed because REvil disappeared first.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linux / ESXi Variant</div>
+        <p>REvix, a Linux and ESXi variant, was released in June 2021, extending REvil to virtualized infrastructure and VMware environments. This capability was later continued by Ransom Cartel, which used DonPAPI to harvest vCenter credentials before encrypting ESXi-associated files (<span class="mono">.log, .vmdk, .vmem, .vswp, .vmsn</span>).</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05 -->
+    <section class="section" id="financial">
+      <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Financial Infrastructure</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>REvil accepted both Bitcoin and Monero, with a stated preference for Monero (ring signatures, stealth addresses, RingCT). Bitcoin carried a 10% surcharge reflecting higher tracing risk. The Kaseya 70 million US dollar demand notably requested Bitcoin; Elliptic's Tom Robinson attributed this to the difficulty of acquiring that sum in Monero on available exchanges. OFAC confirmed REvil received more than 200 million US dollars in ransom paid in Bitcoin and Monero across documented incidents.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering Methodology (Elliptic)</div>
+        <div class="phase-list">
+          <div class="phase-item"><div class="phase-num">1</div><div class="phase-body"><div class="phase-title">Layering</div><div class="phase-desc">Ransom payments split across multiple wallets and mixed with Bitcoin from other sources to break the direct link to the victim payment.</div></div></div>
+          <div class="phase-item"><div class="phase-num">2</div><div class="phase-body"><div class="phase-title">Transaction Chaining</div><div class="phase-desc">Funds passed through many intermediate addresses to obscure the chain of custody before reaching cash-out points.</div></div></div>
+          <div class="phase-item"><div class="phase-num">3</div><div class="phase-body"><div class="phase-title">Phased Cash-Out</div><div class="phase-desc">Laundering remained active weeks after payment in documented cases, indicating a deliberate, staged approach through complicit exchanges.</div></div></div>
+        </div>
+        <div class="conf conf-credible">Credible: Elliptic is the primary REvil-specific blockchain-forensics source</div>
+        <p>Elliptic published the most detailed REvil-specific tracing (payment lifecycle, layering, exchange mapping). Chainalysis and TRM Labs cover REvil within general ransomware tracking, but no equally prominent REvil-dedicated public case study from those firms was identified.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Implicated Exchanges and Seizures</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Entity / action</th><th>Detail</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td>SUEX OTC, S.R.O.</td><td>OFAC-designated for facilitating ransomware transactions (includes REvil flows); majority of known transactions tied to illicit activity</td><td>Sep 21, 2021</td></tr>
+              <tr><td>Chatex</td><td>OFAC-designated for facilitating transactions for multiple variants including REvil; direct ties to Suex</td><td>Nov 8, 2021</td></tr>
+              <tr><td>Chatex support entities</td><td>IZIBITS OU, Chatextech SIA, Hightrade Finance Ltd. designated for material support</td><td>Nov 8, 2021</td></tr>
+              <tr><td>Polyanin FTX seizure</td><td>$6,123,652.21 seized from Yevgeniy Polyanin's FTX Trading account</td><td>Sep 10, 2021</td></tr>
+              <tr><td>DOJ forfeiture</td><td>39.89 BTC and additional USD-denominated funds forfeited, traceable to conspiracy proceeds</td><td>2023</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06 -->
+    <section class="section" id="victims">
+      <div class="section-header"><span class="section-num">06</span><h2 class="section-title">Victim Profile and Targeting</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale and Sector Profile</div>
+        <p>REvil ransomware was deployed on approximately 175,000 computers worldwide (OFAC). IBM placed REvil's 2020 profits alone at roughly 123 million US dollars (conservative). Small businesses are estimated to have made up 50 to 75% of victims (Elliptic), handled by affiliates seeking reliable smaller payments, while high-value "big game" targets generated the headline demands. Targeted sectors span technology and MSPs, food and agriculture, legal services, financial services and travel, healthcare, manufacturing and technology hardware, government, and education. Spokesperson UNKN publicly named agriculture as a deliberate future target in October 2020.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geography and Exclusions</div>
+        <ul class="content-list">
+          <li><strong>Focus:</strong> predominantly the United States, Western Europe, Australia, and Canada; the Kaseya attack affected victims in at least 17 countries.</li>
+          <li><strong>CIS exclusion:</strong> keyboard/locale kill switch prevents execution on Russian and CIS systems.</li>
+          <li><strong>Operational whitelisting:</strong> system directories and specific files excluded to preserve negotiability; database, backup, and security processes killed via the <span class="mono">prc</span> configuration key.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Date</th><th>Demand / payment</th></tr></thead>
+            <tbody>
+              <tr><td>22 Texas municipalities</td><td>Aug 2019</td><td>Coordinated supply-chain-style hit</td></tr>
+              <tr><td>Travelex</td><td>Dec 2019</td><td>~$2.3M paid</td></tr>
+              <tr><td>Grubman Shire Meiselas &amp; Sacks</td><td>May 2020</td><td>$42M demanded; status unclear</td></tr>
+              <tr><td>Brown-Forman (Jack Daniel's)</td><td>Aug 2020</td><td>Terabytes stolen; status unclear</td></tr>
+              <tr><td>Acer</td><td>Mar 2021</td><td>$50M demanded (record at the time)</td></tr>
+              <tr><td>Quanta Computer / Apple</td><td>Apr 2021</td><td>Apple schematics used as direct leverage</td></tr>
+              <tr><td>JBS Foods</td><td>May&ndash;Jun 2021</td><td>$11M paid in Bitcoin</td></tr>
+              <tr><td>Kaseya VSA (supply chain)</td><td>Jul 2021</td><td>$70M demanded; ~1,500 downstream victims</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07 -->
+    <section class="section" id="disruption">
+      <div class="section-header"><span class="section-num">07</span><h2 class="section-title">Law Enforcement and Regulatory Response</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">U.S. Indictments and Sentencing</div>
+        <p><strong>Yaroslav Vasinskyi ("Rabotnik"), Ukrainian national:</strong> arrested in Poland on October 8, 2021; 11-count indictment unsealed November 8, 2021 (Northern District of Texas); extradited March 2022; pleaded guilty August 2022. Sentenced May 1, 2024 to <strong>13 years and 7 months</strong> and ordered to pay <strong>16 million US dollars</strong> in restitution for 2,500+ attacks demanding over 700 million US dollars.</p>
+        <p><strong>Yevgeniy Polyanin, Russian national:</strong> indicted November 8, 2021 on the same counts (maximum exposure 145 years); 6.1 million US dollars seized from his FTX account. Remains a fugitive on the FBI Cyber Most Wanted list (believed to be in Barnaul, Russia) as of March 2026; Russian citizenship makes extradition highly unlikely.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Multinational Arrests and FSB Action</div>
+        <p>Under Operation GoldDust (17 countries, Europol, Eurojust, INTERPOL), authorities arrested five Sodinokibi/REvil affiliates and two GandCrab suspects. Two REvil affiliates were arrested in Romania on November 4, 2021. On January 14, 2022 the Russian FSB, acting on a U.S. request, raided 25 locations across Moscow, St. Petersburg, and surrounding oblasts, detaining 14 individuals.</p>
+        <div class="callout callout-warning">
+          <strong>Charge narrowing:</strong> Russian charges were limited to illegal circulation of means of payment and use/distribution of malware. The indictment excluded the major ransomware episodes (JBS, Kaseya, Acer): defendants were effectively charged with card fraud against Americans, reflecting the breakdown in U.S.-Russia cooperation after the Ukraine invasion.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Sentencing (2024 to 2025)</div>
+        <div class="conf conf-credible">Credible: Recorded Future (The Record), TASS/Kommersant reporting</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cohort</th><th>Individuals</th><th>Outcome</th></tr></thead>
+            <tbody>
+              <tr><td>October 2024</td><td>Artem Zayets (4.5y), Aleksey Malozemov (5y), Ruslan Khansvyarov (5.5y), Daniil Puzyrevsky (6y, assessed leader)</td><td>Penal-colony terms; Puzyrevsky and Khansvyarov reported serving, convictions upheld on appeal</td></tr>
+              <tr><td>June 2025</td><td>Andrey Bessonov, Mikhail Golovachuk, Roman Muromsky, Dmitry Korotayev</td><td>Convicted of carding fraud; released on time served</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>This corrects earlier summaries that described six June 2025 releases: verified reporting shows two cohorts of four. Current custody status of the October 2024 cohort is not fully resolved in open sources.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Rewards</div>
+        <ul class="content-list">
+          <li>OFAC designated Vasinskyi and Polyanin (Nov 8, 2021), Chatex plus support entities (Nov 8, 2021), and SUEX OTC (Sep 21, 2021). Alexander Ermakov was sanctioned Jan 22, 2024 (Medibank hack) as "linked to the Russia-backed cybercrime gang REvil."</li>
+          <li>U.S. State Department: up to 10 million US dollars for information on key REvil leadership; up to 5 million for information leading to arrest/conviction of any participant.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 08 -->
+    <section class="section" id="attribution">
+      <div class="section-header"><span class="section-num">08</span><h2 class="section-title">Attribution and State Nexus</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessment</div>
+        <div class="conf conf-confirmed">Confirmed: no directed state nexus established</div>
+        <p>No direct nexus to Russian state intelligence (FSB, SVR, or GRU) has been established by any government authority or major vendor. REvil is consistently assessed as a financially motivated criminal organization operating under implicit Russian state tolerance rather than as a directed state asset. The "safe harbor" framing (criminals operating freely from Russian territory with implicit non-interference) is well supported; active state tasking is not confirmed.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Indicators and Basis</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Indicator</th><th>Assessment</th></tr></thead>
+            <tbody>
+              <tr><td>CIS exclusion behavior</td><td>Consistent with operating from Russian territory and avoiding domestic scrutiny; a safe-harbor marker, not state direction</td></tr>
+              <tr><td>Historical non-prosecution</td><td>Two-plus years of Russian inaction despite U.S. pressure indicates a permissive environment, not active sponsorship</td></tr>
+              <tr><td>FSB action (Jan 2022)</td><td>Explicitly U.S.-requested and timed to a pre-invasion diplomatic window; assessed as partly a diplomatic gesture</td></tr>
+              <tr><td>Russian charges</td><td>Card fraud rather than ransomware: Moscow neither acknowledged the full scope nor fully shielded the operatives</td></tr>
+              <tr><td>White House statements</td><td>Noted occasional collaboration between some perpetrators and Kremlin security agencies, but attributed no specific REvil tasking</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Evidentiary gap:</strong> No public court document, OFAC designation, or advisory asserts a directed intelligence-sharing or tasking relationship between REvil core operators and Russian services. OFAC's January 2024 Ermakov designation describes a link to the "Russia-backed cybercrime gang REvil," implying reputational continuation of the network rather than confirmation of historical state direction.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09 -->
+    <section class="section" id="trajectory">
+      <div class="section-header"><span class="section-num">09</span><h2 class="section-title">Trajectory Assessment</h2></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Disappearance and Return Cycles</div>
+        <ul class="content-list">
+          <li><strong>Jul 13, 2021:</strong> first disappearance, triggered by FBI infrastructure compromise.</li>
+          <li><strong>Sep 2021:</strong> Happy Blog and payment portals restored; operations briefly resumed.</li>
+          <li><strong>Late Oct 2021:</strong> second disappearance after the Vasinskyi arrest and multinational pressure.</li>
+          <li><strong>Apr 2022:</strong> anomalous Happy Blog reappearance (Oil India content; 80/20 "join us" page); did not develop into a sustained operation. Actor attribution never publicly confirmed.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <p><em>Two-tier confidence: the GandCrab anchor is assessed separately from downstream extension claims.</em></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group</th><th>Relationship</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>GandCrab / GOLD GARDEN</td><td>Predecessor; operational continuity / rebrand</td><td>High (Secureworks, McAfee, Sophos)</td></tr>
+              <tr><td>LV Ransomware / GOLD NORTHFIELD</td><td>Code theft: a REvil v2.03 beta binary reconfigured; no personnel overlap</td><td>High for code; none for personnel</td></tr>
+              <tr><td>Ransom Cartel</td><td>Probable former affiliate/associate with source-code access; not a direct rebrand</td><td>Moderate; single primary vendor (Unit 42)</td></tr>
+              <tr><td>DarkSide</td><td>Shared affiliate pool noted by FireEye/Mandiant; no confirmed operator coordination</td><td>Moderate</td></tr>
+              <tr><td>Conti</td><td>Contemporaneous competitor; former REvil affiliates reportedly moved to LockBit post-backdoor</td><td>Contextual</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Single-source flag (Ransom Cartel):</strong> the linkage rests on a single primary technical source (Unit 42, with MalwareHunterTeam's initial identification). No corroborating second-source technical assessment was identified, and neither Mandiant nor Recorded Future has published a formal Ransom Cartel to REvil equivalence assessment. Treat as a working hypothesis (ANALYST INFERENCE).
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators and Intelligence Gaps</div>
+        <ul class="content-list">
+          <li><strong>Trajectory:</strong> rising sharply through H1 2021 (up to 42% of known victims post-Kaseya), then abrupt collapse. No voluntary wind-down signals; REvil was at its commercial peak when disrupted.</li>
+          <li><strong>Definitive exit:</strong> the January 2022 FSB raids; the FSB stated the gang "ceased to exist." No credible reconstitution under the REvil name has been confirmed since.</li>
+          <li><strong>Gaps:</strong> the UNKN spokesperson and principal developers remain publicly unidentified; the FSB-named "ringleader" was never publicly named; Polyanin remains at large; the full Ermakov/Medibank-to-REvil network relationship is undocumented.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header"><span class="section-num"></span><h2 class="section-title">Sources</h2></div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? 'Hide sources' : 'Show all sources'">Show all sources</button>
+      <div class="source-list">
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>DOJ: Ukrainian Arrested and Charged with Ransomware Attack on Kaseya (Nov 8, 2021): <a href="https://www.justice.gov/opa/pr/ukrainian-arrested-and-charged-ransomware-attack-kaseya" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>DOJ: Sodinokibi/REvil Affiliate Sentenced for Role in $700M Ransomware Scheme (May 1, 2024): <a href="https://www.justice.gov/archives/opa/pr/sodinokibirevil-affiliate-sentenced-role-700m-ransomware-scheme" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>U.S. Treasury OFAC: designations of Vasinskyi, Polyanin, Chatex, and Suex (Sep&ndash;Nov 2021); Ermakov (Jan 2024): <a href="https://home.treasury.gov/news/press-releases" target="_blank">treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>FBI Cyber Most Wanted: Yevgeniy Igorevich Polyanin (imagery, public domain): <a href="https://www.fbi.gov/wanted/cyber/yevgeniy-igorevich-polyanin" target="_blank">fbi.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>Europol: Five Affiliates to Sodinokibi/REvil Unplugged (Operation GoldDust, Nov 8, 2021): <a href="https://www.europol.europa.eu/media-press/newsroom" target="_blank">europol.europa.eu</a></span></div>
+        <div class="source-category">Vendor and Technical Reporting</div>
+        <div class="source-item"><span class="source-num">[6]</span><span>Secureworks CTU: GOLD SOUTHFIELD and GOLD GARDEN threat profiles: <a href="https://www.secureworks.com/research/threat-profiles/gold-southfield" target="_blank">secureworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>CrowdStrike: The Evolution of PINCHY SPIDER from GandCrab to REvil: <a href="https://www.crowdstrike.com/en-us/blog/the-evolution-of-revil-ransomware-and-pinchy-spider/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>MITRE ATT&amp;CK: GOLD SOUTHFIELD, Group G0115: <a href="https://attack.mitre.org/groups/G0115/" target="_blank">attack.mitre.org</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Cisco Talos: Sodinokibi Ransomware Exploits WebLogic Server Vulnerability: <a href="https://blog.talosintelligence.com/sodinokibi-ransomware-exploits-weblogic/" target="_blank">talosintelligence.com</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Bitdefender: Free Universal Decryptor for REvil/Sodinokibi (Sep 2021); No More Ransom: <a href="https://www.bitdefender.com/en-us/blog/labs/bitdefender-offers-free-universal-decryptor-for-revil-sodinokibi-ransomware" target="_blank">bitdefender.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Elliptic: REvil ransomware payment tracing and laundering analysis: <a href="https://www.elliptic.co/blog" target="_blank">elliptic.co</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>Flashpoint / AdvIntel: REvil affiliate cryptographic backdoor and double-chat analysis (Sep 2021)</span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Palo Alto Unit 42: Ransom Cartel Ransomware, A Possible Connection with REvil (Oct 2022): <a href="https://unit42.paloaltonetworks.com/ransom-cartel-ransomware/" target="_blank">unit42.paloaltonetworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>Intel 471: REvil RaaS structure and affiliate model; Malpedia REvil version history</span></div>
+        <div class="source-category">CVE / Vulnerability Records</div>
+        <div class="source-item"><span class="source-num">[15]</span><span>NVD: CVE-2019-2725 (Oracle WebLogic deserialization RCE): <a href="https://nvd.nist.gov/vuln/detail/cve-2019-2725" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>NVD: CVE-2018-8453 (Win32k use-after-free EoP): <a href="https://nvd.nist.gov/vuln/detail/CVE-2018-8453" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>NVD / DIVD CSIRT: CVE-2021-30116 (Kaseya VSA credential disclosure): <a href="https://csirt.divd.nl/cves/CVE-2021-30116/" target="_blank">csirt.divd.nl</a></span></div>
+        <div class="source-category">Media and Sentencing Reporting</div>
+        <div class="source-item"><span class="source-num">[18]</span><span>The Record (Recorded Future): Russia releases REvil members after carding convictions (Jun 2025): <a href="https://therecord.media/revil-cybercrime-gang-members-released-russia" target="_blank">therecord.media</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>The Record (Recorded Future): Four REvil members sentenced to prison (Oct 2024): <a href="https://therecord.media/four-revil-ransomware-gang-members-sentenced-prison-russia" target="_blank">therecord.media</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>The Washington Post: FBI secretly accessed REvil servers and obtained decryption keys (2021)</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless marked Internal &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

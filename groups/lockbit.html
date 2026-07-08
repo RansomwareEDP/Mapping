@@ -102,6 +102,16 @@ body {
   width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
 }
 .dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
 .dot-dim { background: var(--gray-400); }
 .dot-conti { background: #c0392b; }
 .coming-tag {
@@ -565,80 +575,13 @@ html { scroll-behavior: smooth; }
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-section-label">Threat Actor Groups</div>
-    <nav class="group-list">
-    <a class="group-item" href="conti.html">
-      <span class="group-dot dot-conti"></span>
-      Conti
-    </a>
-    <a class="group-item" href="alphv.html">
-      <span class="group-dot dot-inactive"></span>
-      ALPHV / BlackCat
-    </a>
-    <a class="group-item" href="akira.html">
-      <span class="group-dot dot-active"></span>
-      Akira
-    </a>
-    <a class="group-item" href="clop.html">
-      <span class="group-dot dot-active"></span>
-      Cl0p
-    </a>
-    <a class="group-item" href="qilin.html">
-      <span class="group-dot dot-dim"></span>
-      Qilin
-    </a>
-    <a class="group-item" href="lynx.html">
-      <span class="group-dot dot-dim"></span>
-      INC / Lynx
-    </a>
-    <a class="group-item" href="dragonforce.html">
-      <span class="group-dot dot-dim"></span>
-      DragonForce
-    </a>
-    <a class="group-item active" href="lockbit.html">
-      <span class="group-dot dot-dim"></span>
-      LockBit
-    </a>
-    <a class="group-item" href="scatteredspider.html">
-      <span class="group-dot dot-active"></span>
-      Scattered Spider
-    </a>
-    <a class="group-item" href="silentransom.html">
-      <span class="group-dot dot-active"></span>
-      Luna Moth / SRG
-    </a>
-    <a class="group-item" href="royal.html">
-      <span class="group-dot dot-active"></span>
-      Royal / BlackSuit / Chaos
-    </a>
-    <a class="group-item" href="blackbasta.html">
-      <span class="group-dot dot-dim"></span>
-      Black Basta
-    </a>
-    <a class="group-item" href="thegentlemen.html">
-      <span class="group-dot dot-active"></span>
-      The Gentlemen
-    </a>
-    <a class="group-item" href="nightspire.html">
-      <span class="group-dot dot-active"></span>
-      NightSpire
-    </a>
-    <a class="group-item" href="payload.html">
-      <span class="group-dot dot-active"></span>
-      Payload
-    </a>
-    <a class="group-item" href="worldleaks.html">
-      <span class="group-dot dot-active"></span>
-      World Leaks / Hunters Intl
-    </a>
-  </nav>
-
   <div class="sidebar-section-label">On This Page</div>
   <nav class="section-nav" id="section-nav">
     <a href="#overview">Overview</a>
     <a href="#lineage">Lineage &amp; Heritage</a>
     <a href="#operations">Operational Model</a>
     <a href="#technical">Technical Capabilities</a>
+    <a href="#defensive">Defensive Mapping</a>
     <a href="#financial">Financial Infrastructure</a>
     <a href="#victims">Victim Profile</a>
     <a href="#le">LE &amp; Regulatory Response</a>
@@ -647,6 +590,32 @@ html { scroll-behavior: smooth; }
     <a href="#recent-reporting">Recent Reporting</a>
     <a href="#sources">Sources</a>
   </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item active" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
 </aside>
 
 <!-- MAIN -->
@@ -990,10 +959,71 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- SECTION 05: FINANCIAL INFRASTRUCTURE -->
-    <section class="section" id="financial">
+    <!-- SECTION 05: DEFENSIVE MAPPING -->
+    <section class="section" id="defensive">
       <div class="section-header">
         <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+
+      <p>This section translates LockBit reporting into defender action items. Every row below is sourced from joint FBI, CISA, and MS-ISAC advisories (ATT&amp;CK for Enterprise v12 in AA23-075A; v13.1 in AA23-165A), so all mappings carry a Confirmed rating. LockBit is a RaaS: techniques reflect documented affiliate tradecraft, and no single intrusion will use all of them.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&amp;CK Techniques: Priority Set</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>Tactic</th><th>LockBit Usage</th><th>Defender Action</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1078/" target="_blank">T1078</a> Valid Accounts</td><td>Initial Access / Persistence</td><td>Abuses compromised account credentials for entry and to maintain persistence</td><td>Enforce phishing-resistant MFA; audit privileged accounts; lock out repeated failed logins</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1133/" target="_blank">T1133</a> External Remote Services</td><td>Initial Access</td><td>Exploits internet-exposed RDP to enter victim networks; most consistent affiliate vector</td><td>Remove RDP and VPN from direct internet exposure; require MFA on all remote access</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1190/" target="_blank">T1190</a> Exploit Public-Facing Application</td><td>Initial Access</td><td>Exploits edge appliance CVEs, including Citrix Bleed (CVE-2023-4966)</td><td>Prioritize patching of CISA KEV entries on edge devices; after patching Citrix Bleed, terminate active sessions</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1566/" target="_blank">T1566</a> Phishing</td><td>Initial Access</td><td>Affiliate phishing and spearphishing campaigns for credential theft and malware delivery</td><td>Phishing training with easy reporting; external email banners; restrict hyperlinks where feasible</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1547/" target="_blank">T1547</a> Boot or Logon Autostart Execution</td><td>Persistence / Privilege Escalation</td><td>Enables Windows automatic logon via Winlogon registry keys</td><td>Alert on changes to Winlogon AutoAdminLogon and DefaultPassword registry values</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1003/001/" target="_blank">T1003.001</a> OS Credential Dumping: LSASS Memory</td><td>Credential Access</td><td>Uses Sysinternals ProcDump to dump LSASS process memory</td><td>Enable Credential Guard or LSASS protection (PPL); alert on LSASS handle access by non-system tools</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1046/" target="_blank">T1046</a> Network Service Discovery</td><td>Discovery</td><td>SoftPerfect Network Scanner sweeps to map target networks</td><td>Detect internal scanning bursts via EDR network telemetry and flow monitoring</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1614/001/" target="_blank">T1614.001</a> System Language Discovery</td><td>Discovery</td><td>Halts execution on systems with Russian or other CIS language settings (safe-harbor logic)</td><td>Detection opportunity: locale and keyboard-layout queries by unsigned binaries; also a Russia-nexus indicator</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1021/001/" target="_blank">T1021.001</a> Remote Services: RDP</td><td>Lateral Movement</td><td>Splashtop and RDP used to move laterally after initial compromise</td><td>Segment networks; block workstation-to-workstation RDP; inventory and alert on remote-admin tools</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1072/" target="_blank">T1072</a> Software Deployment Tools</td><td>Execution / Lateral Movement</td><td>Pushes ransomware domain-wide via PsExec, Group Policy Objects, and admin shares</td><td>Alert on new PsExec service creation and mass GPO changes; restrict admin share access</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1567/002/" target="_blank">T1567.002</a> Exfiltration to Cloud Storage</td><td>Exfiltration</td><td>StealBit, rclone, and MEGA used for high-speed data theft before encryption</td><td>Block unsanctioned file-sharing domains; alert on rclone binaries and large anomalous outbound transfers</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1490/" target="_blank">T1490</a> Inhibit System Recovery</td><td>Impact</td><td>Deletes Volume Shadow Copies via WMI before encryption</td><td>Alert on shadow-copy deletion (vssadmin, WMI); keep backups immutable and offline</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1489/" target="_blank">T1489</a> Service Stop</td><td>Impact</td><td>Kills security, backup, and database services (Sophos, Veeam, SQL, Exchange) pre-encryption</td><td>Alert on mass service-stop events; tamper-protect EDR and backup agents</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1486/" target="_blank">T1486</a> Data Encrypted for Impact</td><td>Impact</td><td>Encrypts local and remote data; v3.0+ uses selective partial-file encryption for speed</td><td>Maintain tested offline restores; deploy EDR ransomware-behavior detection; segment to contain blast radius</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1485/" target="_blank">T1485</a> Data Destruction</td><td>Impact</td><td>Deletes log files and recycle-bin contents to impede recovery and forensics</td><td>Forward logs in real time to a central, tamper-resistant store</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px;color:var(--gray-600);">Full mapping: AA23-165A documents over 40 techniques and roughly 30 affiliate tools. The set above is curated for detection and hardening value; it is not exhaustive.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked CISA Advisories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory</th><th>Date</th><th>Title</th><th>Defender Takeaway</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a" target="_blank">AA23-165A</a></td><td>Jun 2023</td><td>Understanding Ransomware Threat Actors: LockBit</td><td>Most complete reference: 40+ ATT&amp;CK techniques, ~30 affiliate tools, exploited CVE list, and mitigations from seven national cyber authorities</td></tr>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a" target="_blank">AA23-075A</a></td><td>Mar 2023</td><td>#StopRansomware: LockBit 3.0</td><td>Source of the technique table above; full IOC set (registry keys, mutexes, command-line flags, GPO artifacts) plus CPG-aligned mitigations</td></tr>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-325a" target="_blank">AA23-325A</a></td><td>Nov 2023</td><td>LockBit 3.0 Affiliates Exploit Citrix Bleed (CVE-2023-4966)</td><td>Patch NetScaler ADC/Gateway immediately and terminate all active sessions; hijacked sessions survive patching</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block credible">
+          <strong>Coverage note:</strong> No dedicated CISA advisory exists for LockBit 4.0 or 5.0 as of July 2026. The mappings above reflect LockBit 3.0-era affiliate tradecraft; the operator-continuity evidence in Section 02 indicates core TTPs persist across versions, so these mappings remain the best available government-sourced baseline.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Top Defensive Priorities</div>
+        <div class="callout callout-info">
+          <strong>If you do only five things:</strong> (1) enforce phishing-resistant MFA on every remote access path, (2) patch CISA KEV-listed CVEs on edge appliances first, (3) segment networks and block lateral RDP and admin-share abuse, (4) keep immutable offline backups with tested restores, and (5) validate your detection stack against the techniques in the table above, per the control-validation process in AA23-075A.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06: FINANCIAL INFRASTRUCTURE -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
         <h2 class="section-title">Financial Infrastructure</h2>
       </div>
 
@@ -1064,10 +1094,10 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- SECTION 06: VICTIM PROFILE AND TARGETING -->
+    <!-- SECTION 07: VICTIM PROFILE AND TARGETING -->
     <section class="section" id="victims">
       <div class="section-header">
-        <span class="section-num">06</span>
+        <span class="section-num">07</span>
         <h2 class="section-title">Victim Profile and Targeting</h2>
       </div>
 
@@ -1120,10 +1150,10 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- SECTION 07: LAW ENFORCEMENT AND REGULATORY RESPONSE -->
+    <!-- SECTION 08: LAW ENFORCEMENT AND REGULATORY RESPONSE -->
     <section class="section" id="le">
       <div class="section-header">
-        <span class="section-num">07</span>
+        <span class="section-num">08</span>
         <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
       </div>
 
@@ -1165,10 +1195,10 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- SECTION 08: ATTRIBUTION AND STATE NEXUS -->
+    <!-- SECTION 09: ATTRIBUTION AND STATE NEXUS -->
     <section class="section" id="attribution">
       <div class="section-header">
-        <span class="section-num">08</span>
+        <span class="section-num">09</span>
         <h2 class="section-title">Attribution and State Nexus</h2>
       </div>
 
@@ -1200,10 +1230,10 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- SECTION 09: TRAJECTORY ASSESSMENT -->
+    <!-- SECTION 10: TRAJECTORY ASSESSMENT -->
     <section class="section" id="trajectory">
       <div class="section-header">
-        <span class="section-num">09</span>
+        <span class="section-num">10</span>
         <h2 class="section-title">Trajectory Assessment</h2>
       </div>
 

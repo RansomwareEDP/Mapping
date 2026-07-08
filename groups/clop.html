@@ -99,6 +99,16 @@ body {
   width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
 }
 .dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
 .dot-dim { background: var(--gray-400); }
 .dot-conti { background: #c0392b; }
 .coming-tag {
@@ -465,80 +475,13 @@ html { scroll-behavior: smooth; }
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-section-label">Threat Actor Groups</div>
-    <nav class="group-list">
-    <a class="group-item" href="conti.html">
-      <span class="group-dot dot-conti"></span>
-      Conti
-    </a>
-    <a class="group-item" href="alphv.html">
-      <span class="group-dot dot-inactive"></span>
-      ALPHV / BlackCat
-    </a>
-    <a class="group-item" href="akira.html">
-      <span class="group-dot dot-active"></span>
-      Akira
-    </a>
-    <a class="group-item active" href="clop.html">
-      <span class="group-dot dot-active"></span>
-      Cl0p
-    </a>
-    <a class="group-item" href="qilin.html">
-      <span class="group-dot dot-dim"></span>
-      Qilin
-    </a>
-    <a class="group-item" href="lynx.html">
-      <span class="group-dot dot-dim"></span>
-      INC / Lynx
-    </a>
-    <a class="group-item" href="dragonforce.html">
-      <span class="group-dot dot-dim"></span>
-      DragonForce
-    </a>
-    <a class="group-item" href="lockbit.html">
-      <span class="group-dot dot-dim"></span>
-      LockBit
-    </a>
-    <a class="group-item" href="scatteredspider.html">
-      <span class="group-dot dot-active"></span>
-      Scattered Spider
-    </a>
-    <a class="group-item" href="silentransom.html">
-      <span class="group-dot dot-active"></span>
-      Luna Moth / SRG
-    </a>
-    <a class="group-item" href="royal.html">
-      <span class="group-dot dot-active"></span>
-      Royal / BlackSuit / Chaos
-    </a>
-    <a class="group-item" href="blackbasta.html">
-      <span class="group-dot dot-dim"></span>
-      Black Basta
-    </a>
-    <a class="group-item" href="thegentlemen.html">
-      <span class="group-dot dot-active"></span>
-      The Gentlemen
-    </a>
-    <a class="group-item" href="nightspire.html">
-      <span class="group-dot dot-active"></span>
-      NightSpire
-    </a>
-    <a class="group-item" href="payload.html">
-      <span class="group-dot dot-active"></span>
-      Payload
-    </a>
-    <a class="group-item" href="worldleaks.html">
-      <span class="group-dot dot-active"></span>
-      World Leaks / Hunters Intl
-    </a>
-  </nav>
-
   <div class="sidebar-section-label">On This Page</div>
   <nav class="section-nav" id="section-nav">
     <a href="#overview">Overview</a>
     <a href="#lineage">Origin &amp; Lineage</a>
     <a href="#operations">Operational Model</a>
     <a href="#technical">Technical Profile</a>
+    <a href="#defensive">Defensive Mapping</a>
     <a href="#financial">Financial Infrastructure</a>
     <a href="#targeting">Victim Profile</a>
     <a href="#disruption">LE &amp; Regulatory Response</a>
@@ -547,6 +490,32 @@ html { scroll-behavior: smooth; }
     <a href="#recent-reporting">Recent Reporting</a>
     <a href="#sources">Sources</a>
   </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item active" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
 </aside>
 
 <!-- MAIN -->
@@ -934,12 +903,61 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
+    <!-- SECTION 5: DEFENSIVE MAPPING -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+
+      <p>This section translates reporting into defender action items. Sourced from CISA joint advisory AA23-158A (June 2023; ATT&CK for Enterprise v13). Cl0p (TA505) specializes in mass exploitation of managed file transfer (MFT) platforms for data-theft extortion. Rows are rated <strong>Confirmed</strong> based on source. Techniques reflect documented tradecraft; no single intrusion uses all of them.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&amp;CK Techniques: Priority Set</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>Tactic</th><th>Usage</th><th>Defender Action</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1190/" target="_blank">T1190</a> Exploit Public-Facing Application</td><td>Initial Access</td><td>Zero-day mass exploitation of MFT platforms: MOVEit (CVE-2023-34362), GoAnywhere (CVE-2023-0669), Accellion FTA, and Cleo</td><td>Inventory all internet-facing MFT/file-transfer software; patch on emergency timelines; restrict to allowlisted IPs</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1505/003/" target="_blank">T1505.003</a> Server Software Component: Web Shell</td><td>Persistence</td><td>Deploys the LEMURLOOT web shell (C#) on compromised MOVEit servers to query and steal database contents</td><td>Monitor MFT web directories for new .aspx files; alert on anomalous DB queries from the web tier</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1213/" target="_blank">T1213</a> Data from Information Repositories</td><td>Collection</td><td>Extracts data directly from underlying MFT databases via the web shell</td><td>Encrypt data at rest in MFT stores; minimize retention of transferred files</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1567/" target="_blank">T1567</a> Exfiltration Over Web Service</td><td>Exfiltration</td><td>Steals data prior to any encryption; extortion is data-leak driven</td><td>Alert on large outbound transfers from MFT hosts; baseline normal transfer volumes</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1078/" target="_blank">T1078</a> Valid Accounts</td><td>Initial Access / Persistence</td><td>Abuses harvested credentials for access</td><td>Enforce MFA on MFT admin consoles; rotate credentials after any MFT CVE</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1486/" target="_blank">T1486</a> Data Encrypted for Impact</td><td>Impact</td><td>Historic campaigns deploy Cl0p encryptor; recent MFT campaigns are exfil-only extortion</td><td>Maintain immutable offline backups; note that MFT campaigns may skip encryption entirely</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px;color:var(--gray-600);">Curated for detection and hardening value; not an exhaustive mapping.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked Advisories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory</th><th>Date</th><th>Title</th><th>Defender Takeaway</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a" target="_blank">AA23-158A</a></td><td>Jun 2023</td><td>#StopRansomware: CL0P Ransomware Gang Exploits CVE-2023-34362 MOVEit Vulnerability</td><td>ATT&CK mapping, LEMURLOOT web shell IOCs, and MOVEit-specific detection and mitigation guidance</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block credible"><strong>Coverage note:</strong> AA23-158A is MOVEit-specific. Cl0p's defining behavior is serial MFT zero-day exploitation (Accellion, GoAnywhere, MOVEit, Cleo), so the durable defensive priority is tight control and rapid patching of any internet-facing file-transfer platform, independent of the specific CVE.</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Top Defensive Priorities</div>
+        <div class="callout callout-info">
+          <strong>If you do only five things:</strong> (1) inventory and lock down all internet-facing MFT/file-transfer software, (2) patch MFT CVEs on emergency timelines and rotate credentials after, (3) monitor MFT web tiers for new web shells and anomalous DB queries, (4) alert on large outbound transfers from file-transfer hosts, and (5) encrypt data at rest and minimize file retention.
+        </div>
+      </div>
+    </section>
+
+
     <!-- ============================================================ -->
     <!-- SECTION 05: FINANCIAL INFRASTRUCTURE -->
     <!-- ============================================================ -->
     <section class="section" id="financial">
       <div class="section-header">
-        <span class="section-num">05</span>
+        <span class="section-num">06</span>
         <h2 class="section-title">Financial Infrastructure</h2>
       </div>
 
@@ -1011,7 +1029,7 @@ html { scroll-behavior: smooth; }
     <!-- ============================================================ -->
     <section class="section" id="targeting">
       <div class="section-header">
-        <span class="section-num">06</span>
+        <span class="section-num">07</span>
         <h2 class="section-title">Victim Profile &amp; Targeting</h2>
       </div>
 
@@ -1091,7 +1109,7 @@ html { scroll-behavior: smooth; }
     <!-- ============================================================ -->
     <section class="section" id="disruption">
       <div class="section-header">
-        <span class="section-num">07</span>
+        <span class="section-num">08</span>
         <h2 class="section-title">Law Enforcement &amp; Regulatory Response</h2>
       </div>
 
@@ -1143,7 +1161,7 @@ html { scroll-behavior: smooth; }
     <!-- ============================================================ -->
     <section class="section" id="attribution">
       <div class="section-header">
-        <span class="section-num">08</span>
+        <span class="section-num">09</span>
         <h2 class="section-title">Attribution &amp; State Nexus</h2>
       </div>
 
@@ -1180,7 +1198,7 @@ html { scroll-behavior: smooth; }
     <!-- ============================================================ -->
     <section class="section" id="trajectory">
       <div class="section-header">
-        <span class="section-num">09</span>
+        <span class="section-num">10</span>
         <h2 class="section-title">Trajectory Assessment</h2>
       </div>
 
@@ -1271,7 +1289,7 @@ html { scroll-behavior: smooth; }
     <!-- ============================================================ -->
     <section class="section" id="recent-reporting">
       <div class="section-header">
-        <span class="section-num">10</span>
+        <span class="section-num">11</span>
         <h2 class="section-title">Recent Reporting</h2>
       </div>
       <div class="feed-grid" id="feed-grid">

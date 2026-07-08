@@ -51,6 +51,16 @@ body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(
 .group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
 .group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
 .dot-dim { background: var(--gray-400); }
 .dot-conti { background: #c0392b; }
 .coming-tag { margin-left: auto; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; color: var(--gray-400); border: 1px solid var(--navy-light); border-radius: 4px; padding: 1px 5px; text-transform: uppercase; }
@@ -167,74 +177,6 @@ table tbody tr:last-child td { border-bottom: none; }
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-section-label">Threat Actor Groups</div>
-    <nav class="group-list">
-    <a class="group-item active" href="conti.html">
-      <span class="group-dot dot-conti"></span>
-      Conti
-    </a>
-    <a class="group-item" href="alphv.html">
-      <span class="group-dot dot-inactive"></span>
-      ALPHV / BlackCat
-    </a>
-    <a class="group-item" href="akira.html">
-      <span class="group-dot dot-active"></span>
-      Akira
-    </a>
-    <a class="group-item" href="clop.html">
-      <span class="group-dot dot-active"></span>
-      Cl0p
-    </a>
-    <a class="group-item" href="qilin.html">
-      <span class="group-dot dot-dim"></span>
-      Qilin
-    </a>
-    <a class="group-item" href="lynx.html">
-      <span class="group-dot dot-dim"></span>
-      INC / Lynx
-    </a>
-    <a class="group-item" href="dragonforce.html">
-      <span class="group-dot dot-dim"></span>
-      DragonForce
-    </a>
-    <a class="group-item" href="lockbit.html">
-      <span class="group-dot dot-dim"></span>
-      LockBit
-    </a>
-    <a class="group-item" href="scatteredspider.html">
-      <span class="group-dot dot-active"></span>
-      Scattered Spider
-    </a>
-    <a class="group-item" href="silentransom.html">
-      <span class="group-dot dot-active"></span>
-      Luna Moth / SRG
-    </a>
-    <a class="group-item" href="royal.html">
-      <span class="group-dot dot-active"></span>
-      Royal / BlackSuit / Chaos
-    </a>
-    <a class="group-item" href="blackbasta.html">
-      <span class="group-dot dot-dim"></span>
-      Black Basta
-    </a>
-    <a class="group-item" href="thegentlemen.html">
-      <span class="group-dot dot-active"></span>
-      The Gentlemen
-    </a>
-    <a class="group-item" href="nightspire.html">
-      <span class="group-dot dot-active"></span>
-      NightSpire
-    </a>
-    <a class="group-item" href="payload.html">
-      <span class="group-dot dot-active"></span>
-      Payload
-    </a>
-    <a class="group-item" href="worldleaks.html">
-      <span class="group-dot dot-active"></span>
-      World Leaks / Hunters Intl
-    </a>
-  </nav>
-
   <div class="sidebar-section-label">On This Page</div>
   <nav class="section-nav" id="section-nav">
     <a href="#overview">Overview</a>
@@ -249,6 +191,32 @@ table tbody tr:last-child td { border-bottom: none; }
     <a href="#trajectory">Trajectory &amp; Diaspora</a>
     <a href="#sources">Sources</a>
   </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item active" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
 </aside>
 
 <!-- MAIN -->

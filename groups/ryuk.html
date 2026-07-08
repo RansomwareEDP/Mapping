@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ryuk | Ransomware EDP Threat Actor Library</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: background 0.15s;
+  color: var(--gray-400); margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.dot-inactive { background: var(--gray-400); }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: var(--gray-600); color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE LABELS */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">Ransomware <span>EDP</span> &nbsp;&bull;&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">therenoproject.org &nbsp;&bull;&nbsp; Analytical Profiles</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 &nbsp;Executive Summary</a>
+    <a href="#lineage">02 &nbsp;Lineage &amp; Heritage</a>
+    <a href="#operations">03 &nbsp;Operational Model</a>
+    <a href="#technical">04 &nbsp;Technical Capabilities</a>
+    <a href="#financial">05 &nbsp;Financial Infrastructure</a>
+    <a href="#victims">06 &nbsp;Victim Profile</a>
+    <a href="#lawenforcement">07 &nbsp;Law Enforcement</a>
+    <a href="#attribution">08 &nbsp;Attribution &amp; State Nexus</a>
+    <a href="#trajectory">09 &nbsp;Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item active" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
+</aside>
+
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &bull; Compiled July 2026 &bull; TLP:WHITE</div>
+    <div class="hero-title">Ryuk</div>
+    <div class="hero-subtitle">Wizard Spider / GOLD ULRICK &nbsp;&bull;&nbsp; Russia-based &nbsp;&bull;&nbsp; Big Game Hunting &nbsp;&bull;&nbsp; Active Aug 2018 to May 2021</div>
+    <div class="hero-badges">
+      <span class="badge badge-defunct">Brand Defunct</span>
+      <span class="badge badge-critical">Successor Lineage Active</span>
+      <span class="badge badge-raas">BGH (Non-Public RaaS)</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Aug 2018</div>
+        <div class="kpi-sub">Check Point initial analysis</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ceased</div>
+        <div class="kpi-value">~May 2021</div>
+        <div class="kpi-sub">Operators moved to Conti</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Est. Revenue</div>
+        <div class="kpi-value">$150M+</div>
+        <div class="kpi-sub">61 BTC wallets, AdvIntel/HYAS</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Highest Demand</div>
+        <div class="kpi-value">$12.5M</div>
+        <div class="kpi-sub">Record for 2020 (CrowdStrike)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Data Leak Site</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">No name-and-shame portal</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Decryptor</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">No free public tool</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Hermes</div>
+        <div class="kpi-sub">Ryuk to Conti to diaspora</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01 -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Assessment</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Ryuk was one of the most financially destructive big game hunting (BGH) ransomware operations of its era, run by the Russia-based criminal enterprise that CrowdStrike tracks as WIZARD SPIDER and Secureworks tracks as GOLD ULRICK. First observed in August 2018, Ryuk was a heavily modified derivative of the commercially sold Hermes ransomware, deployed manually against high-value enterprise, government, and healthcare targets after initial access supplied by the TrickBot and Emotet ecosystems.</p>
+        <p>Two characteristics distinguished Ryuk from its RaaS contemporaries: it operated without a public dedicated leak site (DLS), and it did not exfiltrate data for publication leverage. Extortion relied purely on encryption and operational disruption. The Ryuk brand ceased around May 2021 as its operators fully transitioned to Conti, which shut down in June 2022 after the ContiLeaks. The core operator network subsequently dispersed across multiple successor operations. The lineage is defunct in name only: the personnel, tooling, and laundering infrastructure carried forward.</p>
+        <p>As of July 2026, the intelligence picture has advanced materially beyond the original operational period. In May 2025, German authorities named the enterprise leader "Stern" as Russian national Vitaly Nikolaevich Kovalev, and in July 2025 the U.S. unsealed the first named indictment of alleged Ryuk deployment operators (Vardanyan and co-conspirators), partially closing a long-standing attribution gap.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Quick-Reference Attributes</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Group-specific designations</td><td>GRIM SPIDER (CrowdStrike, deprecated Jun 2019, folded into WIZARD SPIDER); UNC1878 then FIN12 (Mandiant); TEMP.MixMaster (Mandiant activity cluster); Periwinkle Tempest / DEV-0193 (Microsoft)</td></tr>
+              <tr><td>Parent enterprise designations</td><td>WIZARD SPIDER (CrowdStrike); GOLD ULRICK ransomware operators plus GOLD BLACKBURN access operators (Secureworks). These describe the parent Conti/TrickBot organization, not Ryuk alone</td></tr>
+              <tr><td>Lineage</td><td>Hermes (2017) to Ryuk (Aug 2018) to Conti (Dec 2019) to post-Conti diaspora</td></tr>
+              <tr><td>Operational model</td><td>Big game hunting; non-public quasi-RaaS with a salaried core and access supplied by TrickBot/Emotet/BazarLoader</td></tr>
+              <tr><td>Extortion mechanic</td><td>Encryption only. No data exfiltration for publication, no leak site (single extortion)</td></tr>
+              <tr><td>Encryption</td><td>AES-256 per file, wrapped with RSA-4096; .RYK extension</td></tr>
+              <tr><td>Assessed jurisdiction</td><td>Russia (Saint Petersburg area); some operators assessed Ukraine-based (CREDIBLE)</td></tr>
+              <tr><td>State nexus</td><td>Financially motivated; tolerant safe-harbor relationship assessed, no confirmed intelligence tasking (ANALYST INFERENCE / CREDIBLE)</td></tr>
+              <tr><td>Decryptor availability</td><td>No free public decryptor (CONFIRMED). Emsisoft offers only a paid fix for the buggy operator-supplied decryptor</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Metrics</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Est. Total Revenue</div>
+            <div class="metric-val">$150M+</div>
+            <div class="metric-note">Through 2021 (AdvIntel/HYAS, 61 wallets)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">FBI Verified Payments</div>
+            <div class="metric-val">$61.26M</div>
+            <div class="metric-note">Feb 2018 to Oct 2019</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Share of 2020 Incidents</div>
+            <div class="metric-val">~33%</div>
+            <div class="metric-note">SonicWall Capture Labs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Government Victims</div>
+            <div class="metric-val">32+</div>
+            <div class="metric-note">StateScoop tracking</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Deletion Deadline</div>
+            <div class="metric-val">14 days</div>
+            <div class="metric-note">Stated in ransom note</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Services Killed</div>
+            <div class="metric-val">180 / 40</div>
+            <div class="metric-note">Services / processes pre-encryption</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE GALLERY: RANSOM NOTES + BRANDING (Ryuk had no DLS) -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site and Branding</div>
+      <div class="callout callout-info" style="margin-top:0;">
+        <strong>No leak site:</strong> Ryuk never operated a public dedicated leak site or name-and-shame portal, a deliberate divergence from Maze, REvil, and later Conti. Victim contact ran through two encrypted email addresses in the ransom note. The gallery below therefore shows ransom notes, infection artifacts, and naming/branding rather than DLS captures.
+      </div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://www.trendmicro.com/content/dam/trendmicro/global/en/what-is/ransomware/ryuk-ransomware-notes.jpg"
+               alt="Ryuk ransom note RyukReadMe.txt"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Ransom Note: RyukReadMe.txt</strong>
+            Notes were dropped as RyukReadMe.txt and UNIQUE_ID_DO_NOT_REMOVE.txt. They stated files were encrypted, listed two protonmail/tutanota contact addresses and a Bitcoin wallet, and warned of deletion after 14 days. No ransom amount was stated upfront.
+            <span class="img-source">Source: Trend Micro / Malwarebytes, 2021</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.trendmicro.com/content/dam/trendmicro/global/en/what-is/ransomware/ryuk-screen-indicating-inspection.jpg"
+               alt="Ryuk infection screen"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Infection Artifact</strong>
+            For many victims the ransom note was the first indication of compromise, appearing only after Ryuk had shut down 180 services and 40 processes (including Veeam, Acronis, and SQL) and encrypted files across the domain.
+            <span class="img-source">Source: Trend Micro / 2-Spyware, 2021</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.trendmicro.com/content/dam/trendmicro/global/en/what-is/ransomware/ryuk-attack-kill-chain.jpg"
+               alt="Ryuk attack kill chain diagram"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Attack Kill Chain</strong>
+            Sophos mapping of the Ryuk kill chain: phishing to Emotet/TrickBot loader, to Cobalt Strike for lateral movement, to manual Ryuk deployment across the domain.
+            <span class="img-source">Source: SophosLabs via Trend Micro, October 2020</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.bleepstatic.com/images/news/ransomware/r/ryuk/decryptor-bug/ryuk-block-formula.png"
+               alt="Ryuk large-file encryption block formula"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Partial-Encryption Logic</strong>
+            To speed encryption, Ryuk only partially encrypted files over 54.4 MB. A bug in the operator-supplied decryptor mis-handled the block count, corrupting large files (VHD/VHDX, databases) even for victims who paid.
+            <span class="img-source">Source: BleepingComputer / Emsisoft, December 2019</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://www.bleepstatic.com/content/hl-images/2018/08/21/Ryuk.png"
+               alt="Ryuk shinigami, Death Note naming reference"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Naming Reference: Ryuk (Death Note)</strong>
+            The name derives from Ryuk, the shinigami (death god) of the manga and anime Death Note, loosely translated as "gift of god." The choice is assessed as cultural familiarity among developers, with no operational significance (ANALYST INFERENCE).
+            <span class="img-source">Source: BleepingComputer, 2018</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Hermes Ransomware Origin</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Ryuk is a heavily modified derivative of Hermes, a ransomware kit sold on Russian-language forums (notably Exploit.in) by a Russian-speaking actor as early as August 2017, before North Korea's deployment of Hermes against Far Eastern International Bank (FEIB) in Taiwan in October 2017. Check Point Research identified significant code overlap between Ryuk and Hermes 2.x in August 2018.</p>
+        <p>CrowdStrike, FireEye, Kryptos Logic, and McAfee independently assessed in January 2019 that code similarity does not support a North Korean nexus. The operators purchased or obtained the Hermes source kit from the criminal market and substantially modified it. Confidence is high for Hermes code heritage and high against North Korean state attribution.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Conti Successor Relationship: Evidentiary Pillars</div>
+        <p>Multiple independent lines of evidence (on-chain, code-based, operational, and personnel) support the assessment that Conti is a rebrand and successor of Ryuk, operated by the same core Wizard Spider group. Anchor relationship confidence: high.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &bull; Confirmed</div>
+            <div class="pillar-title">On-Chain Salary Trace</div>
+            <div class="pillar-body">TRM Labs (April 2022) traced funds used to pay Conti team salaries in July 2021 (a payment from "Stern" to team lead "Mango," roughly $85,000) back to a known Ryuk ransom address reported by CrowdStrike in January 2019. The strongest forensic link under unified operator control.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &bull; Credible</div>
+            <div class="pillar-title">Code Similarity</div>
+            <div class="pillar-body">Conti and Ryuk share significant codebase elements. CertiK on-chain analysis (2023) found wallets for both groups active outside their nominal windows. Secureworks assesses GOLD ULRICK as the exclusive distributor (though not necessarily developer) of both payloads.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3 &bull; Confirmed</div>
+            <div class="pillar-title">Operational Timeline</div>
+            <div class="pillar-body">Ryuk paused February 2020; Conti appeared December 2019 to early 2020; Ryuk resumed September 2020 while Conti ran in parallel; Ryuk ceased around May 2021. Sequential and overlapping operation consistent with a managed transition.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 4 &bull; Confirmed</div>
+            <div class="pillar-title">Operator Continuity</div>
+            <div class="pillar-body">"Stern," a senior Wizard Spider leader, is connected to both GOLD BLACKBURN and GOLD ULRICK chat infrastructure per the ContiLeaks. In May 2025 Stern was named as Vitaly Kovalev by German police (see Section 08).</div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Conflicting assessment:</strong> Some researchers framed Conti and Ryuk as separate entities under one umbrella group rather than a direct rebrand, citing the parallel operation period (late 2020 to early 2021) as co-existence rather than pure succession. Secureworks addresses this as "same operators, different tool," acknowledging that transient operators contributed to TTP variation during the Conti era.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-alert">
+          <strong>Critical rule:</strong> WIZARD SPIDER (CrowdStrike) and GOLD ULRICK (Secureworks) designate the parent Conti/TrickBot criminal organization, not Ryuk as a standalone group. Do not conflate parent-organization designations with group-specific designations.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Ryuk-relevant designation</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>CrowdStrike</td><td>GRIM SPIDER (deprecated); WIZARD SPIDER (parent)</td><td>GRIM SPIDER introduced Sep 2018 for Ryuk operators, deprecated Jun 2019 and folded into WIZARD SPIDER as core-group activity (verified against CrowdStrike blog)</td></tr>
+              <tr><td>Secureworks CTU</td><td>GOLD ULRICK (ransomware ops) + GOLD BLACKBURN (TrickBot/access ops)</td><td>Distinct but highly integrated. GOLD ULRICK exclusively conducted ransomware deployment; GOLD BLACKBURN supplied initial access</td></tr>
+              <tr><td>Mandiant (FireEye)</td><td>UNC1878, graduated to FIN12 (Oct 2021); TEMP.MixMaster (activity cluster)</td><td>UNC1878 was responsible for a large share of 2020 Ryuk intrusions. In Oct 2021 Mandiant promoted it to FIN12, the first ransomware deployment affiliate graduated to a distinct FIN designation. Average time-to-ransom ~2.5 days; targets typically over $300M revenue; ~20% healthcare</td></tr>
+              <tr><td>Microsoft</td><td>DEV-0193 (historical), now Periwinkle Tempest</td><td>Microsoft states Periwinkle Tempest managed the Ryuk program before its shutdown (Microsoft dates this June 2021) and Conti thereafter, plus Diavol</td></tr>
+              <tr><td>Palo Alto Unit 42</td><td>No confirmed group-specific name</td><td>References WIZARD SPIDER attribution in joint contexts. Gap: no Unit 42-specific Ryuk tracking name identified in open sources</td></tr>
+              <tr><td>Recorded Future</td><td>No dedicated public tracking name</td><td>Discusses Ryuk under WIZARD SPIDER attribution. Its Oct 2025 "Dark Covenant 3.0" covers Russian cybercriminal impunity broadly</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Structure: Non-Public Quasi-RaaS</div>
+        <p>Ryuk was not openly advertised as a Ransomware-as-a-Service operation. Unlike REvil or Maze, there was no public affiliate panel, dark web advertising, or posted affiliate terms. Secureworks CTU assessed that operator recruitment occurred through underground forum posts, existing trust relationships, and advertisements on legitimate job sites, including the Russian job portal hh[.]ru as revealed in the ContiLeaks.</p>
+        <p>TRM Labs analysis of the ContiLeaks (the same organizational infrastructure that preceded Conti and ran Ryuk) found a wage-based employee model supplementing a percentage-based affiliate model, an unusual structure that enabled industrial-scale operations. Average threat-actor salaries were roughly $2,000 USD per month. Note: this wage-model detail derives from Conti-era leaks applied retrospectively to the Ryuk period (moderate confidence).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Two-Tier Access and Target Selection</div>
+        <ul class="content-list">
+          <li><strong>GOLD BLACKBURN</strong> (TrickBot/BazarLoader operators) ran mass spam campaigns to build inventories of infected hosts.</li>
+          <li><strong>GOLD ULRICK</strong> (Ryuk operators) selectively identified high-value targets from those pools and manually deployed Ryuk.</li>
+        </ul>
+        <p>This big game hunting model concentrated effort on high-revenue targets: large enterprises, government, and healthcare systems with low tolerance for disruption. Ryuk required direct access to TrickBot's Backconnect proxy module for interactive host access, restricting deployment to highly trusted operators with backend infrastructure access.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Ransom Demands and Negotiation</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Demand range</td><td>Low six figures up to $12.5M (highest single 2020 demand, CrowdStrike). Three of the top ten 2020 demands attributed to Ryuk ($5.3M, $9.9M, $12.5M)</td></tr>
+              <tr><td>Currency</td><td>Bitcoin exclusively</td></tr>
+              <tr><td>Negotiation</td><td>Email-based via protonmail/tutanota addresses in the note. No automated portal</td></tr>
+              <tr><td>Leverage</td><td>Stated 14-day deletion deadline creating payment urgency</td></tr>
+              <tr><td>Extortion type</td><td>Single (encryption only). No data theft for publication, no leak site</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Payment brokering:</strong> AdvIntel and HYAS found Ryuk received a significant share of ransoms from a well-known third-party broker that paid on behalf of victim organizations. This broker layer obscured direct victim-operator interaction and sped payment processing.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <p>Ryuk did not conduct its own initial access. It relied on pre-positioned access from GOLD BLACKBURN.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Malware / CVE</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Phishing / malspam</td><td>Emotet to TrickBot</td><td>Most common chain; AdvIntel estimated ~91% of attacks began with phishing</td></tr>
+              <tr><td>Phishing</td><td>BazarLoader / BazarBackdoor</td><td>Faster "Bazar-Ryuk" chain from 2020, characterized by ANSSI as extremely rapid</td></tr>
+              <tr><td>Phishing</td><td>Zloader, IcedID</td><td>Secondary vectors in later operations</td></tr>
+              <tr><td>Exploitation</td><td class="mono">CVE-2020-1472 (ZeroLogon)</td><td>CVSS 10.0 (verified vs NVD). Exploited from Oct 2020; unauthenticated domain-admin takeover; domain-wide encryption demonstrated in under 5 hours</td></tr>
+              <tr><td>Exploitation</td><td class="mono">CVE-2021-40444 (MSHTML RCE)</td><td>CVSS 8.8 (verified vs NVD). Early zero-day exploitation for Cobalt Strike Beacon delivery; RiskIQ/Microsoft attributed infrastructure to WIZARD SPIDER</td></tr>
+              <tr><td>RDP brute force</td><td>Direct</td><td>Documented in earlier 2018 to 2019 operations; less common than malware chains</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Lateral Movement and Post-Exploitation</div>
+        <ul class="content-list">
+          <li><strong>Cobalt Strike Beacon:</strong> primary post-exploitation framework for C2, credential dumping, and lateral movement.</li>
+          <li><strong>PowerShell Empire:</strong> domain discovery and movement.</li>
+          <li><strong>BloodHound:</strong> Active Directory enumeration and path-finding.</li>
+          <li><strong>PsExec and WMI:</strong> remote execution of ransomware and scripts across hosts.</li>
+          <li><strong>Angry IP Scanner / Advanced IP Scanner:</strong> network host discovery.</li>
+          <li><strong>SMB file transfers:</strong> staging ransomware binaries on domain controllers before mass deployment.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>File algorithm</td><td>AES-256 symmetric, unique key per file</td></tr>
+              <tr><td>Key protection</td><td>AES keys wrapped with RSA-4096; RSA public key embedded in binary</td></tr>
+              <tr><td>Extension</td><td class="mono">.RYK</td></tr>
+              <tr><td>Process termination</td><td>Shuts down 180 services and 40 processes (Veeam, Acronis, Sophos, SQL, Oracle, email clients)</td></tr>
+              <tr><td>Remote / Wake-on-LAN</td><td>Encrypts remote admin shares; sends WoL packets to wake sleeping devices</td></tr>
+              <tr><td>Partial encryption</td><td>Files over 54.4 MB only partially encrypted (block-based) for speed</td></tr>
+              <tr><td>Decryptor</td><td>No free public decryptor (CONFIRMED). Not listed on No More Ransom. Emsisoft offers only a paid fix for the buggy operator-supplied decryptor after payment</td></tr>
+              <tr><td>Crypto weakness</td><td>None publicly documented. Recovery requires operator RSA private key</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Decryptor bug:</strong> The operator-supplied decryptor mis-calculated the footer on large partially-encrypted files, truncating VHD/VHDX and database files and destroying the encrypted originals in the process. Even victims who paid could lose large files. This is a data-integrity liability, not a recovery opportunity for defenders.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <p>Early 2018 Ryuk samples included hardcoded path and language exclusions consistent with CIS/former-Soviet targets, standard practice for Russian-origin ransomware. Ryuk did not implement a CIS keyboard-layout kill switch in the manner of REvil. ANSSI's 2021 worm-variant analysis noted the new variant lacked any exclusion mechanism, including a re-infection mutex, meaning it could re-encrypt already-processed hosts, complicating containment. No systematic targeting of CIS entities has been documented.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Self-Propagating Worm Variant (2021)</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>In February 2021, ANSSI identified a Ryuk variant with worm-like self-propagation during incident response. It used a privileged domain account, enumerated IP addresses from the local ARP cache, sent Wake-on-LAN packets, mounted network shares, copied a unique executable (rep.exe or lan.exe) to each, and created remote scheduled tasks via schtasks.exe to execute the payload. It spread over Windows RPC rather than being limited to established lateral movement. Critically, it lacked a re-infection exclusion, so it could re-encrypt already-compromised devices. The HHS HC3 issued an analyst note on this variant on March 12, 2021.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05 -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model and Wallet Structure</div>
+        <p>Ryuk accepted Bitcoin exclusively, with no documented use of Monero. Demands were denominated in USD but paid in BTC. AdvIntel and HYAS (January 2021) traced payments across 61 Bitcoin addresses linked to Ryuk, estimating total earnings of at least $150 million USD. Victims typically paid through a third-party broker rather than directly to operator wallets; funds then moved to mixing and layering services before cash-out.</p>
+        <p>Chainalysis (January 2020) identified Huobi (Seychelles) and Binance as endpoints where laundered Ryuk proceeds were converted to fiat, describing a shadow network exploiting weak AML/KYC controls, in some cases using suspected stolen identities.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Laundering Methodology (Dubnikov Prosecution)</div>
+        <p>The Dubnikov prosecution documents (DOJ, 2023) provide the most detailed public picture of Ryuk laundering mechanics.</p>
+        <div class="phase-list">
+          <div class="phase-item"><div class="phase-num">1</div><div class="phase-body"><div class="phase-title">Receipt</div><div class="phase-desc">Ransom received in Bitcoin via anonymous wallet addresses listed in ransom notes.</div></div></div>
+          <div class="phase-item"><div class="phase-num">2</div><div class="phase-body"><div class="phase-title">Layering</div><div class="phase-desc">BTC split into smaller portions and forwarded to multiple wallets to obscure the trail.</div></div></div>
+          <div class="phase-item"><div class="phase-num">3</div><div class="phase-body"><div class="phase-title">Exchange placement</div><div class="phase-desc">Funds placed into exchange accounts for conversion to other currencies.</div></div></div>
+          <div class="phase-item"><div class="phase-num">4</div><div class="phase-body"><div class="phase-title">Stablecoin conversion</div><div class="phase-desc">Converted to Tether (USDT) and transferred to co-conspirators.</div></div></div>
+          <div class="phase-item"><div class="phase-num">5</div><div class="phase-body"><div class="phase-title">Fiat off-ramp</div><div class="phase-desc">Co-conspirators exchanged USDT for Chinese Renminbi (CNY) via daisy-chained international transactions to obscure source and control.</div></div></div>
+        </div>
+        <p>Denis Dubnikov's OTC exchange Eggchange, based in Federation Tower East (Vostok) in Moscow, received over $34 million in cryptocurrency from darknet markets, scams, fraud shops, and ransomware operators between 2019 and 2021, per Chainalysis.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Vendor Coverage</div>
+        <ul class="content-list">
+          <li><strong>TRM Labs (April 2022):</strong> Confirmed the Stern-to-Mango salary payment traced to a January 2019 Ryuk address, the strongest Ryuk-to-Conti financial link (CONFIRMED).</li>
+          <li><strong>Chainalysis (January 2020):</strong> Documented the Huobi/Binance cash-out network and the Ryuk broker payment pattern (CONFIRMED).</li>
+          <li><strong>Elliptic:</strong> No dedicated Ryuk-specific on-chain report identified in open sources (gap; TRM and Chainalysis are the primary blockchain-forensics sources for Ryuk).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">OFAC Sanctions</div>
+        <p>No OFAC designations were issued specifically against wallets or operators using the Ryuk brand. Sanctions targeting the parent enterprise came in February 2023 (see Section 07), when the U.S. and UK jointly sanctioned seven individuals for Conti, Ryuk, and TrickBot activity.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 06 -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale and Sectors</div>
+        <p>Estimated total extraction exceeds $150 million through 2021 (AdvIntel/HYAS, 61 wallets); FBI reported $61.26 million in verified payments through October 2019 alone. SonicWall Capture Labs attributed roughly one-third of all 2020 ransomware incidents to Ryuk. No single authoritative victim count is public.</p>
+        <ul class="content-list">
+          <li><strong>Healthcare / public health:</strong> most intensively targeted, especially during COVID-19 (2020). FBI assessed Ryuk had more completed payments than any other ransomware worldwide.</li>
+          <li><strong>Government / municipal:</strong> at least 32 confirmed government entity victims (StateScoop).</li>
+          <li><strong>Media / publishing:</strong> Tribune Publishing (December 2018) was the highest-profile early attack.</li>
+          <li><strong>Financial services, technology, manufacturing, academia, MSPs, schools, ports:</strong> all documented.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Date</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Tribune Publishing</td><td>Dec 2018</td><td>Disrupted printing of Chicago Tribune, Baltimore Sun, LA Times, and West Coast WSJ/NYT editions</td></tr>
+              <tr><td>Jackson County, Georgia</td><td>Mar 2019</td><td>Paid ~$400,000 (22 BTC)</td></tr>
+              <tr><td>Universal Health Services (UHS)</td><td>Sep 2020</td><td>Fortune 500 healthcare; US and UK hospitals offline; phishing to Emotet to TrickBot to Ryuk</td></tr>
+              <tr><td>Sky Lakes Medical Center (Oregon)</td><td>Oct 2020</td><td>Systems offline during active COVID-19 care</td></tr>
+              <tr><td>Lawrence Health System (New York)</td><td>Oct 2020</td><td>Electronic health records unavailable</td></tr>
+              <tr><td>Sopra Steria (France)</td><td>Oct 2020</td><td>French IT services firm; weeks of estimated recovery</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Note on the 2025 indictment victims:</strong> The July 2025 DOJ case (Section 07) cites Ryuk victims including Hollywood Presbyterian Medical Center, UHS, Electronic Warfare Associates, a North Carolina water utility, and multiple US newspapers, tied to intrusions between March 2019 and September 2020.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Focus and Targeting Criteria</div>
+        <p>Primarily the United States, with secondary targeting of Western Europe (UK, France, Ireland, Germany). No documented systematic targeting of Russia, Belarus, or other CIS states. Observed selection criteria: high operational dependency on IT (hospitals, newspapers, government), perceived ability to pay large ransoms, and maximum urgency from disruption. The group showed no publicly documented restraint against healthcare during the pandemic.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 07 -->
+    <section class="section" id="lawenforcement">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">2025 Ryuk Deployment Operator Indictment (Post-Cutoff)</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>In July 2025, the U.S. District Court for the District of Oregon unsealed charges against alleged Ryuk deployment operators, the first named indictment of Ryuk deployment personnel (as opposed to money launderers).</p>
+        <ul class="content-list">
+          <li><strong>Karen Serobovich Vardanyan</strong> (Armenian, 33): extradited from Ukraine and arrived in the US on June 18, 2025; pleaded not guilty June 20. Charged with conspiracy, computer fraud, and computer extortion. Faces up to 5 years and a $250,000 fine per count.</li>
+          <li><strong>Co-conspirators:</strong> Ukrainian nationals Oleg Nikolayevich Lyulyava (53) and Andrii Leonydovich Prykhodchenko (53), both at large; Armenian national Levon Georgiyovych Avetisyan (45), awaiting a US extradition request in France.</li>
+          <li><strong>Conduct:</strong> Between March 2019 and September 2020, the group allegedly deployed Ryuk on hundreds of compromised servers and received about 1,160 BTC (over $15 million at the time).</li>
+          <li><strong>Lead origin:</strong> Suspect identified via forensic analysis of equipment seized in a November 2023 multinational raid (Ukraine, US, France, Norway, Netherlands, Germany, plus Europol and Eurojust).</li>
+        </ul>
+        <div class="callout callout-success">
+          <strong>Gap closure:</strong> This indictment partially closes the long-standing intelligence gap that no Ryuk operators had been named for ransomware deployment. Prior public actions targeted only money laundering.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Money-Laundering Prosecution: Dubnikov</div>
+        <p>Denis Mihaqlovic Dubnikov (co-founder of Coyote Crypto and Eggchange) was charged August 2021 (District of Oregon), arrested in Amsterdam November 2021, extradited August 2022, pleaded guilty February 7, 2023 to conspiracy to commit money laundering, and was sentenced to time served with $2,000 restitution in April 2023. DOJ alleged the broader conspiracy laundered at least $70 million in Ryuk proceeds. The indictment references unnamed co-conspirators, the largest with laundering exceeding $35 million between roughly February 2020 and July 2021.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">OFAC Sanctions (February 2023)</div>
+        <p>On February 9, 2023, the US Treasury and the UK jointly sanctioned seven Russian nationals for roles in spreading Conti, Ryuk, and TrickBot: Vitaliy Kovalev, Valery Sedletski, Valentin Karyagin, Maksim Mikhailov, Dmitry Pleshevskiy, Mikhail Iskritskiy, and Ivan Vakhromeyev. Travel bans and asset freezes were imposed. Kovalev was later identified as the leader "Stern" (see Section 08).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Government Advisories and Infrastructure Actions</div>
+        <ul class="content-list">
+          <li><strong>Oct 28, 2020, Joint Advisory AA20-302A (FBI/CISA/HHS):</strong> warned of an "increased and imminent" Ryuk/TrickBot threat to healthcare, triggered by six US hospitals compromised in a 24-hour window.</li>
+          <li><strong>May 2019, FBI TLP:WHITE Alert:</strong> early IOC release for Ryuk.</li>
+          <li><strong>TrickBot disruption (Microsoft/ESET, October 2020):</strong> degraded the access infrastructure supporting Ryuk but did not take down Ryuk-specific C2. No Ryuk-specific infrastructure seizure is documented.</li>
+          <li><strong>Operation Endgame (2024 to 2025):</strong> the multinational malware-infrastructure crackdown under which the Kovalev identification and related actions advanced.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 08 -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessment</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>No confirmed nexus to Russian state intelligence (FSB, SVR, GRU) has been established for Ryuk operations specifically. The group is assessed as financially motivated criminal actors, not state-directed or state-tasked. Several indicators are nonetheless relevant.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Indicator</th><th>Finding</th></tr></thead>
+            <tbody>
+              <tr><td>Geographic base</td><td>Russia (Saint Petersburg area); some operators assessed Ukraine-based. The 2025 indictment names Armenian and Ukrainian nationals in operator roles</td></tr>
+              <tr><td>CIS exclusion</td><td>Early samples carried CIS language/path exclusions; the 2021 worm variant lacked them</td></tr>
+              <tr><td>Targeting</td><td>No systematic targeting of Russian entities; willingness to hit US critical healthcare and government</td></tr>
+              <tr><td>Safe harbor</td><td>Members operated openly from Russian territory for years without prosecution, consistent with implicit non-prosecution</td></tr>
+              <tr><td>Loyalty statement</td><td>In Feb 2022 GOLD ULRICK (Conti) posted "fealty to the Russian Federation," quickly deleted after the ContiLeaks. Same operator group ran Ryuk</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Leadership: "Stern" = Vitaly Kovalev (Post-Cutoff)</div>
+        <div class="conf conf-credible">Credible to Confirmed</div>
+        <p>In May 2025, the enterprise leader known by the alias "Stern," connected on-chain and in chat logs to both Ryuk and Conti, was named as Vitaly Nikolaevich Kovalev, a 36-year-old Russian national. The leaker GangExposed published the identification on May 5, 2025; Germany's BKA confirmed it later that month as part of Operation Endgame and issued an Interpol red notice. Kovalev was already the first-listed individual in the February 2023 OFAC action, tying the leadership identity, the sanction, and the "Stern" alias together. Germany assesses he currently resides in Russia.</p>
+        <div class="callout callout-warning">
+          <strong>Confidence note:</strong> Government naming (German BKA) supports high confidence in the Kovalev = Stern identification. The initial disclosure originated with GangExposed, whose methodology remains partly unverified; the German confirmation is the load-bearing source.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Analyst Judgment</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>The combination of Russia-based operations, implicit non-prosecution safe harbor, target selection aligned with Russian geopolitical interests, and the successor organization's 2022 loyalty statement is consistent with a "tolerant state nexus": Russian services permit the group to operate freely in exchange for occasional cooperation or access, without direct operational tasking. No specific intelligence-sharing agreement, FSB tasking, or officer-level contact has been publicly confirmed for Ryuk. Any stronger nexus claim would require classified reporting.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 09 -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Historical Phases</div>
+        <ul class="content-list">
+          <li><strong>Phase 1 (Aug 2018 to Jan 2020):</strong> rapid build-up. Revenue grew from an estimated $640,000 in the first four months to $61.26 million by October 2019.</li>
+          <li><strong>Phase 2 (Feb to Aug 2020):</strong> apparent pause; Conti emerged as a parallel or successor platform.</li>
+          <li><strong>Phase 3 (Sep 2020 to May 2021):</strong> aggressive resurgence focused on US healthcare during COVID-19; ZeroLogon adoption enabling sub-5-hour domain compromise; the self-propagating worm variant (Feb 2021); final cessation around May 2021.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <p>Two-tier confidence applies: the anchor relationships (TrickBot, Emotet, Conti) are strongly corroborated; the post-Conti fragment attributions rest more heavily on single primary sources.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Group</th><th>Relationship</th><th>Corroboration</th></tr></thead>
+            <tbody>
+              <tr><td>TrickBot / GOLD BLACKBURN</td><td>Near-exclusive initial access provider (Anchor)</td><td>CONFIRMED. CrowdStrike, Mandiant, Secureworks, TRM Labs, ANSSI</td></tr>
+              <tr><td>Emotet (TA542 / Mummy Spider)</td><td>Upstream access broker feeding TrickBot (Anchor)</td><td>CONFIRMED. CrowdStrike, Kryptos Logic, FireEye</td></tr>
+              <tr><td>Conti</td><td>Successor / rebrand, same core cluster (Anchor)</td><td>CONFIRMED. TRM Labs, Secureworks, AdvIntel, BleepingComputer. Some framed Conti as a splinter rather than a direct rebrand</td></tr>
+              <tr><td>Post-Conti fragments</td><td>Operator dispersal (Extension)</td><td>CREDIBLE. AdvIntel names Black Basta, BlackByte, Karakurt, AvosLocker, ALPHV/BlackCat, Hive, HelloKitty/FiveHands, Royal. Chainalysis corroborated "Stern" wallet activity with Karakurt, Diavol, and Royal in 2022. Intel 471 assessed BlackByte as a possible rebranded Conti operation</td></tr>
+              <tr><td>FIN12 (Mandiant)</td><td>The Ryuk-deploying affiliate, graduated from UNC1878 (Oct 2021)</td><td>CONFIRMED (Mandiant formal assessment). Continued deploying Ryuk and successor payloads</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Formal-assessment status:</strong> Mandiant has published a formal designation (FIN12). Recorded Future has not published a dedicated Ryuk group designation, discussing the activity under the broader Russian cybercriminal ecosystem (for example Dark Covenant 3.0, October 2025).
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators and Intelligence Gaps</div>
+        <p>The Ryuk brand is permanently defunct; there is no indication of revival under the Ryuk name. The relevant trajectory is that of the successor cluster and its named leadership. The February 2022 ContiLeaks exposed the full Wizard Spider organizational architecture, and Operation Endgame plus the 2025 indictments and the Kovalev identification represent sustained pressure on surviving operators. Wizard Spider is assessed as disbanded as of open-source reporting through 2024, with individual operators dispersed.</p>
+        <ul class="content-list">
+          <li><strong>Remaining gaps:</strong> most co-conspirators in the Dubnikov and Vardanyan cases remain unidentified or at large; the original Ryuk codebase author is unidentified; the specific current activities of core operators are not documented.</li>
+          <li><strong>Partially closed:</strong> named Ryuk deployment operators (2025 indictment) and named enterprise leadership (Stern = Kovalev, 2025).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">&#8258;</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" id="source-toggle">Show source list</button>
+      <div class="source-list" id="source-list">
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>FBI/CISA/HHS Joint Advisory AA20-302A, October 28, 2020 &bull; <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa20-302a" target="_blank">cisa.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>DOJ (District of Oregon): Armenian National Extradited for Ransomware Extortion Conspiracy, July 2025 &bull; <a href="https://www.justice.gov/usao-or/pr/armenian-national-extradited-united-states-faces-federal-charges-ransomware-extortion" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>US Treasury OFAC / UK FCDO: Joint sanctions on seven Conti/Ryuk/TrickBot actors, February 9, 2023 &bull; <a href="https://home.treasury.gov/news/press-releases/jy1256" target="_blank">treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>ANSSI/CERT-FR: Ryuk self-propagating variant, February 2021 (CERTFR-2021-CTI-006)</span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>HHS HC3 Analyst Note: Ryuk worm variant, March 12, 2021</span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>NVD: CVE-2020-1472 (ZeroLogon, CVSS 10.0) &bull; <a href="https://nvd.nist.gov/vuln/detail/CVE-2020-1472" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>NVD: CVE-2021-40444 (MSHTML, CVSS 8.8) &bull; <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-40444" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-category">Blockchain Forensics</div>
+        <div class="source-item"><span class="source-num">[8]</span><span>TRM Labs: Analysis Corroborates Suspected Ties Between Conti and Ryuk and Wizard Spider, April 2022 &bull; <a href="https://www.trmlabs.com/resources/blog/analysis-corroborates-suspected-ties-between-conti-and-ryuk-ransomware-groups-and-wizard-spider" target="_blank">trmlabs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Chainalysis: Huobi/Binance cash-out network and Ryuk broker analysis, January 2020</span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>AdvIntel / HYAS: Ryuk $150M Bitcoin wallet analysis, January 2021 &bull; <a href="https://www.databreachtoday.com/ryuk-ransomware-profits-150-million-a-15726" target="_blank">databreachtoday.com</a></span></div>
+        <div class="source-category">Threat Intelligence Vendors</div>
+        <div class="source-item"><span class="source-num">[11]</span><span>CrowdStrike: Big Game Hunting with Ryuk; WIZARD SPIDER / GRIM SPIDER &bull; <a href="https://www.crowdstrike.com/en-us/blog/big-game-hunting-with-ryuk-another-lucrative-targeted-ransomware/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>Mandiant: FIN12, the Prolific Ransomware Intrusion Actor Pursuing Healthcare, October 2021 &bull; <a href="https://cloud.google.com/blog/topics/threat-intelligence/fin12-ransomware-intrusion-actor-pursuing-healthcare-targets" target="_blank">cloud.google.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Microsoft Security Insider: Periwinkle Tempest (DEV-0193) &bull; <a href="https://www.microsoft.com/en-us/security/security-insider/threat-landscape/periwinkle-tempest" target="_blank">microsoft.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>Secureworks CTU: GOLD ULRICK / GOLD BLACKBURN profiles; ContiLeaks analysis</span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Check Point Research: Ryuk-Hermes code analysis, August 2018</span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>Trend Micro: What Is Ryuk Ransomware (TTPs, kill chain, ransom note imagery) &bull; <a href="https://www.trendmicro.com/en_us/what-is/ransomware/ryuk-ransomware.html" target="_blank">trendmicro.com</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>BleepingComputer / Emsisoft: Ryuk decryptor bug and data loss, December 2019 &bull; <a href="https://www.bleepingcomputer.com/news/security/ryuk-ransomware-decryptor-is-broken-could-lead-to-data-loss/" target="_blank">bleepingcomputer.com</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Recorded Future: Dark Covenant 3.0, October 2025 &bull; <a href="https://www.recordedfuture.com/research/dark-covenant-3-controlled-impunity-and-russias-cybercriminals" target="_blank">recordedfuture.com</a></span></div>
+        <div class="source-category">Attribution and Successor Reporting</div>
+        <div class="source-item"><span class="source-num">[19]</span><span>BleepingComputer: Germany doxxes Conti/TrickBot ringleader as Vitaly Kovalev ("Stern"), May 2025 &bull; <a href="https://www.bleepingcomputer.com/news/security/germany-doxxes-conti-ransomware-and-trickbot-ring-leader/" target="_blank">bleepingcomputer.com</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>CyberScoop: Karen Vardanyan Ryuk operator extradited, June/July 2025 &bull; <a href="https://cyberscoop.com/karen-vardanyan-ryuk-ransomware-extradited/" target="_blank">cyberscoop.com</a></span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span>The Record: Armenian and Ukrainian nationals charged over Ryuk, July 2025 &bull; <a href="https://therecord.media/ryuk-ransomware-actors-legal-action" target="_blank">therecord.media</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span>Bitdefender: Ryuk money launderer (Dubnikov) sentenced, 2023 &bull; <a href="https://www.bitdefender.com/en-us/blog/hotforsecurity/ryuk-ransomware-money-launderer-sentenced-russian-national-faces-time-served" target="_blank">bitdefender.com</a></span></div>
+        <div class="source-item"><span class="source-num">[23]</span><span>Wikipedia: Wizard Spider (organizational overview, disbandment tracking) &bull; <a href="https://en.wikipedia.org/wiki/Wizard_Spider" target="_blank">wikipedia.org</a></span></div>
+        <div class="source-item"><span class="source-num">[24]</span><span>Internal data &bull; analyst-compiled Ryuk case and payment records</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+(function initSources() {
+  const btn = document.getElementById('source-toggle');
+  const list = document.getElementById('source-list');
+  if (!btn || !list) return;
+  btn.addEventListener('click', function() {
+    const open = list.classList.toggle('open');
+    btn.textContent = open ? 'Hide source list' : 'Show source list';
+  });
+})();
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

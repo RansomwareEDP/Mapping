@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkSide | Ransomware EDP Threat Actor Library</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px;
+}
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: background 0.15s;
+  color: var(--gray-400); margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-inactive { background: #6b7280; }
+.dot-conti { background: #c0392b; }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-inactive { background: #6b7280; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE LABELS */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUTS */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+@media print { .sidebar, .topbar { display: none; } .main { padding: 0; } .content { padding: 0 24px; } }
+
+/* THEME TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-item { background: #161b22; border-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware <span>EDP</span> &nbsp;&bull;&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">therenoproject.org &nbsp;&bull;&nbsp; Analytical Profiles</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Executive Summary</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Capabilities</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#victims">Victim Profile &amp; Targeting</a>
+    <a href="#le">Law Enforcement Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory Assessment</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item active" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &nbsp;&bull;&nbsp; Historical &nbsp;&bull;&nbsp; Last updated July 2026</div>
+    <div class="hero-title">DarkSide</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Colonial Pipeline &nbsp;&bull;&nbsp; CARBON SPIDER / GOLD WATERFALL</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Historic Critical Threat</span>
+      <span class="badge badge-inactive">Disbanded May 2021</span>
+      <span class="badge badge-raas">RaaS</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Active Period</div>
+        <div class="kpi-value">Aug 2020</div>
+        <div class="kpi-sub">to May 2021 (~9 months)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Known Infections</div>
+        <div class="kpi-value">99</div>
+        <div class="kpi-sub">DarkTracer, cited by Elliptic</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Revenue</div>
+        <div class="kpi-value">$90M+</div>
+        <div class="kpi-sub">Bitcoin, 47 paying victims (Elliptic)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Average Payment</div>
+        <div class="kpi-value">$1.9M</div>
+        <div class="kpi-sub">Per paying victim (Elliptic)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Funds Seized</div>
+        <div class="kpi-value">63.7 BTC</div>
+        <div class="kpi-sub">~$2.3M, DOJ, June 2021</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Operator Indictments</div>
+        <div class="kpi-value">Zero</div>
+        <div class="kpi-sub">No named operator charged, July 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">BlackMatter</div>
+        <div class="kpi-sub">then ALPHV / BlackCat</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary &amp; Group Overview</h2>
+      </div>
+      <p>DarkSide was a Russia-nexus Ransomware-as-a-Service (RaaS) operation active from August 2020 to May 2021. In roughly nine months it extracted over $90 million in Bitcoin from at least 47 paying victims (Elliptic) before its May 2021 attack on Colonial Pipeline triggered a U.S. national emergency declaration and the group's abrupt shutdown. DarkSide cultivated a self-consciously professional and quasi-corporate brand, publishing a code of conduct, prohibiting attacks on healthcare, education, non-profits, and government, and geofencing organizations in Commonwealth of Independent States (CIS) nations.</p>
+      <p>DarkSide is assessed with high confidence to have continued through the successor operation BlackMatter (July 2021 to November 2021), and subsequently through ALPHV / BlackCat (November 2021 to March 2024). CrowdStrike attributes the operator group to CARBON SPIDER, and Secureworks to GOLD WATERFALL. As of July 2026 the DarkSide brand is inactive, no named DarkSide operator has been publicly indicted or arrested, and no OFAC designation has ever targeted DarkSide operators or wallets.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Tracking designations</td><td>CARBON SPIDER (CrowdStrike, equated with FIN7); GOLD WATERFALL (Secureworks); DARKSIDE RaaS with affiliate clusters UNC2628 / UNC2659 / UNC2465 (Mandiant); Ransom:Win32/DarkSide malware family (Microsoft). Unit 42 and Recorded Future apply no distinct named-actor codename.</td></tr>
+            <tr><td>Operational model</td><td>Closed-operator RaaS: core developers ran the encryptor, admin panel, leak site, and negotiation portal; vetted affiliates conducted intrusions.</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion (exfiltration plus encryption); triple-extortion DDoS pressure; a novel April 2021 proposal to share pre-leak intelligence with stock short-sellers.</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia, operating under assessed tacit state tolerance, not confirmed state direction (CREDIBLE).</td></tr>
+            <tr><td>Signature</td><td>Ransom note header: <span class="mono">----------- [ Welcome to Dark ] -------------&gt;</span>; Salsa20 plus RSA-1024 encryption; configurable CIS language-check kill switch.</td></tr>
+            <tr><td>Disposition</td><td>Disbanded May 2021 after Colonial Pipeline; core operators assessed to have transitioned to BlackMatter then ALPHV.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://www.cybereason.com/hs-fs/hubfs/image%201.png"
+               alt="DarkSide Leaks data leak site"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DarkSide Leaks: Data Leak Site</strong>
+            The group's Tor-based "DarkSide Leaks" blog, used to name victims, post stolen-data samples, and host download links. The corporate presentation mirrors the group's professionalized branding. Stolen data was advertised as remaining available on the group's Tor content servers for at least six months.
+            <span class="img-source">Source: Cybereason, 2021</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.trendmicro.com/content/dam/trendmicro/global/en/research/21/e/what-we-know-about-darkside-ransomware-and-the-us-pipeline-attack/fig1-darksideransomware.jpg"
+               alt="DarkSide ransom note"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DarkSide Ransom Note</strong>
+            The README ransom note written to each encrypted directory. It carries the distinctive header "Welcome to Dark," embeds a victim-specific Tor payment URL and unique key, and warns against file modification. The consistent header across victims is a durable identification signature.
+            <span class="img-source">Source: Trend Micro, 2021</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://storage.googleapis.com/gweb-cloudblog-publish/images/darkside1_vfpd.max-1300x1300.png"
+               alt="DarkSide affiliate recruitment forum post"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Affiliate Recruitment</strong>
+            The actor "darksupp" advertising the DarkSide RaaS affiliate program on Russian-language cybercrime forums (exploit.in and xss.is) from November 2020. Affiliates passed an interview before receiving admin-panel access.
+            <span class="img-source">Source: Mandiant / Google TI, 2021</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://storage.googleapis.com/gweb-cloudblog-publish/images/darkside2_iopm.max-1000x1000.png"
+               alt="DarkSide affiliate administration panel"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Affiliate Administration Panel</strong>
+            The DarkSide affiliate management panel used to build customized ransomware per victim (encryption mode, target scope, note content) and to manage victim negotiations. The panel infrastructure was later assessed as a template borrowed by BlackMatter.
+            <span class="img-source">Source: Mandiant / Google TI, 2021</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.cybereason.com/hs-fs/hubfs/image%2016.png"
+               alt="DarkSide desktop wallpaper set on encrypted host"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Branding: Desktop Wallpaper</strong>
+            The desktop background written to encrypted hosts, directing victims to the ransom note. Wallpaper replacement is a shared behavioral signature later reused by BlackMatter (noted by Sophos).
+            <span class="img-source">Source: Cybereason, 2021</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage &amp; Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Origin</div>
+        <p>DarkSide has no publicly established ransomware predecessor in the sequential sense of Ryuk to Conti. CrowdStrike assesses the group was built by the CARBON SPIDER adversary, active since 2013 in other financially motivated operations before pivoting to Big Game Hunting ransomware in summer 2020. The RaaS platform was formally advertised by the actor "darksupp" from November 2020. DarkSide 2.0 followed in March 2021, adding faster multithreaded encryption, a Linux and VMware ESXi variant, and a VoIP calling feature for affiliate pressure.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Tracking Designations: Disambiguation</div>
+        <div class="callout callout-warning">
+          <strong>Designation caution.</strong> CARBON SPIDER is CrowdStrike's designation for the <strong>FIN7</strong> adversary (aliases include GOLD NIAGARA, ELBRUS, and Sangria Tempest). By attributing DarkSide and BlackMatter to CARBON SPIDER, CrowdStrike ties the operators to the broad FIN7 organization. This is a broader attribution than Secureworks' GOLD WATERFALL, which Secureworks tracks as its own DarkSide/BlackMatter cluster rather than folding it into GOLD NIAGARA (its FIN7 designation). Vendors therefore do not fully agree on whether the DarkSide operators <em>are</em> FIN7 or a distinct but related cluster. Do not conflate CARBON SPIDER (a parent-organization designation) with a DarkSide-specific attribution.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>DarkSide designation</th><th>Scope note</th></tr></thead>
+            <tbody>
+              <tr><td>CrowdStrike</td><td>CARBON SPIDER</td><td>Same designation covers DarkSide and BlackMatter. CARBON SPIDER equals FIN7. Broad operator attribution.</td></tr>
+              <tr><td>Secureworks</td><td>GOLD WATERFALL</td><td>Covers DarkSide and BlackMatter. Distinct from GOLD BLACKBURN (TrickBot / BazarLoader ecosystem), which is unrelated to DarkSide.</td></tr>
+              <tr><td>Mandiant (Google TI)</td><td>DARKSIDE (RaaS); affiliates UNC2628, UNC2659, UNC2465</td><td>No single named operator. Five clusters tracked, three characterized, plus additional uncharacterized clusters.</td></tr>
+              <tr><td>Palo Alto Unit 42</td><td>DarkSide (malware family)</td><td>No distinct codename at time of reporting. Later "Ambitious Scorpius" designates a possible DarkSide/BlackMatter successor (ALPHV), not the original operators.</td></tr>
+              <tr><td>Recorded Future</td><td>DARKSIDE RaaS operators (unnamed)</td><td>Assessed BlackMatter a "successor." No proprietary codename.</td></tr>
+              <tr><td>Microsoft</td><td>Ransom:Win32/DarkSide (family)</td><td>Malware family only. No MSTIC actor name (no DEV-#### or Tempest name).</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">DarkSide to BlackMatter (Anchor Relationship)</div>
+        <div class="conf conf-confirmed">Confirmed &nbsp;&bull;&nbsp; High confidence, multi-source</div>
+        <p>The DarkSide to BlackMatter link is corroborated across cryptographic code analysis, TTP overlap, operator self-statement, and targeting evolution. The only meaningful dispute is framing (strict rebrand versus close successor), not the existence of continuity.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1 &nbsp;&bull;&nbsp; Confirmed</div>
+            <div class="pillar-title">Cryptographic Match</div>
+            <div class="pillar-body">Fabian Wosar (Emsisoft) analyzed a leaked BlackMatter decryptor and found the RSA and Salsa20 implementations, including a custom Salsa20 matrix previously unique to DarkSide, were an exact copy. Emsisoft concluded the two are effectively the same. Strongest single pillar.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2 &nbsp;&bull;&nbsp; Credible</div>
+            <div class="pillar-title">TTP Continuity (with caveat)</div>
+            <div class="pillar-body">Sophos found wallpaper reset, multithreaded encryption, and UAC bypass "technically very similar" to DarkSide, but stated explicitly this is "not a simple case of rebranding." BlackMatter code is not identical and incorporates features from REvil and LockBit.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 3 &nbsp;&bull;&nbsp; Credible (self-report)</div>
+            <div class="pillar-title">Operator Statement</div>
+            <div class="pillar-body">A BlackMatter representative told Recorded Future's Dmitry Smilyanets: "We are familiar with the DarkSide team from working together in the past but we are not them, although we are intimate with their ideas." Self-serving and contradicted by the code analysis.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 4 &nbsp;&bull;&nbsp; Circumstantial / High</div>
+            <div class="pillar-title">Targeting Avoidance</div>
+            <div class="pillar-body">BlackMatter explicitly excluded oil and gas (pipelines, refineries), the exact industry whose targeting caused DarkSide's downfall. Deliberate avoidance consistent with continuity of personnel who learned from the Colonial failure.</div>
+          </div>
+        </div>
+        <p><strong>Vendor positions.</strong> Corroborating: Emsisoft (strongest), CrowdStrike (CARBON SPIDER covers both), Secureworks (GOLD WATERFALL covers both), Recorded Future (successor), Flashpoint (possible rebrand), Mandiant (actor-level alignment, Kimberly Goody, May 2021). Caveating: Sophos (connection real, rejects "simple rebranding"). No vendor denies the connection.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">BlackMatter to ALPHV / BlackCat (Extension Relationship)</div>
+        <div class="conf conf-credible">Credible &nbsp;&bull;&nbsp; Moderate confidence; nature of link disputed</div>
+        <p>The FBI's ALPHV flash advisory (CU-000167-MW, April 2022) stated that many ALPHV developers and money launderers are linked to DarkSide and BlackMatter. Cisco Talos documented shared domain, IP, and tooling overlap between a September 2021 BlackMatter attack and a December 2021 BlackCat attack, assessing at moderate confidence that BlackMatter affiliates were early BlackCat adopters.</p>
+        <div class="conf-block inference">
+          <strong>Disputed nature of the link.</strong> Whether ALPHV represents former DarkSide/BlackMatter <em>core developers</em> (Emsisoft's Brett Callow leans this way) or migrating <em>affiliates</em> (Cisco Talos infrastructure evidence, and ALPHV's own claim to have been "advertisers" of prior RaaS) is genuinely unresolved. The Canadian Centre for Cyber Security records the dispute without resolving it. The link is well corroborated; the core-versus-affiliate distinction is not.
+        </div>
+        <div class="callout callout-info">
+          <strong>Cluster-assessment flag.</strong> No single vendor has published one formal assessment naming the complete DarkSide to BlackMatter to ALPHV chain as a unified, code-continuous lineage. The three-generation chain is an analyst-community consensus assembled from stage-specific statements: hop one (DarkSide to BlackMatter) is HIGH confidence and code-grounded; hop two (BlackMatter to ALPHV) is MODERATE and rests on infrastructure overlap plus testimony. Neither Mandiant nor Recorded Future has published a formal full-chain cluster attribution.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS Structure &amp; Affiliate Management</div>
+        <p>DarkSide ran a closed-operator RaaS. Core developers maintained the ransomware, the administration panel, the leak-site infrastructure, and the negotiation portal, while vetted affiliates paid for access and conducted intrusions independently. Recruitment ran through the actor "darksupp" on exploit.in and xss.is from November 2020. Affiliates passed an interview before receiving a build panel that allowed per-victim customization (encryption mode, target scope, ransom-note content).</p>
+        <p>Mandiant identified at least five Russian-speaking actors who were or had been DarkSide affiliates, some of whom concurrently partnered with BABUK and REvil (SODINOKIBI). Affiliates were prohibited from targeting hospitals, schools, universities, non-profits, government entities, or any organization in CIS nations.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Revenue Split</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ransom amount</th><th>Operator take</th><th>Affiliate take</th></tr></thead>
+            <tbody>
+              <tr><td>Under $500,000</td><td>25%</td><td>75%</td></tr>
+              <tr><td>$500,000 to $5,000,000</td><td>Sliding scale</td><td>Sliding scale</td></tr>
+              <tr><td>Over $5,000,000</td><td>10%</td><td>90%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Elliptic's blockchain analysis found the core operator wallet received approximately 17% ($15.5 million) of the tracked $90 million, with 83% ($74.7 million) flowing to affiliate wallets, broadly consistent with the sliding 10% to 25% split.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation &amp; Extortion Mechanics</div>
+        <ul class="content-list">
+          <li>Demands were tailored per victim from research into company financials and decision-makers. Observed demand range: $200,000 to $20 million (Check Point). Average payment: $1.9 million (Elliptic, 47 victims).</li>
+          <li>Payment deadlines used countdown timers; refusal to engage within two to three days triggered escalation.</li>
+          <li>Escalation progression (Unit 42): threatening emails to employees, then calls to senior executives, then threats to contact customers and press, then DDoS against external websites.</li>
+          <li>Double extortion was standard (exfiltration before encryption, publication threat on DarkSide Leaks). Triple-extortion DDoS pressure emerged in 2021.</li>
+          <li>Novel tactic (April 2021): operators announced willingness to share pre-leak intelligence with traders shorting NASDAQ-listed victim companies.</li>
+          <li>In at least one documented case an affiliate obtained the victim's cyber-insurance policy and refused to reduce the demand below the known policy limit.</li>
+        </ul>
+        <div class="callout callout-warning">
+          <strong>Sanctions-exposure signal (November 2020).</strong> DarkSide announced intent to host infrastructure in Iran, prompting ransomware negotiation firms to place the group on restricted lists over potential OFAC exposure. This is atypical for a Kremlin-tolerated group and complicates a purely Russia-nexus reading (see Section 08).
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Detail</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Corporate VPN exploitation</td><td>Password spraying and credential stuffing against VPN infrastructure (UNC2628)</td><td>Mandiant</td></tr>
+              <tr><td class="mono">CVE-2021-20016</td><td>SonicWall SMA100 SSL VPN SQL injection; zero-day at time of use by UNC2659; enabled credential access and RCE. CVSS 9.8. In CISA KEV.</td><td>Mandiant; NVD</td></tr>
+              <tr><td class="mono">CVE-2019-5544</td><td>VMware ESXi OpenSLP heap overwrite RCE (CVSS 9.8). Used in Linux/ESXi campaign. In CISA KEV.</td><td>Securin; NVD</td></tr>
+              <tr><td class="mono">CVE-2020-3992</td><td>VMware ESXi OpenSLP use-after-free RCE (CVSS 9.8), ESXi 6.5, 6.7 and 7.0. In CISA KEV.</td><td>Securin; NVD</td></tr>
+              <tr><td>Phishing</td><td>Malicious LNK via Google Drive / Dropbox links delivering the SMOKEDHAM backdoor (UNC2465)</td><td>Mandiant</td></tr>
+              <tr><td>Valid accounts / RDP</td><td>Credentials from access brokers or credential markets</td><td>Multiple</td></tr>
+              <tr><td>Zloader botnet</td><td>Reported as one distribution vector</td><td>Acronis</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>CVE verification note.</strong> All three CVEs confirmed against NVD at CVSS v3.1 base score 9.8 (Critical) and all three appear in the CISA Known Exploited Vulnerabilities catalog. CVE-2019-5544 and CVE-2020-3992 are the pair of ESXi OpenSLP (Service Location Protocol) vulnerabilities routinely reused across ransomware ESXi campaigns.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence, Lateral Movement &amp; Tooling</div>
+        <ul class="content-list">
+          <li><strong>Persistence:</strong> ransomware registered as a Windows service under a pseudo-random 8-character lowercase hex name derived from MAC address or MachineGuid; legitimate RMM tools (AnyDesk, TeamViewer) for remote access; SMOKEDHAM .NET backdoor (UNC2465); Cobalt Strike BEACON via HTTPS and SMB (UNC2628); NGROK to expose RDP/WinRM.</li>
+          <li><strong>Lateral movement:</strong> RDP with valid domain credentials; PsExec deployment to host lists; Cobalt Strike SMB BEACON; ADRecon, BloodHound/SharpHound, Advanced IP Scanner for reconnaissance; Mimikatz for LSASS credential dumping; F-Secure C3 framework proxying C2 through the Slack API (UNC2628).</li>
+          <li><strong>Exfiltration:</strong> Rclone to cloud services (pCloud, MegaSync).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Algorithm</td><td>Salsa20 (file content), RSA-1024 (key encapsulation)</td></tr>
+              <tr><td>Key generation</td><td>Per-file random key via RtlRandomEx, encrypted with embedded RSA-1024 public key</td></tr>
+              <tr><td>File extension</td><td>8-character pseudo-random lowercase hex derived from MAC address (later builds: MachineGuid)</td></tr>
+              <tr><td>Encryption modes</td><td>FULL, FAST, AUTO (configurable per build)</td></tr>
+              <tr><td>Note format</td><td>Written to <span class="mono">README[ext].TXT</span>; header <span class="mono">"----------- [ Welcome to Dark ] -------------&gt;"</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block credible">
+          <strong>Decryptor status (CREDIBLE).</strong> Bitdefender released a free DarkSide decryptor on January 11, 2021, exploiting a key-reuse flaw. Publicizing it tipped off DarkSide, who patched key generation the next day, so it recovers files only for victims encrypted before roughly January 2021 and is ineffective against the mature (Colonial-era) variant. No universal free DarkSide decryptor exists as of July 2026. Note: the October 2021 free <em>BlackMatter</em> decryptor was from Emsisoft (Fabian Wosar), not Bitdefender.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion / Language Check</div>
+        <p>The DarkSide binary contains a configurable system-language check (T1614.001). When enabled, it calls GetSystemDefaultUILanguage and GetUserDefaultLangID and halts on detection of Russian, Ukrainian, Belarusian, Georgian, Tatar, Kazakh, Tajik, Kyrgyz, Romanian/Moldova, Armenian, Turkmen, Azerbaijani, and Arabic (Syria) language identifiers, writing "This is a Russian-Speaking System, Exit" to its log. Mandiant notes the check is enabled or disabled per affiliate build and is therefore not present in all samples.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Anti-Recovery &amp; Linux / ESXi Variant</div>
+        <ul class="content-list">
+          <li><strong>Anti-recovery:</strong> shadow-copy deletion via obfuscated PowerShell and WMI; Recycle Bin emptying; service stop and deletion targeting vss, sql, backup, veeam, sophos, memtas, mepocs and related services; process termination of databases, Office applications, and browsers.</li>
+          <li><strong>UAC bypass:</strong> pre-Windows 10 via slui.exe handler hijack; Windows 10 and later via the CMSTPLUA COM interface.</li>
+          <li><strong>Linux / ESXi (DarkSide 2.0, March 2021):</strong> targets .vmdk, .vmsd, .vmsn on VMware ESXi; uses esxcli vm process kill to halt VMs before encryption; also targets Synology and OMV NAS. Some affiliates failed to stop ESXi daemons cleanly, producing interlaced encrypted and unencrypted data, a documented operational error.</li>
+          <li><strong>Code signing:</strong> early samples signed with a Cobalt Strike stager certificate to bypass execution restrictions.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card highlight">
+          <div class="metric-label">Total Tracked Revenue</div>
+          <div class="metric-val">$90M+</div>
+          <div class="metric-note">Bitcoin, Oct 2020 to May 2021 (Elliptic)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Paying Victims</div>
+          <div class="metric-val">47</div>
+          <div class="metric-note">~47% of 99 known infections</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Operator Share</div>
+          <div class="metric-val">$15.5M</div>
+          <div class="metric-note">~17% of tracked payments</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Affiliate Share</div>
+          <div class="metric-val">$74.7M</div>
+          <div class="metric-note">~83% of tracked payments</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Final Quarter</div>
+          <div class="metric-val">$17.5M</div>
+          <div class="metric-note">~20% of total, last 3 months</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Payment Rails</div>
+          <div class="metric-val">BTC / XMR</div>
+          <div class="metric-note">10% to 20% premium charged for Bitcoin</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Colonial Pipeline On-Chain Flow</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Payment</div>
+              <div class="phase-desc">Colonial Pipeline paid 75 BTC (approximately $4.4 million) to the affiliate-provided address on May 8, 2021.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Operator-to-Affiliate Split</div>
+              <div class="phase-desc">DarkSide administrators forwarded 63.7 BTC (about 85%) to the affiliate wallet, consistent with a roughly 15% operator cut; the majority moved out of the initial wallet by May 9.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Trace</div>
+              <div class="phase-desc">FBI investigators traced the funds through at least 23 cryptocurrency accounts before they settled in a wallet for which the FBI held the private key.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">4</div>
+            <div class="phase-body">
+              <div class="phase-title">Seizure</div>
+              <div class="phase-desc">On May 27 to 28, 2021 the FBI seized 63.7 BTC via a warrant from Magistrate Judge Laurel Beeler (N.D. Cal.); DOJ announced the seizure June 7, 2021. The dollar value had fallen to about $2.3 million from $4.4 million due to a Bitcoin price decline.</div>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-alert">
+          <strong>Key forensic nuance (Elliptic, Tom Robinson).</strong> The seized funds came from the <em>affiliate</em> wallet, not the DarkSide operator wallet. The $2.3 million figure is a price-crash artifact: 63.7 BTC was roughly 84% to 85% of the coins Colonial paid but only about half the original dollar value at seizure. Approximately $2.1 million of the original payment was never recovered.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Laundering &amp; Attribution Gaps</div>
+        <ul class="content-list">
+          <li>Elliptic conducted on-chain tracking to identify DarkSide wallets; Chainalysis assisted the FBI in tracing the Colonial payment; TRM Labs also published specific DarkSide on-chain analysis (tracking the 75 BTC withdrawal on May 8 and 113.5 BTC leaving the DarkSide wallet on May 13).</li>
+          <li><strong>No vendor has publicly named the specific off-ramp exchange or mixer</strong> used to launder DarkSide proceeds. Chainalysis stated funds moved to a mixer whose name it could not reveal due to an ongoing investigation. Public detail does not extend beyond the Bitcoin addresses in DOJ court documents.</li>
+        </ul>
+        <div class="conf-block confirmed">
+          <strong>CONFIRMED &nbsp;&bull;&nbsp; No OFAC action on DarkSide.</strong> No OFAC designation has ever targeted DarkSide operators or specific DarkSide wallets. The September 2021 SUEX and November 2021 Chatex sanctions are frequently but incorrectly linked to DarkSide: the documented ransomware nexus for SUEX is Ryuk, Conti, and Maze, and for the Chatex action, REvil. Neither designation names DarkSide. Avoid repeating the SUEX/DarkSide misconception.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Profile &amp; Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Scale &amp; Distribution</div>
+        <ul class="content-list">
+          <li><strong>99 organizations infected</strong> per DarkTracer (cited by Elliptic, May 2021); <strong>47 paid</strong> (about 47%). Active over roughly nine months across more than 15 countries.</li>
+          <li><strong>Geography:</strong> majority U.S.-based (Mandiant, CSIS), with European victims including Brenntag (Germany) and Toshiba Tec (France office). No known CIS-nation victims, consistent with the programmatic prohibition.</li>
+          <li><strong>Model:</strong> Big Game Hunting. DarkSide deliberately targeted larger for-profit enterprises able to pay multi-million-dollar ransoms, calibrating demands to victim revenue and researching decision-makers and insurance limits.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sectors</div>
+        <p>Mandiant documented financial services, legal, manufacturing, professional services, retail, and technology. The FBI/CISA advisory (AA21-131A) additionally noted manufacturing, legal, insurance, healthcare, and energy. Stated exclusions: CIS nations, hospitals, schools, universities, non-profits, and government entities.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">High-Profile Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Impact</th><th>Ransom</th></tr></thead>
+            <tbody>
+              <tr><td>Colonial Pipeline (USA)</td><td>Energy / Critical Infrastructure</td><td>Shutdown of a 5,500-mile fuel pipeline; East Coast fuel shortages; federal emergency declared</td><td>~$4.4M paid; $2.3M recovered</td></tr>
+              <tr><td>Brenntag (Germany)</td><td>Chemical distribution</td><td>Data exfiltration and encryption</td><td>~$4.4M (Bitcoin)</td></tr>
+              <tr><td>Toshiba Tec (France office)</td><td>Technology / Electronics</td><td>740+ GB exfiltrated</td><td>Undisclosed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: LAW ENFORCEMENT -->
+    <section class="section" id="le">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Law Enforcement &amp; Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">DOJ Seizure (June 2021)</div>
+        <p>On June 7, 2021 DOJ announced the seizure of 63.7 BTC (about $2.3 million), the majority of Colonial's ransom, from a DarkSide-associated wallet. The action was executed by the Ransomware and Digital Extortion Task Force under criminal and civil forfeiture statutes (computer intrusion, money laundering), not sanctions authority, and announced by Deputy Attorney General Lisa Monaco. The FBI held the private key; the method of key acquisition was not disclosed.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Indictments, Sanctions &amp; Rewards</div>
+        <div class="callout callout-alert">
+          <strong>As of July 2026:</strong> no named DarkSide operator has ever been publicly indicted or arrested, and no OFAC designation has targeted DarkSide operators or wallets. The identities of "darksupp" and the CARBON SPIDER / GOLD WATERFALL core operators remain unknown in the public domain.
+        </div>
+        <ul class="content-list">
+          <li><strong>State Department rewards (November 2021):</strong> up to $10 million for information identifying or locating DarkSide leadership, plus up to $5 million for information leading to the arrest or conviction of any participant. Still active.</li>
+          <li><strong>ALPHV-lineage arrests (not DarkSide core):</strong> the only related arrests to date, Ryan Goldberg and Kevin Martin, who pleaded guilty (2024 to 2025) to deploying ALPHV/BlackCat, are U.S.-based affiliates and negotiators, not the Russia-based DarkSide developers.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Advisory &amp; Infrastructure</div>
+        <ul class="content-list">
+          <li><strong>FBI/CISA Joint Advisory AA21-131A (May 11, 2021):</strong> issued in the wake of Colonial Pipeline, confirming the RaaS model, providing IOCs, and urging segmentation, tested isolated backups, and MFA.</li>
+          <li><strong>May 2021 infrastructure loss:</strong> DarkSide claimed its servers and payment-panel funds were lost "at the request of law enforcement." No government agency has ever officially confirmed executing this takedown, and some analysts assess it may have been an exit-scam cover story timed to U.S. pressure. It remains unattributed.</li>
+          <li><strong>International action:</strong> no formal Europol or Interpol-led joint operation against DarkSide was announced. The public record is dominated by unilateral U.S. actions.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 8: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution &amp; State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Summary Assessment</div>
+        <div class="conf conf-credible">Credible &nbsp;&bull;&nbsp; Tacit state tolerance, not confirmed direction</div>
+        <p>No confirmed state direction or formal intelligence-sharing relationship has been established between DarkSide and the Russian government. The group is assessed as a criminal enterprise operating under what CSIS and others characterize as tacit Kremlin tolerance: permitted within Russia's permissive environment for cybercrime targeting non-CIS entities. President Biden publicly stated there was no evidence of Russian government involvement in the Colonial attack itself.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidence &amp; Reasoning</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Factor</th><th>Assessment</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Russia-based operations</td><td>Russian-language forums, CIS exclusion policy, U.S. government statements</td><td>High</td></tr>
+              <tr><td>CIS exclusion</td><td>Indicator of state tolerance, not direction; consistent with the established Russian criminal norm</td><td>Strong indicator</td></tr>
+              <tr><td>GRU / FSB / SVR direction</td><td>No confirmed nexus; FBI attributed the attack to a criminal group</td><td>None confirmed</td></tr>
+              <tr><td>Post-Colonial behavior</td><td>Rapid semi-apology and shutdown within days assessed by some analysts as possible Kremlin pressure to reduce diplomatic heat</td><td>Analyst inference</td></tr>
+              <tr><td>Iranian infrastructure (Nov 2020)</td><td>Announced intent to host in Iran is atypical for a Kremlin-protected group; may indicate independent operational decisions</td><td>Complicating factor</td></tr>
+              <tr><td>Kremlin denial</td><td>Peskov denied ties; routine and low evidentiary weight</td><td>Low weight</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block inference">
+          <strong>Baseline community position.</strong> The most widely cited assessment (CSIS, Emily Harding) characterizes DarkSide as "probably a largely entrepreneurial criminal group that the Kremlin does not direct but can co-opt at will." Unit 42 noted no one had directly connected the group to the Russian government. This "tolerated but not directed" assessment has not been publicly revised in available reporting.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Status: Inactive since May 2021.</strong> DarkSide's shutdown was rapid and externally precipitated by the geopolitical fallout of Colonial Pipeline. The group cut off a clearly ascending revenue trajectory (roughly $17.5 million in its final three months), pledged decryptors to active victims, and reported its payment-server funds transferred to an unknown account. Multiple researchers noted the drained funds could equally represent an exit scam. Core operators are assessed to have continued through BlackMatter and then ALPHV / BlackCat.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Relationship</th><th>Assessment</th><th>Corroboration</th></tr></thead>
+            <tbody>
+              <tr><td>DarkSide to BlackMatter</td><td>Rebrand or close successor (anchor)</td><td>CONFIRMED. Emsisoft (crypto), Sophos (TTP, caveats "not simple rebranding"), CrowdStrike, Secureworks, Mandiant, Flashpoint, Recorded Future.</td></tr>
+              <tr><td>BlackMatter to ALPHV/BlackCat</td><td>Successor; core-vs-affiliate nature disputed (extension)</td><td>CREDIBLE. FBI advisory, Cisco Talos (infrastructure), actor interview; Canadian Centre notes unresolved dispute.</td></tr>
+              <tr><td>DarkSide to REvil (SODINOKIBI)</td><td>Concurrent operation with shared affiliates (esp. UNC2628); not the same entity</td><td>CONFIRMED / multi-vendor (Mandiant, BleepingComputer, Recorded Future, Flashpoint).</td></tr>
+              <tr><td>DarkSide to BABUK</td><td>Shared affiliates</td><td>CREDIBLE, near single-source (Mandiant).</td></tr>
+              <tr><td>DarkSide to NETWALKER</td><td>UNC2628 partnership</td><td>ANALYST INFERENCE, Mandiant-only single-source.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Single-source flag.</strong> The Mandiant UNC classifications (UNC2628, UNC2659, UNC2465) are proprietary designations; individual cluster attribution is not corroborated by other vendors to the same granularity. The BABUK and NETWALKER affiliate ties rest essentially on Mandiant.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Clusters (Mandiant)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cluster</th><th>Active since</th><th>Notable TTPs</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>UNC2628</td><td>Feb 2021</td><td>Cobalt Strike BEACON, RDP, Rclone, F-Secure C3 via Slack API</td><td>Ransomware within 2 to 3 days; also partnered with REvil and NETWALKER</td></tr>
+              <tr><td>UNC2659</td><td>Jan 2021</td><td>CVE-2021-20016 zero-day, TeamViewer/AnyDesk, Rclone to pCloud</td><td>Full lifecycle under 10 days; zero-day exploitation</td></tr>
+              <tr><td>UNC2465</td><td>Apr 2019</td><td>SMOKEDHAM backdoor, phishing, supply-chain compromise, NGROK, BloodHound</td><td>Longest dwell time; continued post-shutdown, suggesting transition to another RaaS</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Documented Intelligence Gaps</div>
+        <ul class="content-list">
+          <li><strong>Operator identities:</strong> "darksupp" and the CARBON SPIDER / GOLD WATERFALL core operators remain unidentified and unindicted.</li>
+          <li><strong>Off-ramp infrastructure:</strong> the specific exchanges, mixers, or OTC desks used to cash out DarkSide proceeds are not publicly documented.</li>
+          <li><strong>State-nexus specificity:</strong> the precise nature of any Kremlin relationship (tacit tolerance versus occasional tasking) is unconfirmed; no public intelligence-community assessment addresses DarkSide's state relationship directly.</li>
+          <li><strong>Victim universe:</strong> the 99-infection figure reflects known cases; quietly paying victims may not be captured.</li>
+          <li><strong>Unrecovered funds:</strong> roughly $2.1 million of Colonial's payment was never recovered; operator-wallet disposition post-shutdown is unconfirmed.</li>
+          <li><strong>Criminal proceedings:</strong> no public indictments or arrests of named DarkSide operators; whether sealed indictments exist is unknown.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? 'Hide sources' : 'Show all sources'">Show all sources</button>
+      <div class="source-list">
+        <div class="source-category">Primary Government Sources</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>FBI/CISA Joint Advisory AA21-131A: DarkSide Ransomware Best Practices, May 11, 2021 &nbsp;&bull;&nbsp; <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-131a" target="_blank">cisa.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>DOJ: Department of Justice Seizes $2.3 Million in Cryptocurrency Paid to DarkSide, June 7, 2021 &nbsp;&bull;&nbsp; <a href="https://www.justice.gov/archives/opa/pr/department-justice-seizes-23-million-cryptocurrency-paid-ransomware-extortionists-darkside" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>U.S. Department of State: Reward Offers for Information to Bring DarkSide Co-Conspirators to Justice, November 2021 &nbsp;&bull;&nbsp; <a href="https://2021-2025.state.gov/reward-offers-for-information-to-bring-darkside-ransomware-variant-co-conspirators-to-justice/" target="_blank">state.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>FBI Flash CU-000167-MW: IOCs Associated with BlackCat/ALPHV, April 2022 &nbsp;&bull;&nbsp; <a href="https://www.cisa.gov/news-events/alerts/2022/04/22/fbi-releases-iocs-associated-blackcatalphv-ransomware" target="_blank">cisa.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>NVD: CVE-2021-20016, CVE-2019-5544, CVE-2020-3992 &nbsp;&bull;&nbsp; <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-20016" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-category">Threat Intelligence Reports</div>
+        <div class="source-item"><span class="source-num">[6]</span><span>Mandiant (Google TI): Shining a Light on DARKSIDE Ransomware Operations, May 11, 2021 &nbsp;&bull;&nbsp; <a href="https://cloud.google.com/blog/topics/threat-intelligence/shining-a-light-on-darkside-ransomware-operations/" target="_blank">cloud.google.com</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>CrowdStrike: CARBON SPIDER Embraces Big Game Hunting (Parts 1 and 2) &nbsp;&bull;&nbsp; <a href="https://www.crowdstrike.com/en-us/blog/carbon-spider-embraces-big-game-hunting-part-1/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Secureworks: GOLD WATERFALL Threat Profile &nbsp;&bull;&nbsp; <a href="https://www.secureworks.com/research/threat-profiles/gold-waterfall" target="_blank">secureworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Palo Alto Unit 42: DarkSide Ransomware Gang, An Overview, May 2021 &nbsp;&bull;&nbsp; <a href="https://unit42.paloaltonetworks.com/darkside-ransomware/" target="_blank">unit42.paloaltonetworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Sophos: BlackMatter Ransomware Emerges From the Shadow of DarkSide, August 2021 &nbsp;&bull;&nbsp; <a href="https://news.sophos.com/en-us/2021/08/09/blackmatter-ransomware-emerges-from-the-shadow-of-darkside/" target="_blank">news.sophos.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Emsisoft: Ransomware Profile, BlackMatter (Fabian Wosar cryptographic analysis) &nbsp;&bull;&nbsp; <a href="https://www.emsisoft.com/en/blog/39121/ransomware-profile-blackmatter/" target="_blank">emsisoft.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>Cisco Talos: From BlackMatter to BlackCat, Analyzing Two Attacks From One Affiliate, March 2022 &nbsp;&bull;&nbsp; <a href="https://blog.talosintelligence.com/from-blackmatter-to-blackcat-analyzing/" target="_blank">talosintelligence.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>The Record (Recorded Future): An Interview With BlackMatter (Dmitry Smilyanets), August 2021 &nbsp;&bull;&nbsp; <a href="https://therecord.media/an-interview-with-blackmatter-a-new-ransomware-group-thats-learning-from-the-mistakes-of-darkside-and-revil" target="_blank">therecord.media</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>Trend Micro: What We Know About DarkSide Ransomware and the US Pipeline Attack, May 2021 &nbsp;&bull;&nbsp; <a href="https://www.trendmicro.com/en_us/research/21/e/what-we-know-about-darkside-ransomware-and-the-us-pipeline-attac.html" target="_blank">trendmicro.com</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Cybereason vs. DarkSide Ransomware, 2021 &nbsp;&bull;&nbsp; <a href="https://www.cybereason.com/blog/research/cybereason-vs-darkside-ransomware" target="_blank">cybereason.com</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>Canadian Centre for Cyber Security: Profile ALPHV/BlackCat &nbsp;&bull;&nbsp; <a href="https://www.cyber.gc.ca/en/guidance/profile-alphvblackcat-ransomware" target="_blank">cyber.gc.ca</a></span></div>
+        <div class="source-category">Blockchain &amp; Financial Forensics</div>
+        <div class="source-item"><span class="source-num">[17]</span><span>Elliptic: DarkSide Ransomware Has Netted Over $90 Million in Bitcoin (Tom Robinson), May 2021 &nbsp;&bull;&nbsp; <a href="https://www.elliptic.co/blog/darkside-ransomware-has-netted-over-90-million-in-bitcoin" target="_blank">elliptic.co</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Elliptic: US Authorities Seize DarkSide Bitcoin (affiliate-wallet nuance) &nbsp;&bull;&nbsp; <a href="https://www.elliptic.co/blog/us-authorities-seize-darkside" target="_blank">elliptic.co</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>Chainalysis: How FBI Investigators Traced DarkSide's Funds &nbsp;&bull;&nbsp; <a href="https://www.chainalysis.com/blog/darkside-colonial-pipeline-ransomware-seizure-case-study/" target="_blank">chainalysis.com</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>TRM Labs: Digging Into the DarkSide Ransomware Payment &nbsp;&bull;&nbsp; <a href="https://www.trmlabs.com/post/darkside-ransomware-report" target="_blank">trmlabs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span>Bitdefender: DarkSide Ransomware Decryption Tool (January 2021) &nbsp;&bull;&nbsp; <a href="https://www.bitdefender.com/en-us/blog/labs/darkside-ransomware-decryption-tool" target="_blank">bitdefender.com</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span>CSIS: Holding Moscow Accountable for Its Criminal Networks (Emily Harding), 2021 &nbsp;&bull;&nbsp; <a href="https://www.csis.org/" target="_blank">csis.org</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DARK MODE
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// SCROLL SPY
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
