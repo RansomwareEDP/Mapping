@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrickBot | Ransomware EDP Threat Actor Library</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.dot-inactive { background: #6b7280; }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: #6b7280; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px; transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE BUTTON */
+.theme-toggle {
+  background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px;
+  color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit;
+  letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware <span>EDP</span> &nbsp;&bull;&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">therenoproject.org &nbsp;&bull;&nbsp; Analytical Profiles</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#origin">Origin &amp; Lineage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#targeting">Targeting</a>
+    <a href="#victims">Victim Data</a>
+    <a href="#financial">Financial Profile</a>
+    <a href="#attribution">Attribution &amp; Nexus</a>
+    <a href="#disruption">Disruption History</a>
+    <a href="#status">Status &amp; Trajectory</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">20</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item active" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &nbsp;&bull;&nbsp; Last updated July 2026</div>
+    <div class="hero-title">TrickBot</div>
+    <div class="hero-subtitle">Modular Loader &amp; Access Broker &nbsp;&bull;&nbsp; Banking Trojan Heritage &nbsp;&bull;&nbsp; Wizard Spider / GOLD BLACKBURN</div>
+    <div class="hero-badges">
+      <span class="badge badge-defunct">Botnet Defunct</span>
+      <span class="badge badge-critical">Personnel Active</span>
+      <span class="badge badge-raas">Access Broker</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Oct 2016</div>
+        <div class="kpi-sub">Earliest samples Sep 2016</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Botnet Shutdown</div>
+        <div class="kpi-value">Mar 2022</div>
+        <div class="kpi-sub">Voluntary wind-down</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ecosystem Revenue</div>
+        <div class="kpi-value">$724M+</div>
+        <div class="kpi-sub">Chainalysis, Feb 2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Peak Botnet</div>
+        <div class="kpi-value">~1M</div>
+        <div class="kpi-sub">Compromised machines</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Sanctioned Members</div>
+        <div class="kpi-value">18</div>
+        <div class="kpi-sub">US/UK, 2023 (2 actions)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">Multiple</div>
+        <div class="kpi-sub">2020 takedowns, Endgame 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">Dyre</div>
+        <div class="kpi-sub">Direct descendant</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Overview</h2>
+      </div>
+      <p>TrickBot was a Russia-based, highly modular malware ecosystem operated by a financially motivated criminal enterprise from October 2016 until the botnet infrastructure was voluntarily abandoned on March 1, 2022. It began as a banking trojan targeting Australian financial institutions and evolved into the dominant initial-access and loader platform of its era, provisioning compromised networks to the Ryuk and Conti ransomware operations. The group functioned as a backend criminal service rather than a public-facing extortion brand: it never operated a data leak site in its own name, and ransom demands were issued under partner brands.</p>
+      <p>The group is tracked across the threat intelligence community under multiple designations. It is assessed with high confidence as a direct descendant of the Dyre banking trojan, and its core personnel were absorbed into Conti by early 2022 before dispersing into successor operations. As of July 2026, the TrickBot platform is defunct but its operators remain active in the broader ransomware ecosystem, and its alleged founder was publicly named by German authorities in May 2025.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Tracking aliases (group-specific)</td><td>GOLD BLACKBURN (Secureworks, TrickBot operators), Periwinkle Tempest / DEV-0193 (Microsoft), UNC1878 and UNC2053 (Mandiant clusters). WIZARD SPIDER (CrowdStrike) and MITRE G0102 designate the broader parent syndicate, not TrickBot alone.</td></tr>
+            <tr><td>Predecessor lineage</td><td>Direct descendant of Dyre / Dyreza banking trojan (2014 to 2015), assessed with high confidence by Secureworks, Fidelis, US Treasury, and UK FCDO</td></tr>
+            <tr><td>Operational model</td><td>Closed operator and access broker; not an open RaaS. Malware-as-a-service provisioning to trusted ransomware partners (Ryuk, Conti, Diavol)</td></tr>
+            <tr><td>Extortion mechanic</td><td>None directly. Extortion (including Conti double extortion) conducted by partner ransomware deployed on TrickBot-originated access</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia (CONFIRMED by US/UK government designations); safe harbor throughout operational life</td></tr>
+            <tr><td>Operational status</td><td>Botnet defunct since March 2022; personnel migrated to Conti then to Black Basta, Royal, and other successors</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: MALWARE ARTIFACTS + ATTRIBUTION + BRANDING -->
+      <div class="subsection-title" style="margin-top:24px;">Malware Artifacts, Attribution &amp; Branding</div>
+      <p style="font-size:12.5px;color:var(--gray-600);margin-bottom:4px;">TrickBot did not operate a public data leak site. In place of DLS imagery, the gallery below documents TrickBot-specific artifacts: its landmark UEFI firmware module, its firmware-reconnaissance code, and the attribution of its alleged founder.</p>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://www.bleepstatic.com/content/hl-images/2020/12/02/TrickBoot1.jpg"
+               alt="TrickBoot UEFI firmware module"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>TrickBoot: UEFI Firmware Module</strong>
+            In October 2020, researchers discovered a TrickBot module (internally "PermaDll" / user_platform_check.dll) capable of probing UEFI/BIOS firmware. It made TrickBot the first financially motivated, non-state actor observed probing UEFI-level persistence in the wild.
+            <span class="img-source">Source: BleepingComputer / AdvIntel / Eclypsium, December 2020</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.bleepstatic.com/content/hl-images/2020/11/20/trickbot-header.jpg"
+               alt="TrickBot malware branding header"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>TrickBot Operation</strong>
+            TrickBot launched in 2016 as a banking credential stealer and matured into the near-exclusive initial access vector for Ryuk and later Conti ransomware. Eighteen operators were sanctioned by the US and UK across two 2023 actions.
+            <span class="img-source">Source: BleepingComputer, 2020 (used in US/UK sanctions coverage, 2023)</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.bleepstatic.com/images/news/u/1100723/Malware/Trickbot/TrickBoot01.png"
+               alt="TrickBoot PCH query firmware reconnaissance"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>TrickBoot: Firmware Reconnaissance</strong>
+            The module ran Platform Controller Hub (PCH) queries to identify the hardware platform and check whether BIOS write protection was active, using the RwDrv.sys driver from the RWEverything utility, the same driver used by the state-linked LoJax rootkit.
+            <span class="img-source">Source: BleepingComputer / Eclypsium, December 2020</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.bleepstatic.com/images/news/u/1109292/2025/Vitaly-Nikolayevich-Kovalev.jpg"
+               alt="Vitaly Nikolaevich Kovalev, alleged TrickBot founder"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Attribution: "Stern" (Vitaly Kovalev)</strong>
+            In May 2025, Germany's BKA publicly named Vitaly Nikolaevich Kovalev, a Russian national, as "Stern," the alleged founder and leader of the TrickBot group. An INTERPOL Red Notice is outstanding; he is believed to reside in Russia.
+            <span class="img-source">Source: U.S. Secret Service, via BleepingComputer, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://www.bleepstatic.com/content/hl-images/2020/12/02/TrickBoot1.jpg"
+               alt="TrickBot firmware persistence concept"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Capability Marker: Firmware-Level Persistence</strong>
+            TrickBoot signaled a shift toward persistence that survives OS reinstalls and drive replacement. At time of discovery the module only performed reconnaissance; it was never confirmed to have destructively written firmware in the wild (intelligence gap).
+            <span class="img-source">Source: BleepingComputer / Eclypsium, December 2020</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ORIGIN -->
+    <section class="section" id="origin">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Origin &amp; Lineage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence</div>
+        <p>TrickBot was first identified in the wild in October 2016, with the earliest samples (September 2016) targeting customers of Australian banks (ANZ, Westpac, St. George, NAB). It was first publicly reported by Fidelis Cybersecurity and Malwarebytes as a banking trojan. Early monetization was credential theft and banking fraud, not extortion. The malware evolved continuously across a six-year window, adding worm propagation, backdoors, and ransomware-delivery functionality.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Predecessor: Dyre / Dyreza</div>
+        <div class="conf conf-confirmed">Confirmed: multi-vendor consensus, no meaningful dispute in public record</div>
+        <p>There is high-confidence, multi-vendor consensus that TrickBot is a direct descendant of the Dyre (Dyreza) banking trojan, active from June 2014 until Russian law enforcement disrupted it in November 2015 through raids on a Moscow film-distribution company assessed to be a front. Secureworks assesses GOLD BLACKBURN with high confidence as a direct descendant of Dyre. The US Treasury and UK FCDO official statements explicitly state TrickBot "evolved from the Dyre trojan."</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Dyre Lineage: Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1: Confirmed</div>
+            <div class="pillar-title">Code Overlap</div>
+            <div class="pillar-body">Fidelis (September 2016) documented "staggering" similarity between TrickBot and Dyre: shared loader architecture, custom encryptors, hashing functions, and C2 encryption. TrickLoader was near-identical to Dyre's loader. Main differences were more C++ code and use of Microsoft CryptoAPI for AES/SHA-256.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2: Credible</div>
+            <div class="pillar-title">Timing Continuity</div>
+            <div class="pillar-body">Dyre ceased November 2015; TrickBot appeared September 2016, roughly ten months later, consistent with surviving developers reconstituting after evading the 2015 arrests. Fidelis assessed with moderate confidence that one or more original Dyre developers were involved, not necessarily the whole team.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3: Confirmed</div>
+            <div class="pillar-title">Infrastructure Reuse</div>
+            <div class="pillar-body">TrickLoader was also used by Vawtrak, Pushdo, and Cutwail, all previously tied to the Dyre ecosystem. This infrastructure reuse strongly implies personnel continuity across the two operations.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 4: Authoritative</div>
+            <div class="pillar-title">Government Confirmation</div>
+            <div class="pillar-body">US Treasury and UK FCDO statements (February and September 2023) explicitly state TrickBot evolved from Dyre and identify Moscow-based individuals as the operational continuity. Secureworks corroborates independently.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-warning">
+          <strong>Scoping caution:</strong> Vendor labels differ in scope and must not be conflated. <strong>WIZARD SPIDER</strong> (CrowdStrike) and <strong>GOLD ULRICK</strong> (Secureworks) describe the broader Conti parent syndicate, not TrickBot specifically. GOLD ULRICK is Secureworks' designation for Conti; it is distinct from GOLD BLACKBURN.
+        </div>
+        <p><strong>GOLD BLACKBURN</strong> (Secureworks) is the group-specific designation for the TrickBot botnet operators, assessed as authors and operators of TrickBot from 2016 to March 2022 and of BazarLoader, Anchor, and related tooling. <strong>Periwinkle Tempest</strong> (formerly DEV-0193) is Microsoft's designation for the same actor responsible for developing and managing TrickBot, BazarLoader, AnchorDNS, Ryuk, Conti, and Diavol. Mandiant tracked the TrickBot-to-Ryuk intrusion activity as <strong>UNC1878</strong>, with <strong>UNC2053</strong> as a related cluster designation. CrowdStrike's WIZARD SPIDER (equivalent to MITRE ATT&amp;CK G0102) spans TrickBot, Ryuk, and Conti as sequential campaigns of one organization.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Structure: Closed Operator with Ransomware Partnerships</div>
+        <p>TrickBot operated as a closed operator, not an open RaaS platform. It developed and maintained its own malware infrastructure and provided access to select ransomware partners rather than openly advertising affiliate slots. The BKA assessed that, at times, the group exceeded 100 members and worked in an organized, hierarchically structured, project- and profit-oriented manner. By 2020 to 2021, the group had become a de facto access broker exclusively serving the Conti syndicate, which ultimately acquired the operation.</p>
+        <ul class="content-list">
+          <li><strong>Developer core:</strong> Structured hierarchy with named roles: administrators (Stern / Kovalev), team leads for coders, test leads, HR and finance managers, infrastructure procurement, and server administrators.</li>
+          <li><strong>Ransomware partnerships:</strong> Ryuk from 2018; near-exclusive provisioning to Conti by 2020; also linked to Diavol (FBI-confirmed, January 2022).</li>
+          <li><strong>Talent structure:</strong> Investigators assess at least 17 members in functional roles including malware managers, developers, crypters, and spammers; BKA cites more than 100 at peak.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Recruitment and Vetting</div>
+        <p>TrickBot did not run a public affiliate recruitment program in the manner of LockBit or REvil. Collaboration was through controlled partnerships with trusted ransomware groups. BazarLoader, developed as TrickBot's stealthier successor, was similarly operated as a closed platform. No public forum recruitment advertisements have been attributed to TrickBot specifically; the group maintained operational secrecy about its internal structure.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Revenue Model</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Period</th><th>Monetization</th></tr></thead>
+            <tbody>
+              <tr><td>Direct fraud</td><td>2016 to 2018</td><td>Credential theft from banking customers; wire transfer fraud</td></tr>
+              <tr><td>Access broker / MaaS</td><td>2018 to 2022</td><td>Initial access and persistence sold to ransomware operators for revenue share</td></tr>
+              <tr><td>Ransomware revenue share</td><td>2018 to 2022</td><td>Share of ransoms extorted by Ryuk and Conti from TrickBot-originated access</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf conf-inference">Analyst Inference: exact split ratios not publicly documented</div>
+        <p>Specific revenue-split terms between TrickBot and its ransomware partners have not been publicly documented in court filings or leaked data. Chainalysis identified cryptocurrency payments from Conti, Ryuk, Diavol, and Karakurt wallets flowing to administrator "Stern" (Kovalev), corroborating revenue sharing, but exact ratios remain unconfirmed from public sources.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation and Extortion Behavior</div>
+        <p>TrickBot did not conduct ransom negotiations directly; these were handled by the ransomware partners deploying payloads onto TrickBot-compromised networks. Under the Conti partnership, extortion followed a double-extortion model: data exfiltration preceding encryption, with publication threats on Conti's "Conti News" leak site. Ransom amounts were set by the partner and ranged from hundreds of thousands to tens of millions of dollars depending on victim revenue. Per US Treasury, group members "publicly gloated" over the speed of ransom payments from healthcare victims during the COVID-19 pandemic.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Profile</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Malware Architecture</div>
+        <p>TrickBot was a highly modular malware ecosystem. The core bot loaded plugin modules dynamically, allowing operators to deploy capabilities selectively against high-value targets. This modularity made complete takedown and detection significantly harder than for monolithic malware. Configuration files used a rolling 4-byte XOR scheme for C2 obfuscation, with key and config length hardcoded at fixed offsets.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access Vectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Phishing / spearphishing</strong></td><td>Primary delivery: macro-enabled Office documents; fake invoices, bank documents, COVID-19 lures</td></tr>
+              <tr><td>Emotet delivery</td><td>From mid-2018, Emotet installed TrickBot as a secondary payload; the Emotet to TrickBot to Ryuk/Conti chain was a dominant attack pattern</td></tr>
+              <tr><td>SMB exploitation (EternalBlue)</td><td>Worm component for lateral movement and self-propagation using leaked NSA exploits</td></tr>
+              <tr><td>TrickBooster spam module</td><td>Discovered 2019; used infected machines to propagate further TrickBot infections</td></tr>
+              <tr><td>Malicious Google Docs links</td><td>Documented delivery vector</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key CVEs Exploited</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CVE</th><th>Product</th><th>Type</th><th>Use</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">CVE-2017-0144</td><td>Windows SMBv1 (MS17-010)</td><td>Remote code execution</td><td>EternalBlue; worm propagation within networks (NVD-verified)</td></tr>
+              <tr><td class="mono">CVE-2017-0145</td><td>Windows SMBv1 (MS17-010)</td><td>Remote code execution</td><td>EternalRomance; lateral movement (NVD-verified)</td></tr>
+              <tr><td class="mono">CVE-2020-14871</td><td>Oracle Solaris PAM</td><td>Buffer overflow</td><td>Attributed primarily to UNC1945; ecosystem capability only, not confirmed for TrickBot core (single-source)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">TrickBoot: UEFI Firmware Module</div>
+        <div class="conf conf-confirmed">Confirmed: discovered October 2020 by AdvIntel and Eclypsium</div>
+        <p>TrickBoot (internally "PermaDll" / user_platform_check.dll) was a landmark module able to read, write, and erase UEFI/BIOS firmware. It used the RwDrv.sys driver from the public RWEverything tool to interact with the SPI controller governing system firmware, the same driver used by the state-linked LoJax rootkit. This enabled persistence that survives OS reinstalls and drive replacement. At time of discovery, the module was only observed checking whether BIOS write protection was enabled (reconnaissance), making TrickBot the first non-state-sponsored, financially motivated actor to probe UEFI-level persistence in real-world deployments. Prior UEFI implants (LoJax, MosaicRegressor) had been observed only in nation-state operations.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence and Lateral Movement</div>
+        <ul class="content-list">
+          <li>Registry run-key persistence and scheduled tasks (Task Scheduler)</li>
+          <li>Mimikatz for Windows credential harvesting (NTLM hashes, Kerberos tickets)</li>
+          <li>Cobalt Strike for post-exploitation lateral movement and network mapping</li>
+          <li>SMB-based worm propagation using EternalBlue</li>
+          <li>Active Directory credential theft module (Windows 10 UAC bypass, January 2020)</li>
+          <li>Theft of OpenSSH and OpenVPN keys (November 2019); VNC, PuTTY, and RDP credentials</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption (via Partners)</div>
+        <p>TrickBot's own malware was a loader and access tool, not a ransomware encryptor. Encryption was performed by deployed partners: Ryuk (AES-256 for files, RSA-2048 for keys); Conti (AES-256, ChaCha20 in later variants, multi-threaded fast encryption via asynchronous I/O); Diavol (asynchronous I/O file queuing with command-line parameters nearly identical to Conti, per IBM X-Force; appends the .lock64 extension).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-credible">Credible: confirmed for BazarLoader; inferred for TrickBot core</div>
+        <p>BazarLoader (TrickBot's successor tool) is confirmed by MITRE ATT&amp;CK (S0534) to check whether the OS keyboard and language settings are Russian, halting execution if detected, a standard CIS-exclusion behavior. For the TrickBot core binary, the operational behavior of avoiding Russian and CIS victims was consistent and deliberate (per US Treasury), but explicit technical documentation of a Russian keyboard kill switch in the core binary (distinct from BazarLoader) is not uniformly confirmed across public vendor reports. Analysts should treat the core-binary kill switch as inferred, not confirmed.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linux and Cross-Platform Variants</div>
+        <ul class="content-list">
+          <li><strong>TrickBot Linux variant:</strong> TrickBot began infecting Linux systems as of July 2020; a Linux port was actively deployed.</li>
+          <li><strong>Anchor Linux:</strong> The Anchor backdoor (first observed August 2018) had a confirmed Linux variant (anchor_linux), extending reach to Linux servers.</li>
+          <li><strong>ESXi/VMware:</strong> Primary ESXi targeting was conducted by Conti (Linux ESXi encryptor); TrickBot provided the initial access that enabled Conti to reach ESXi environments.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5: TARGETING -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Primary Sectors</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Healthcare / hospitals</td><td>Most intensively targeted during 2020 COVID-19 pandemic; ~428 US hospitals targeted per research cited by Wired; three Minnesota medical centers disrupted, ambulances diverted</td></tr>
+              <tr><td>Financial services</td><td>Original banking trojan function; credential theft from banking customers globally</td></tr>
+              <tr><td>Government / public sector</td><td>US government entities; 27 Costa Rican institutions (via Conti); UK local authorities</td></tr>
+              <tr><td>Education</td><td>Schools and districts; Los Angeles Unified School District attack linked to the TrickBot group</td></tr>
+              <tr><td>Critical infrastructure</td><td>Law enforcement, EMS, 911 dispatch (per US advisories); 16 attacks on US emergency responders documented</td></tr>
+              <tr><td>Retail and manufacturing</td><td>Anchor backdoor campaigns specifically targeted financial, manufacturing, and retail sectors</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution and Exclusions</div>
+        <p>Primary target geographies were the United States (healthcare, government, financial), the United Kingdom (149 confirmed NCA victims), and Europe (Germany, Netherlands). Documented targeting also reached India and Australia. Russian, Belarusian, and CIS-region entities were operationally excluded as victims, consistent with a state-tolerated operator model. The UK government assessed that targeting of the International Olympic Committee "almost certainly aligns with Russian state objectives."</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Size Profile</div>
+        <p>In its initial phase (2016 to 2018) TrickBot primarily hit small and medium businesses and individual banking customers. In its evolved phase (2019 to 2022) targeting shifted toward mid-market and large enterprise, government, and critical infrastructure, reflecting the ransomware-deployment model where victim size determines ransom viability.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 6: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Victim Data</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Machines Infected</div>
+          <div class="metric-val">Millions</div>
+          <div class="metric-note">Peak botnet over 1M machines</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">UK Victims (NCA)</div>
+          <div class="metric-val">149</div>
+          <div class="metric-note">Hospitals, schools, businesses</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">US Hospitals Targeted</div>
+          <div class="metric-val">~428</div>
+          <div class="metric-note">2020, per research cited by Wired</div>
+        </div>
+        <div class="metric-card highlight">
+          <div class="metric-label">Conti Operations <span class="internal-badge">Ecosystem</span></div>
+          <div class="metric-val">1,000+</div>
+          <div class="metric-note">Largely via TrickBot access</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Notable Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Three Minnesota medical facilities</td><td>Healthcare</td><td>2020; ambulances diverted, networks and phones disrupted</td></tr>
+              <tr><td>Universal Health Services (UHS)</td><td>Healthcare</td><td>250 facilities affected</td></tr>
+              <tr><td>Los Angeles Unified School District</td><td>Education</td><td>Second-largest US school district</td></tr>
+              <tr><td>Government of Costa Rica</td><td>Government</td><td>27 institutions; $20M demand (via Conti)</td></tr>
+              <tr><td>Scripps Health</td><td>Healthcare</td><td>Conti on TrickBot-originated access; Galochkin separately indicted in S. California</td></tr>
+              <tr><td>Sonoma Valley, Hackensack Meridian, Enloe, Sturdy Memorial, UF Health</td><td>Healthcare</td><td>Documented healthcare victims</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Financial Profile</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Types</div>
+        <p>Bitcoin (BTC) was the primary payment currency for ransomware demands under the Ryuk and Conti partnerships. TrickBot also deployed an XMRig Monero mining module from January 2018 to generate passive revenue from infected endpoints; some Conti demands accepted Monero.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Revenue Scale</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source</th><th>Figure</th><th>Scope</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Chainalysis (Feb 2023)</td><td>$724M+</td><td>Strains related to TrickBot across lifetime; second-highest-earning cybercrime group after Lazarus</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+              <tr><td>UK NCA</td><td>&pound;27M (~$33M)</td><td>149 UK victims</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+              <tr><td>UK NCA</td><td>$180M+</td><td>Extorted from victims globally</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+              <tr><td>Dunaev plea agreement</td><td>$3.4M+</td><td>Documented fraud, Oct 2018 to Feb 2021 (not total ransomware revenue)</td><td><span class="conf conf-confirmed" style="margin:0;padding:2px 8px;font-size:10px">Confirmed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Analytical note:</strong> The $724M+ figure conflates TrickBot access revenues and Ryuk/Conti/Diavol/Karakurt ransomware revenues. Clean attribution of revenue solely to TrickBot's infrastructure-provision role is not publicly documented. Figures cannot be cleanly disaggregated from public data.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering: Documented Evolution</div>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">I</div>
+            <div class="phase-body">
+              <div class="phase-title">Pre-2020: Unregulated Exchanges</div>
+              <div class="phase-desc">Primarily unregulated cryptocurrency exchanges and peer-to-peer markets for cash-out.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">II</div>
+            <div class="phase-body">
+              <div class="phase-title">2020 to 2022: Layered Networks</div>
+              <div class="phase-desc">Ransomware wallets (Conti, Ryuk, Diavol, Karakurt) sent funds to administrator "Stern" (Kovalev), who redistributed to sanctioned individuals including Vakhromeyev (Mushroom), Mikhailov (Baget), Karyagin (Globus), and Sedletski (Strix). Layering used exchanges, mixers, and intermediary wallets.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">III</div>
+            <div class="phase-body">
+              <div class="phase-title">Dedicated Facilitators: PM2BTC and Cryptex</div>
+              <div class="phase-desc">US prosecutors charged Sergey Ivanov ("Taleon") in September 2024 for operating PM2BTC, UAPS, and PinPays, used by Conti and TrickBot to launder proceeds. Ivanov's services processed over $1.15B; TRM Labs estimated over $500M laundered through UAPS/PinPays between 2022 and 2024. Dutch authorities seized the Cryptex exchange (which facilitated ~$1.4B in transactions) in September 2024.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">IV</div>
+            <div class="phase-body">
+              <div class="phase-title">Post-2022: Conti Diaspora Sophistication</div>
+              <div class="phase-desc">Conti diaspora (inheriting TrickBot infrastructure and personnel) adopted cross-chain bridges and privacy-enhancing protocols per TRM Labs reporting.</div>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Wallet designations:</strong> OFAC and UK OFSI did not include specific cryptocurrency addresses in the February or September 2023 designations. Chainalysis and TRM Labs independently identified associated wallets using proprietary blockchain analysis.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Attribution &amp; Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Jurisdiction</div>
+        <div class="conf conf-confirmed">Confirmed: Russia</div>
+        <p>Russian jurisdiction is confirmed by US and UK government designations. Russia provided effective safe harbor throughout TrickBot's operational life; all known members residing in Russia have remained protected from extradition. Some members were also based in or operated from Ukraine, Belarus, and Suriname.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Services Nexus</div>
+        <div class="conf conf-credible">Credible: association assessed by US/UK; specific agency and tasking not publicly confirmed</div>
+        <p>The US Treasury (February 2023) stated that "Members of the Trickbot Group are associated with Russian Intelligence Services" and that their 2020 preparations "aligned them to Russian state objectives and targeting previously conducted by Russian Intelligence Services," including targeting the US government. The UK FCDO used stronger language: key members "highly likely maintain links to the Russian Intelligence Services from whom they have likely received tasking."</p>
+        <ul class="content-list">
+          <li><strong>CIS targeting exclusion:</strong> operational avoidance of Russian and CIS victims, consistent with state tolerance</li>
+          <li><strong>2020 alignment:</strong> targeting of US government and healthcare during an election year correlated with Russian state interests</li>
+          <li><strong>Olympic Committee targeting:</strong> aligns with documented Russian grievances over Olympic doping sanctions</li>
+          <li><strong>Non-prosecution:</strong> despite extensive public identification, no Russian law enforcement action against members has occurred</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Gaps</div>
+        <div class="conf-block inference">
+          <strong>ANALYST INFERENCE:</strong> The formal link to specific agencies (FSB, SVR, GRU) is not publicly confirmed by Western governments, which reference "Russian Intelligence Services" collectively. The TrickLeaks "FSB cooperation" claim (March 2022) is single-source and unverified from open sources. The nexus is best characterized as moderate-high confidence that TrickBot operated under Russian state tolerance and probable tasking or coordination, without confirmed evidence of direct operational control by a named service.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Individual</th><th>Alias(es)</th><th>Role</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Vitaly Kovalev</td><td>Stern, Ben, Bentley, Bergen, Alex Konor</td><td>Assessed founder and leader</td><td>BKA-named May 2025; INTERPOL Red Notice; at large in Russia</td></tr>
+              <tr><td>Alla Witte</td><td>Max, Alla Klimova</td><td>Developer; Diavol code</td><td>Arrested Feb 2021 (Miami); sentenced 2 years 8 months</td></tr>
+              <tr><td>Vladimir Dunaev</td><td>FFX</td><td>Browser-injection developer</td><td>Extradited Oct 2021; sentenced Jan 2024 to 5 years 4 months</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: DISRUPTION -->
+    <section class="section" id="disruption">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Law Enforcement &amp; Disruption History</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure Takedowns</div>
+        <ul class="content-list">
+          <li><strong>October 2020, Microsoft-led coalition:</strong> DCU, FS-ISAC, ESET, Lumen/Black Lotus Labs, NTT, and Symantec conducted a court-authorized seizure/redirect of ~94% of TrickBot's C2 infrastructure (120 of 128 servers). TrickBot rebuilt but at reduced scale.</li>
+          <li><strong>October 2020, US Cyber Command:</strong> Concurrent operation pushing poisoned configuration files to bots, replacing C2 IP lists with reserved/loopback addresses; reportedly timed to protect 2020 US election infrastructure.</li>
+          <li><strong>September 2024, PM2BTC / Cryptex:</strong> Dutch police seized Cryptex servers; US prosecutors charged Sergey Ivanov for laundering TrickBot/Conti proceeds.</li>
+          <li><strong>May 2025, Operation Endgame:</strong> Multi-nation action (US, Germany, France, Canada, UK, Denmark, Netherlands), May 19 to 22; ~300 servers and &euro;3.5M seized during the action week (&euro;21.2M cumulative). BKA publicly named Kovalev as founder; INTERPOL Red Notice issued.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Indictments</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action</th><th>Date</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>First US/UK joint cyber sanctions</td><td>Feb 9, 2023</td><td>7 individuals incl. Kovalev, Mikhailov (Baget), Karyagin (Globus), Iskritskiy (Tropa), Pleshevskiy (Iseldor), Vakhromeyev (Mushroom), Sedletski (Strix)</td></tr>
+              <tr><td>Second joint US/UK action</td><td>Sep 7, 2023</td><td>11 individuals incl. Zhuykov (Dif), Galochkin (Bentley/Crypt), Rudenskiy, Tsarev (Mango), Putilin, Khaliullin, Loguntsov, Valiakhmetov, Kurov, Chernov (Bullet), Mozhaev (Green)</td></tr>
+              <tr><td>DOJ indictments unsealed</td><td>Sep 2023</td><td>9 individuals across three federal jurisdictions</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Total US/UK designated: 18 individuals across the two 2023 actions, made under Executive Order 13694 as amended. All indicted individuals remain at large in Russia, where extradition is unavailable.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Decryptor Availability</div>
+        <div class="conf conf-confirmed">Confirmed: no practical decryptor for active TrickBot-delivered campaigns</div>
+        <p>TrickBot itself was not an encryptor, so no decryptor applies to it directly. No public decryptor for TrickBot-delivered Conti or Ryuk was released for active campaigns. A Conti decryptor was briefly circulated by a researcher after the ContiLeaks but was of limited practical use.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 10: STATUS -->
+    <section class="section" id="status">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Status &amp; Trajectory</h2>
+      </div>
+
+      <div class="callout callout-alert">
+        <strong>Botnet defunct, personnel active.</strong> The TrickBot botnet was voluntarily abandoned on March 1, 2022 after months of internal deliberation. Secureworks (GOLD BLACKBURN) noted the group "retains the capability to reconstitute the botnet at any time." Core personnel migrated to Conti and then dispersed into successor operations. As of July 2026, former TrickBot/Conti operators remain active across the ransomware ecosystem.
+      </div>
+
+      <div class="metric-grid" style="margin-top:20px">
+        <div class="metric-card">
+          <div class="metric-label">Botnet Status</div>
+          <div class="metric-val">Defunct</div>
+          <div class="metric-note">Since March 1, 2022</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Personnel Status</div>
+          <div class="metric-val">Active</div>
+          <div class="metric-note">Via successor groups</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Founder Status</div>
+          <div class="metric-val">Named</div>
+          <div class="metric-note">Kovalev, Red Notice May 2025</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Reconstitution Risk</div>
+          <div class="metric-val">Retained</div>
+          <div class="metric-note">Per Secureworks</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:24px">
+        <div class="subsection-title">Dissolution Drivers (2022)</div>
+        <ul class="content-list">
+          <li>Antivirus detection saturation: TrickBot became easily detected; effectiveness as an access tool declined sharply</li>
+          <li>BazarBackdoor maturation: a stealthier, purpose-built replacement was already in use</li>
+          <li>Conti acquisition: core talent had migrated to Conti; the platform was no longer needed standalone</li>
+          <li>Microsoft and Cyber Command disruption (Oct 2020): imposed operational burden and accelerated detection</li>
+          <li>Law enforcement pressure: arrests of Witte and Dunaev, indictments, and sanctions raised personal risk</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <p>Anchor relationships (Dyre predecessor, Emotet distribution partner, Ryuk and Conti ransomware partners, Diavol, BazarLoader/Anchor successor tooling) are assessed with high confidence and multi-source corroboration. Extension claims into later successors carry lower confidence.</p>
+        <div class="conf-block confirmed" style="margin-bottom:12px">
+          <strong>CONFIRMED anchor relationships:</strong> Dyre (predecessor), Emotet (distribution), Ryuk and Conti (ransomware partners; Conti acquirer), Diavol (FBI-linked Jan 2022), BazarLoader and Anchor (successor tooling). Corroborated by multiple vendors and leaked internal communications.
+        </div>
+        <div class="conf-block credible" style="margin-bottom:12px">
+          <strong>CREDIBLE extension (Black Basta):</strong> Black Basta emerged April 2022; the dominant assessment is that a senior subset of Conti/TrickBot operators formed it, taking tooling and affiliates. Assessed with moderate-high confidence by AdvIntel, CrowdStrike, Secureworks, and BKA. The "permadll" naming-continuity claim between TrickBoot and Black Basta is single-source (Scott Scheferman) and not independently confirmed.</div>
+        <div class="conf-block inference">
+          <strong>ANALYST INFERENCE (QakBot overlap):</strong> QakBot was used by Black Basta as an initial access vector (2022 to 2023), with some infrastructure overlap to TrickBot/Conti-adjacent networks documented during Operation Endgame. Moderate confidence on specific infrastructure overlap; neither Mandiant nor Recorded Future have published a formal TrickBot-QakBot organizational-continuity assessment.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>Agency-specific nexus (FSB vs. SVR vs. GRU) not publicly confirmed</li>
+          <li>Revenue disaggregation: the $724M+ figure conflates TrickBot and partner ransomware revenues</li>
+          <li>US/UK had not publicly linked Kovalev to the "Stern" handle before the German BKA did so in May 2025</li>
+          <li>TrickBoot was confirmed to check BIOS write protection but never confirmed to destructively write firmware in the wild</li>
+          <li>CIS kill switch confirmed in BazarLoader; inferred but not uniformly confirmed in the TrickBot core binary</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? 'Hide sources' : 'Show all sources'">Show all sources</button>
+      <div class="source-list">
+        <div class="source-category">Primary Government Sources</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>US Treasury OFAC: TrickBot designations, Feb 9 &amp; Sep 7, 2023 &ndash; <a href="https://home.treasury.gov/news/press-releases/jy1714" target="_blank">home.treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>UK NCA: Ransomware criminals sanctioned in joint UK/US crackdown, 2023 &ndash; <a href="https://www.nationalcrimeagency.gov.uk/news/russian-ransomware-group-hit-with-new-sanctions" target="_blank">nationalcrimeagency.gov.uk</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>German BKA: Operation Endgame, Kovalev ("Stern") identification, May 2025 &ndash; <a href="https://www.bka.de/DE/IhreSicherheit/Fahndungen/Personen/BekanntePersonen/Endgame_2/KVN/Sachverhalt.html" target="_blank">bka.de</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>FBI Flash: Indicators of Compromise Associated with Diavol Ransomware, Jan 19, 2022 &ndash; <a href="https://www.aha.org/fbi-tlp-alert/2022-01-19-fbi-flash-tlp-white-indicators-compromise-associated-diavol-ransomware" target="_blank">aha.org</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>US Treasury: PM2BTC and Cryptex coordinated actions, Sep 2024 &ndash; <a href="https://home.treasury.gov/news/press-releases/jy2616" target="_blank">home.treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>NVD: CVE-2017-0144 (EternalBlue, MS17-010) &ndash; <a href="https://nvd.nist.gov/vuln/detail/cve-2017-0144" target="_blank">nvd.nist.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>MITRE ATT&amp;CK G0102 (Wizard Spider) &ndash; <a href="https://attack.mitre.org/groups/G0102/" target="_blank">attack.mitre.org</a></span></div>
+        <div class="source-category">Vendor Intelligence and Threat Research</div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Secureworks: GOLD BLACKBURN threat profile &ndash; <a href="https://www.secureworks.com/research/threat-profiles/gold-blackburn" target="_blank">secureworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Microsoft: Periwinkle Tempest (formerly DEV-0193) threat actor &ndash; <a href="https://www.microsoft.com/en-us/security/security-insider/threat-landscape/periwinkle-tempest" target="_blank">microsoft.com</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Chainalysis: US and UK sanction Russia-based TrickBot cybercrime gang, Feb 2023 &ndash; <a href="https://www.chainalysis.com/blog/trickbot-ransomware-sanctions/" target="_blank">chainalysis.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>TRM Labs: US Treasury actions against PM2BTC and Cryptex, 2024 &ndash; <a href="https://www.trmlabs.com/resources/blog/us-treasury-takes-coordinated-actions-against-illicit-russian-virtual-currency-exchanges-and-cybercrime-facilitators-pmbtc-and-cryptex" target="_blank">trmlabs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>Eclypsium / AdvIntel: TrickBoot: Persist, Brick, Profit, Dec 2020 &ndash; <a href="https://eclypsium.com/blog/trickbot-now-offers-trickboot-persist-brick-profit/" target="_blank">eclypsium.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>BleepingComputer: TrickBoot module infects UEFI firmware, Dec 2020 &ndash; <a href="https://www.bleepingcomputer.com/news/security/trickbots-new-trickboot-module-infects-your-uefi-firmware/" target="_blank">bleepingcomputer.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>BleepingComputer: Germany doxxes Conti/TrickBot ring leader, May 2025 &ndash; <a href="https://www.bleepingcomputer.com/news/security/germany-doxxes-conti-ransomware-and-trickbot-ring-leader/" target="_blank">bleepingcomputer.com</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>BleepingComputer: US and UK sanction 11 TrickBot and Conti members, Sep 2023 &ndash; <a href="https://www.bleepingcomputer.com/news/security/us-and-uk-sanction-11-trickbot-and-conti-cybercrime-gang-members/" target="_blank">bleepingcomputer.com</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>Fidelis Cybersecurity: TrickBot / Dyre code-overlap analysis, Sep 2016</span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>IBM X-Force / ESET: Anchor, Bazar, and TrickBot technical analysis (VB2020)</span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Recorded Future: Dark Covenant 3.0, Oct 2025 &ndash; <a href="https://www.recordedfuture.com/research/dark-covenant-3-controlled-impunity-and-russias-cybercriminals" target="_blank">recordedfuture.com</a></span></div>
+        <div class="source-category">Research Basis</div>
+        <div class="source-item"><span class="source-num">[19]</span><span>Perplexity Deep Research: TrickBot deep-dive (primary research document), Jul 2026</span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>Vladimir Dunaev plea agreement and sentencing documents (DOJ)</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+// DARK MODE
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+// Scroll spy for sidebar section nav
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
