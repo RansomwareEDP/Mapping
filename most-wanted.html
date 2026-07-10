@@ -11,12 +11,12 @@
     --op:#e5534b; --enab:#3fb950; --host:#a371f7; --facil:#db61a2; --launder:#39a0c9;
   }
   *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.5}
   .topnav{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px 32px;background:#11161f;border-bottom:1px solid var(--line);font-size:12.5px}
   .topnav a{color:var(--muted);text-decoration:none;transition:color .15s}
   .topnav a:hover{color:var(--accent)}
   .topnav .brand{color:var(--txt);font-weight:700;letter-spacing:.06em;margin-right:6px}
   .topnav .active{color:var(--accent);font-weight:600}
-  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.5}
   header{padding:28px 32px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#11161f,#0d1117)}
   h1{margin:0 0 4px;font-size:24px;letter-spacing:.3px}
   .sub{color:var(--muted);font-size:13px;max-width:980px}
@@ -32,7 +32,11 @@
   .section h2{font-size:16px;border-left:3px solid var(--accent);padding-left:10px;margin:0 0 4px}
   .section .desc{color:var(--muted);font-size:12px;margin:0 0 14px;padding-left:13px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+  .card.captured .photo,.card.captured .ph-fallback{filter:grayscale(1) brightness(.7)}
+  .card.captured{opacity:.94}
+  .stamp{position:absolute;top:36px;left:-8px;right:-8px;transform:rotate(-8deg);background:rgba(229,83,75,.93);color:#fff;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-align:center;padding:5px 0;z-index:6;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.5);font-size:15px}
+  .stamp small{display:block;font-weight:600;font-size:9.5px;letter-spacing:.4px;opacity:.95;text-transform:none;margin-top:1px}
   .card.op{border-top:3px solid var(--op)}
   .card.access,.card.precursor{border-top:3px solid var(--enab)}
   .card.laundering{border-top:3px solid var(--launder)}
@@ -102,6 +106,7 @@
   <a href="https://research.therenoproject.org/exchanges">Exchanges</a>
   <a href="https://research.therenoproject.org/library/">Library</a>
 </nav>
+
 <header>
   <h1>Ransomware Most Wanted - Actor Profiles</h1>
   <div class="sub">Officially wanted, indicted, or sanctioned ransomware principals and the supporting ecosystem selected for tracking. The first section covers operators, group leadership, and deployment affiliates (direct actors); the remaining sections cover function-specific support roles (access, laundering, hosting, facilitation). Photographs are drawn from official wanted pages where available and auto-load from the source; sanctions-only designations frequently carry no official photo. Confidence labels reflect the strength of public-source attribution. Not for operational use; verify against primary sources before action.</div>
@@ -229,6 +234,11 @@ const D = [
  {slug:"zhukov",cat:"access",name:"Aleksandr Vadimovich Zhukov",alias:"-",group:"Operation Endgame malware ecosystem",origin:"Russia",sources:"EU Most Wanted (Endgame)",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:null,family:"No public familial information.",bio:"Listed on EU Most Wanted under Operation Endgame. Specific strain and role not separately confirmed in public reporting.",src:[["BKA",BKA("ZAV")]]},
  {slug:"kalinin",cat:"access",name:"Artem Kalinin",alias:"-",group:"DanaBot (banking trojan / botnet)",origin:"Russia",sources:"EU Most Wanted (Endgame), DOJ",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:null,family:"No public familial information.",bio:"Charged in the Central District of California DanaBot scheme; DanaBot is a banking trojan and botnet used for initial access and fraud. Named under Operation Endgame.",src:[["DOJ","https://www.justice.gov/usao-cdca/pr/16-defendants-federally-charged-connection-danabot-malware-scheme-infected-computers"]]},
  {slug:"stepanov",cat:"access",name:"Aleksandr Stepanov",alias:'"JimmBee"',group:"DanaBot (banking trojan / botnet)",origin:"Russia",sources:"EU Most Wanted (Endgame), DOJ",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:null,family:"No public familial information.",bio:"Charged in the DanaBot scheme (C.D. Cal); named under Operation Endgame as part of the botnet ecosystem enabling downstream ransomware.",src:[["DOJ","https://www.justice.gov/usao-cdca/pr/16-defendants-federally-charged-connection-danabot-malware-scheme-infected-computers"]]},
+ {slug:"rustam-rafailevich-gallyamov",cat:"access",name:"Rustam Rafailevich Gallyamov",alias:"-",group:"Qakbot (leader); access for Prolock, DoppelPaymer, Egregor, REvil, Conti, Black Basta, Cactus",origin:"Russia",sources:"DOJ",reward:"-",sanctions:"-",status:"At large (Moscow)",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Age 48; of Moscow, Russia. Developed and controlled the Qakbot malware and botnet from 2008; from 2019 sold access to infected networks to ransomware crews (Prolock, DoppelPaymer, Egregor, REvil, Conti, Black Basta, Cactus) for a share of ransoms. Indicted May 2025 in the Central District of California; over $24M in cryptocurrency seized. After the 2023 Qakbot takedown he continued via 'spam bomb' intrusions, deploying Black Basta and Cactus as recently as January 2025. Tied to Operation Endgame.",
+  src:[["DOJ","https://www.justice.gov/opa/pr/leader-qakbot-malware-conspiracy-indicted-involvement-global-ransomware-scheme"]],
+  ref:[["DOJ indictment","https://www.justice.gov/opa/media/1401301/dl?inline"]]},
  {slug:"lefterov",cat:"access",name:"Alexander Lefterov",alias:'"Alander", "Drik"',group:"Credential-theft botnet",origin:"Ukraine",sources:"FBI, USSS",reward:"-",sanctions:"-",status:"At large",conf:"Moderate",photo:FBIimg("alexander-lefterov"),
   family:"No public familial information.",
   bio:"Operated a botnet of compromised computers used to harvest banking and account credentials, providing the access layer that ransomware crews rely on. Appears on FBI and USSS lists.",
@@ -389,7 +399,61 @@ const D = [
   family:"No public familial information.",
   bio:"Resident of Tomsk, Russia; alleged coder/developer for the JabberZeus crew, charged in the District of Nebraska indictment. As a Russia-based member he was never arrested and remains at large. Part of the crew whose lineage fed the Evil Corp ecosystem.",
   src:[["DOJ indictment","https://www.justice.gov/usao-ne/file/764236/dl?inline="]],
-  ref:[["DOJ (Nine Charged)","https://www.justice.gov/archives/opa/pr/nine-charged-conspiracy-steal-millions-dollars-using-zeus-malware"]]}
+  ref:[["DOJ (Nine Charged)","https://www.justice.gov/archives/opa/pr/nine-charged-conspiracy-steal-millions-dollars-using-zeus-malware"]]},
+
+ // ---- CAPTURED / PROSECUTED (mixed into categories, stamped) ----
+ {slug:"ptitsyn",cat:"op",name:"Evgenii Ptitsyn",alias:'"derxan", "zimmermanx"',group:"Phobos / 8Base (administrator)",origin:"Russia",sources:"DOJ",reward:"-",sanctions:"-",status:"Pleaded guilty (Mar 2026)",conf:"High",photo:null,captured:{label:"Pleaded Guilty",detail:"faces up to 20 yrs"},
+  family:"No public familial information.",
+  bio:"Administered the Phobos ransomware-as-a-service (1,000+ victims, $39M+). Extradited from South Korea in Nov 2024; pleaded guilty in the District of Maryland in March 2026.",
+  src:[["DOJ","https://www.justice.gov/usao-md/pr/russian-ransomware-administrator-pleads-guilty-wire-fraud-conspiracy"]]},
+ {slug:"vasinskyi",cat:"op",name:"Yaroslav Vasinskyi",alias:'"Rabotnik"',group:"REvil / Sodinokibi (Kaseya)",origin:"Ukraine",sources:"DOJ, OFAC",reward:"-",sanctions:"OFAC",status:"Convicted 2024 (~13 yrs 7 mo)",conf:"High",photo:null,captured:{label:"Convicted",detail:"13 yrs 7 mo"},
+  family:"No public familial information.",
+  bio:"REvil affiliate behind the 2021 Kaseya supply-chain attack. Extradited from Poland and sentenced in 2024 to about 13 years 7 months plus restitution.",
+  src:[]},
+ {slug:"vasiliev",cat:"op",name:"Mikhail Vasiliev",alias:"-",group:"LockBit (affiliate)",origin:"Russia / Canada (dual)",sources:"DOJ",reward:"-",sanctions:"-",status:"Convicted / extradited",conf:"High",photo:null,captured:{label:"Convicted",detail:"Canada; extradited"},
+  family:"No public familial information.",
+  bio:"LockBit affiliate arrested in Canada in 2022, convicted there, and extradited to the US.",
+  src:[]},
+ {slug:"astamirov",cat:"op",name:"Ruslan Astamirov",alias:"-",group:"LockBit (affiliate)",origin:"Russia",sources:"DOJ",reward:"-",sanctions:"-",status:"Pleaded guilty",conf:"High",photo:null,captured:{label:"Pleaded Guilty",detail:"LockBit affiliate"},
+  family:"No public familial information.",
+  bio:"LockBit affiliate arrested in 2023; pleaded guilty in US federal court.",
+  src:[]},
+ {slug:"stryzhak",cat:"op",name:"Artem Stryzhak",alias:"-",group:"Nefilim (affiliate)",origin:"Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"Extradited from Spain (2025)",conf:"High",photo:null,captured:{label:"Extradited",detail:"from Spain, 2025"},
+  family:"Co-conspirator of Volodymyr Tymoshchuk.",
+  bio:"Nefilim ransomware affiliate; extradited from Spain to the US in 2025 to face charges alongside Tymoshchuk.",
+  src:[]},
+ {slug:"8base-leaders",cat:"op",name:"8Base leaders (multiple)",alias:"-",group:"8Base / Phobos",origin:"Russia (suspected)",sources:"Europol",reward:"-",sanctions:"-",status:"Arrested in Thailand (Feb 2025)",conf:"Moderate",photo:null,captured:{label:"Arrested",detail:"Thailand, Feb 2025"},
+  family:"No public familial information.",
+  bio:"Key figures behind the 8Base (Phobos) operation, arrested in Thailand in February 2025 in a coordinated international action; the data-leak site was seized.",
+  src:[["Europol","https://www.europol.europa.eu/media-press/newsroom/news/key-figures-behind-phobos-and-8base-ransomware-arrested-in-international-cybercrime-crackdown"]]},
+ {slug:"lytvynenko",cat:"op",name:"Oleksii Oleksiyovych Lytvynenko",alias:"-",group:"Conti (affiliate)",origin:"Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"Pleaded guilty (2026)",conf:"High",photo:null,captured:{label:"Pleaded Guilty",detail:"Conti, 2026"},
+  family:"No public familial information.",
+  bio:"Conti ransomware affiliate; extradited from Ireland and pleaded guilty to wire fraud conspiracy in June 2026.",
+  src:[["DOJ","https://www.justice.gov/opa/pr/ukrainian-national-pleads-guilty-wire-fraud-conspiracy-connection-conti-ransomware"]]},
+ {slug:"zolotarjovs",cat:"op",name:"Deniss Zolotarjovs",alias:"-",group:"Conti / Akira (affiliate; ransom negotiator)",origin:"Latvia",sources:"DOJ",reward:"-",sanctions:"-",status:"Convicted 2026 (102 months)",conf:"High",photo:null,captured:{label:"Convicted",detail:"102 months (~8.5 yrs)"},
+  family:"No public familial information.",
+  bio:"Latvian national and Conti/Akira affiliate who specialized in pressure and extortion tactics during ransom negotiations. Active from about June 2021 to March 2023 with an organization that extorted 50+ companies. Arrested in Georgia, extradited to the US in August 2024, pleaded guilty in July 2025, and sentenced to 102 months.",
+  src:[["The Record","https://therecord.media/conti-akira-ransomware-affiliate-sentenced"]]},
+ {slug:"silnikau",cat:"access",name:"Maksim Silnikau",alias:'"J.P. Morgan", "lansky"',group:"Angler Exploit Kit; Ransom Cartel / Reveton",origin:"Belarus / Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"Extradited from Poland (2024)",conf:"High",photo:null,captured:{label:"Extradited",detail:"from Poland, 2024"},
+  family:"Co-defendant of Kadariya and Tarasov.",
+  bio:"Operated the Angler Exploit Kit and the Ransom Cartel / Reveton ransomware schemes. Extradited from Poland to the US in 2024.",
+  src:[]},
+ {slug:"penchukov",cat:"precursor",name:"Vyacheslav Penchukov",alias:'"tank", "father"',group:"JabberZeus / IcedID (leader)",origin:"Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"Convicted 2024 (18 years)",conf:"High",photo:null,captured:{label:"Convicted",detail:"18 years"},
+  family:"No public familial information.",
+  bio:"Leader of the JabberZeus crew and later tied to IcedID malware. Arrested in Geneva in 2022, extradited, and sentenced in Nebraska in 2024 to 18 years plus over $73M restitution.",
+  src:[]},
+ {slug:"rybtsov",cat:"precursor",name:"Yuriy Igorevich Rybtsov",alias:'"MrICQ"',group:"Zeus / JabberZeus (developer)",origin:"Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"In US custody (Oct 2025)",conf:"High",photo:null,captured:{label:"In Custody",detail:"US, from Italy"},
+  family:"No public familial information.",
+  bio:"John Doe #3 in the JabberZeus indictment; handled new-victim notifications and laundering. Arrested in Italy, lost his extradition appeal, and arrived in US custody in October 2025.",
+  src:[]},
+ {slug:"kulibaba",cat:"precursor",name:"Yevhen Kulibaba",alias:'"jonni"',group:"Zeus / JabberZeus",origin:"Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"Convicted UK; extradited to US",conf:"High",photo:null,captured:{label:"Convicted",detail:"UK; extradited to US"},
+  family:"No public familial information.",
+  bio:"JabberZeus ringleader in the UK; convicted in the UK (2011), extradited to the US in 2014, and pleaded guilty.",
+  src:[]},
+ {slug:"konovalenko",cat:"precursor",name:"Yuriy Konovalenko",alias:'"jtk0"',group:"Zeus / JabberZeus",origin:"Ukraine",sources:"DOJ",reward:"-",sanctions:"-",status:"Convicted UK; extradited to US",conf:"High",photo:null,captured:{label:"Convicted",detail:"UK; extradited to US"},
+  family:"No public familial information.",
+  bio:"Kulibaba's right-hand in the JabberZeus UK money-mule network; convicted in the UK and extradited to the US in 2014.",
+  src:[]}
 ];
 
 const main=document.getElementById('main');
@@ -415,7 +479,7 @@ window.stepImg=stepImg;
 function photoHTML(d){
   const ini=initials(d.name), cands=[];
   if(d.photo)cands.push(d.photo);
-  ['jpg','jpeg','png','webp'].forEach(e=>cands.push('photos/'+d.slug+'.'+e));
+  ['jpg','jpeg','png','webp','avif'].forEach(e=>cands.push('photos/'+d.slug+'.'+e));
   return `<img class="photo" src="${cands[0]}" data-srcs='${JSON.stringify(cands)}' data-i="0" data-ini="${ini}" alt="" loading="lazy" onerror="stepImg(this)">`;
 }
 
@@ -445,11 +509,13 @@ function card(d){
   const refs=(d.ref||[]).slice();
   if(d.group.indexOf('Evil Corp')>-1)refs.push(["NCA report (PDF)","photos/evil-corp-behind-the-screens.pdf"]);
   const refHTML=refs.length?`<div class="ref">Reference: ${refs.map(r=>`<a href="${r[1]}" target="_blank" rel="noopener">${esc(r[0])}</a>`).join(', ')}</div>`:'';
+  const stamp=d.captured?`<div class="stamp">${esc(d.captured.label)}${d.captured.detail?`<small>${esc(d.captured.detail)}</small>`:''}</div>`:'';
   const fam=(d.family&&d.family!=='No public familial information.')?`<div class="fam"><b>Family / associations:</b> ${esc(d.family)}</div>`:'';
   const nophoto=!d.photo?`<div class="nophoto">photo: drop photos/${d.slug}.jpg</div>`:'';
   const aliasHTML=(d.alias&&d.alias!=='-')?`<div class="alias">${esc(d.alias)}</div>`:'';
   const rewardBadge=(d.reward&&d.reward!=='-')?`<span class="b reward">${esc(d.reward.split('(')[0].trim())}</span>`:'';
-  return `<div class="card ${c.cls}">
+  return `<div class="card ${c.cls}${d.captured?' captured':''}">
+    ${stamp}
     <div class="chead">
       <div>${photoHTML(d)}${nophoto}</div>
       <div class="hbody">

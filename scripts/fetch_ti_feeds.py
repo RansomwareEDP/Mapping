@@ -166,6 +166,12 @@ KEYWORDS = {
         "worldleaks",
         "hunters international",
     ],
+    "8base": [
+        "8base",
+        "8 base ransomware",
+        "phobos ransomware",
+        "phobos aetor",
+    ],
 }
 
 MAX_PER_GROUP = 10          # max articles to keep per group
