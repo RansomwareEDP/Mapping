@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8Base | Ransomware EDP Threat Actor Library</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: background 0.15s;
+  color: var(--gray-400); margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.dot-inactive { background: var(--gray-400); }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: var(--gray-600); color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-decryptor { background: var(--green); color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE LABELS */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* LIVE BADGE + RECENT REPORTING FEED */
+.live-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: #27ae60; border: 1px solid #27ae60; border-radius: 3px; padding: 1px 4px; vertical-align: middle; margin-left: 5px; line-height: 1.4; }
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card { background: #fff; border: 1px solid var(--gray-300); border-left: 3px solid var(--blue); border-radius: 6px; padding: 14px 16px; transition: border-color 0.15s, box-shadow 0.15s; }
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+.feed-empty { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; font-style: italic; }
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 &nbsp;Executive Summary</a>
+    <a href="#lineage">02 &nbsp;Lineage &amp; Heritage</a>
+    <a href="#operations">03 &nbsp;Operational Model</a>
+    <a href="#technical">04 &nbsp;Technical Capabilities</a>
+    <a href="#defensive">05 &nbsp;Defensive Mapping</a>
+    <a href="#financial">06 &nbsp;Financial Infrastructure</a>
+    <a href="#victims">07 &nbsp;Victim Profile</a>
+    <a href="#lawenforcement">08 &nbsp;Law Enforcement</a>
+    <a href="#attribution">09 &nbsp;Attribution &amp; State Nexus</a>
+    <a href="#trajectory">10 &nbsp;Trajectory Assessment</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">21</span></summary>
+    <nav class="group-list">
+    <a class="group-item" href="akira.html"><span class="group-dot dot-st-active"></span>Akira</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-st-active"></span>Cl0p</a>
+    <a class="group-item" href="dragonforce.html"><span class="group-dot dot-st-active"></span>DragonForce</a>
+    <a class="group-item" href="lynx.html"><span class="group-dot dot-st-active"></span>INC / Lynx</a>
+    <a class="group-item" href="silentransom.html"><span class="group-dot dot-st-active"></span>Luna Moth / SRG</a>
+    <a class="group-item" href="nightspire.html"><span class="group-dot dot-st-active"></span>NightSpire</a>
+    <a class="group-item" href="payload.html"><span class="group-dot dot-st-active"></span>Payload</a>
+    <a class="group-item" href="qilin.html"><span class="group-dot dot-st-active"></span>Qilin</a>
+    <a class="group-item" href="scatteredspider.html"><span class="group-dot dot-st-active"></span>Scattered Spider</a>
+    <a class="group-item" href="thegentlemen.html"><span class="group-dot dot-st-active"></span>The Gentlemen</a>
+    <a class="group-item" href="worldleaks.html"><span class="group-dot dot-st-active"></span>World Leaks / Hunters Intl</a>
+    <a class="group-item active" href="8base.html"><span class="group-dot dot-st-disrupted"></span>8Base / Phobos</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-st-disrupted"></span>LockBit</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-st-disrupted"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-st-inactive"></span>Black Basta</a>
+    <a class="group-item" href="alphv.html"><span class="group-dot dot-st-defunct"></span>ALPHV / BlackCat</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-st-defunct"></span>Conti</a>
+    <a class="group-item" href="darkside.html"><span class="group-dot dot-st-defunct"></span>DarkSide / BlackMatter</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-st-defunct"></span>REvil / Sodinokibi</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-st-defunct"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+  </nav>
+  </details>
+</aside>
+
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &bull; Compiled July 2026 &bull; TLP:WHITE</div>
+    <div class="hero-title">8Base</div>
+    <div class="hero-subtitle">Phobos RaaS Affiliate ("Affiliate 2803") &nbsp;&bull;&nbsp; CrySiS / Dharma / Phobos lineage &nbsp;&bull;&nbsp; Russia-nexus &nbsp;&bull;&nbsp; Active 2022 to Jan 2025</div>
+    <div class="hero-badges">
+      <span class="badge badge-defunct">Disrupted &middot; Feb 2025</span>
+      <span class="badge badge-critical">High-Volume SMB Extortion</span>
+      <span class="badge badge-raas">Phobos RaaS Affiliate</span>
+      <span class="badge badge-decryptor">Free Decryptor &middot; Jul 2025</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">2022</div>
+        <div class="kpi-sub">Public activity May 2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Peak Activity</div>
+        <div class="kpi-value">#2</div>
+        <div class="kpi-sub">Globally, May 2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Leak-Site Victims</div>
+        <div class="kpi-value">455</div>
+        <div class="kpi-sub">ransomware.live</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">DOJ Victim Estimate</div>
+        <div class="kpi-value">1,000+</div>
+        <div class="kpi-sub">May 2019&ndash;Oct 2024</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Total Extortion</div>
+        <div class="kpi-value">$16M</div>
+        <div class="kpi-sub">DOJ, in Bitcoin</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Operators Arrested</div>
+        <div class="kpi-value">4</div>
+        <div class="kpi-sub">Phuket, Feb 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Free Decryptor</div>
+        <div class="kpi-value">Yes</div>
+        <div class="kpi-sub">Japan NPA, Jul 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: EXECUTIVE SUMMARY -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>8Base was a high-volume, financially motivated ransomware operation that functioned as a registered affiliate of the Phobos Ransomware-as-a-Service (RaaS) ecosystem, designated "Affiliate 2803" in the unsealed U.S. Department of Justice charging documents. It deployed a Phobos variant using the <span class="mono">.8base</span> file extension and ran full double extortion: data was exfiltrated before encryption, then victims were pressured through a darknet leak site and a Telegram channel. The group branded itself as "simple pen testers" punishing organizations that neglected security, a moral framing common to extortion crews.</p>
+
+      <p>8Base first drew wide attention in a May&ndash;June 2023 surge, when it ranked as the second most active ransomware brand globally in May 2023 (67 confirmed victims that month, behind only LockBit). It sustained high tempo through late 2024. On February 10, 2025, Operation Phobos Aetor seized its darknet infrastructure and led to four arrests in Phuket, Thailand. In July 2025 Japan's National Police Agency released a free decryptor covering Phobos and 8Base. As of July 2026 there is no confirmed reemergence or rebranding.</p>
+
+      <div class="callout callout-alert">
+        <strong>Overall assessment (ANALYST INFERENCE, high confidence):</strong> 8Base is effectively disrupted. Core operators are in custody, the Phobos administrator has pleaded guilty, the extortion infrastructure is seized, and a functional free decryptor neutralizes the group's leverage over historic victims. Residual risk lies in operator recidivism and the wider Phobos affiliate pool rather than in 8Base as a standing brand. Monitoring for reconstitution under a new alias remains warranted.
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Quick-Reference Attributes</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Known aliases</td><td>8Base, EightBase, 8Base Ransomware; DOJ designation "Affiliate 2803"</td></tr>
+            <tr><td>Vendor designation</td><td>Squalid Scorpius (Palo Alto Unit 42, CONFIRMED). No public proprietary alias identified from CrowdStrike, Secureworks, Microsoft, Mandiant, or Recorded Future; Cisco Talos and Trend Micro track it as "8Base." See Section 02.</td></tr>
+            <tr><td>Classification</td><td>Phobos RaaS affiliate; double extortion (encryption plus data-leak threat)</td></tr>
+            <tr><td>Lineage</td><td>Phobos ransomware (itself an evolution of CrySiS / Dharma). 8Base is a registered Phobos affiliate per DOJ indictment (CONFIRMED)</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russia-nexus (CREDIBLE); all named arrested operators are Russian nationals</td></tr>
+            <tr><td>Encryption</td><td>AES-256-CBC per-file keys, wrapped with a hardcoded RSA-1024 public key; partial encryption above 1.5 MB</td></tr>
+            <tr><td>Payment currency</td><td>Bitcoin only; ~$16M total extortion (DOJ)</td></tr>
+            <tr><td>Operational status</td><td>Disrupted (Operation Phobos Aetor, Feb 10, 2025); free decryptor released Jul 2025; no reemergence confirmed as of Jul 2026</td></tr>
+            <tr><td>LE disruption status</td><td>Major: darknet sites and 100+ servers seized; four operators arrested; Phobos administrator pleaded guilty (Mar 2026)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMAGE GALLERY: DLS + BRANDING + RANSOM NOTE -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site and Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2023/07/main-page-of-8base-ransomware-tor-site.png.webp"
+               alt="8Base Tor leak site home page with victim listings"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>8Base DLS: Home Page</strong>
+            The Tor-based leak site listed victims with countdown timers and published stolen data when ransoms went unpaid. The layout and welcome-page verbiage were later assessed as closely resembling RansomHouse (see Section 02).
+            <span class="img-source">Source: SOCRadar, July 2023</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2023/07/contact-page-of-8base-ransomware-tor-site-1.png.webp"
+               alt="8Base leak site contact and negotiation page"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>8Base DLS: Contact Page</strong>
+            Victim communications were channelled through the leak site's contact form plus operator email embedded in the encrypted file extension. The group advertised "very specific terms of service" prohibiting third-party involvement in negotiations.
+            <span class="img-source">Source: SOCRadar, July 2023</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2023/07/terms-of-service-page-of-8base-ransomware-tor-site-1024x469.png.webp"
+               alt="8Base leak site rules and terms of service page"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Rules and Self-Description</strong>
+            8Base described itself as "simple pen testers" targeting companies that placed financial gain "above the interest of their partners." The framing casts victims as deserving of attack for poor security posture.
+            <span class="img-source">Source: SOCRadar, July 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2023/07/screenshot-of-8base-ransomwares-telegram-channel-1-553x1024.jpg.webp"
+               alt="8Base Telegram channel used to publish victim data"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Telegram Channel</strong>
+            Created May 13, 2023, the channel published victim announcements and stolen data alongside the leak site, a secondary distribution and pressure mechanism.
+            <span class="img-source">Source: SOCRadar, July 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://documents.trendmicro.com/images/TEx/articles/RS-8Base-Impact-Xm50r4I.png"
+               alt="8Base ransom note info.hta"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Ransom Note (info.hta)</strong>
+            Notes were dropped as <span class="mono">info.hta</span> and <span class="mono">info.txt</span>, containing a victim ID and operator email. They did not link directly to the leak site; that was disseminated separately via Telegram and email.
+            <span class="img-source">Source: Trend Micro, Ransomware Spotlight: 8Base, 2024</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <p>8Base sits at the intersection of three candidate lineage relationships, each carrying different evidentiary weight. The Phobos affiliation is prosecutorially established; the RansomHouse resemblance is a design-similarity observation; the "experienced actor rebranding" thesis is circumstantial.</p>
+
+      <div class="pillar-grid">
+        <div class="pillar-card confirmed">
+          <div class="pillar-num">Pillar 1 &mdash; Confirmed</div>
+          <div class="pillar-title">Phobos Affiliate (Prosecutorial Finding)</div>
+          <div class="pillar-body">DOJ charging documents (Feb 10, 2025) state that Berezhnoy, Glebov, and others "operated a ransomware affiliate organization, including under the names '8Base' and 'Affiliate 2803,'... through the deployment of Phobos ransomware." Europol confirmed 8Base "took advantage of Phobos' infrastructure" and developed its own variant using Phobos encryption and delivery.</div>
+        </div>
+        <div class="pillar-card confirmed">
+          <div class="pillar-num">Pillar 2 &mdash; Confirmed (binary forensics)</div>
+          <div class="pillar-title">Zero Code Divergence from Phobos</div>
+          <div class="pillar-body">Cisco Talos (Nov 2023) compared the 8Base Phobos sample against prior Phobos variants and found "no differences between the code at the binary level at all" &mdash; only configuration data differed. VMware Carbon Black first observed Phobos samples using the <span class="mono">.8base</span> extension. Single strong primary source (Talos), corroborated by extension observation.</div>
+        </div>
+        <div class="pillar-card credible">
+          <div class="pillar-num">Pillar 3 &mdash; Low-Medium</div>
+          <div class="pillar-title">RansomHouse Resemblance</div>
+          <div class="pillar-body">VMware Carbon Black (Jun 28, 2023) reported a ~99% match between 8Base and RansomHouse ransom notes and leak-site welcome copy "copied word for word." No code, infrastructure, or personnel overlap has been confirmed. VMware itself did not conclude they are the same group; the tie remains uncorroborated.</div>
+        </div>
+        <div class="pillar-card inference">
+          <div class="pillar-num">Pillar 4 &mdash; Medium (circumstantial)</div>
+          <div class="pillar-title">Pre-existing Actor Continuity</div>
+          <div class="pillar-body">VMware assessed 8Base's speed and maturity signalled "a well-established mature organization," not a new group. Early sample compile timestamps (Jun 2022) predate public activity by ~1 year, and DOJ dates operator activity to May 2019 &mdash; supporting the view that Berezhnoy and Glebov were long-active actors before the 8Base brand.</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:8px;">
+        <div class="subsection-title">Phobos Family Heritage</div>
+        <p>Phobos is an evolution of the <strong>CrySiS / Dharma</strong> ransomware family. CrySiS emerged in 2016; Dharma followed when CrySiS decryptors appeared; Phobos emerged around October&ndash;December 2018 as a further evolution once Dharma decryptors became available (documented by Coveware in January 2019 and Europol in December 2018). Phobos and Dharma share near-identical ransom-note text and file-naming conventions. Cisco Talos established that the <strong>same RSA public key protected the encryption key across all Phobos samples analyzed since 2019</strong>, confirming a shared builder and enabling universal decryption once the corresponding private key was recovered (see Section 04).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-info" style="margin-top:0;">
+          <strong>Rule applied:</strong> the Phobos-family cluster and the 8Base affiliate are tracked under separate designations. Do not conflate a Phobos-ecosystem label with an 8Base-specific one. Palo Alto Unit 42 tracks 8Base as <strong>Squalid Scorpius</strong> and the broader Phobos family separately as <strong>Weary Scorpius</strong>.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>8Base-specific designation</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Palo Alto Unit 42</td><td><strong>Squalid Scorpius</strong> (8Base listed as alias; Phobos family tracked separately as Weary Scorpius)</td><td>CONFIRMED</td></tr>
+              <tr><td>Cisco Talos</td><td>Tracked as "8Base" (Phobos variant operator); no codename</td><td>CONFIRMED</td></tr>
+              <tr><td>Trend Micro</td><td>Tracked as "8Base"; no proprietary alias</td><td>CONFIRMED</td></tr>
+              <tr><td>CrowdStrike</td><td>No public "SPIDER" alias identified</td><td>UNVERIFIED (absence)</td></tr>
+              <tr><td>Secureworks</td><td>No public "GOLD" designation identified</td><td>UNVERIFIED (absence)</td></tr>
+              <tr><td>Microsoft</td><td>No Sandstorm/Typhoon/Storm-#### identified</td><td>UNVERIFIED (absence)</td></tr>
+              <tr><td>Mandiant / Google TI</td><td>No public UNC#### identified</td><td>UNVERIFIED (absence)</td></tr>
+              <tr><td>Recorded Future</td><td>No public Insikt threat-actor ID identified</td><td>UNVERIFIED (absence)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--gray-600);"><strong>Caveat:</strong> "UNVERIFIED (absence)" means no proprietary designation was found in open sources or in the Malpedia and SentinelOne alias aggregators. CrowdStrike, Mandiant, Recorded Future, and Secureworks maintain customer-only actor catalogs; a private designation could exist without public disclosure. Neither Mandiant nor Recorded Future has published a formal named-cluster assessment of 8Base.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Phobos RaaS Structure</div>
+        <p>8Base operated as Affiliate 2803 within the Phobos network. Under the Phobos model, the administrator (Evgenii Ptitsyn, monikers "derxan" and "zimmermanx") sold access to the builder and maintained coordination infrastructure and cryptocurrency wallets. Affiliates purchased builder access, conducted intrusions independently, and paid a per-decryption-key fee to the administrator after each successful attack. Each deployment was assigned a unique alphanumeric string matched to a decryption key. Affiliates received ransoms in affiliate-specific wallets, which then transferred key fees to Ptitsyn-controlled wallets (documented flow December 2021&ndash;April 2024).</p>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>The FBI alleged Berezhnoy promoted the ransomware on cybercrime forums to recruit "long-term" affiliates, suggesting 8Base itself may have maintained a sub-affiliate or operational support layer. The exact revenue split is not disclosed in court documents; standard Phobos arrangements had affiliates keep the bulk of the ransom while remitting a per-key fee to the administrator.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Double Extortion Sequence</div>
+        <ul class="content-list">
+          <li><strong>Exfiltration:</strong> data stolen prior to encryption using RClone, WinSCP, and Mega.io.</li>
+          <li><strong>Encryption:</strong> Phobos payload deployed with the <span class="mono">.8base</span> extension.</li>
+          <li><strong>Leak threat:</strong> victim posted to the darknet leak site with a countdown timer; data published if unpaid.</li>
+          <li><strong>Direct contact:</strong> operators reached out to victims directly to open negotiations, in addition to on-host ransom notes.</li>
+        </ul>
+        <p>No documented evidence of triple extortion (DDoS or customer-notification threats) appears in available sourcing.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation Behavior</div>
+        <ul class="content-list">
+          <li><strong>Demand range:</strong> hundreds of thousands to millions of dollars; exact per-victim ranges not uniformly documented (CREDIBLE).</li>
+          <li><strong>Deadlines:</strong> countdown timers on the leak site with threat of public data release.</li>
+          <li><strong>Terms:</strong> victims could negotiate for both decryption keys and deletion assurances; NCC Group noted "very specific terms of service" prohibiting third-party involvement in negotiations.</li>
+          <li><strong>Communication:</strong> initial contact via <span class="mono">info.hta</span> / <span class="mono">info.txt</span>; ongoing negotiation via operator email embedded in the file extension (e.g., <span class="mono">[support@rexsdata.pro].8base</span>) and via the Telegram channel.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Phishing (T1566)</td><td>Primary vector; used to deliver SmokeLoader via malicious attachments or links.</td></tr>
+              <tr><td>SmokeLoader-embedded payload</td><td>In 8Base campaigns the Phobos payload is embedded in SmokeLoader's encrypted payloads rather than downloaded separately, and loaded directly into process memory &mdash; a documented distinction from standard Phobos distribution.</td></tr>
+              <tr><td>Exposed RDP (T1190 / T1078)</td><td>Brute-force against exposed RDP; a standard Phobos affiliate vector per CISA AA24-060A.</td></tr>
+              <tr><td>Exploit kits / drive-by</td><td>Noted by HHS HC3 as supplementary vectors.</td></tr>
+              <tr><td>Initial Access Brokers</td><td>IAB-sourced access noted for some intrusions (Check Point and others).</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>No specific CVEs</strong> are attributed to 8Base in major open-source reporting. Phobos affiliate activity broadly targets exposed RDP rather than named vulnerabilities. Post-access tooling includes AnyDesk for remote access and LSASS credential dumping.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Post-Compromise Tooling</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Tools and techniques</th></tr></thead>
+            <tbody>
+              <tr><td>Credential Access</td><td>Mimikatz, LaZagne, WebBrowserPassView, VNCPassView, PasswordFox, ProcDump (LSASS); cached-hash reuse to domain admin; token theft via Windows APIs</td></tr>
+              <tr><td>Privilege Escalation</td><td>UAC bypass via .NET Profiler DLL loading; token impersonation of explorer.exe (T1134.001); IFEO registry keys attaching cmd.exe to accessibility binaries (sethc.exe, utilman.exe, Magnify.exe, HelpPane.exe)</td></tr>
+              <tr><td>Lateral Movement</td><td>PsExec (T1570), SystemBC, share enumeration via WNetEnumResource() (T1135), BloodHound / SharpHound for AD enumeration</td></tr>
+              <tr><td>Defense Evasion</td><td>KILLAV batch (<span class="mono">defoff.bat</span>) disabling Defender; PCHunter, GMER, Process Hacker, Universal Virus Sniffer, PowerTool; binary padding (T1027.001); Cuckoo bypass via SetErrorMode; log clearing via <span class="mono">wevtutil.exe</span>; firewall disable via <span class="mono">netsh</span></td></tr>
+              <tr><td>Persistence</td><td>Startup-folder copy (<span class="mono">mtx777.exe</span>); HKLM/HKCU Run keys (<span class="mono">mtx777</span>)</td></tr>
+              <tr><td>Exfiltration</td><td>RClone (primary), WinSCP, Mega.io</td></tr>
+              <tr><td>Pre-encryption Impact</td><td>Shadow-copy deletion (<span class="mono">vssadmin delete shadows</span>, <span class="mono">wmic shadowcopy delete</span>); boot-recovery disable via <span class="mono">bcdedit</span>; backup-catalog deletion (<span class="mono">wbadmin delete catalog</span>); termination of database, email, and office processes</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Implementation</div>
+        <ul class="content-list">
+          <li><strong>Algorithm:</strong> AES-256-CBC (custom implementation, not the Windows Crypto API since the post-2019 change).</li>
+          <li><strong>Per-file key:</strong> a unique random AES key per file, encrypted with a hardcoded RSA-1024 public key and appended to each file.</li>
+          <li><strong>Speed optimization:</strong> full encryption below 1.5 MB; partial block encryption above 1.5 MB, with encrypted-block lists saved in file metadata.</li>
+          <li><strong>File extension:</strong> <span class="mono">&lt;filename&gt;.id[&lt;VolumeSerial&gt;-&lt;ID&gt;].[&lt;operator email&gt;].8base</span></li>
+          <li><strong>Config:</strong> 70+ options, AES-encrypted with a hardcoded key, including a blocklist that avoids re-encrypting <span class="mono">.8base</span> and ~80+ other Phobos variant extensions &mdash; effectively mapping the Phobos affiliate ecosystem.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion Behavior</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; Cyrillic language check present in binary</div>
+        <p>Cisco Talos confirmed the Phobos binary used by 8Base checks for Cyrillic OS language settings to "prevent the malware from running in unwanted environments." HHS HC3 (Nov 2023) stated no attacks were reported against former Soviet or CIS countries, corroborated by BleepingComputer. The combination of Cyrillic kill switch and zero documented CIS victims is consistent with standard Russia-nexus criminal behavior, though no confirmed intelligence-service nexus exists (see Section 08).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Free Decryptor (July 2025)</div>
+        <div class="callout callout-success">
+          <strong>CONFIRMED:</strong> On July 18, 2025, Japan's National Police Agency released a free decryptor for Phobos and 8Base, publicized with Europol and the FBI and distributed via the No More Ransom platform. It supports <span class="mono">.phobos</span>, <span class="mono">.8base</span>, <span class="mono">.elbie</span>, <span class="mono">.faust</span>, and <span class="mono">.LIZARD</span> (with additional extensions possible). BleepingComputer tested it and recovered all 150 test files encrypted by the LIZARD variant.
+        </div>
+        <p>Decryption is feasible because the same RSA public key is reused across all Phobos variants since 2019, so recovery of the corresponding private key &mdash; likely obtained through the law-enforcement operation and Ptitsyn's arrest &mdash; enables decryption across samples. No public decryptor existed for post-2019 Phobos variants before July 2025. No confirmed Linux or ESXi variant of 8Base is documented; it was a Windows-focused operation.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: DEFENSIVE MAPPING -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+
+      <p>This section translates documented 8Base / Phobos tradecraft into prioritized defender actions. Techniques are drawn primarily from CISA/FBI/MS-ISAC advisory AA24-060A and corroborating vendor reporting, and are treated as CONFIRMED where based on observed behavior. Because 8Base deployed an unmodified Phobos variant, these mitigations apply across the wider Phobos affiliate ecosystem, not 8Base alone.</p>
+
+      <div class="subsection-title">MITRE ATT&amp;CK Techniques: Priority Set</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Technique</th><th>Tactic</th><th>8Base usage</th><th>Defender action</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">T1566 Phishing</td><td>Initial Access</td><td>Primary vector; delivered SmokeLoader, which decrypted and loaded the Phobos payload in memory</td><td>Attachment sandboxing and detonation; block executable/script attachments; user reporting; disable macro auto-execution</td></tr>
+            <tr><td class="mono">T1133 / T1190 External Remote Services</td><td>Initial Access</td><td>Brute-force against exposed RDP; a standard Phobos affiliate vector</td><td>Eliminate internet-exposed RDP; require VPN with MFA; account-lockout and geo/velocity rules</td></tr>
+            <tr><td class="mono">T1078 Valid Accounts</td><td>Initial Access / Persistence</td><td>Stolen or brute-forced credentials; some IAB-sourced access</td><td>Enforce MFA everywhere; disable dormant accounts; monitor impossible-travel and infostealer credential exposure</td></tr>
+            <tr><td class="mono">T1003.001 LSASS Memory</td><td>Credential Access</td><td>Mimikatz, ProcDump, LaZagne dumping of LSASS to reach domain admin</td><td>Enable LSASS protection (RunAsPPL) and Credential Guard; tamper-protected EDR; alert on LSASS handle access</td></tr>
+            <tr><td class="mono">T1548.002 Bypass UAC</td><td>Privilege Escalation</td><td>UAC bypass via .NET Profiler DLL loading; token impersonation of explorer.exe</td><td>Set UAC to always-notify; enforce least privilege; restrict local admin; monitor IFEO registry key changes</td></tr>
+            <tr><td class="mono">T1562.001 Impair Defenses</td><td>Defense Evasion</td><td>KILLAV batch (defoff.bat), PowerTool, PCHunter, GMER disabling Defender/AV; firewall disabled via netsh</td><td>Enable tamper protection; alert on security-tool stop events and known BYOVD/killer tools; restrict driver loading</td></tr>
+            <tr><td class="mono">T1021.001 / T1570 Remote Services &amp; Lateral Tool Transfer</td><td>Lateral Movement</td><td>PsExec and RDP to distribute batch files and the ransomware binary; SystemBC</td><td>Network segmentation; restrict admin shares and PsExec; internal RDP MFA; monitor SMB write of executables</td></tr>
+            <tr><td class="mono">T1490 Inhibit System Recovery</td><td>Impact</td><td>vssadmin/wmic shadow-copy deletion; bcdedit recovery disable; wbadmin catalog deletion</td><td>Immutable, offline, tested backups; restrict vssadmin/wbadmin/bcdedit; alert on shadow-copy deletion</td></tr>
+            <tr><td class="mono">T1567.002 Exfiltration to Cloud Storage</td><td>Exfiltration</td><td>RClone, WinSCP, Mega.io used to steal data before encryption</td><td>Egress filtering and DLP; block/alert on RClone and Mega endpoints; monitor large outbound transfers</td></tr>
+            <tr><td class="mono">T1486 Data Encrypted for Impact</td><td>Impact</td><td>AES-256-CBC per-file encryption with the .8base extension; partial encryption above 1.5 MB</td><td>EDR ransomware behavior detection and canaries; rapid isolation runbook; retain the July 2025 free decryptor for historic samples</td></tr>
+            <tr><td class="mono">T1070.001 Clear Windows Event Logs</td><td>Defense Evasion</td><td>Event logs cleared via wevtutil.exe to hinder response</td><td>Forward logs to an immutable SIEM in real time; alert on log-clear events (Event ID 1102)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:20px;">Linked Advisories</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Advisory</th><th>Date / Issuer</th><th>Defender takeaway</th></tr></thead>
+          <tbody>
+            <tr><td>AA24-060A &mdash; #StopRansomware: Phobos</td><td>Feb 29, 2024 &bull; CISA / FBI / MS-ISAC</td><td>Authoritative TTP and IOC set with 8Base as primary variant operator; prioritize RDP hardening, MFA, phishing defense, and recovery protection</td></tr>
+            <tr><td>HHS HC3 Analyst Note &mdash; 8Base</td><td>Nov 2023 &bull; HHS HC3</td><td>Healthcare-sector warning; patch exposed services, segment clinical networks, protect backups</td></tr>
+            <tr><td>FBI IC3 advisory (Phobos/8Base)</td><td>May 2024 &bull; FBI IC3</td><td>Reinforces reporting channels and the Phobos/8Base intrusion pattern</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-success">
+        <strong>Top Defensive Priorities (8Base / Phobos):</strong>
+        <ul class="content-list" style="margin-top:8px;margin-bottom:0;">
+          <li>Eliminate internet-exposed RDP; require VPN with MFA on all remote and privileged access.</li>
+          <li>Blunt the phishing-to-SmokeLoader chain: attachment detonation, block loader/script execution, and user reporting.</li>
+          <li>Protect credentials: LSASS protection (RunAsPPL) and Credential Guard, with tamper-protected EDR.</li>
+          <li>Maintain immutable, offline, tested backups; restrict vssadmin, wbadmin, and bcdedit; alert on shadow-copy deletion.</li>
+          <li>Egress-filter and block unauthorized cloud-exfil tools (RClone, Mega); stream logs to an immutable SIEM.</li>
+        </ul>
+      </div>
+      <div class="callout callout-info">
+        <strong>Recovery leverage:</strong> the free Phobos/8Base decryptor (Japan NPA, July 2025) can restore files encrypted by these samples, removing the attacker's core leverage over any organization still holding affected data. Retain encrypted artifacts and check No More Ransom before considering payment.
+      </div>
+    </section>
+
+    <!-- SECTION 06: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card highlight">
+          <div class="metric-label">Total Extortion</div>
+          <div class="metric-val">$16M</div>
+          <div class="metric-note">DOJ, May 2019&ndash;Oct 2024</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Payment Currency</div>
+          <div class="metric-val">Bitcoin</div>
+          <div class="metric-note">No Monero documented</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Wallet Model</div>
+          <div class="metric-val">Per-affiliate</div>
+          <div class="metric-note">Fees routed to admin</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">OFAC Sanctions</div>
+          <div class="metric-val">None</div>
+          <div class="metric-note">As of Jul 2026</div>
+        </div>
+      </div>
+
+      <div class="subsection" style="margin-top:8px;">
+        <div class="subsection-title">Payment and Wallet Structure</div>
+        <p>Payment was exclusively in Bitcoin across all documented sourcing. DOJ places total extortion at approximately $16 million across the Phobos/8Base operation (May 2019&ndash;October 2024). Each affiliate received ransoms in a unique wallet; per-decryption-key fees then flowed to Ptitsyn-controlled wallets. Thai authorities seized digital wallets from the four arrested individuals in February 2025.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Laundering Methodology</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Europol, Thai police reporting, and BleepingComputer describe the use of cryptocurrency mixing services to obscure transaction trails; suspects are accused of "laundering payments through digital mixing platforms." No specific mixer services are named in open-source reporting, and no use of bridges or named cash-out exchanges is documented.</p>
+        <div class="callout callout-warning">
+          <strong>Intelligence gap:</strong> no public-facing Chainalysis, TRM Labs, or Elliptic report specifically naming 8Base wallet addresses was identified. Law-enforcement forensics are documented, but firm-published on-chain analysis of 8Base is not available in open source.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions Context</div>
+        <p>No OFAC sanctions have been confirmed against 8Base actors or wallets. On the same day as the 8Base takedown (February 10, 2025), OFAC sanctioned <strong>Zservers</strong>, a Russia-based bulletproof hosting provider used by LockBit affiliates &mdash; a coordinated but separate action not directed at 8Base infrastructure.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 07: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Leak-Site Victims</div>
+          <div class="metric-val">455</div>
+          <div class="metric-note">ransomware.live</div>
+        </div>
+        <div class="metric-card highlight">
+          <div class="metric-label">DOJ / Europol Estimate</div>
+          <div class="metric-val">1,000+</div>
+          <div class="metric-note">Not all posted publicly</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Swiss Victims</div>
+          <div class="metric-val">17</div>
+          <div class="metric-note">Apr 2023&ndash;Oct 2024</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">CIS Victims</div>
+          <div class="metric-val">Zero</div>
+          <div class="metric-note">Geographic exclusion</div>
+        </div>
+      </div>
+
+      <p style="margin-top:8px;">The gap between 455 leak-site victims and the DOJ's 1,000+ estimate reflects victims who paid before publication or were never listed. Primary targeting was small-to-medium businesses "that lacked sophisticated cybersecurity defenses" (Europol), with some enterprise victims.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">Primary Sectors (Trend Micro, May 2023&ndash;Mar 2024)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Manufacturing</td><td>Top targeted sector (Trend Micro; also NCC Group)</td></tr>
+              <tr><td>Finance / Business Services</td><td>Consistently top five</td></tr>
+              <tr><td>Technology / IT</td><td>Top five</td></tr>
+              <tr><td>Healthcare</td><td>Warned specifically by HHS HC3 (Nov 2023); a children's hospital among DOJ victims</td></tr>
+              <tr><td>Construction, Legal, Real Estate / Hospitality</td><td>Documented targeted sectors</td></tr>
+              <tr><td>Education, Government</td><td>Documented by DOJ / FBI, including local and critical-infrastructure entities</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Country</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>United States</td><td>Primary target; 71 infected-machine detections (Trend Micro); majority of DOJ victims</td></tr>
+              <tr><td>Brazil</td><td>Second-highest leak-site victim count</td></tr>
+              <tr><td>United Kingdom, France</td><td>Consistent top-five targets</td></tr>
+              <tr><td>Netherlands</td><td>35 detections (Trend Micro) &mdash; notably high for its size</td></tr>
+              <tr><td>Canada, Australia, Germany</td><td>Documented victims (e.g., Alberta Dental Service Corp; Volkswagen claimed, disputed)</td></tr>
+              <tr><td>Switzerland</td><td>17 confirmed victims (Apr 2023&ndash;Oct 2024)</td></tr>
+              <tr><td>CIS / former Soviet states</td><td>Zero documented victims (HHS HC3, BleepingComputer)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Victims</div>
+        <ul class="content-list">
+          <li><strong>UN Development Programme (UNDP):</strong> March 27, 2024; HR and procurement data stolen; data published April 3, 2024.</li>
+          <li><strong>Nidec Corporation (Japan):</strong> technology group (~$11B revenue); claimed by 8Base.</li>
+          <li><strong>Alberta Dental Service Corp (Canada):</strong> paid ransom; widely reported August 2023.</li>
+          <li><strong>Kansas Medical Center (US):</strong> July 2023; patient and employee data claimed.</li>
+          <li><strong>Atlantic States Marine Fisheries Commission; Oregon Sports Medicine (US); Volkswagen (Germany, disputed):</strong> additional documented or claimed victims.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 08: LAW ENFORCEMENT -->
+    <section class="section" id="lawenforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="groups/8base.html" defer></script>
+
+      <div class="subsection">
+        <div class="subsection-title">Operation Phobos Aetor (February 10, 2025)</div>
+        <p>An international operation seized 8Base's darknet leak and negotiation sites and led to four arrests in Phuket, Thailand. The site seizure was executed by the Bavarian State Criminal Police Office on behalf of the Bamberg Public Prosecutor. Europol's operation took down 27 servers; the broader U.S.-cited disruption references more than 100 servers linked to the Phobos network. Roughly 40 items (laptops, phones, digital wallets) were seized, and over 400 companies worldwide were warned of ongoing or imminent attacks. The operation was coordinated by Europol and Eurojust across some 14 countries (including Germany, Thailand, USA, UK, Switzerland, Japan, Romania, Spain, France, Belgium, Czechia).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Arrests</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Individual</th><th>Detail</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Roman Berezhnoy (~33, Russian)</td><td>Arrested Phuket, Feb 10, 2025; charged District of Maryland (11-count indictment: wire fraud conspiracy, wire fraud, computer-fraud conspiracy, 3x intentional damage, 3x extortion, threat to impair confidentiality, unauthorized access)</td><td>In custody; extradition status not reported since Feb 2025 (UNVERIFIED)</td></tr>
+              <tr><td>Egor Nikolaevich Glebov (~39, Russian)</td><td>Arrested Phuket, Feb 10, 2025; same charge profile as Berezhnoy</td><td>In custody; extradition status not reported (UNVERIFIED)</td></tr>
+              <tr><td>Two additional individuals</td><td>Arrested in the same Phuket operation; reported as two women, identities and roles undisclosed</td><td>Status undisclosed (CREDIBLE)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Correction vs. prior reporting:</strong> the two unnamed Phuket arrestees are reported as women, not simply "additional operators." A Swiss dimension (17 Swiss victims; Swiss federal police warned 300+ potential victims) is CREDIBLE, but the DOJ Office of Public Affairs release does not itself reference Switzerland or Swiss extradition.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Phobos Administrator: Evgenii Ptitsyn</div>
+        <p>Ptitsyn (43, Russian national; monikers "derxan"/"zimmermanx") administered the sale, distribution, and operation of Phobos and managed wallets receiving affiliate key fees. He was arrested in South Korea (June 2024) and extradited to the US (November 2024).</p>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>On March 4, 2026, Ptitsyn pleaded guilty in the U.S. District Court for the District of Maryland to one count of wire fraud conspiracy, tied to a Phobos operation that hit 1,000+ victims and extorted approximately $39 million ecosystem-wide. Sentencing is scheduled for <strong>July 15, 2026, at 2:30 p.m.</strong> in the District of Maryland; maximum exposure is 20 years. As of this profile's compilation (July 9, 2026), sentencing has not yet occurred.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Wider Ecosystem Arrests</div>
+        <ul class="content-list">
+          <li><strong>Poland, February 2026:</strong> Poland's Central Office for Combating Cybercrime (CBZC) arrested a 47-year-old man who allegedly used encrypted messaging to coordinate with the Phobos network; devices held credentials and server data. Charged under Polish computer-crime statutes (max ~5 years).</li>
+          <li><strong>Italy, 2023:</strong> an unnamed "key Phobos affiliate involved in development and distribution" was arrested on a French warrant (Europol); identity not disclosed.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Advisories</div>
+        <ul class="content-list">
+          <li><strong>CISA/FBI/MS-ISAC AA24-060A (Feb 29, 2024):</strong> joint advisory on Phobos ransomware with 8Base as primary variant operator; TTPs, IOCs, mitigations.</li>
+          <li><strong>HHS HC3 Analyst Note (Nov 2023):</strong> warned the healthcare and public-health sector specifically.</li>
+          <li><strong>FBI IC3 advisory (May 2024):</strong> referenced Phobos/8Base.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 09: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessment: Criminal Financial Motivation, No Confirmed State Nexus</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; no confirmed RIS nexus</div>
+        <p>No government, law-enforcement, or threat-intelligence vendor has established a connection between 8Base and Russian state intelligence (FSB, SVR, GRU) in available open-source reporting. All charging documents describe financially motivated criminal extortion, not intelligence-directed operations. The victim profile lacks the targeting patterns typical of intelligence-value collection, and the UNDP attack is consistent with opportunistic financial targeting.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion as Geopolitical Indicator</div>
+        <p>The Cyrillic-language kill switch (confirmed by Cisco Talos) combined with zero documented CIS victims is consistent with the informal "safe harbor" norm among Russia-based cybercriminals: avoid domestic and allied-state targets to reduce domestic-prosecution risk. HHS HC3 noted this exclusion "is a hallmark for many Russian-speaking threat actors" while stating no known correlation to Russia was established. The pattern does not by itself establish a state nexus or intelligence-sharing relationship.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals and the Website-Developer Angle</div>
+        <div class="conf conf-credible">Credible &mdash; single investigative source; subject denies involvement</div>
+        <p>A September 2023 KrebsOnSecurity investigation (with SentinelOne) linked the 8Base leak-site code to <strong>Andrei Kolev</strong>, a full-stack developer in Chisinau, Moldova, associated with a firm called JCube Group. The site was reportedly running in development mode, leaking a true IP (a Hetzner server in Finland) and a private GitLab repository path referencing an "8base-v2" project; the site's KYC/journalist-vetting language matched repository code. Kolev denied knowledge of the connection, and within minutes of being contacted the leak site changed its error handling. This introduces a possible Moldova-based developer distinct from the Russian operators later arrested, and is best treated as a credible but single-source lead, not a confirmed attribution.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Nationality and Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>All named arrested individuals are Russian nationals; Berezhnoy and Glebov were in Thailand at arrest, Ptitsyn in South Korea &mdash; consistent with operating outside Russian jurisdiction to reduce arrest risk.</li>
+          <li><strong>Unknown:</strong> whether any arrested individual had prior contact with Russian domestic law enforcement or intelligence.</li>
+          <li><strong>Unknown:</strong> whether ransom-payment data was ever shared with or accessible to Russian state actors.</li>
+          <li><strong>No documented safe-harbor relationship</strong> is found in available sources.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 10: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Disruption Impact</div>
+        <div class="conf conf-confirmed">Confirmed &mdash; highly effective, multi-vector disruption</div>
+        <ul class="content-list">
+          <li>Both named operators (Berezhnoy, Glebov) plus two additional individuals in custody.</li>
+          <li>Phobos administrator (Ptitsyn) arrested, extradited, and pleaded guilty &mdash; removing the ecosystem's infrastructure provider.</li>
+          <li>100+ servers dismantled; darknet leak and negotiation sites seized.</li>
+          <li>Free decryptor (July 2025) retroactively neutralizes extortion leverage over historic victims.</li>
+          <li>Continued ecosystem dismantlement (Poland arrest, February 2026).</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Reemergence Indicators</div>
+        <div class="conf conf-inference">Analyst Inference &mdash; no reemergence as of Jul 2026</div>
+        <p>The last confirmed victim post is dated January 13, 2025 (Telegram channel; CREDIBLE, per the primary research). No rebranding or reemergence is documented in open-source reporting as of July 2026, and the seized sites remain dormant under the law-enforcement banner. Researchers continued to monitor for reconstitution under a new alias; none is confirmed.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="callout callout-info" style="margin-top:0;">
+          <strong>Two-tier confidence.</strong> The anchor relationship (8Base as a Phobos affiliate) is CONFIRMED. Extension claims to specific sibling groups vary in strength and are treated separately.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Relationship</th><th>Basis</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Phobos RaaS ecosystem (anchor)</td><td>DOJ "Affiliate 2803"; zero binary-level code divergence (Talos); shared RSA key; documented wallet flows to admin</td><td>CONFIRMED</td></tr>
+              <tr><td>Phobos variant family (.elbie, .faust, .devos, .LIZARD, .eking, Eight, Backmydata)</td><td>Shared builder/code; CISA AA24-060A links Phobos to these variants by similar TTPs; separate affiliate operations</td><td>CONFIRMED (shared builder)</td></tr>
+              <tr><td>RansomHouse</td><td>~99% ransom-note match and copied leak-site copy (VMware Carbon Black, 2023); no code, infrastructure, or personnel overlap; uncorroborated since</td><td>LOW-MEDIUM</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--gray-600);">Neither Mandiant nor Recorded Future has published a formal cluster assessment tying 8Base to RansomHouse. The arrested individuals have not been linked to RansomHouse in court documents.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability and Strife Indicators</div>
+        <ul class="content-list">
+          <li><strong>Static codebase:</strong> the Phobos code has been largely unchanged since 2019&ndash;2020 (Talos). 8Base innovated at the configuration level, not the malware level.</li>
+          <li><strong>Operational evolution:</strong> improvements were in OPSEC (mixing services, residence in Thailand to avoid Russian jurisdiction) rather than technical capability.</li>
+          <li><strong>No documented internal strife:</strong> no chat leaks, affiliate disputes, or public conflicts identified before law-enforcement penetration.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>Roles and identities of the two additional Phuket arrestees.</li>
+          <li>Whether Berezhnoy and Glebov recruited sub-affiliates who remain operational.</li>
+          <li>The ~550+ victim gap between leak-site (455) and DOJ (1,000+) figures.</li>
+          <li>Per-victim and per-sector extortion breakdowns (only the aggregate $16M is confirmed).</li>
+          <li>Whether the RansomHouse resemblance reflects any operational tie (unresolved at a technical level).</li>
+          <li>Outcome of Ptitsyn sentencing (scheduled July 15, 2026), which may surface additional operational detail.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Recent Reporting <span class="live-badge">LIVE</span></h2>
+      </div>
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:4px;">
+        Open-source reporting from monitored threat-intelligence sources, refreshed automatically via the project feed. 8Base itself has been dormant since the February 2025 takedown; this feed surfaces ongoing Phobos-ecosystem and follow-on law-enforcement reporting. The authored analysis above is unaffected by this feed.
+      </p>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">&#8258;</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" id="source-toggle">Show source list</button>
+      <div class="source-list" id="source-list">
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>DOJ OPA: Phobos Ransomware Affiliates Arrested in Coordinated International Disruption, Feb 10, 2025 &bull; <a href="https://www.justice.gov/opa/pr/phobos-ransomware-affiliates-arrested-coordinated-international-disruption" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>DOJ USAO-MD: Russian Ransomware Administrator Pleads Guilty to Wire Fraud Conspiracy, Mar 4, 2026 &bull; <a href="https://www.justice.gov/usao-md/pr/russian-ransomware-administrator-pleads-guilty-wire-fraud-conspiracy" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>Europol: Key figures behind Phobos and 8Base ransomware arrested, Feb 11, 2025 &bull; <a href="https://www.europol.europa.eu/media-press/newsroom/news/key-figures-behind-phobos-and-8base-ransomware-arrested-in-international-cybercrime-crackdown" target="_blank">europol.europa.eu</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>CISA/FBI/MS-ISAC Joint Advisory AA24-060A: #StopRansomware Phobos, Feb 29, 2024 &bull; <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-060a" target="_blank">cisa.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>HHS HC3 Analyst Note: 8Base Ransomware, November 2023 &bull; <a href="https://www.hhs.gov/sites/default/files/8base-ransomware-analyst-note.pdf" target="_blank">hhs.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>Japan National Police Agency: Ransomware Damage Recovery (Phobos/8Base decryptor) &bull; <a href="https://www.npa.go.jp/english/bureau/cyber/ransomdamagerecovery.html" target="_blank">npa.go.jp</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>No More Ransom / Europol decryptor platform &bull; <a href="https://www.nomoreransom.org/" target="_blank">nomoreransom.org</a></span></div>
+        <div class="source-category">Threat Intelligence and Vendor Reporting</div>
+        <div class="source-item"><span class="source-num">[8]</span><span>Cisco Talos: A deep dive into Phobos ransomware, recently deployed by 8Base group, Nov 17, 2023 &bull; <a href="https://blog.talosintelligence.com/deep-dive-into-phobos-ransomware/" target="_blank">talosintelligence.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Trend Micro: Ransomware Spotlight: 8Base, April 2024 &bull; <a href="https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-8base" target="_blank">trendmicro.com</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>VMware Carbon Black (TAU): 8Base Ransomware &mdash; A Heavy Hitting Player, Jun 28, 2023 &bull; <a href="https://blogs.vmware.com/security/2023/06/8base-ransomware-a-heavy-hitting-player.html" target="_blank">blogs.vmware.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>Palo Alto Unit 42: Threat Actor Groups tracked (Squalid Scorpius / Weary Scorpius) &bull; <a href="https://unit42.paloaltonetworks.com/threat-actor-groups-tracked-by-palo-alto-networks-unit-42/" target="_blank">unit42.paloaltonetworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>SOCRadar: Dark Web Profile &mdash; 8Base Ransomware (leak-site and Telegram imagery) &bull; <a href="https://socradar.io/blog/dark-web-profile-8base-ransomware/" target="_blank">socradar.io</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Malpedia: win.8base (alias aggregation) &bull; <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.8base" target="_blank">malpedia.caad.fkie.fraunhofer.de</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>SentinelOne: 8Base anthology &bull; <a href="https://www.sentinelone.com/anthology/8base/" target="_blank">sentinelone.com</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Coveware: Phobos Ransomware, A Combo of CrySiS and Dharma, January 2019 &bull; <a href="https://www.coveware.com/blog/phobos-ransomware-distributed-dharma-crew" target="_blank">coveware.com</a></span></div>
+        <div class="source-category">News and Investigative Reporting</div>
+        <div class="source-item"><span class="source-num">[16]</span><span>BleepingComputer: New Phobos and 8Base ransomware decryptor recovers files for free, Jul 18, 2025 &bull; <a href="https://www.bleepingcomputer.com/news/security/new-phobos-ransomware-decryptor-lets-victims-recover-files-for-free/" target="_blank">bleepingcomputer.com</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>KrebsOnSecurity: Who's Behind the 8Base Ransomware Website?, September 2023 &bull; <a href="https://krebsonsecurity.com/2023/09/whos-behind-the-8base-ransomware-website/" target="_blank">krebsonsecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>The Hacker News: FBI, Europol, and NCA take down 8Base data leak and negotiation sites, Feb 2025 &bull; <a href="https://thehackernews.com/2025/02/8base-ransomware-data-leak-sites-seized.html" target="_blank">thehackernews.com</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>The Register: Poland arrests alleged Phobos affiliate, Feb 17, 2026 &bull; <a href="https://www.theregister.com/2026/02/17/poland_phobos_ransomware_arrest/" target="_blank">theregister.com</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>Ransomware.live: 8Base group profile (leak-site victim data) &bull; <a href="https://www.ransomware.live/group/8base" target="_blank">ransomware.live</a></span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span>Quorum Cyber: 8Base Threat Actor Profile, October 2023</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a> &nbsp;&bull;&nbsp; <a href="https://endkrysha.com" style="color:var(--blue)">endkrysha.com</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+(function initSources() {
+  const btn = document.getElementById('source-toggle');
+  const list = document.getElementById('source-list');
+  if (!btn || !list) return;
+  btn.addEventListener('click', function() {
+    const open = list.classList.toggle('open');
+    btn.textContent = open ? 'Hide source list' : 'Show source list';
+  });
+})();
+
+// Recent Reporting feed (graceful: shows empty-state if no data file)
+(async function loadFeed() {
+  const grid = document.getElementById('feed-grid');
+  const loadingEl = document.getElementById('feed-loading');
+  if (!grid) return;
+  try {
+    const res = await fetch('./data/ti-feed-8base.json');
+    if (!res.ok) throw new Error('no feed');
+    const items = await res.json();
+    if (Array.isArray(items) && items.length > 0) {
+      if (loadingEl) loadingEl.remove();
+      items.slice(0, 10).forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          '<div class="feed-title"><a href="' + item.url + '" target="_blank" rel="noopener">' + item.title + '</a></div>' +
+          '<div class="feed-meta"><span class="feed-source">' + (item.source || '') + '</span>' +
+          (dateStr ? '<span class="feed-date">' + dateStr + '</span>' : '') + '</div>';
+        grid.appendChild(card);
+      });
+    } else { throw new Error('empty'); }
+  } catch (e) {
+    if (loadingEl) {
+      loadingEl.textContent = 'No recent reporting in monitored feeds. 8Base has shown no activity since the February 2025 takedown.';
+      loadingEl.style.fontStyle = 'italic';
+    }
+  }
+})();
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
