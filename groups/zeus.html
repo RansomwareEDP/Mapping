@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zeus / GameOver Zeus / CryptoLocker | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: background 0.15s;
+  color: var(--gray-400); margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.dot-inactive { background: var(--gray-400); }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: var(--gray-600); color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE LABELS */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* DESCENDANTS / LEGACY POINTER GRID */
+.feed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+.feed-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; }
+.feed-card .feed-meta { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.feed-card .feed-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.feed-card .feed-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+.live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 4px 10px; border-radius: 20px; }
+.live-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gray-400); }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-title { color: #e6edf3; }
+[data-theme="dark"] .feed-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item active" href="zeus.html"><span class="group-dot dot-inactive"></span>Zeus / GameOver Zeus</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-conti"></span>Conti</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-inactive"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-inactive"></span>TrickBot</a>
+    <a class="group-item" href="akira.html"><span class="group-dot dot-active"></span>Akira</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-active"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-inactive"></span>Black Basta</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-active"></span>Cl0p</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-dim"></span>LockBit</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-inactive"></span>REvil</a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 &nbsp;Executive Summary</a>
+    <a href="#lineage">02 &nbsp;Lineage &amp; Heritage</a>
+    <a href="#operations">03 &nbsp;Operational Model</a>
+    <a href="#technical">04 &nbsp;Technical Capabilities</a>
+    <a href="#defensive">05 &nbsp;Defensive Mapping</a>
+    <a href="#financial">06 &nbsp;Financial Infrastructure</a>
+    <a href="#victims">07 &nbsp;Victim Profile</a>
+    <a href="#lawenforcement">08 &nbsp;Law Enforcement</a>
+    <a href="#attribution">09 &nbsp;Attribution &amp; State Nexus</a>
+    <a href="#trajectory">10 &nbsp;Trajectory &amp; Legacy</a>
+    <a href="#descendants">Legacy &amp; Descendants</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Ecosystem Origins Profile &bull; Compiled July 2026 &bull; TLP:WHITE</div>
+    <div class="hero-title">Zeus / GameOver Zeus / CryptoLocker</div>
+    <div class="hero-subtitle">GOLD EVERGREEN (Secureworks) &nbsp;&bull;&nbsp; Russia-based &nbsp;&bull;&nbsp; Evgeniy Bogachev ("Slavik") &nbsp;&bull;&nbsp; Banking Trojan to Ransomware Origin &nbsp;&bull;&nbsp; Active 2006 to 2014</div>
+    <div class="hero-badges">
+      <span class="badge badge-defunct">Infrastructure Defunct</span>
+      <span class="badge badge-critical">Successor Lineage Active (Evil Corp)</span>
+      <span class="badge badge-raas">Ecosystem Root Node</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">c. 2006</div>
+        <div class="kpi-sub">Zeus kit (Fox-IT radar)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Disrupted</div>
+        <div class="kpi-value">Jun 2014</div>
+        <div class="kpi-sub">Operation Tovar (13 nations)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">GOZ Infections</div>
+        <div class="kpi-value">500K&ndash;1M</div>
+        <div class="kpi-sub">~25% US (FBI)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Est. Losses (GOZ)</div>
+        <div class="kpi-value">$100M+</div>
+        <div class="kpi-sub">Wire / ACH fraud (FBI)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">CryptoLocker Victims</div>
+        <div class="kpi-value">~500K</div>
+        <div class="kpi-sub">Decrypt portal population</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">FBI Reward</div>
+        <div class="kpi-value">$3M</div>
+        <div class="kpi-sub">Bogachev, still at large</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Forward Lineage</div>
+        <div class="kpi-value">Evil Corp</div>
+        <div class="kpi-sub">JabberZeus to Dridex</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01 -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Enterprise Overview</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Assessment</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The Zeus enterprise is the origin node of the modern Russia and CIS financially-motivated cybercrime ecosystem. It is treated here as a single connected operation across three phases, anchored by one central operator, Evgeniy Mikhailovich Bogachev (handles "Slavik," "lucky12345," "Pollingsoon," "Monstr," "Lastik"). Fox-IT dated Bogachev's activity to as early as 2006, and Zeus's first appearance to roughly 2005 to 2006.</p>
+        <p>Phase 1, the Zeus crimeware kit (roughly 2006 to 2011), was a commercially licensed banking trojan sold on underground forums that industrialized online-banking credential theft through man-in-the-browser attacks. Phase 2, GameOver Zeus and the "Business Club" (2011 to 2014), was Bogachev's private, non-commercial evolution of Zeus onto a peer-to-peer botnet, operated by a vetted syndicate of more than fifty members. Phase 3, CryptoLocker (2013 to 2014), was ransomware delivered through the existing GameOver Zeus and Cutwail botnet infrastructure, proving that direct file-encryption extortion could out-monetize banking fraud, and establishing the template every modern ransomware operation would follow.</p>
+        <p>All three phases are defunct as active infrastructure. GameOver Zeus and CryptoLocker were seized and sinkholed during the U.S.-led, thirteen-country Operation Tovar in late May and early June 2014. Fox-IT and FireEye later recovered the CryptoLocker key database and stood up a free public decryption portal in August 2014. Bogachev was never arrested; he resides openly in Anapa, Russia, under a $3 million FBI reward and a December 2016 OFAC designation. The lineage is defunct only in name: the JabberZeus operational nucleus carried forward into Evil Corp (Maksim Yakubets, "aqua"), Dridex, and the WastedLocker ransomware family, making this profile the root of the site's lineage architecture.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Quick-Reference Attributes</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Group-specific designation</td><td>GOLD EVERGREEN (Secureworks) tracks the Zeus / GameOver Zeus / Business Club actor. No APT-style codename was assigned to Bogachev individually; law enforcement tracked him as a named defendant</td></tr>
+              <tr><td>Successor designations (NOT this era)</td><td>INDRIK SPIDER (CrowdStrike), GOLD DRAKE (Secureworks), Manatee Tempest / DEV-0243 (Microsoft), UNC2165 (Mandiant) all name the Evil Corp / Dridex successor, not the Zeus enterprise. Do not conflate</td></tr>
+              <tr><td>Core actor</td><td>Evgeniy Mikhailovich Bogachev &mdash; "Slavik," "lucky12345," "Pollingsoon," "Monstr," "Lastik"</td></tr>
+              <tr><td>Phases</td><td>Zeus kit (2006 to 2011); GameOver Zeus + Business Club (2011 to 2014); CryptoLocker (2013 to 2014)</td></tr>
+              <tr><td>Operational model</td><td>Commercial crimeware kit, then private P2P botnet with a vetted 50+ member syndicate, then ransomware monetization layer</td></tr>
+              <tr><td>Extortion mechanic (CryptoLocker)</td><td>File encryption, ~$300 demand, MoneyPak / Ukash / cashU / paysafecard / Bitcoin, 72 to 100 hour deadline. Pre-leak-site era: no DLS, no data publication</td></tr>
+              <tr><td>Encryption (CryptoLocker)</td><td>RSA-2048 asymmetric wrapping AES bulk file encryption; private key held server-side; no cryptographic weakness</td></tr>
+              <tr><td>Assessed jurisdiction</td><td>Russia (Anapa). Bogachev at large; Russia does not extradite nationals</td></tr>
+              <tr><td>State nexus</td><td>Tolerated safe harbor, with a probable-cooperation minority position (GOZ espionage tasking evidence). Weaker than the government-declared Evil Corp / FSB nexus (CREDIBLE / ANALYST INFERENCE)</td></tr>
+              <tr><td>Decryptor availability</td><td>DecryptCryptoLocker (Fox-IT / FireEye, Aug 2014) via recovered key database, not a cipher break (CONFIRMED)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Metrics</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">GOZ Infections</div>
+            <div class="metric-val">500K&ndash;1M</div>
+            <div class="metric-note">At takedown; ~25% US (FBI)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">GOZ Losses</div>
+            <div class="metric-val">$100M+</div>
+            <div class="metric-note">FBI aggregate attribution</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Data Exfiltrated</div>
+            <div class="metric-val">20&ndash;30 TB</div>
+            <div class="metric-note">Fox-IT / CrowdStrike / FBI</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">CryptoLocker Victims</div>
+            <div class="metric-val">~500K</div>
+            <div class="metric-note">Decrypt portal population</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">CryptoLocker Pay Rate</div>
+            <div class="metric-val">1.3%</div>
+            <div class="metric-note">Post-mortem; 0.4% mid-outbreak</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Business Club</div>
+            <div class="metric-val">50+</div>
+            <div class="metric-note">Members; 2 leaders at apex</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE GALLERY -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site and Branding</div>
+      <div class="callout callout-info" style="margin-top:0;">
+        <strong>Pre-leak-site era:</strong> This enterprise predates the name-and-shame dedicated leak site, which emerged with Maze in 2019. Zeus and GameOver Zeus were covert banking trojans with no public branding, and CryptoLocker extorted through a ransom splash screen rather than a victim-shaming portal. The gallery below therefore shows the CryptoLocker ransom interface, the FBI wanted notice for Bogachev, and Operation Tovar takedown material rather than DLS captures. Images carry graceful fallbacks; verify rendering before publication.
+      </div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://upload.wikimedia.org/wikipedia/en/e/e6/CryptoLocker.png"
+               alt="CryptoLocker ransom splash screen"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>CryptoLocker Ransom Screen</strong>
+            The CryptoLocker interface presented a countdown timer, the RSA-2048 encryption notice, and payment instructions demanding roughly $300 in Bitcoin or prepaid vouchers before the private key was deleted server-side. This splash screen is the archetype every later ransom note descends from.
+            <span class="img-source">Source: Wikimedia / CryptoLocker sample, 2013 (verify licensing before publication)</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Evgeniy_Mikhailovich_Bogachev%2C_Cyber%27s_Most_Wanted.jpg/480px-Evgeniy_Mikhailovich_Bogachev%2C_Cyber%27s_Most_Wanted.jpg"
+               alt="FBI Cyber Most Wanted notice for Evgeniy Bogachev"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>FBI Cyber Most Wanted: Bogachev</strong>
+            Bogachev carries an FBI reward of up to $3 million, among the largest cyber bounties ever offered. He remains at large in Anapa, Russia. The image is the archetypal example of the "indictment without incapacitation" pattern this enterprise established.
+            <span class="img-source">Source: FBI / Wikimedia Commons (US Gov, public domain), 2015</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Gameover_ZeuS_botnet_infrastructure.png/640px-Gameover_ZeuS_botnet_infrastructure.png"
+               alt="GameOver Zeus peer-to-peer botnet infrastructure diagram"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>P2P Botnet Architecture</strong>
+            GameOver Zeus replaced Zeus's fixed command servers with a peer-to-peer network in which instructions could propagate from any infected node, the design the FBI cited as making it far harder to dismantle than earlier Zeus variants.
+            <span class="img-source">Source: US Government / Operation Tovar material, 2014 (verify before publication)</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Zeus_Trojan_control_panel.png/640px-Zeus_Trojan_control_panel.png"
+               alt="Zeus builder and command panel"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Zeus Kit / Command Panel</strong>
+            Zeus was sold as a commercial crimeware kit: a builder and web control panel that let buyers customize target banks and web injects. The full package was reported priced as high as $10,000 before the 2011 source leak collapsed its resale value.
+            <span class="img-source">Source: Vendor research / Zeus builder sample, c. 2010 (verify before publication)</span>
+          </div>
+        </div>
+        <div class="img-panel myth">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Operation_Tovar_logo.png/480px-Operation_Tovar_logo.png"
+               alt="Operation Tovar takedown"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Operation Tovar (2014)</strong>
+            The thirteen-nation takedown seized command servers in Kiev and Donetsk, redirected infected-host traffic under court order, and freed roughly 300,000 machines, the first full-spectrum ransomware disruption combining seizure, indictment, and later sanctions.
+            <span class="img-source">Source: FBI / Europol Operation Tovar, June 2014 (verify before publication)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage, Heritage, and the Source-Code Leak Tree</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Zeus Origin and the SpyEye Rivalry</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Zeus operated for years as the market-leading banking trojan kit, competing directly with SpyEye, authored by "Gribodemon" / "Harderman" (later identified in prosecution as Aleksandr Panin). In October 2010, Brian Krebs reported, sourcing forum posts, that Zeus's author announced his retirement and transferred the Zeus source code to the SpyEye author, with public claims the two kits would be merged. The claimed merger is genuinely disputed and is presented here on both sides.</p>
+        <div class="conf-block credible"><strong>Merger occurred (partial):</strong> Kaspersky's Dmitry Tarakanov confirmed a one-directional transfer in which SpyEye's author incorporated a specific Zeus web-cache-override feature shortly after the handoff.</div>
+        <div class="conf-block inference"><strong>Merger did not fully occur:</strong> By late 2011 Microsoft and Kaspersky researchers stated the promised full merger "never happened, beyond some basic cutting and pasting of code," and the two families continued on separate development tracks. Threatpost headlined the ambiguity "Married Or Living Separately?"</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The May 2011 Source-Code Leak and the Derivative Tree</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Separately from the SpyEye handoff, the complete Zeus source code leaked publicly. Danish firm CSIS found Zeus source being sold on forums as early as March 23, 2011, and by May 9 to 10, 2011, The Hacker News, The Register, and Virus Bulletin confirmed the full Zeus/Zbot source was freely available and functional. This event, not the 2010 SpyEye handoff, produced the derivative "leak tree."</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Derivative</th><th>Evidence</th><th>Confidence</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Citadel</td><td>Code overlap: built directly on leaked Zeus source, added VNC and anti-AV</td><td>CONFIRMED</td><td>Best-documented fork; Kaspersky, Virus Bulletin</td></tr>
+              <tr><td>ICE IX</td><td>Code overlap: first crimeware built from leaked Zeus source (2011), sold ~$1,800</td><td>CONFIRMED</td><td>Upgraded from single-source: Kaspersky (Jorge Mieres) via Threatpost</td></tr>
+              <tr><td>Atmos</td><td>Citadel variant (c. 2016); Citadel itself is Zeus-derived, making Atmos a Zeus grandchild</td><td>CONFIRMED</td><td>Upgraded from single-source: SecurityWeek, Threatpost, Proofpoint</td></tr>
+              <tr><td>GameOver Zeus</td><td>NOT a leak fork. Bogachev's private continuous track (Zeus v2 to Murofet to Licat to P2P GOZ)</td><td>CONFIRMED</td><td>Critical distinction: personnel and infrastructure continuity, not the public leak</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-alert">
+          <strong>Analyst-critical distinction:</strong> Forks such as Citadel, ICE IX, and Atmos were built by <em>other</em> actors from the <em>publicly leaked</em> 2011 source. GameOver Zeus is Bogachev's <em>own</em> proprietary lineage (Zeus v2 to Murofet to Licat to P2P Zeus), privately retained even as the base code became public. GOZ first appeared in September 2011, the same year as the leak, but Fox-IT and CrowdStrike describe it as a continuation of Bogachev's existing Murofet/Licat codebase, so its lineage rests on personnel and infrastructure continuity rather than the leak.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-alert">
+          <strong>Critical rule:</strong> Nearly every vendor "actor" codename in this space names the Evil Corp / Dridex successor (emerged ~2014), not the original Zeus / GameOver Zeus / Business Club operator. Only Secureworks assigns a proprietary name to the earlier Bogachev-era actor.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>Applies to</th></tr></thead>
+            <tbody>
+              <tr><td>Secureworks CTU</td><td>GOLD EVERGREEN</td><td>The Zeus / GameOver Zeus / Business Club actor (Bogachev). The one vendor cryptonym for this enterprise</td></tr>
+              <tr><td>Secureworks CTU</td><td>GOLD DRAKE</td><td>Evil Corp / Bugat / Dridex successor (separate profile)</td></tr>
+              <tr><td>CrowdStrike</td><td>INDRIK SPIDER</td><td>Evil Corp, from Dridex (early 2014) forward. Public profile does not extend back to Zeus/GOZ</td></tr>
+              <tr><td>Microsoft</td><td>Manatee Tempest (formerly DEV-0243)</td><td>Evil Corp successor</td></tr>
+              <tr><td>Mandiant (Google TIG)</td><td>UNC2165</td><td>Evil Corp; Mandiant lineage begins at Dridex, not Zeus</td></tr>
+              <tr><td>Fox-IT</td><td>"Business Club" (organization); GameOver Zeus (malware)</td><td>Organization and malware kept distinct</td></tr>
+              <tr><td>Recorded Future / Unit 42</td><td>No distinct actor codename located</td><td>Track the malware family by name</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational and Business Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Phase 1: The Zeus Kit Licensing Economy</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Zeus was sold as a commercial crimeware kit, with the full builder and panel package reported priced as high as $10,000 around the 2011 leak. A Cambridge University study that manually reviewed 120 criminal forums (65 relevant posts across 9 forums in English, German, and Russian) documented an active resale and module economy in which configuration files were "shared, sold, and stolen" in a barter-like underground market. One verbatim resale advertisement listed a full Zeus 2.0.8.9 setup bundled with webinjects, VNC, a FUD executable, and "1k installs (worldwide)," hosted on "offshore hosting" with a "bulletproof domain."</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Phase 2: The "Business Club" Structure</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The primary source is the Fox-IT / CrowdStrike / FBI research presented at Black Hat USA 2015 (whitepaper by Michael Sandee and Elliott Peterson). Earlier reporting appeared to conflict on membership size, but the primary whitepaper resolves it as a single tiered structure, not a contradiction.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Apex</div>
+            <div class="pillar-title">Two Leaders</div>
+            <div class="pillar-body">"The core team of GOZ consisted of two leaders," one being Slavik (Bogachev), who also performed technical work securing the Linux server backends.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Inner Core</div>
+            <div class="pillar-title">~6 "Half-Dozen"</div>
+            <div class="pillar-body">The two leaders plus a support crew and "preferred suppliers." This is The Register's "six-member secretive circle," the inner ring, not a competing total.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Full Membership</div>
+            <div class="pillar-title">50+ Members</div>
+            <div class="pillar-body">"Over 50 individuals," spanning most of Russia's eleven time zones to enable round-the-clock operations. Roles: fraud operators, money-mule recruiters, 24/7 technical support, and webinject suppliers.</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Backend Layer</div>
+            <div class="pillar-title">27 Botnets</div>
+            <div class="pillar-body">27 sub-botnets, each backend "managed by a different person or group," the distributed operator network beneath the club.</div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Membership terms:</strong> Long-term vetting, an initial membership fee, and a profit-sharing agreement, with privileges unlocked over time. Krebs reported the group devised hybrid token-grabber attacks (internally "The World Bank Center") specifically to defeat two-factor authentication on corporate banking. Predominantly Russian-speaking, the club included Ukrainian members, from whom Bogachev concealed the espionage tasking (see Section 09).
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Phase 3: CryptoLocker Operationalization</div>
+        <p>CryptoLocker was distributed through the existing GameOver Zeus and Cutwail spam infrastructure. Machines already compromised by GameOver Zeus were frequently also infected with CryptoLocker as a secondary monetization payload; the FBI stated plainly that "computers infected with Cryptolocker are often also infected with GameOver Zeus." Ransom demands were roughly $300, payable via MoneyPak, Ukash, cashU, paysafecard, or Bitcoin, with a 72 to 100 hour deadline after which the private key was deleted server-side. A follow-on "CryptoLocker Decryption Service" let victims who missed the deadline recover keys at higher cost.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Money-Mule Mechanics (Cross-Phase)</div>
+        <p>The JabberZeus-era indictment (District of Nebraska) is the most granular primary source on mule mechanics: conspirators used U.S.-resident "money mules" who received ACH or wire transfers from victims' accounts into their own, withdrew a portion, and wired the remainder overseas. The FBI arrested roughly 90 mules in an October 2010 sweep tied to this case. Roles were specialized: Yuriy Konovalenko forwarded stolen banking credentials to Yevhen Kulibaba, who ran the UK laundering network.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Zeus (Kit Era)</div>
+        <p>Zeus operated via man-in-the-browser web injects and form-grabbing, intercepting banking credentials at the point of entry, and used a builder/config model that let purchasers customize target banks and payloads. Distribution occurred via spam/phishing and exploit-kit drive-by infection, with the Blackhole exploit kit widely referenced in contemporaneous Zeus-era distribution reporting. A discrete CVE enumeration tied specifically to Zeus was not isolated in this research and is flagged as an intelligence gap; exploitation in this era was kit-driven rather than tied to a signature vulnerability list.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">GameOver Zeus</div>
+        <p>GOZ's defining departure was a peer-to-peer command-and-control architecture rather than fixed servers, cited by the FBI as the reason it was harder to dismantle: instructions could come from any infected node. A domain-generation algorithm provided fallback command channels. After the May 2014 takedown of the P2P network, Dell SecureWorks CTU observed the gang re-emerge in July 2014 with a centralized DGA-based structure, abandoning P2P; CTU sinkholed a DGA domain on July 11, 2014, and recorded 177 compromised systems reaching out within twelve hours. Later variants generated between 1,000 and 10,000 domains per day; Bitdefender sinkholing found 5,907 unique infected IPs (84% US) for the 1,000-domain variant and 4,316 IPs (70% Ukraine/Belarus) for the 10,000-domain variant. The original botnet was estimated at 500,000 to over 1 million machines, roughly 25% in the US.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CryptoLocker Encryption</div>
+        <p>CryptoLocker used RSA-2048 for the asymmetric component and AES for bulk file encryption, generating a unique keypair per infected machine via C2, with domains for C2 also DGA-generated. The private key was held server-side. No cryptographic weakness in the implementation was ever publicized: the decryption breakthrough came entirely from operational recovery of the private-key database during Operation Tovar's server seizure, which Fox-IT and FireEye used to build the free DecryptCryptoLocker portal, not from a cipher break.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS / Russian-Language Behavior</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>No primary source reviewed documented a confirmed Russian-keyboard kill switch inside the Zeus, GOZ, or CryptoLocker binaries. What is well documented is behavioral rather than code-level: the Fox-IT research found GOZ espionage tasking concentrated on Ukraine, Georgia, Turkey, and OPEC states, and the Bitdefender variant geography (70% Ukraine/Belarus, notably not Russia) is consistent with sparing the Russian Federation itself. Analysts should not assume a confirmed CIS keyboard exclusion in these specific binaries absent code-level documentation, which was not located.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: DEFENSIVE MAPPING (RETROSPECTIVE) -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping (Retrospective)</h2>
+      </div>
+      <div class="callout callout-info">
+        <strong>Historical framing:</strong> This enterprise is defunct, so the mapping below is retrospective. It maps the Zeus enterprise's techniques to MITRE ATT&CK, records the control that countered each at the time, and captures what the takedown demonstrated, rather than prescribing live defender action against an active group.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&CK Techniques: Priority Set</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>Tactic</th><th>Enterprise usage</th><th>Countermeasure / takedown lesson</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">T1566 Phishing</td><td>Initial Access</td><td>Cutwail spam delivered Zeus and CryptoLocker payloads</td><td>Mail filtering and user awareness; Tovar and later Cutwail actions degraded the distribution layer</td></tr>
+              <tr><td class="mono">T1189 Drive-by Compromise</td><td>Initial Access</td><td>Blackhole exploit kit drive-by delivery of Zeus</td><td>Timely patching; the Blackhole ecosystem collapsed in 2013 after the "Paunch" arrest</td></tr>
+              <tr><td class="mono">T1185 Browser Session Hijacking</td><td>Collection</td><td>Man-in-the-browser web injects and form-grabbing to steal banking credentials</td><td>Out-of-band transaction verification; the Business Club built token-grabbers specifically to defeat 2FA</td></tr>
+              <tr><td class="mono">T1090 Proxy (P2P)</td><td>Command &amp; Control</td><td>GameOver Zeus peer-to-peer C2 with no fixed servers</td><td>Sinkholing required court-ordered traffic redirection; P2P made takedown materially harder than centralized Zeus</td></tr>
+              <tr><td class="mono">T1568.002 Domain Generation Algorithms</td><td>Command &amp; Control</td><td>GOZ DGA fallback and CryptoLocker C2 domains</td><td>DGA reversing and pre-emptive sinkholing (CTU, Bitdefender) tracked and suppressed re-emergence</td></tr>
+              <tr><td class="mono">T1486 Data Encrypted for Impact</td><td>Impact</td><td>CryptoLocker RSA-2048 + AES file encryption</td><td>Offline, tested backups; recovery of the key database enabled free decryption without paying</td></tr>
+              <tr><td class="mono">T1657 Financial Theft</td><td>Impact</td><td>ACH / wire fraud via money-mule networks (Zeus, GOZ)</td><td>Bank-side anomaly detection and mule interdiction; ~90 mules arrested in the October 2010 sweep</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked Advisories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory / Action</th><th>Issuer</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td>Alert TA14-150A: GameOver Zeus P2P Malware</td><td>US-CERT / CISA</td><td>June 2014</td></tr>
+              <tr><td>GameOver Zeus Botnet Disrupted (Operation Tovar)</td><td>FBI / DOJ / Europol</td><td>June 2014</td></tr>
+              <tr><td>DecryptCryptoLocker free recovery portal</td><td>Fox-IT / FireEye</td><td>August 2014</td></tr>
+              <tr><td>OFAC designation of Evgeniy Bogachev</td><td>US Treasury</td><td>December 2016</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout callout-success">
+        <strong>Top defensive priorities (retrospective):</strong> Offline tested backups neutralize the CryptoLocker extortion model regardless of cipher strength; out-of-band transaction verification defeats man-in-the-browser fraud; and DGA/P2P monitoring plus rapid multinational legal coordination were the decisive levers in Operation Tovar. The single most important lesson is architectural: full-spectrum disruption (infrastructure seizure plus indictment plus sanctions) achieved real technical results but did not incapacitate the principal.
+      </div>
+    </section>
+
+    <!-- SECTION 06 -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Pre-Crypto: Wire and ACH Fraud</div>
+        <p>The FBI attributes losses of more than $100 million to GameOver Zeus. The JabberZeus-specific indictment (District of Nebraska) sought forfeiture of at least $70 million from that sub-conspiracy alone. The 2014 Pittsburgh indictment's illustrative victim, Haysite Reinforced Plastics of Erie, PA, saw two fraudulent wire transfers succeed (approximately $198,000 and $175,000) while six others were blocked. DOJ's 2019 Yakubets/Evil Corp indictment separately states the original Zeus/JabberZeus scheme caused $70 million in U.S. losses across 21 victims in 11 states, distinct from the later Dridex losses of "at least $100 million."</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CryptoLocker Revenue: All Published Estimates</div>
+        <div class="callout callout-warning">
+          <strong>Methodology warning:</strong> Estimates span roughly three orders of magnitude and use fundamentally different methods (server-side telemetry vs. on-chain clustering vs. journalistic aggregate). Do not collapse them into one figure.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Estimate</th><th>Source</th><th>Methodology</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td>~$300K (up to ~$980K at peak BTC)</td><td>Dell SecureWorks CTU (Keith Jarvis)</td><td>1,216 BTC tracked over ~100 days; 0.4% payment rate</td><td>Dec 2013</td></tr>
+              <tr><td>~$310K confirmed (up to ~$1.1M&ndash;$1.18M at peak BTC)</td><td>ASU academic study (Liao et al., eCrime 2016)</td><td>On-chain clustering: 795 confirmed payments, 1,128.40 BTC; broader filter up to 1,541 BTC ($539K)</td><td>Sept 2013&ndash;Jan 2014</td></tr>
+              <tr><td>~$3 million</td><td>BBC (security-firm assessments)</td><td>Contemporaneous journalistic estimate at portal launch; not a formal on-chain study</td><td>Aug 2014</td></tr>
+              <tr><td>~$300 million</td><td>Operation Tovar retrospectives</td><td>Attributed to "the gang" broadly across GOZ + CryptoLocker; likely double-counts banking-fraud losses. Treat with caution</td><td>2014-era</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The ASU study is the only source using rigorous blockchain forensics. It also identified transactional links to Bitcoin Fog (a mixing service) and the BTC-e exchange as laundering and cash-out points.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Coverage and OFAC</div>
+        <ul class="content-list">
+          <li><strong>Commercial forensics gap (CONFIRMED):</strong> No Chainalysis, Elliptic, or TRM Labs entity-specific analysis of CryptoLocker proceeds exists. The 2013-2014 campaign predates these firms' relevant coverage; the ASU study is the sole rigorous on-chain measurement.</li>
+          <li><strong>OFAC:</strong> The December 29, 2016 designation of Bogachev (Executive Order 13694, alongside Aleksey Belan) is a person-level sanction, not a wallet-blocking order. No CryptoLocker wallet-specific OFAC designation exists.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 07 -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Zeus / GameOver Zeus</div>
+        <p>GameOver Zeus infected between 500,000 and over 1 million computers globally, roughly 25% in the United States per the FBI. Fox-IT / CrowdStrike / FBI researchers estimate the gang stole 20 to 30 terabytes of data in addition to the $100 million-plus in direct losses. Corporate banking accounts, rather than individual consumers, were the primary GOZ-phase target. Named victims in the JabberZeus-era indictment include Bullitt County Fiscal Court, Franciscan Sisters of Chicago, Husker Ag LLC, Parago Inc., the Town of Egremont, and United Dairy; the Pittsburgh indictment names Haysite Reinforced Plastics.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CryptoLocker</div>
+        <p>Roughly 500,000 known victims populated the decryption portal. Post-mortem analysis of recovered server data found about 1.3% of victims paid, versus Dell SecureWorks' mid-outbreak estimate of 0.4% (December 2013, on 200,000 to 250,000 infections). The discrepancy reflects a mid-campaign snapshot versus a full-lifecycle tally.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Sparing</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>The Bitdefender DGA-sinkhole data showing one late-2014 GOZ remnant variant concentrated 70% in Ukraine and Belarus, specifically not Russia, supports a Russia-exclusion targeting pattern focused on the Russian Federation itself rather than the broader CIS bloc. This rests on a single vendor's sinkhole sample and should be treated as illustrative.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 08 -->
+    <section class="section" id="lawenforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operation Tovar (May 30 to June 2, 2014)</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>A thirteen-country coalition, led by the U.S. DOJ/FBI with the UK National Crime Agency and partners across South Africa, Australia, the Netherlands, Germany, Luxembourg, Ukraine, Canada, New Zealand, Japan, Italy, and France, executed the takedown. Ukrainian officials seized and copied GOZ command servers in Kiev and Donetsk; a civil suit in the Western District of Pennsylvania obtained orders authorizing sinkhole redirection, severing P2P communications. Roughly 300,000 of the 500,000 to 1,000,000 infected computers were freed in the initial action. Medium-term, Dell SecureWorks documented the gang's re-emergence within about six weeks using a centralized DGA-based C2, demonstrating that infrastructure disruption alone did not eliminate the malware family.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Indictments and Prosecutions</div>
+        <p>Bogachev was indicted under his true name in the Western District of Pennsylvania on May 19, 2014 (conspiracy, computer fraud, wire fraud, bank fraud, money laundering), having earlier been indicted under the alias "lucky12345" in the District of Nebraska in 2012. The JabberZeus crew was named in a separate Nebraska case.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Individual</th><th>Handle</th><th>Role</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Evgeniy Bogachev</td><td>Slavik, lucky12345, Pollingsoon, Monstr, Lastik</td><td>Enterprise leader, Zeus author</td><td>At large in Anapa, Russia; FBI Most Wanted; $3M reward</td></tr>
+              <tr><td>Vyacheslav Penchukov</td><td>"tank"</td><td>JabberZeus crew; later led IcedID/Bokbot</td><td>Arrested Geneva Oct 2022; pleaded guilty Feb 2024; sentenced July 2024 to 9 years, $73M restitution</td></tr>
+              <tr><td>Yevhen Kulibaba</td><td>&mdash;</td><td>Ran UK money-laundering network</td><td>Guilty plea Nov 2014; sentenced May 2015 (2 yrs 10 mo)</td></tr>
+              <tr><td>Yuriy Konovalenko</td><td>&mdash;</td><td>Relayed stolen credentials to Kulibaba</td><td>Guilty plea Nov 2014; sentenced May 2015 (2 yrs 10 mo)</td></tr>
+              <tr><td>Ivan Klepikov, Alexey Bron, Alexey Tikonov</td><td>&mdash;</td><td>Named JabberZeus co-conspirators</td><td>At-large status not detailed in sources reviewed [SINGLE SOURCE gap]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Reward, Sanctions, and Cooperating Witnesses</div>
+        <ul class="content-list">
+          <li><strong>FBI reward:</strong> Up to $3 million for Bogachev, among the largest cyber bounties at the time (first widely reported February 2015).</li>
+          <li><strong>OFAC (Dec 29, 2016):</strong> Bogachev designated under E.O. 13694; the designation attributes CryptoLocker to him directly ("over 120,000 U.S. victims") but frames the sanction in financial-crime terms, without a state-intelligence allegation.</li>
+          <li><strong>Cooperating witnesses:</strong> SpyEye developer Aleksandr Panin provided reporting to journalists describing communications with Bogachev, but is not documented as a formal law-enforcement cooperating witness. Preserve this distinction.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 09 -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Central Evidentiary Claim</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Fox-IT's Black Hat 2015 research, produced with CrowdStrike and briefed alongside an FBI agent, found that GOZ-infected machines in Ukraine, Georgia, and Turkey were queried with search commands seeking documents at certain government secret-classification levels, specific intelligence-agency employees, and politically sensitive regional issues, activity distinct from the botnet's financial-fraud function. One cited query probed Turkish systems on what Ankara knew about the movement of Russian fighters to Syria; Ukrainian targeting intensified against the SBU during the conflict period; OPEC states were also targeted.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Basis and Competing Interpretations</div>
+        <p>This is a multi-organization, cross-corroborated finding (Fox-IT's Sandee whitepaper, CrowdStrike's parallel research, and an FBI agent's co-presentation), but all of it rests on one underlying evidentiary corpus: the intercepted Business Club communications and botnet command telemetry recovered at takedown. It is therefore not fully independent evidentiary streams. The New York Times (via BankInfoSecurity) presented three competing explanations: Russian services using criminal infrastructure as cover; Bogachev acting as a paid mercenary given a target list; or opportunistic criminal resale with no state direction. Former FBI ASAC Austin Berglas stated investigators observed Bogachev provide a copy of his passport to a suspected Russian intelligence contact under surveillance, "the closest we ever came," explicitly not conclusive.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assigned Nexus Tier</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p><strong>Tolerated safe harbor, with a probable-cooperation minority position.</strong> Supporting at least tolerated safe harbor: Bogachev's decade-plus of undisturbed residence in Russia despite a $3M bounty and OFAC sanction, and Russia's non-extradition practice. Supporting the stronger reading: the specific espionage-tasking pattern and the observed passport handoff. Counter-evidence: no source documents direct tasking messages from a named Russian intelligence officer to Bogachev; Fox-IT's Sandee explicitly hedged that state motivation "remains speculation."</p>
+        <div class="callout callout-warning">
+          <strong>Confidence relative to Evil Corp:</strong> This nexus is materially weaker than the 2019 Evil Corp / Yakubets FSB linkage, which carries an explicit U.S. Treasury designation statement ("by 2017 Yakubets was working with the Russian FSB"). The Bogachev-era nexus remains assessed and circumstantial, not government-declared.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10 -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory and Legacy Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Three Templates This Enterprise Established</div>
+        <ul class="content-list">
+          <li><strong>The kit economy (2006 to 2011):</strong> licensed crimeware-as-a-service scaled banking fraud beyond a single operator, with a documented resale, module, and configuration marketplace, the conceptual ancestor of RaaS.</li>
+          <li><strong>The vetted syndicate (2011 to 2014):</strong> the Business Club's private, invitation-only, profit-sharing structure with 50+ members foreshadowed the RaaS "vetted affiliate" model later formalized by REvil and Conti.</li>
+          <li><strong>Ransomware monetization (2013 to 2014):</strong> CryptoLocker proved encryption extortion could be monetized instantly through an existing botnet without mule chains, the shift DOJ's 2019 Evil Corp filing frames as the ecosystem's move toward "the relative anonymity provided by ransomware linked to cryptocurrency payments."</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster and the Evil Corp Handoff</div>
+        <p>Two-tier confidence applies, and the two tiers diverge sharply in this case.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Link</th><th>Relationship</th><th>Corroboration</th></tr></thead>
+            <tbody>
+              <tr><td>JabberZeus/GOZ to Evil Corp (Anchor)</td><td>Maksim Yakubets ("aqua") supplied mules/credentials in the Zeus era, then led Evil Corp / Dridex</td><td>CREDIBLE. DOJ/Treasury filings + NCA 2024 "Behind the Screens" + Krebs. NOT independently vendor-anchored: Mandiant (UNC2165) and CrowdStrike (INDRIK SPIDER) both begin their lineage at Dridex (2014), not Zeus</td></tr>
+              <tr><td>Evil Corp to ransomware brands (Extension)</td><td>BitPaymer, DoppelPaymer, WastedLocker, Hades, then LockBit affiliation</td><td>CONFIRMED (independent vendor). Mandiant UNC2165 (high confidence, 2022) and CrowdStrike both assess the chain and the OFAC-evasion motive</td></tr>
+              <tr><td>Locky</td><td>Sometimes attributed to Evil Corp</td><td>ANALYST INFERENCE. Not in Mandiant's stated Evil Corp progression; weaker than the core brand chain</td></tr>
+              <tr><td>Citadel, ICE IX, Atmos</td><td>Third-party forks of leaked 2011 Zeus source</td><td>CONFIRMED. Distinct from the Bogachev lineage (see Section 02)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Formal-assessment status:</strong> The downstream Evil Corp to ransomware-brand chain is vendor-confirmed (Mandiant, CrowdStrike). The JabberZeus to Evil Corp anchor is not: it rests on government legal filings and the NCA's October 2024 report (which alone spans JabberZeus to Business Club to Dridex to ransomware, and names the family network, ex-FSB protector Eduard Benderskiy, and LockBit affiliate Aleksandr Ryzhenkov). Flag this asymmetry to any downstream consumer.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">What Operation Tovar Demonstrated, and Its Limits</div>
+        <p>Tovar showed a coordinated full-spectrum response (technical sinkholing and seizure, criminal indictment, and later financial sanctions) could achieve real short-term disruption, freeing roughly 300,000 machines and eliminating the P2P architecture. Its limits are equally documented: the gang rebuilt centralized DGA infrastructure within about six weeks, and Bogachev was never captured. This established the enduring "indictment without incapacitation" pattern recurring across virtually every subsequent Russia-based ransomware actor.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Intelligence Gaps</div>
+        <ul class="content-list">
+          <li><strong>Business Club granularity:</strong> resolved at the tier level (2 leaders, ~6 core, 50+ members, 27 backends), but exact role-by-role rosters and profit-sharing mechanics remain undocumented beyond the Fox-IT whitepaper.</li>
+          <li><strong>Espionage-tasking chain:</strong> all state-nexus reporting traces to one leaked communications corpus; a second independent intelligence stream (declassified assessment or a second vendor with independent access) would be required to close it.</li>
+          <li><strong>CryptoLocker on-chain total:</strong> only one rigorous academic study exists; a modern re-analysis of the recovered Fox-IT/FireEye key-database transactions would resolve the $300K to $300M spread.</li>
+          <li><strong>Zeus-specific CVEs and CIS kill-switch:</strong> no discrete CVE enumeration or code-level CIS exclusion was located for these binaries.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LEGACY & DESCENDANTS (replaces live Recent Reporting feed for a defunct enterprise) -->
+    <section class="section" id="descendants">
+      <div class="section-header">
+        <span class="section-num">&rarr;</span>
+        <h2 class="section-title">Legacy and Descendants</h2>
+      </div>
+      <p style="margin-bottom:6px;"><span class="live-badge">Static &bull; Root-Node Handoff</span></p>
+      <p>This enterprise is defunct, so this profile carries a forward-pointer to its descendant cluster rather than a live reporting feed. The operational nucleus and its tooling continued under the designations below; each is tracked in its own profile as the library expands.</p>
+      <div class="feed-grid">
+        <div class="feed-card">
+          <div class="feed-meta">Direct Successor</div>
+          <div class="feed-title">Evil Corp</div>
+          <div class="feed-body">Led by Maksim Yakubets ("aqua"), the JabberZeus mule/credential supplier. Designations: INDRIK SPIDER (CrowdStrike), GOLD DRAKE (Secureworks), Manatee Tempest / DEV-0243 (Microsoft), UNC2165 (Mandiant). 2019 Treasury designation alleges FSB tasking by 2017.</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Successor Banking Trojan</div>
+          <div class="feed-title">Dridex (Bugat / Cridex)</div>
+          <div class="feed-body">The Zeus-successor banking trojan built by Evil Corp from 2014, caused "at least $100 million" in further losses per DOJ. Marks the transition from the Zeus codebase to the Evil Corp era.</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Ransomware Pivot</div>
+          <div class="feed-title">BitPaymer to WastedLocker to Hades</div>
+          <div class="feed-body">Evil Corp's move into big-game ransomware, mirroring the GOZ-to-CryptoLocker monetization shift a generation earlier. Vendor-confirmed chain (Mandiant, CrowdStrike).</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Sanctions Evasion</div>
+          <div class="feed-title">LockBit Affiliation</div>
+          <div class="feed-body">Per Mandiant (2022) and the NCA (2024), Evil Corp shifted to deploying LockBit to hinder attribution and evade OFAC sanctions; Aleksandr Ryzhenkov assessed as a LockBit affiliate.</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Leak-Source Forks (parallel line)</div>
+          <div class="feed-title">Citadel / ICE IX / Atmos</div>
+          <div class="feed-body">Third-party crimeware built from the publicly leaked 2011 Zeus source. A distinct lineage from Bogachev's private GOZ track, included here to keep the two lines from being conflated.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">&#8258;</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" id="source-toggle">Show source list</button>
+      <div class="source-list" id="source-list">
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>FBI: GameOver Zeus Botnet Disrupted &bull; <a href="https://www.fbi.gov/news/stories/gameover-zeus-botnet-disrupted" target="_blank">fbi.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>FBI: Evgeniy Mikhailovich Bogachev, Cyber Most Wanted &bull; <a href="https://www.fbi.gov/wanted/cyber/evgeniy-mikhailovich-bogachev" target="_blank">fbi.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>US Treasury OFAC: Designation of Bogachev, December 29, 2016 &bull; <a href="https://home.treasury.gov/news/press-releases/jl0693" target="_blank">treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>US Treasury OFAC: SDN entry (BOGACHEV, Evgeniy) &bull; <a href="https://sanctionssearch.ofac.treas.gov/Details.aspx?id=21326" target="_blank">ofac.treas.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>DOJ: US v. Vyacheslav Penchukov et al. (District of Nebraska) &bull; <a href="https://www.justice.gov/usao-ne/victimwitness-assistance/information-victims-large-cases/us-vyacheslav-penchukov" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>DOJ: Russian National Charged, Decade-Long Hacking / Bank Fraud (Yakubets/Evil Corp, 2019) &bull; <a href="https://www.justice.gov/archives/opa/pr/russian-national-charged-decade-long-series-hacking-and-bank-fraud-offenses-resulting-tens" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>US Treasury: Sanctions on Evil Corp / Dridex, December 5, 2019 &bull; <a href="https://home.treasury.gov/news/press-releases/sm845" target="_blank">treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>NCA: Evil Corp &mdash; Behind the Screens, October 2024 &bull; <a href="https://www.nationalcrimeagency.gov.uk/who-we-are/publications/732-evil-corp-behind-the-screens/file" target="_blank">nationalcrimeagency.gov.uk</a></span></div>
+        <div class="source-category">Primary Vendor Research</div>
+        <div class="source-item"><span class="source-num">[9]</span><span>Fox-IT / CrowdStrike (Sandee &amp; Peterson): GameOver Zeus, Badguys and Backends, Black Hat USA 2015 &bull; <a href="https://www.blackhat.com/docs/us-15/materials/us-15-Peterson-GameOver-Zeus-Badguys-And-Backends-wp.pdf" target="_blank">blackhat.com</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Krebs on Security: Inside the $100M Business Club Crime Gang, August 2015 &bull; <a href="https://krebsonsecurity.com/2015/08/inside-the-100m-business-club-crime-gang/" target="_blank">krebsonsecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>SecurityWeek: GameOver Zeus Gang Leader Engaged in Espionage &bull; <a href="https://www.securityweek.com/gameover-zeus-gang-leader-engaged-espionage-researchers/" target="_blank">securityweek.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>The Register: $100M business gang / Fox-IT report, August 2015 &bull; <a href="https://www.theregister.com/2015/08/06/100m_business_gang_foxit_report/" target="_blank">theregister.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>CSO Online: GameOver Zeus criminals spied on Turkey, Georgia, Ukraine and OPEC &bull; <a href="https://www.csoonline.com/article/552385/gameover-zeus-criminals-spied-on-turkey-georgia-ukraine-and-opec.html" target="_blank">csoonline.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>CrowdStrike: Gameover (Operation Tovar) &bull; <a href="https://www.crowdstrike.com/en-us/blog/gameover/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Sophos / Dell SecureWorks: Gameover Zeus re-emerges without P2P (DGA variant) &bull; <a href="https://www.sophos.com/en-us/blog/gameover-zeus-re-emerges-without-peer-to-peer-capability" target="_blank">sophos.com</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>Bitdefender: Gameover Zeus Variants Targeting Ukraine, US (DGA sinkhole geography) &bull; <a href="https://www.bitdefender.com/en-us/blog/labs/gameover-zeus-variants-targeting-ukraine-us" target="_blank">bitdefender.com</a></span></div>
+        <div class="source-category">Vendor Designations and Successor Tracking</div>
+        <div class="source-item"><span class="source-num">[17]</span><span>Secureworks CTU: Evolution of the GOLD EVERGREEN Threat Group &bull; <a href="https://www.secureworks.com/research/evolution-of-the-gold-evergreen-threat-group" target="_blank">secureworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>Mandiant (Google Cloud): UNC2165 Shifts to Evade Sanctions &bull; <a href="https://cloud.google.com/blog/topics/threat-intelligence/unc2165-shifts-to-evade-sanctions" target="_blank">cloud.google.com</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>CrowdStrike: INDRIK SPIDER adversary profile &bull; <a href="https://www.crowdstrike.com/en-us/adversaries/indrik-spider/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>MITRE ATT&amp;CK: Indrik Spider (G0119, Evil Corp alias aggregation) &bull; <a href="https://attack.mitre.org/groups/G0119/" target="_blank">attack.mitre.org</a></span></div>
+        <div class="source-category">Leak Tree and Financial Forensics</div>
+        <div class="source-item"><span class="source-num">[21]</span><span>Krebs on Security: SpyEye v. ZeuS Rivalry Ends in Quiet Merger (2010) &bull; <a href="https://krebsonsecurity.com/2010/10/spyeye-v-zeus-rivalry-ends-in-quiet-merger/" target="_blank">krebsonsecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span>The Register: Source code leaked for ZeuS crimeware kit (May 2011) &bull; <a href="https://www.theregister.com/2011/05/10/zeus_crimeware_kit_leaked/" target="_blank">theregister.com</a></span></div>
+        <div class="source-item"><span class="source-num">[23]</span><span>Threatpost: Ice IX, First Crimeware Based on Leaked ZeuS Source (Kaspersky) &bull; <a href="https://threatpost.com/ice-ix-first-crimeware-based-leaked-zeus-sources-082411/75577/" target="_blank">threatpost.com</a></span></div>
+        <div class="source-item"><span class="source-num">[24]</span><span>SecurityWeek: Citadel-Derivative Atmos Targeting French Banks &bull; <a href="https://www.securityweek.com/citadel-derivative-atmos-targeting-french-banks/" target="_blank">securityweek.com</a></span></div>
+        <div class="source-item"><span class="source-num">[25]</span><span>Liao, Zhao, Doupe, Ahn (ASU): Behind Closed Doors &mdash; CryptoLocker Ransoms in Bitcoin, eCrime 2016 &bull; <a href="https://ieeexplore.ieee.org/document/7487938/" target="_blank">ieeexplore.ieee.org</a></span></div>
+        <div class="source-item"><span class="source-num">[26]</span><span>Cambridge (Univ. of Cambridge): ConfiguringZeus forum-economy study &bull; <a href="https://www.cl.cam.ac.uk/~rnc1/talks/170426-configuringzeus.pdf" target="_blank">cl.cam.ac.uk</a></span></div>
+        <div class="source-category">Technical and Contemporaneous Reporting</div>
+        <div class="source-item"><span class="source-num">[27]</span><span>Threatpost: CryptoLocker Creators Infected ~250,000 Systems (Dell SecureWorks) &bull; <a href="https://threatpost.com/cryptolocker-creators-infected-nearly-250000-systems-earned-30m-since-september/103261/" target="_blank">threatpost.com</a></span></div>
+        <div class="source-item"><span class="source-num">[28]</span><span>BBC: CryptoLocker victims to get files back for free (Decrypt portal) &bull; <a href="https://www.bbc.com/news/technology-28661463" target="_blank">bbc.com</a></span></div>
+        <div class="source-item"><span class="source-num">[29]</span><span>BankInfoSecurity: Russian Espionage Piggybacks on Cybercrime (NYT synthesis, Berglas) &bull; <a href="https://www.bankinfosecurity.com/blogs/report-russian-espionage-piggybacks-on-cybercrime-p-2415" target="_blank">bankinfosecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[30]</span><span>Wikipedia: Operation Tovar (takedown mechanics, payment-rate synthesis) &bull; <a href="https://en.wikipedia.org/wiki/Operation_Tovar" target="_blank">wikipedia.org</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; Ecosystem origins / root node &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+(function initSources() {
+  const btn = document.getElementById('source-toggle');
+  const list = document.getElementById('source-list');
+  if (!btn || !list) return;
+  btn.addEventListener('click', function() {
+    const open = list.classList.toggle('open');
+    btn.textContent = open ? 'Hide source list' : 'Show source list';
+  });
+})();
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dyre / Dyreza | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky; top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 8px; }
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: background 0.15s;
+  color: var(--gray-400); margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: #e74c3c; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.dot-inactive { background: var(--gray-400); }
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent; margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero { background: var(--navy); padding: 40px 48px 36px; border-bottom: 1px solid var(--navy-light); }
+.hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+.hero-title { font-size: 42px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.hero-subtitle { font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; }
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-defunct { background: var(--gray-600); color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card { background: var(--navy-mid); border: 1px solid var(--navy-light); border-radius: 10px; padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.section-num { font-size: 12px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.06em; min-width: 28px; }
+.section-title { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+.subsection { margin-bottom: 28px; }
+.subsection-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li { padding: 5px 0 5px 18px; position: relative; color: var(--gray-800); line-height: 1.6; }
+ul.content-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* CONFIDENCE LABELS */
+.conf { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px; }
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block { border-left: 3px solid; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table thead tr { background: var(--navy); }
+table thead th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td { padding: 10px 14px; color: var(--gray-800); border-bottom: 1px solid var(--gray-200); vertical-align: top; line-height: 1.5; }
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout { border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px; }
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; }
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600); display: flex; align-items: center; gap: 8px; transition: all 0.15s; }
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item { padding: 7px 12px; border-radius: 6px; margin-bottom: 3px; font-size: 12.5px; color: var(--gray-800); background: #fff; border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline; }
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* INTERNAL DATA BADGE */
+.internal-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px; vertical-align: middle; margin-left: 6px; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.pillar-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* LAUNDERING PHASES */
+.phase-list { margin: 16px 0; }
+.phase-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.phase-num { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* DESCENDANTS / LEGACY POINTER GRID */
+.feed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+.feed-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; }
+.feed-card .feed-meta { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.feed-card .feed-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.feed-card .feed-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+.live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--navy); color: #fff; padding: 4px 10px; border-radius: 20px; }
+.live-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gray-400); }
+
+/* FOOTER */
+.page-footer { text-align: center; padding: 32px 48px; font-size: 12px; color: var(--gray-400); border-top: 1px solid var(--gray-200); }
+.reno-credit { display: block; margin-top: 8px; font-size: 10px; letter-spacing: 0.06em; color: var(--gray-400); opacity: 0.7; }
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+html { scroll-behavior: smooth; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE */
+.theme-toggle { background: none; border: 1px solid rgba(255,255,255,0.18); border-radius: 5px; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; letter-spacing: 0.03em; padding: 3px 10px; margin-left: 14px; transition: border-color 0.15s, color 0.15s; flex-shrink: 0; }
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-title { color: #e6edf3; }
+[data-theme="dark"] .feed-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-item { border-color: #21262d; color: #8b949e; background: #161b22; }
+[data-theme="dark"] .source-category { color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section-label">Threat Actor Groups</div>
+  <nav class="group-list">
+    <a class="group-item" href="zeus.html"><span class="group-dot dot-inactive"></span>Zeus / GameOver Zeus</a>
+    <a class="group-item active" href="dyre.html"><span class="group-dot dot-inactive"></span>Dyre / Dyreza</a>
+    <a class="group-item" href="conti.html"><span class="group-dot dot-conti"></span>Conti</a>
+    <a class="group-item" href="ryuk.html"><span class="group-dot dot-inactive"></span>Ryuk</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-inactive"></span>TrickBot</a>
+    <a class="group-item" href="akira.html"><span class="group-dot dot-active"></span>Akira</a>
+    <a class="group-item" href="royal.html"><span class="group-dot dot-active"></span>Royal / BlackSuit / Chaos</a>
+    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-inactive"></span>Black Basta</a>
+    <a class="group-item" href="clop.html"><span class="group-dot dot-active"></span>Cl0p</a>
+    <a class="group-item" href="lockbit.html"><span class="group-dot dot-dim"></span>LockBit</a>
+    <a class="group-item" href="revil.html"><span class="group-dot dot-inactive"></span>REvil</a>
+  </nav>
+
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 &nbsp;Executive Summary</a>
+    <a href="#lineage">02 &nbsp;Lineage &amp; Heritage</a>
+    <a href="#operations">03 &nbsp;Operational Model</a>
+    <a href="#technical">04 &nbsp;Technical Capabilities</a>
+    <a href="#defensive">05 &nbsp;Defensive Mapping</a>
+    <a href="#financial">06 &nbsp;Financial Infrastructure</a>
+    <a href="#victims">07 &nbsp;Victim Profile</a>
+    <a href="#lawenforcement">08 &nbsp;Law Enforcement</a>
+    <a href="#attribution">09 &nbsp;Attribution &amp; State Nexus</a>
+    <a href="#trajectory">10 &nbsp;Trajectory &amp; Legacy</a>
+    <a href="#descendants">Legacy &amp; Descendants</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Ecosystem Bridge Profile &bull; Compiled July 2026 &bull; TLP:WHITE</div>
+    <div class="hero-title">Dyre / Dyreza</div>
+    <div class="hero-subtitle">Closed operator gang &nbsp;&bull;&nbsp; Moscow-based (assessed) &nbsp;&bull;&nbsp; Banking trojan &nbsp;&bull;&nbsp; Bridge: GameOver Zeus era to TrickBot &nbsp;&bull;&nbsp; Active June 2014 to November 2015</div>
+    <div class="hero-badges">
+      <span class="badge badge-defunct">Defunct (Nov 2015)</span>
+      <span class="badge badge-critical">Successor Lineage Active (TrickBot)</span>
+      <span class="badge badge-raas">Bridge Node: GOZ to TrickBot</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Jun 2014</div>
+        <div class="kpi-sub">Days after Operation Tovar</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ceased</div>
+        <div class="kpi-value">Nov 18 2015</div>
+        <div class="kpi-sub">Abrupt, never resumed (Symantec)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Targeted Institutions</div>
+        <div class="kpi-value">1,000+</div>
+        <div class="kpi-sub">US / UK / AU / DE / FR</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Est. Losses</div>
+        <div class="kpi-value">Tens of $M</div>
+        <div class="kpi-sub">BofA, JPMorgan (Reuters)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Dyre Wolf / Incident</div>
+        <div class="kpi-value">$0.5&ndash;1.5M</div>
+        <div class="kpi-sub">Corporate wire fraud (IBM)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Disruption</div>
+        <div class="kpi-value">Moscow Raid</div>
+        <div class="kpi-sub">Nov 2015, unconfirmed cause</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Successor</div>
+        <div class="kpi-value">TrickBot</div>
+        <div class="kpi-sub">2016, then Ryuk / Conti</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01 -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Entity Overview</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Assessment</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Dyre (also Dyreza; component names Dyzap and Dyranges) is the connective-tissue node between the GameOver Zeus era and the TrickBot, Ryuk, and Conti cluster. First identified by the Dell SecureWorks Counter Threat Unit in early June 2014, within days of the June 2 Operation Tovar takedown of GameOver Zeus, Dyre filled the vacuum that action created and grew over seventeen months into one of the most prevalent and technically advanced banking trojans in the wild.</p>
+        <p>Two features define it analytically. First, Dyre was run by a closed operator gang rather than sold as a kit, a structural contrast with Zeus and SpyEye, and Symantec's command-and-control telemetry (roughly 285 servers, a five-day working week on Eastern Europe / Russia hours) is the basis for its reputation as a group that operated "like a business." Second, Dyre ended not through Western law enforcement but through an anomalous Russian domestic action: all spam campaigns ceased abruptly on November 18, 2015, correlating with a reported November 2015 raid on a Moscow film company. Russia acting against its own cybercriminals inverts the Bogachev safe-harbor pattern and is the profile's central open question.</p>
+        <p>The lineage is defunct only in name. The Dyre group is assessed to have re-formed as TrickBot in 2016, carrying its tooling and at least some personnel into the operation that would go on to enable Ryuk and Conti. That handoff makes Dyre the missing root of the TrickBot spine already in this library.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Quick-Reference Attributes</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Names</td><td>Dyre, Dyreza (malware family); Dyzap, Dyranges (components); "Dyre Wolf" (a named 2015 corporate-fraud campaign, not a separate family)</td></tr>
+              <tr><td>Vendor designations</td><td>MITRE ATT&amp;CK S0024 (malware object, not a group). No distinct Dyre-era actor codename exists. Secureworks folds Dyre into GOLD EVERGREEN (its GameOver Zeus group). CrowdStrike WIZARD SPIDER names the TrickBot successor from Sept 2016, not the Dyre period</td></tr>
+              <tr><td>Structure</td><td>Closed operator gang, not a forum-sold kit. Assessed "run like a business" (shift-based, Eastern Europe / Russia hours)</td></tr>
+              <tr><td>Codebase</td><td>Purpose-built custom MITM/browser-hooking trojan. Architecturally distinct from Zeus, not a leaked-source fork (CREDIBLE)</td></tr>
+              <tr><td>Monetization</td><td>Wire fraud and account takeover; money mules; no cryptocurrency (predates the ransomware-crypto era)</td></tr>
+              <tr><td>Signature capability</td><td>Custom man-in-the-middle proxy hooking IE, Chrome, and Firefox; SSL/TLS interception; hidden VNC; I2P C2 fallback</td></tr>
+              <tr><td>Assessed jurisdiction</td><td>Moscow, Russia (per later OFAC characterization and C2-hours telemetry)</td></tr>
+              <tr><td>Disruption</td><td>Reported November 2015 Russian domestic raid; no US indictment or OFAC action specific to Dyre</td></tr>
+              <tr><td>Successor</td><td>TrickBot (2016), tracked by CrowdStrike as WIZARD SPIDER; downstream to Ryuk and Conti</td></tr>
+              <tr><td>State nexus</td><td>Tolerated safe harbor, terminated by an unexplained internal or state action. No evidence of state tasking during the Dyre period (ANALYST INFERENCE)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Metrics</div>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Targeted Institutions</div>
+            <div class="metric-val">1,000+</div>
+            <div class="metric-note">Grew from ~206 (2014) to 355 (early 2015)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">C2 Servers</div>
+            <div class="metric-val">~285</div>
+            <div class="metric-note">Symantec telemetry, mid-2015</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Peak Infections</div>
+            <div class="metric-val">9,000/mo</div>
+            <div class="metric-note">Autumn 2015, from &lt;500/mo (Sep 2014)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Est. Losses</div>
+            <div class="metric-val">Tens of $M</div>
+            <div class="metric-note">Cumulative (Reuters / SecureWorks)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Operational Life</div>
+            <div class="metric-val">17 mo</div>
+            <div class="metric-note">Jun 2014 to Nov 2015</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Successor Gap</div>
+            <div class="metric-val">~10 mo</div>
+            <div class="metric-note">To TrickBot debut (Sep 2016)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE GALLERY -->
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site and Branding</div>
+      <div class="callout callout-info" style="margin-top:0;">
+        <strong>Pre-leak-site era:</strong> Dyre was a covert banking trojan, not a name-and-shame ransomware operation, so it had no dedicated leak site or public branding. The gallery below shows the "Dyre Wolf" fake-support fraud page, the Upatre infection chain, and the Moscow disruption context rather than DLS captures. Images carry graceful fallbacks; verify rendering before publication.
+      </div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://securityintelligence.com/wp-content/uploads/2015/04/the-dyre-wolf.jpg"
+               alt="Dyre Wolf fake bank support page"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>The Dyre Wolf Campaign</strong>
+            When a victim reached a targeted bank site, Dyre displayed a fake "the site is experiencing issues, please call this number" page. A live English-speaking operator posing as bank support then extracted credentials and two-factor codes, sometimes asking to loop in a co-worker to defeat dual authorization, before a high-value wire transfer.
+            <span class="img-source">Source: IBM Security, "The Dyre Wolf," April 2015 (verify before publication)</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://blog.talosintelligence.com/images/dyre1.png"
+               alt="Dyre / Upatre infection chain"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Upatre Infection Chain</strong>
+            Delivery ran through the Upatre downloader in Cutwail-driven spam (fake invoices, faxes, delivery notices): Upatre fetched and installed Dyre, self-deleted, and Dyre established persistence as a fake "Google Update Service" before hooking the browser.
+            <span class="img-source">Source: Cisco Talos, Dyre/Dyreza analysis, March 2015 (verify before publication)</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Moscow_City_2015.jpg/640px-Moscow_City_2015.jpg"
+               alt="Moscow-City business complex"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Moscow-City / The 2015 Raid</strong>
+            The reported November 2015 raid targeted the film company "25th Floor" in the Moscow-City complex, said to be producing a cybercrime thriller titled "Botnet." Dyre spam stopped days later and never resumed.
+            <span class="img-source">Source: Reuters (Menn), Feb 2016 / Wikimedia Commons (verify before publication)</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://www.secureworks.com/-/media/images/blog/dyre-config.ashx"
+               alt="Dyre web-inject configuration"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>MITM Proxy and Web-Injects</strong>
+            Dyre hooked IE, Chrome, and Firefox and routed targeted-bank traffic through its own man-in-the-middle proxy, serving fabricated login pages while relaying real credentials to defeat SSL and two-factor controls.
+            <span class="img-source">Source: Secureworks CTU / Sophos, Dyre analysis, 2015 (verify before publication)</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://unit42.paloaltonetworks.com/wp-content/uploads/2015/02/dyre-i2p.png"
+               alt="Dyre I2P and DGA C2 resilience"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>I2P C2 Fallback</strong>
+            An early-2015 variant added a domain-generation algorithm and an I2P (Invisible Internet Project) fallback for command-and-control, an unusual resilience feature for a contemporaneous banking trojan.
+            <span class="img-source">Source: Palo Alto Unit 42, February 2015 (verify before publication)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02 -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Emergence in the GameOver Zeus Vacuum</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The temporal relationship is well corroborated: GameOver Zeus and CryptoLocker were dismantled via Operation Tovar on June 2, 2014, with Bogachev indicted the same day, and Dyre was first identified by Dell SecureWorks in early June 2014, within the same window. This proximity is the basis for treating Dyre as an ecosystem-regeneration event. No source proves Dyre's operators were displaced GameOver Zeus personnel; the link is inferential, based on timing and the general pattern of a criminal ecosystem refilling after enforcement.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Fresh Codebase Versus Zeus Derivative</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Sources disagree, and the disagreement is a code-versus-crew conflation worth preserving. CSIS (the June 2014 discoverer) framed Dyre as a distinct, purpose-built family rather than a Zeus derivative; Cisco Talos treats it as its own banking-malware family with Zeus cited only as a behavioral comparator. Reuters' 2016 law-enforcement sources called Dyre "related to Zeus," but that reflects operational and personnel ties to the Bogachev milieu, not shared source code. F5 Labs hedges that "no official attribution to the source code can be confirmed."</p>
+        <div class="callout callout-info">
+          <strong>Assessment:</strong> The technical-researcher consensus is that Dyre is architecturally distinct from Zeus, a custom man-in-the-middle proxy trojan rather than a leaked-source fork, while being operationally connected to the Zeus/GameOver Zeus criminal world. Confidence: moderate-to-high on distinct code, high on operational relationship. No researcher has produced source-code lineage proving a fork.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The GOLD EVERGREEN Thread</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Secureworks provides the most concrete vendor link between Dyre and the earlier Bogachev enterprise. It does not give Dyre its own actor codename; instead it assesses that GOLD EVERGREEN, its designation for the GameOver Zeus group, "diversified its malware portfolio using the Dyre and Bugat v5 (Dridex) trojans," and that "some Dyre attacks could be connected to the GOLD EVERGREEN threat group." Secureworks is careful to add that there is "insufficient information to determine if GOLD EVERGREEN is using TrickBot," so it does not collapse Dyre and TrickBot into one label. This thread strengthens the inference of personnel continuity from the GameOver Zeus milieu into Dyre, without confirming it.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-alert">
+          <strong>Critical rule:</strong> No vendor assigned a distinct threat-actor codename to the Dyre-era operator group. Dyre is tracked as a malware family. Do not retroactively apply the successor's WIZARD SPIDER designation to the Dyre period.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>Applies to</th></tr></thead>
+            <tbody>
+              <tr><td>MITRE ATT&amp;CK</td><td>S0024 (Dyre; aliases Dyreza, Dyzap)</td><td>Malware software object, not an intrusion set. Group entry G0102 Wizard Spider merely lists Dyre as software used</td></tr>
+              <tr><td>Secureworks CTU</td><td>GOLD EVERGREEN (GameOver Zeus group)</td><td>Attributes "some Dyre attacks" to the GameOver Zeus group; no Dyre-specific GOLD name</td></tr>
+              <tr><td>CrowdStrike</td><td>WIZARD SPIDER</td><td>The TrickBot successor from September 2016, not the Dyre period</td></tr>
+              <tr><td>IBM X-Force / Trusteer</td><td>"Dyre"; campaign "The Dyre Wolf"</td><td>Malware family plus a specific corporate wire-fraud campaign, attributed to "a closed cybercrime gang"</td></tr>
+              <tr><td>Microsoft / Mandiant / Recorded Future / Unit 42</td><td>No distinct Dyre-era actor codename located</td><td>Track the malware family by name</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational and Business Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">A Closed Operator Gang</div>
+        <p>Dyre is consistently characterized as a closed, non-affiliate operator group rather than a malware-as-a-service kit, a structural contrast with Zeus and SpyEye, which were commercialized to many independent operators. IBM's April 2015 Dyre Wolf report described "an experienced and resource-backed cybercrime gang" running Dyre directly rather than licensing it, while noting the code could be operated by several connected teams attacking different geographies, suggesting internal compartmentalization rather than open-market distribution.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">"Run Like a Business"</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>The strongest evidentiary basis for the group's business-like structure is Symantec's June 2015 command-and-control telemetry: roughly 285 C2 servers, and an operating rhythm in which "the attackers appear to adhere to a five-day working week, with no activity on Saturday and Sunday," most activity from 09:00 to 16:00 UTC, consistent with UTC+2 / UTC+3 (Eastern Europe / Russia) time zones. This is methodologically strong but effectively single-source (Symantec), and no direct organizational documents (payroll, org charts, office material) surfaced for the Dyre period, unlike later leaked-chat ransomware groups.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Distribution and Cash-Out</div>
+        <ul class="content-list">
+          <li><strong>Delivery:</strong> the Upatre downloader in spam disguised as invoices, faxes, and delivery notices, amplified by the Cutwail spambot; a later worm variant abused victims' own Outlook clients to spread Upatre.</li>
+          <li><strong>Money mules:</strong> CSIS's original June 2014 reporting found a tailored money-mule interface in Dyre's C2 tied to accounts in Riga, Latvia, where recruits temporarily held stolen funds before onward transfer (single-source, CSIS).</li>
+          <li><strong>Dyre Wolf cash-out:</strong> after fraudulent wires, funds were moved rapidly between banks in smaller tranches, and DDoS attacks were launched against the victim organization specifically to delay detection and recovery.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 04 -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Browser Hooking and MITM Interception</div>
+        <p>Dyre hooked all three major browsers, hooking PR_Read / PR_Write in nspr4.dll for Firefox, the SSL functions in Chrome, and wininet.dll for Internet Explorer, and used a dedicated man-in-the-middle proxy rather than simple form-grabbing. Targeted-bank traffic was routed through Dyre's proxy, which served fabricated login pages while relaying the victim's real credentials to the bank to complete an apparently normal login, letting the attacker log in as the victim in parallel. This design bypassed in-browser SSL/TLS to capture plaintext credentials and defeat two-factor authentication.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Persistence, Remote Access, and Anti-Analysis</div>
+        <ul class="content-list">
+          <li><strong>Persistence:</strong> registration as a fake "Google Update Service" plus a scheduled task, with injection into svchost.exe or Explorer.exe depending on OS version.</li>
+          <li><strong>Hidden VNC:</strong> a built-in remote-access module for interactive control during high-value corporate account takeovers (well reported; not re-confirmed against a single primary this pass).</li>
+          <li><strong>Anti-analysis (MITRE S0024):</strong> sandbox and VM detection via process-list and registry checks, packed/encrypted resources, plus (per Proofpoint) mouse-movement and screen-resolution checks, timing delays, JavaScript obfuscation, and per-sample binary randomization to defeat hash detection.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">C2 Resilience: SSL, DGA, and I2P</div>
+        <p>Dyre protected command-and-control with SSL and RSA-signed configurations, and by early 2015 added a domain-generation algorithm fallback and, notably, an I2P (Invisible Internet Project) fallback, an anonymity-network capability unusual among contemporaneous banking trojans (Palo Alto Unit 42, February 2015). DGA domain-count figures differ across sources and versions: Cisco Talos reported roughly 333 domains per day, while Unit 42 and Secureworks/Sophos reported about 1,000 per day. This reflects version and measurement differences, not a single resolvable number.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Dyre Wolf Campaign</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>IBM's April 2015 report is the definitive primary source on the group's most distinctive tactic. Corporate victims were infected via spear-phishing; when the victim tried to reach one of hundreds of pre-configured bank URLs, a fake "site experiencing issues, please call this number" page appeared; the victim called and reached a live English-speaking operator posing as bank support who extracted username, password, and two-factor codes, sometimes asking to loop in a co-worker with equivalent access to bypass dual-authorization controls; high-value wire transfers followed (reported at $500,000 to $1.5 million per incident); and for high-value targets a volumetric DDoS was launched to delay detection. IBM called this social-engineering-plus-DDoS combination unprecedented for a banking-trojan fraud scheme.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS / Russian-Language Behavior</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>Evidence is inferential rather than a confirmed hard-coded kill switch. Symantec's C2 telemetry noted that a large share of Dyre's infrastructure sat in Eastern Europe / Russia while relatively few infections and no targeted financial institutions were seen there, and speculated the operators "may be reluctant to draw attention." No source located a reverse-engineered Russian-keyboard-layout or locale-check kill switch in Dyre's binary, so the CIS-exclusion pattern rests on target-list and C2-geography inference, not code evidence. This is an intelligence gap.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: DEFENSIVE MAPPING (RETROSPECTIVE) -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping (Retrospective)</h2>
+      </div>
+      <div class="callout callout-info">
+        <strong>Historical framing:</strong> Dyre is defunct, so the mapping below is retrospective. It maps the operation's techniques to MITRE ATT&CK (software object S0024), records the control that countered each, and captures what the 2015 disruption demonstrated, rather than prescribing live defender action.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&CK Techniques: Priority Set</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>Tactic</th><th>Dyre usage</th><th>Countermeasure / lesson</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">T1566 Phishing</td><td>Initial Access</td><td>Cutwail spam delivering the Upatre downloader (fake invoices, faxes)</td><td>Attachment sandboxing and user awareness; disrupting the spam layer degraded delivery</td></tr>
+              <tr><td class="mono">T1204 User Execution</td><td>Execution</td><td>Disguised EXE/SCR attachments launching Upatre</td><td>Block executable attachments; application allow-listing</td></tr>
+              <tr><td class="mono">T1543.003 Windows Service</td><td>Persistence</td><td>Fake "Google Update Service" registration</td><td>Service-creation monitoring; scrutinize masquerading service names</td></tr>
+              <tr><td class="mono">T1185 Browser Session Hijacking</td><td>Collection</td><td>MITM proxy hooking IE, Chrome, Firefox; fabricated login pages</td><td>Out-of-band transaction verification defeats credential-plus-2FA capture</td></tr>
+              <tr><td class="mono">T1557 Adversary-in-the-Middle</td><td>Credential Access</td><td>SSL/TLS interception to capture plaintext credentials</td><td>Certificate pinning; endpoint integrity checks on the browser stack</td></tr>
+              <tr><td class="mono">T1497 Virtualization / Sandbox Evasion</td><td>Defense Evasion</td><td>Process-list and registry checks; per-sample binary randomization</td><td>Behavioral rather than hash-based detection</td></tr>
+              <tr><td class="mono">T1090 / T1568.002 Proxy, DGA, I2P</td><td>Command &amp; Control</td><td>SSL C2 with DGA and I2P fallback</td><td>DGA reversing and sinkholing; egress monitoring for anonymity-network traffic</td></tr>
+              <tr><td class="mono">T1657 Financial Theft</td><td>Impact</td><td>Wire fraud via live-operator social engineering (Dyre Wolf) plus DDoS cover</td><td>Callback verification, dual authorization out-of-band, DDoS resilience</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked Advisories and Reference Material</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory / Report</th><th>Issuer</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td>The Dyre Wolf: Attacks on Corporate Banking Accounts</td><td>IBM Security</td><td>April 2015</td></tr>
+              <tr><td>Dyre banking trojan technical analysis</td><td>Dell SecureWorks CTU</td><td>2015</td></tr>
+              <tr><td>CryptoWall 3.0 / Dyre and I2P analysis</td><td>Palo Alto Unit 42</td><td>February 2015</td></tr>
+              <tr><td>Dyre: operations grind to a halt following takedown</td><td>Symantec</td><td>February 2016</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout callout-success">
+        <strong>Top defensive priorities (retrospective):</strong> Out-of-band verification of banking transactions neutralizes the man-in-the-middle-plus-social-engineering model that defined Dyre Wolf; blocking executable email attachments cuts the Upatre chain at the root; and behavioral detection defeats the per-sample binary randomization that beat hash-based tools. The strategic lesson is different from Operation Tovar's: Dyre showed the ecosystem regenerates through new tooling and personnel after any single takedown, so disruption redistributes capability rather than removing it.
+      </div>
+    </section>
+
+    <!-- SECTION 06 -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Wire Fraud, Not Crypto</div>
+        <p>Dyre's monetization was overwhelmingly wire-fraud-based. Stolen credentials and, in the Dyre Wolf phase, live-social-engineered two-factor codes authorized large transfers from consumer and increasingly corporate accounts to attacker-controlled offshore accounts, with funds then moved rapidly between banks in smaller tranches to complicate tracing. Dyre predates the ransomware-era cryptocurrency laundering ecosystem: no Bitcoin or Monero infrastructure specific to Dyre is documented, and no blockchain-forensics firm (Chainalysis, Elliptic, TRM Labs) or OFAC wallet action targets Dyre, which is expected given its fiat model and should not be read as a sourcing failure.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Loss Estimates: Present All, Reconciled</div>
+        <div class="callout callout-warning">
+          <strong>Figure hygiene:</strong> A widely circulated "$1 billion" Dyre figure is a media misreading and is not IBM's claim; it should not be used. The defensible aggregate is "tens of millions."
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Estimate</th><th>Scope</th><th>Source</th><th>Assessment</th></tr></thead>
+            <tbody>
+              <tr><td>"More than $1 million" ($0.5&ndash;1.5M / incident)</td><td>Dyre Wolf corporate sub-campaign only</td><td>IBM Security, Apr 2015</td><td>CONFIRMED as the campaign-specific figure</td></tr>
+              <tr><td>"At least tens of millions"</td><td>Full operational lifetime, cumulative</td><td>Reuters (SecureWorks-informed), 2016</td><td>Best-supported aggregate; BofA and JPMorgan named</td></tr>
+              <tr><td>"~$1 billion"</td><td>Ambiguous</td><td>Secondary blogs, uncredited</td><td>Media inflation. Do not use</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Documented and Contested High-Value Thefts</div>
+        <ul class="content-list">
+          <li><strong>Dyre Wolf incidents:</strong> $500,000 to $1.5 million per corporate incident (IBM, confirmed).</li>
+          <li><strong>Ryanair (~$4.9M, Apr 2015):</strong> credible but contested. Initially the theft method was reported as unclear, with Dyre Wolf cited only as a comparator; later Forbes/Brewster (2017) listed Ryanair (~$5.5M) among Dyre cases. Never authoritatively confirmed by Ryanair or a primary technical report.</li>
+          <li><strong>Others named in later reporting:</strong> Sherwin-Williams (~$6.45M) and Miba (~$4.8M) appear in Forbes/Brewster's 2017 list of Dyre-attributed corporate cases.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 07 -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Targets and Geography</div>
+        <p>Initial 2014 targeting focused on UK and US retail-banking customers (Bank of America, Citibank, NatWest, RBS, Ulster Bank). By early 2015 the target list expanded across UK high-street banks (Barclays, HSBC, Lloyds, Santander) and into Germany, Australia, and France. Trend Micro's January 2015 telemetry placed 68% of infections in the United States, 10% in Canada, and 4% in Chile. Reuters named Bank of America and JPMorgan Chase among affected US institutions, targeting their account holders rather than bank infrastructure directly.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Target-List Growth and the Corporate Pivot</div>
+        <p>The target list grew from roughly 206 sites in the pre-2015 configuration to 355 by early 2015, with Dell SecureWorks describing manipulation of communications with more than 400 institutions and later retrospectives citing over 1,000 spoofed sites cumulatively. Dyre began as consumer retail-banking credential theft and evolved by early-to-mid 2015 into a dual-track model adding high-value corporate targeting through the Dyre Wolf campaign. IBM's John Kuhn noted the unusual focus: "I don't know of another campaign or Trojan that targets corporations and not individuals." A later 2015 variant also began targeting Bitcoin wallet sites in its web-inject configuration.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 08 -->
+    <section class="section" id="lawenforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The November 2015 Russian Raid</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Reuters' February 6, 2016 exclusive (Joseph Menn) is the foundational and essentially only primary journalistic account, sourced to three contacts "with knowledge of the matter." The raid reportedly occurred in November 2015 at the Moscow offices of 25th Floor, a film distribution and production company in the Moscow-City complex. Reuters explicitly stated it "was unable to establish a direct connection between the halt of the malware's activities and the raid itself." Symantec independently confirmed that all Dyre spam campaigns ceased around November 18, 2015 and never resumed, distinguishing this from a routine operational pause (contrasting it with a Dridex pause that did not represent termination).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The "Botnet" Film and the Kovalev Link</div>
+        <p>25th Floor was reportedly producing a cybercrime thriller titled "Botnet," loosely based on a 2010 US mule-network case. Later reporting (Krebs on Security, February 2023, citing a 2016 Forbes.ru story) identified Vitaly Kovalev as the figure behind the film project and reported sources describing the studio as a money-laundering front for the Dyre crew.</p>
+        <div class="callout callout-warning">
+          <strong>Confidence note:</strong> The Kovalev-as-filmmaker attribution and the money-laundering-front claim rest on a single source chain (Krebs relaying Forbes.ru). The contemporaneous Russian coverage (xakep.ru, 2016) confirms the 25th Floor raid and the "Botnet" film but does not name Kovalev. A separate claim that Kovalev was personally detained in 2016 under Russian Criminal Code Article 273 and the case quietly closed could not be corroborated in any located source and is therefore not carried in this profile.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Arrests, Official Posture, and the US Gap</div>
+        <ul class="content-list">
+          <li><strong>Arrests:</strong> thin and contradictory. Forbes (2016) reported roughly 50 arrests with "most released" (its own text noted no evidence anyone at the film company had been charged over Dyre). No named, formally charged Dyre-specific defendant has been confirmed by any government.</li>
+          <li><strong>Official posture:</strong> the FSB declined to comment; the Interior Ministry denied departmental involvement (implying a different agency acted). Neither confirmed the raid's purpose.</li>
+          <li><strong>US response:</strong> a well-corroborated negative. No US indictment or OFAC action was ever issued specifically for Dyre. Kovalev's only US charge is a 2012 New Jersey money-mule indictment that predates Dyre.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Contrast With Operation Tovar</div>
+        <p>The asymmetry is itself analytically significant. Operation Tovar (June 2014) was a coordinated, multinational, publicly documented action with unsealed charges against a named individual, court-authorized technical measures, and international coordination. The Dyre disruption has never been officially confirmed by any government, involved a domestic Russian raid on a film company rather than a malware-infrastructure takedown, and produced no public court filings, no named Dyre-specific defendant, and no coordinated international statement.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 09 -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Central Puzzle: An Inverted Pattern</div>
+        <p>Why would Russian authorities act against Dyre's operators when Russia has a documented pattern of tolerating cybercriminals who avoid domestic targets, the Bogachev safe-harbor pattern? By the available targeting evidence, Dyre observed the conventional non-Russian-targeting norm that usually earns tolerance, which makes the apparent Russian-initiated action against it an inversion rather than an application of the usual rule.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Competing Explanations</div>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Hypothesis A &bull; Credible</div>
+            <div class="pillar-title">Ordinary Prosecution</div>
+            <div class="pillar-body">A genuine, if opaque, law-enforcement action, described by Reuters' experts as possibly Russia's biggest cybercrime crackdown to date. Weakness: no source identifies a domestic-Russian victim or a specific triggering incident that would explain why Dyre crossed a line others did not.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Hypothesis B &bull; Inference</div>
+            <div class="pillar-title">FSB Score-Settling / Asset Seizure</div>
+            <div class="pillar-body">A film company serving as a laundering front, the total absence of formal charges, and later non-prosecution are consistent with an informal internal action (a faction dispute, an intelligence unit appropriating proceeds, or removing a liability). No source makes this claim directly; it is a plausible but unconfirmed hypothesis.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Hypothesis C &bull; Weak</div>
+            <div class="pillar-title">Crossed a Domestic Line</div>
+            <div class="pillar-body">Symantec found Russian and Eastern European institutions were generally not on Dyre's target list, so the group appears to have observed the non-targeting norm. This weakens a domestic-targeting explanation as a standalone cause.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Baseline</div>
+            <div class="pillar-title">The Bogachev Comparator</div>
+            <div class="pillar-body">Bogachev's apparent protection was contingent on usefulness (a "carrot" model). Dyre represents the state acting against, rather than for, a compliant criminal group, the least-resolved feature of the case.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assigned Nexus Tier</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p><strong>Tolerated safe harbor, terminated by an unexplained internal or state action.</strong> This is distinct from "no nexus" (a state action did occur, just unexplained) and from "probable cooperation" or "direct control" (no evidence Dyre was tasked with state objectives during its operational life). Supporting some state involvement: the FSB's no-comment posture, the Interior Ministry's denial implying a different agency acted, and the later 2020/2023 OFAC finding that the successor TrickBot organization had a Russian-intelligence-services association, which raises but does not answer whether that relationship began during or after the Dyre-era disruption.</p>
+        <div class="callout callout-info">
+          <strong>Dating question for the analyst:</strong> Whether the FSB-TrickBot intelligence relationship documented by OFAC in 2020 and 2023 existed in any form during the Dyre period (2014 to 2015), or developed only after the 2015 to 2016 disruption and regrouping, bears directly on how far back the state-nexus inversion should be dated. This is an open collection requirement.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10 -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory and Legacy Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Dyre as the Bridge Node</div>
+        <p>The arc is the profile's core contribution: GameOver Zeus disrupted June 2014, Dyre emerges within days and operates as a closed-shop banking-fraud gang for seventeen months, Dyre is disrupted by an opaque Russian domestic action in November 2015, the same tooling lineage and some of the same personnel re-emerge as TrickBot in September 2016, and TrickBot then evolves into the ransomware-enabling platform underpinning Ryuk (2018) and Conti (2020). Dyre demonstrates the ecosystem's defining property: enforcement disruptions do not eliminate criminal capability, they redistribute and rebrand it, typically with a six-to-twelve-month lag and continuity of core personnel even where the malware code is substantially rewritten.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Dyre-to-TrickBot Handoff: Two-Tier Confidence</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Claim</th><th>Basis</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>A lineage relationship exists (Dyre to TrickBot)</td><td>Fidelis/Reaves 2016 (TrickLoader and Dyre loader similarity, shared custom crypter also used for Vawtrak/Pushdo/Cutwail, Australian-bank targeting continuity, ~10-month gap); echoed by CrowdStrike 2019, DOJ 2021, OFAC 2023</td><td>CREDIBLE (tooling / code lineage; multi-sourced)</td></tr>
+              <tr><td>The same individuals carried over (personnel continuity)</td><td>Reaves's explicit "moderate confidence" that one or more original Dyre developers is involved in TrickBot; asserted as fact by DOJ and OFAC but downstream of the same vendor research</td><td>ANALYST INFERENCE (government-endorsed, not independently forensically corroborated)</td></tr>
+              <tr><td>TrickBot to Ryuk / Conti</td><td>CrowdStrike WIZARD SPIDER attribution, TRM Labs on-chain analysis, OFAC named individuals across all three</td><td>CONFIRMED (distinct, higher-confidence downstream chain)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Formal-assessment status:</strong> The technical backbone of the Dyre-to-TrickBot link traces substantially to a single 2016 Fidelis analysis (Jason Reaves), with CrowdStrike's 2019 "Sin-ful SPIDERS" reporting as the main independent vendor corroboration and DOJ (Alla Witte indictment, unsealed June 4, 2021) and OFAC (February and September 2023) as government endorsements. No dedicated Mandiant or Recorded Future assessment of this specific link was located. Flag this single-source dependency at the heart of the origins narrative.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Intelligence Gaps</div>
+        <ul class="content-list">
+          <li><strong>Dyre-era identities:</strong> no confirmed roster of 2014 to 2015 Dyre operators exists; Kovalev's connection is circumstantial (via the raid and later TrickBot sanctions).</li>
+          <li><strong>The reason for the 2015 Russian action:</strong> no official confirmation; ordinary prosecution, FSB score-settling, and an undisclosed domestic-line violation all remain unresolved.</li>
+          <li><strong>Strength of the Dyre-to-TrickBot code evidence:</strong> the core technical case rests on one 2016 Fidelis analysis, echoed but never independently re-derived by Mandiant or Recorded Future.</li>
+          <li><strong>State-nexus timing:</strong> whether the FSB-TrickBot relationship existed during the Dyre period is unknown and directly affects how the nexus inversion is dated.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LEGACY & DESCENDANTS (replaces live Recent Reporting feed for a defunct entity) -->
+    <section class="section" id="descendants">
+      <div class="section-header">
+        <span class="section-num">&rarr;</span>
+        <h2 class="section-title">Legacy and Descendants</h2>
+      </div>
+      <p style="margin-bottom:6px;"><span class="live-badge">Static &bull; Bridge-Node Handoff</span></p>
+      <p>Dyre is defunct, so this profile carries a forward-pointer to its successor cluster rather than a live reporting feed. The lineage continues in profiles already in this library.</p>
+      <div class="feed-grid">
+        <div class="feed-card">
+          <div class="feed-meta">Direct Successor &bull; See TrickBot profile</div>
+          <div class="feed-title">TrickBot</div>
+          <div class="feed-body">Emerged September 2016, roughly ten months after Dyre ceased. Shares loader and crypter lineage with Dyre (Fidelis 2016). Tracked by CrowdStrike as WIZARD SPIDER; Secureworks GOLD BLACKBURN.</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Downstream &bull; See Ryuk profile</div>
+          <div class="feed-title">Ryuk</div>
+          <div class="feed-body">The WIZARD SPIDER big-game-hunting ransomware operation from 2018, deployed via the TrickBot / Emotet access chain. Dyre is the earliest root of this spine.</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Downstream &bull; See Conti profile</div>
+          <div class="feed-title">Conti</div>
+          <div class="feed-body">The 2020 successor platform; leadership figure "Stern" later named as Vitaly Kovalev, the same individual linked (circumstantially) to the Dyre-era Moscow raid.</div>
+        </div>
+        <div class="feed-card">
+          <div class="feed-meta">Upstream Thread &bull; See Zeus profile</div>
+          <div class="feed-title">GOLD EVERGREEN / GameOver Zeus</div>
+          <div class="feed-body">Secureworks attributes "some Dyre attacks" to GOLD EVERGREEN, the GameOver Zeus group, a hedged thread connecting Dyre back toward the Bogachev enterprise.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num">&#8258;</span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" id="source-toggle">Show source list</button>
+      <div class="source-list" id="source-list">
+        <div class="source-category">Primary Vendor Research</div>
+        <div class="source-item"><span class="source-num">[1]</span><span>IBM Security: The Dyre Wolf, Attacks on Corporate Banking Accounts, April 2015 &bull; <a href="https://securityintelligence.com/dyre-wolf/" target="_blank">securityintelligence.com</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span>Dell SecureWorks CTU / Sophos mirror: Dyre banking trojan analysis (browser hooks, Google Update persistence, SSL C2, DGA, I2P) &bull; <a href="https://www.sophos.com/en-us/research" target="_blank">sophos.com</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span>Cisco Talos: Threat Spotlight, Dyre/Dyreza analysis, March 2015 &bull; <a href="https://blog.talosintelligence.com/2015/03/threat-spotlight-dyredyreza-analysis-to.html" target="_blank">talosintelligence.com</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span>Palo Alto Unit 42: CryptoWall 3.0 and Dyre I2P / DGA C2, February 2015 &bull; <a href="https://unit42.paloaltonetworks.com/analysis-cryptowall-3-0-dyre-i2p" target="_blank">unit42.paloaltonetworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span>Proofpoint: Dyre Straits, Evolution of the Dyre Banking Trojan &bull; <a href="https://www.proofpoint.com/us/threat-insight/post/Dyre-Straits-Evolution-of-the-Dyre-Banking-Trojan-Challenges-Traditional-Defenses" target="_blank">proofpoint.com</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span>Symantec: Dyre, operations grind to a halt following takedown (Nov 18 2015 cessation), Feb 2016</span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span>Symantec via Security Affairs: Dyre C2 telemetry (285 servers, five-day work week), June 2015 &bull; <a href="https://securityaffairs.com" target="_blank">securityaffairs.com</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span>CSIS (via PCWorld / Dark Reading): initial Dyreza discovery, distinct family, Riga mule interface, June 2014 &bull; <a href="https://www.darkreading.com/vulnerabilities-threats/a-dyre-new-banking-trojan" target="_blank">darkreading.com</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span>F5 Labs: Banking Trojans reference (no confirmed Zeus source attribution) &bull; <a href="https://www.f5.com/labs/articles/banking-trojans-a-reference-guide-to-the-malware-family-tree" target="_blank">f5.com</a></span></div>
+        <div class="source-category">Lineage and Designation</div>
+        <div class="source-item"><span class="source-num">[10]</span><span>Fidelis Cybersecurity (Jason Reaves): TrickBot, We Missed You, Dyre, October 15, 2016 &bull; <a href="https://www.fidelissecurity.com/threatgeek/threat-intelligence/trickbot-we-missed-you-dyre" target="_blank">fidelissecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span>CrowdStrike: Sin-ful SPIDERS, WIZARD SPIDER and LUNAR SPIDER (Dyre/Neverquest origin), Feb 15 2019 &bull; <a href="https://www.crowdstrike.com/en-us/blog/sin-ful-spiders-wizard-spider-and-lunar-spider-sharing-the-same-web/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span>CrowdStrike: WIZARD SPIDER adversary profile (surfaced Sept 2016 with TrickBot) &bull; <a href="https://www.crowdstrike.com/adversaries/wizard-spider/" target="_blank">crowdstrike.com</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span>Secureworks CTU: Evolution of the GOLD EVERGREEN Threat Group (Dyre/Bugat diversification) &bull; <a href="https://www.secureworks.com/research/evolution-of-the-gold-evergreen-threat-group" target="_blank">secureworks.com</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span>MITRE ATT&amp;CK: Dyre (Software S0024; aliases Dyreza, Dyzap) &bull; <a href="https://attack.mitre.org/software/S0024/" target="_blank">attack.mitre.org</a></span></div>
+        <div class="source-category">Law Enforcement, Government, and Sanctions</div>
+        <div class="source-item"><span class="source-num">[15]</span><span>Reuters (Joseph Menn): Top cybercrime ring disrupted as authorities raid Moscow offices, Feb 6 2016</span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span>DOJ (N.D. Ohio): Latvian National (Alla Witte) charged in TrickBot cybercrime organization, unsealed June 4, 2021 &bull; <a href="https://www.justice.gov/usao-ndoh/pr/latvian-national-charged-alleged-role-transnational-cybercrime-organization" target="_blank">justice.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span>US Treasury OFAC / UK: Sanctions on seven TrickBot/Conti actors (Dyre-lineage language), Feb 9 2023 &bull; <a href="https://home.treasury.gov/news/press-releases/jy1256" target="_blank">treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span>US Treasury OFAC / UK: Additional 11 TrickBot/Conti designations (repeats Dyre lineage), Sept 7 2023 &bull; <a href="https://home.treasury.gov/news/press-releases/jy1714" target="_blank">treasury.gov</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span>Krebs on Security: US/UK sanction 7 tied to TrickBot (Kovalev, Botnet film, Forbes.ru sourcing), Feb 2023 &bull; <a href="https://krebsonsecurity.com/2023/02/u-s-u-k-sanction-7-men-tied-to-trickbot-hacking-group/" target="_blank">krebsonsecurity.com</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span>Forbes (Thomas Brewster): Dyre hackers stealing millions from American corporates (Ryanair, Sherwin-Williams, Miba), May 2017 &bull; <a href="https://www.forbes.com/sites/thomasbrewster/2017/05/04/dyre-hackers-stealing-millions-from-american-coporates/" target="_blank">forbes.com</a></span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span>The Register: Moscow raids could signal end of Dyre, February 2016 &bull; <a href="https://www.theregister.com/2016/02/10/moscow_raids_could_signal_end_of_global_dyre_bank_trojan_menace/" target="_blank">theregister.com</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span>Trend Micro: Dyre infection geography and Upatre/Outlook worm variant, 2015 &bull; <a href="https://www.trendmicro.com" target="_blank">trendmicro.com</a></span></div>
+        <div class="source-item"><span class="source-num">[23]</span><span>Internal data &bull; analyst-compiled Dyre lineage and timeline notes</span></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; Ecosystem bridge node (GameOver Zeus to TrickBot) &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem('reno-theme');
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+  updateToggle();
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    updateToggle();
+  });
+})();
+
+(function initSources() {
+  const btn = document.getElementById('source-toggle');
+  const list = document.getElementById('source-list');
+  if (!btn || !list) return;
+  btn.addEventListener('click', function() {
+    const open = list.classList.toggle('open');
+    btn.textContent = open ? 'Hide source list' : 'Show source list';
+  });
+})();
+
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
