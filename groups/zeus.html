@@ -85,6 +85,16 @@ body {
 .dot-dim { background: var(--gray-400); }
 .dot-conti { background: #c0392b; }
 .dot-inactive { background: var(--gray-400); }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
 
 .section-nav { padding: 0 12px; }
 .section-nav a {
@@ -291,28 +301,14 @@ html { scroll-behavior: smooth; }
 <body>
 
 <header class="topbar">
-  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
-  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <div class="topbar-brand">Ransomware <span>EDP</span> &nbsp;&bull;&nbsp; Threat Actor Library</div>
+  <div class="topbar-tag">therenoproject.org &nbsp;&bull;&nbsp; Analytical Profiles</div>
   <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
 </header>
 
 <div class="layout">
 
 <aside class="sidebar">
-  <div class="sidebar-section-label">Threat Actor Groups</div>
-  <nav class="group-list">
-    <a class="group-item active" href="zeus.html"><span class="group-dot dot-inactive"></span>Zeus / GameOver Zeus</a>
-    <a class="group-item" href="conti.html"><span class="group-dot dot-conti"></span>Conti</a>
-    <a class="group-item" href="ryuk.html"><span class="group-dot dot-inactive"></span>Ryuk</a>
-    <a class="group-item" href="trickbot.html"><span class="group-dot dot-inactive"></span>TrickBot</a>
-    <a class="group-item" href="akira.html"><span class="group-dot dot-active"></span>Akira</a>
-    <a class="group-item" href="royal.html"><span class="group-dot dot-active"></span>Royal / BlackSuit / Chaos</a>
-    <a class="group-item" href="blackbasta.html"><span class="group-dot dot-inactive"></span>Black Basta</a>
-    <a class="group-item" href="clop.html"><span class="group-dot dot-active"></span>Cl0p</a>
-    <a class="group-item" href="lockbit.html"><span class="group-dot dot-dim"></span>LockBit</a>
-    <a class="group-item" href="revil.html"><span class="group-dot dot-inactive"></span>REvil</a>
-  </nav>
-
   <div class="sidebar-section-label">On This Page</div>
   <nav class="section-nav" id="section-nav">
     <a href="#overview">01 &nbsp;Executive Summary</a>
@@ -328,6 +324,15 @@ html { scroll-behavior: smooth; }
     <a href="#descendants">Legacy &amp; Descendants</a>
     <a href="#sources">Sources</a>
   </nav>
+
+  <details class="group-details">
+    <summary class="group-summary">Threat Actor Groups <span class="group-count">23</span></summary>
+    <nav class="group-list">
+    <a class="group-item active" href="zeus.html"><span class="group-dot dot-st-defunct"></span>Zeus / GameOver Zeus</a>
+    <a class="group-item" href="dyre.html"><span class="group-dot dot-st-defunct"></span>Dyre / Dyreza</a>
+    <a class="group-item" href="trickbot.html"><span class="group-dot dot-st-defunct"></span>TrickBot</a>
+    </nav>
+  </details>
 </aside>
 
 <main class="main">
@@ -974,7 +979,7 @@ html { scroll-behavior: smooth; }
   </div><!-- /content -->
 
   <footer class="page-footer">
-    Profile compiled July 2026 &nbsp;&bull;&nbsp; Ecosystem origins / root node &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://ransomwareedp.github.io" style="color:var(--blue)">ransomwareedp.github.io</a>
+    Profile compiled July 2026 &nbsp;&bull;&nbsp; Ecosystem origins / root node &nbsp;&bull;&nbsp; All data from open-source reporting unless noted &nbsp;&bull;&nbsp; Confidence labels: CONFIRMED / CREDIBLE / ANALYST INFERENCE &nbsp;&bull;&nbsp; <a href="https://therenoproject.org" style="color:var(--blue)">therenoproject.org</a>
     <span class="reno-credit">Developed by Reno</span>
   </footer>
 
