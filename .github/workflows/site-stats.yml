@@ -1,0 +1,59 @@
+name: Update site stats
+
+# Recounts the profile libraries every time content is published and writes
+# data/site-stats.json. The homepages read that file to display counts, so
+# profile counts never need to be typed by hand again.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'groups/**'
+      - 'exchanges/**'
+      - 'bphs/**'
+  workflow_dispatch:
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Count profiles and write stats file
+        run: |
+          python3 - <<'PYEOF'
+          import json, pathlib, datetime
+
+          def count_profiles(dirname):
+              d = pathlib.Path(dirname)
+              return len([p for p in d.glob('*.html') if p.name != 'index.html'])
+
+          stats = {
+              'groups':    count_profiles('groups'),
+              'exchanges': count_profiles('exchanges'),
+              'bphs':      count_profiles('bphs'),
+              'updated':   datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+          }
+          pathlib.Path('data').mkdir(exist_ok=True)
+          pathlib.Path('data/site-stats.json').write_text(json.dumps(stats, indent=2))
+          print(stats)
+          PYEOF
+
+      - name: Commit stats file if counts changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/site-stats.json
+          # Only commit when a COUNT changed, not just the timestamp
+          if git diff --staged -- data/site-stats.json | grep -E '^[+-]\s+"(groups|exchanges|bphs)"' >/dev/null; then
+            git commit -m "Auto: site stats recount"
+            git push
+          else
+            git restore --staged data/site-stats.json
+            git checkout -- data/site-stats.json 2>/dev/null || true
+            echo "Counts unchanged; nothing to commit."
+          fi
