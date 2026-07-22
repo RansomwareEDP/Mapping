@@ -626,7 +626,7 @@ body {
           <div class="tool-label">Threat Actor Library</div>
           <div class="tool-title">Ransomware Variant Profiles</div>
           <div class="tool-desc">
-            16 structural profiles covering lineage, operational patterns, affiliate relationships,
+            <span data-stat="groups">23</span> structural profiles covering lineage, operational patterns, affiliate relationships,
             live victim data, and disruption timelines.
           </div>
         </div>
@@ -648,7 +648,7 @@ body {
           <div class="tool-label">Financial Layer</div>
           <div class="tool-title">Cryptocurrency Exchange Profiles</div>
           <div class="tool-desc">
-            8 profiles of exchanges serving Russia/CIS networks: volumes, illicit exposure,
+            <span data-stat="exchanges">8</span> profiles of exchanges serving Russia/CIS networks: volumes, illicit exposure,
             operator attribution, and sanctions history.
           </div>
         </div>
@@ -659,7 +659,7 @@ body {
           <div class="tool-label">Infrastructure Layer</div>
           <div class="tool-title">Bulletproof Hosting Profiles</div>
           <div class="tool-desc">
-            6 BPH provider profiles: ASN infrastructure, operator attribution, sanctions exposure,
+            <span data-stat="bphs">6</span> BPH provider profiles: ASN infrastructure, operator attribution, sanctions exposure,
             and disruption history.
           </div>
         </div>
@@ -831,5 +831,21 @@ body {
 </div>
 
 <script data-goatcounter="https://ransomwareedp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+  /* Live profile counts: reads data/site-stats.json (auto-regenerated on every
+     publish by the site-stats GitHub Action). Static numbers above act as the
+     fallback if the fetch fails. */
+  (function () {
+    fetch('data/site-stats.json?t=' + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (s) {
+        document.querySelectorAll('[data-stat]').forEach(function (el) {
+          var v = s[el.getAttribute('data-stat')];
+          if (typeof v === 'number') el.textContent = v;
+        });
+      })
+      .catch(function () { /* keep static fallback */ });
+  })();
+</script>
 </body>
 </html>
