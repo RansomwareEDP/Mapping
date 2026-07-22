@@ -123,34 +123,11 @@
     <div class="footer-meta">Author: Reno &middot; Updated July 2026</div>
   </footer>
 
+  <script src="groups-data.js"></script>
   <script>
     const STATUS_ORDER=[['Active','#2ecc71'],['Disrupted','#f1c40f'],['Inactive','#9ba1ab'],['Defunct','#e05252']];
     const badgeCls={Active:'b-active',Disrupted:'b-disrupted',Inactive:'b-inactive',Defunct:'b-defunct'};
-    const D=[
-      {slug:'akira',name:'Akira',id:'01',status:'Active',model:'RaaS',active:'2023 to present',color:'#e63946',img:'photos/akira.svg',note:'Double-extortion RaaS targeting SMBs and enterprise; linked to former Conti affiliates.'},
-      {slug:'clop',name:'Cl0p',id:'09',status:'Active',model:'Data Extortion',active:'2019 to present',color:'#00897b',img:'photos/clop.svg',note:'FIN11/TA505 core. Mass MFT exploitation: GoAnywhere, MOVEit, Cleo. 1,000+ victims.'},
-      {slug:'dragonforce',name:'DragonForce',id:'03',status:'Active',model:'RaaS',active:'2023 to present',color:'#e67e22',img:'photos/dragonforce.svg',note:'Ransomware cartel model with white-label affiliate infrastructure; deployed by Scattered Spider.'},
-      {slug:'lynx',name:'Lynx / INC',id:'05',status:'Active',model:'RaaS',active:'2024 to present',color:'#3498db',img:'photos/lynx.svg',note:'Absorbed INC Ransom operations; shared code base. Double extortion; critical-infrastructure targeting.'},
-      {slug:'silentransom',name:'Luna Moth / SRG',id:'10',status:'Active',model:'Data Extortion',active:'2021 to present',color:'#8b5cf6',img:'photos/silentransom.svg',note:'No encryption; pure data extortion via callback phishing. Targets legal and financial sectors.'},
-      {slug:'nightspire',name:'NightSpire',id:'12',status:'Active',model:'RaaS',active:'2025 to present',color:'#0ea5e9',img:'photos/nightspire.svg',note:'Go-based double extortion transitioning to full RaaS; 259+ victims across 30+ countries.'},
-      {slug:'payload',name:'Payload',id:'13',status:'Active',model:'RaaS',active:'2026 to present',color:'#e056fd',img:'photos/payload.svg',note:'Babuk-derived; emerged Feb 2026. Double extortion against Windows and VMware ESXi. Emerging.'},
-      {slug:'qilin',name:'Qilin',id:'06',status:'Active',model:'RaaS',active:'2022 to present',color:'#f1c40f',img:'photos/qilin.svg',note:'Go/Rust encryptor; aggressive healthcare targeting. Absorbed former RansomHub affiliates in 2025.'},
-      {slug:'scatteredspider',name:'Scattered Spider',id:'16',status:'Active',model:'Data Extortion',active:'2022 to present',color:'#e67e22',img:'photos/scatteredspider.svg',note:'English-speaking social-engineering collective (The Com). Deploys ALPHV, RansomHub, Qilin, DragonForce.'},
-      {slug:'thegentlemen',name:'The Gentlemen',id:'11',status:'Active',model:'RaaS',active:'2025 to present',color:'#c9a84c',img:'photos/thegentlemen.svg',note:'Qilin splinter; 420+ victims across 50+ countries. Self-propagating Go encryptor; GPO propagation.'},
-      {slug:'worldleaks',name:'World Leaks / Hunters Intl',id:'14',status:'Active',model:'Data Extortion',active:'2025 to present',color:'#16a085',img:'photos/worldleaks.svg',note:'Jan 2025 rebrand of Hunters International (Hive lineage). Extortion-as-a-service; no encryption.'},
-      {slug:'lockbit',name:'LockBit',id:'04',status:'Disrupted',model:'RaaS',active:'2019 to present',color:'#2ecc71',img:'photos/lockbit.svg',note:'Largest RaaS globally. Infrastructure seized Feb 2024 (Operation Cronos); admin indicted; attempted reconstitution.'},
-      {slug:'8base',name:'8Base / Phobos',id:'21',status:'Disrupted',model:'RaaS',active:'2022 to 2025',color:'#9acd32',img:'photos/8base.svg',note:'Phobos RaaS affiliate running mass double extortion against SMBs; ~$16M traced. Seized in Operation Phobos Aetor (Feb 2025).'},
-      {slug:'royal',name:'Royal / BlackSuit / Chaos',id:'07',status:'Disrupted',model:'RaaS',active:'2022 to 2025',color:'#8e44ad',img:'photos/royal.svg',note:'Conti Team One lineage; $500M+ demands. Disrupted by Operation Checkmate (Jul 2025); assessed rebrand to Chaos.'},
-      {slug:'blackbasta',name:'Black Basta',id:'08',status:'Inactive',model:'RaaS',active:'2022 to 2025',color:'#7d1e1e',img:'photos/blackbasta.svg',note:'Conti Team 3 successor; $107M+ revenue, 500+ victims. Collapsed Jan 2025 after internal chat leaks.'},
-      {slug:'alphv',name:'ALPHV / BlackCat',id:'15',status:'Defunct',model:'RaaS',active:'2021 to 2024',color:'#c0392b',img:'photos/alphv.svg',note:'DarkSide/BlackMatter lineage; first major Rust-based RaaS. Ended in the Change Healthcare exit scam.'},
-      {slug:'conti',name:'Conti',id:'02',status:'Defunct',model:'RaaS',active:'2020 to 2022',color:'#9b59b6',img:'photos/conti.svg',note:'Russia-linked, FSB-connected. Dissolved 2022 after leaks; parent to Black Basta, Royal, Akira affiliates.'},
-      {slug:'darkside',name:'DarkSide / BlackMatter',id:'19',status:'Defunct',model:'RaaS',active:'2020 to 2021',color:'#5b6b86',img:'photos/darkside.svg',note:'Closed-operator RaaS behind Colonial Pipeline; $90M+ from 47 victims. Anchor of the DarkSide to ALPHV lineage.'},
-      {slug:'revil',name:'REvil / Sodinokibi',id:'20',status:'Defunct',model:'RaaS',active:'2019 to 2021',color:'#b03a2e',img:'photos/revil.svg',note:'GandCrab successor behind Kaseya and JBS; first $70M ransom demand. FSB arrests Jan 2022, most later released.'},
-      {slug:'ryuk',name:'Ryuk',id:'17',status:'Defunct',model:'RaaS',active:'2018 to 2021',color:'#94a3b8',img:'photos/ryuk.svg',note:'TrickBot-delivered big-game hunting pioneer; $150M+ traced. Wizard Spider; retooled into Conti.'},
-      {slug:'trickbot',name:'TrickBot',id:'18',status:'Defunct',model:'Botnet',active:'2016 to 2022',color:'#d35400',img:'photos/trickbot.svg',note:'Banking trojan turned access broker for Ryuk and Conti; 1M+ infections. Named in Operation Endgame.'},
-      {slug:'zeus',name:'Zeus / GameOver Zeus',id:'22',status:'Defunct',model:'Botnet',active:'2006 to 2014',color:'#a9865f',img:'photos/zeus.svg',note:'Origin node of the Russia/CIS ecosystem: Zeus kit, GameOver Zeus botnet, and CryptoLocker. Bogachev "Slavik"; disrupted by Operation Tovar. Root of the Evil Corp line.'},
-      {slug:'dyre',name:'Dyre / Dyreza',id:'23',status:'Defunct',model:'Botnet',active:'2014 to 2015',color:'#5f8aa9',img:'photos/dyre.svg',note:'Closed-gang banking trojan that filled the GameOver Zeus vacuum; disrupted by a 2015 Moscow raid. Bridge node that regrouped as TrickBot.'},
-    ];
+    const D=(window.GROUPS||[]);
     const main=document.getElementById('main'),q=document.getElementById('q'),fStatus=document.getElementById('fStatus'),fModel=document.getElementById('fModel'),count=document.getElementById('count');
     function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
     function initials(n){return n.replace(/\/.*/,'').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
