@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Takedown Scoreboard: What Actually Degrades the Ecosystem</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --chip-red-bg: #3b1f1f; --chip-red-border: #7f1d1d;
+  --chip-amber-bg: #2d1b00; --chip-amber-border: #78350f;
+  --chip-green-bg: #0d4429; --chip-green-border: #238636;
+  --chip-blue-bg: #172b4d; --chip-blue-border: #1f6feb;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary); color: var(--text-primary);
+  line-height: 1.6; font-size: 14px;
+}
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100; gap: 16px;
+}
+.site-header .logo { font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+.site-header .divider { color: var(--border); }
+.site-header .profile-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.site-header .node-type-tag { font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; letter-spacing: 0.04em; }
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+.status-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; border: 1px solid; }
+.badge-live { background: var(--chip-blue-bg); color: var(--accent-blue); border-color: var(--chip-blue-border); }
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px; }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a { display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.15s; }
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+.main-content { margin-left: var(--sidebar-width); margin-top: var(--header-height); padding: 32px 40px 80px; max-width: 1080px; }
+.section { margin-bottom: 48px; }
+.section-header { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px; }
+.section-num { font-size: 12px; color: var(--text-muted); font-weight: 700; }
+.section-title { font-size: 18px; font-weight: 600; }
+.section-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+.stat-card .num { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 12px; border: 1px solid; white-space: nowrap; }
+.chip-red { background: var(--chip-red-bg); color: var(--accent-red); border-color: var(--chip-red-border); }
+.chip-amber { background: var(--chip-amber-bg); color: var(--accent-orange); border-color: var(--chip-amber-border); }
+.chip-green { background: var(--chip-green-bg); color: var(--accent-green); border-color: var(--chip-green-border); }
+.chip-blue { background: var(--chip-blue-bg); color: var(--accent-blue); border-color: var(--chip-blue-border); }
+.chip-gray { background: var(--bg-tertiary); color: var(--text-secondary); border-color: var(--border); }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.filter-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
+.fchip { font-size: 12px; padding: 3px 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.15s; }
+.fchip:hover { color: var(--text-primary); border-color: var(--text-muted); }
+.fchip.on { background: rgba(88,166,255,0.12); color: var(--accent-blue); border-color: var(--accent-blue); }
+.search-box { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 12px; padding: 5px 10px; width: 220px; }
+.search-box:focus { outline: none; border-color: var(--accent-blue); }
+.count-note { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+.tbl-wrap { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg-tertiary); white-space: nowrap; }
+table.data th.sortable { cursor: pointer; }
+table.data th.sortable:hover { color: var(--text-primary); }
+table.data td { padding: 8px 12px; border-bottom: 1px solid var(--border-muted); vertical-align: top; }
+table.data tr:last-child td { border-bottom: none; }
+table.data tr:hover td { background: rgba(88,166,255,0.03); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; white-space: nowrap; }
+.dim { color: var(--text-secondary); }
+.mut { color: var(--text-muted); }
+.gap-note { font-size: 12px; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent-red); padding: 10px 14px; margin-bottom: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); align-items: center; }
+.src-link { font-size: 11px; }
+.footer-note { font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 24px; }
+.score-chip { display: inline-block; font-size: 12px; font-weight: 700; min-width: 26px; text-align: center; padding: 2px 8px; border-radius: 6px; border: 1px solid; }
+.s5, .s4 { background: var(--chip-green-bg); color: var(--accent-green); border-color: var(--chip-green-border); }
+.s3 { background: var(--chip-amber-bg); color: var(--accent-orange); border-color: var(--chip-amber-border); }
+.s2, .s1 { background: var(--chip-red-bg); color: var(--accent-red); border-color: var(--chip-red-border); }
+.sTBD { background: var(--bg-tertiary); color: var(--text-muted); border-color: var(--border); }
+.bar-track { background: var(--bg-tertiary); border-radius: 4px; height: 8px; width: 110px; display: inline-block; vertical-align: middle; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+.dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 12px; }
+.dist-row .dist-label { width: 150px; color: var(--text-secondary); }
+.dist-row .dist-count { width: 24px; text-align: right; font-weight: 700; }
+.dist-bar-track { flex: 1; max-width: 420px; background: var(--bg-tertiary); border-radius: 4px; height: 14px; overflow: hidden; }
+.dist-bar { height: 100%; border-radius: 4px; }
+.finding-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; }
+.finding-card .f-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.finding-card .f-num { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.finding-card .f-title { font-size: 14px; font-weight: 600; }
+.finding-card .f-body { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.finding-card .f-imp { font-size: 12px; color: var(--text-primary); border-left: 3px solid var(--accent-blue); padding-left: 10px; }
+tr.detail-row td { background: var(--bg-tertiary) !important; font-size: 12px; color: var(--text-secondary); padding: 12px 16px; }
+tr.detail-row .d-grid { display: grid; grid-template-columns: 130px 1fr; gap: 4px 14px; }
+tr.detail-row .d-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+tr.op-row { cursor: pointer; }
+.method-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); }
+.method-block h4 { font-size: 13px; color: var(--text-primary); margin-bottom: 6px; }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 24px 16px 60px; }
+  .site-header .node-type-tag { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">Takedown Scoreboard</span>
+  <span class="node-type-tag">Disruption Pillar</span>
+  <div class="header-badges">
+    <span class="status-badge badge-live" id="hdr-asof">As of 2026-07-24</span>
+  </div>
+</header>
+
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#authorities"><span class="nav-num">02</span>Authority Scorecard</a></li>
+    <li><a href="#displacement"><span class="nav-num">03</span>Degrade vs Displace</a></li>
+    <li><a href="#operations"><span class="nav-num">04</span>Operations</a></li>
+    <li><a href="#findings"><span class="nav-num">05</span>Findings</a></li>
+    <li><a href="#method"><span class="nav-num">06</span>Methodology</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Related</div>
+  <ul class="sidebar-nav">
+    <li><a href="tracker.html">Sanctions and Indictment Tracker</a></li>
+    <li><a href="index.html">Ecosystem Hub</a></li>
+    <li><a href="most-wanted.html">Most Wanted</a></li>
+    <li><a href="groups/index.html">Group Profiles</a></li>
+    <li><a href="exchanges/index.html">Exchange Profiles</a></li>
+    <li><a href="bphs/index.html">BPH Profiles</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Version</span><span class="value" id="meta-version"></span></div>
+    <div class="sidebar-meta-row"><span class="label">As of</span><span class="value" id="meta-asof"></span></div>
+    <div class="sidebar-meta-row"><span class="label">Operations</span><span class="value" id="meta-ops"></span></div>
+    <div class="sidebar-meta-row"><span class="label">Avg score</span><span class="value" id="meta-avg"></span></div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <section class="section" id="overview">
+    <div class="section-header"><span class="section-num">01</span><span class="section-title">Overview</span></div>
+    <p class="section-sub">Every major disruption operation against the RU/CIS ransomware ecosystem since 2019, scored 1-5 for what it actually achieved: neutralization, degradation, displacement, or nothing. The question this page answers: which authorities' actions degrade the ecosystem, and which just move it. Source of truth: <span class="mono">data/scoreboard.json</span>; methodology in section 06.</p>
+    <div class="stat-grid" id="stat-grid"></div>
+  </section>
+
+  <section class="section" id="authorities">
+    <div class="section-header"><span class="section-num">02</span><span class="section-title">Authority Scorecard</span></div>
+    <p class="section-sub">Average effectiveness of each authority's operations. Co-led operations credit every named authority; averages exclude too-recent (TBD) actions. Rows with fewer than 3 scored actions carry a small-sample flag.</p>
+    <div class="tbl-wrap">
+      <table class="data" id="auth-table">
+        <thead><tr>
+          <th class="sortable" data-sort="avg">Avg score &#8597;</th>
+          <th>Authority</th>
+          <th class="sortable" data-sort="actions">Actions &#8597;</th>
+          <th title="Operations scored 4 or 5: target dead or inert">Neutralized</th>
+          <th title="Operations scored 1 or 2">Failures</th>
+          <th>Signature action</th>
+          <th>Pattern</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><span class="chip chip-green">4.0+</span> reliably neutralizes targets</span>
+      <span><span class="chip chip-amber">3.0-3.9</span> degrades more than displaces</span>
+      <span><span class="chip chip-red">&lt;3.0</span> actions displaced or absorbed</span>
+      <span class="mut">* fewer than 3 scored actions</span>
+    </div>
+  </section>
+
+  <section class="section" id="displacement">
+    <div class="section-header"><span class="section-num">03</span><span class="section-title">Degrade vs Displace</span></div>
+    <p class="section-sub">Outcome distribution across all scored operations, the operations the ecosystem simply absorbed, and how fast each layer reconstitutes after a hit.</p>
+    <div id="dist-chart" style="margin-bottom:24px;"></div>
+    <h4 style="font-size:13px;margin-bottom:8px;">Displacement watch: operations scored 2 or lower</h4>
+    <div class="tbl-wrap" style="margin-bottom:24px;">
+      <table class="data" id="disp-table">
+        <thead><tr><th>Date</th><th>Operation</th><th>Score</th><th>Where it went</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <h4 style="font-size:13px;margin-bottom:8px;">Reconstitution speed by layer</h4>
+    <div class="tbl-wrap">
+      <table class="data" id="bench-table">
+        <thead><tr><th>Event</th><th>Recovery time</th><th>Layer</th><th>Conf.</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="section-sub" style="margin-top:10px;">Pattern: Russian-language financial infrastructure reconstitutes in 1-14 days when personnel are untouched. Recovery time scales with personnel exposure, not with the size of the seizure.</p>
+  </section>
+
+  <section class="section" id="operations">
+    <div class="section-header"><span class="section-num">04</span><span class="section-title">Operations</span></div>
+    <p class="section-sub">All scored operations. Click any row for the full assessment: action components, personnel outcome, measured impact, and score rationale. Every row links to a primary source.</p>
+    <div class="filter-bar">
+      <span class="filter-label">Result</span>
+      <span class="fchip on" data-g="band" data-f="all">All</span>
+      <span class="fchip" data-g="band" data-f="kill">Neutralized (4-5)</span>
+      <span class="fchip" data-g="band" data-f="degraded">Degraded (3)</span>
+      <span class="fchip" data-g="band" data-f="fail">Failures (1-2)</span>
+      <span class="fchip" data-g="band" data-f="tbd">Too recent</span>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Target layer</span>
+      <span class="fchip on" data-g="layer" data-f="all">All</span>
+      <span class="fchip" data-g="layer" data-f="ransomware">Ransomware</span>
+      <span class="fchip" data-g="layer" data-f="financial">Financial</span>
+      <span class="fchip" data-g="layer" data-f="bph">BPH</span>
+      <span class="fchip" data-g="layer" data-f="malware">Malware / enablers</span>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Period</span>
+      <span class="fchip on" data-g="year" data-f="all">All</span>
+      <span class="fchip" data-g="year" data-f="pre">2021-2024</span>
+      <span class="fchip" data-g="year" data-f="2025">2025</span>
+      <span class="fchip" data-g="year" data-f="2026">2026</span>
+      <input class="search-box" id="op-search" type="text" placeholder="Search operations, targets, authorities">
+      <span class="count-note" id="op-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data" id="ops-table">
+        <thead><tr>
+          <th class="sortable" data-sort="date">Date &#8597;</th>
+          <th>Operation</th><th>Target</th><th>Authorities</th>
+          <th class="sortable" data-sort="score">Score &#8597;</th>
+          <th>Outcome</th><th>Conf.</th><th>Src</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="findings">
+    <div class="section-header"><span class="section-num">05</span><span class="section-title">Findings</span></div>
+    <p class="section-sub">What the scored record shows. Each finding states its evidence, confidence, and the leverage implication.</p>
+    <div id="findings-list"></div>
+    <div id="gap-block"></div>
+  </section>
+
+  <section class="section" id="method">
+    <div class="section-header"><span class="section-num">06</span><span class="section-title">Methodology</span></div>
+    <div class="method-block">
+      <h4>Scoring scale</h4>
+      <div class="tbl-wrap" style="margin-top:8px;">
+        <table class="data" id="scale-table">
+          <thead><tr><th>Score</th><th>Label</th><th>Definition</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="method-block">
+      <h4>Rules</h4>
+      <p>The unit of analysis is the operation, not the press release: coordinated multi-authority actions are one row, and every named lead authority is credited with that row's score. Averages exclude operations under roughly 90 days old (marked TBD), because reconstitution takes weeks to observe. Individual arrests are recorded inside their parent operation's personnel outcome rather than as separate rows.</p>
+    </div>
+    <div class="method-block">
+      <h4>Re-score policy</h4>
+      <p>Scores are not static. A brand that resurfaces, a successor that reaches material scale, or a fugitive brought into custody triggers a re-score at the next revision, in either direction. Each revision is dated and the workbook behind this page preserves the full history.</p>
+    </div>
+    <div class="method-block">
+      <h4>Confidence and sources</h4>
+      <p><span class="chip chip-green">Confirmed</span> primary source (official press release, court filing) or multiple credible sources. <span class="chip chip-blue">Credible</span> single reputable vendor or media source. Assessments and inferences are labeled as such in the row detail. Every operation links to at least one primary source.</p>
+    </div>
+    <div class="method-block">
+      <h4>Independence</h4>
+      <p>This scoreboard is independent research. It is not affiliated with, endorsed by, or informed by non-public material from any government or law enforcement agency. Scoring reflects publicly observable outcomes: whether the target kept operating, how fast it recovered, and whether anyone was held accountable. Corrections are welcome and will be applied with a dated note.</p>
+    </div>
+    <p class="footer-note">
+      Part of the Disruption Pillar. Master dataset maintained in the Takedown Scoreboard workbook; this page renders <span class="mono">data/scoreboard.json</span>. Companion dataset: <a href="tracker.html">Sanctions and Indictment Tracker</a> (action-level log, individuals, pressure matrix). To update: edit the workbook, regenerate the JSON, redeploy.
+    </p>
+  </section>
+
+</main>
+
+<script src="data/scoreboard-data.js"></script>
+<script>
+(function () {
+  var D = window.SCOREBOARD;
+  if (!D) { document.getElementById("stat-grid").innerHTML = "<p class='dim'>Data file not found: data/scoreboard-data.js</p>"; return; }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function scoreChip(s) {
+    var cls = s === "TBD" ? "sTBD" : "s" + s;
+    return "<span class='score-chip " + cls + "'>" + esc(s) + "</span>";
+  }
+  function confChip(c) {
+    var cls = /^confirmed/i.test(c) ? "chip-green" : "chip-blue";
+    var short = /^confirmed/i.test(c) ? "C" : "Cr";
+    return "<span class='chip " + cls + "' title='" + esc(c) + "'>" + short + "</span>";
+  }
+  function srcLink(s) {
+    var first = String(s || "").split(";")[0].trim();
+    if (!/^http/.test(first)) return "<span class='mut'>-</span>";
+    var host = first.replace(/^https?:\/\/(www\.)?/, "").split("/")[0];
+    return "<a class='src-link' href='" + esc(first) + "' target='_blank' rel='noopener'>" + esc(host) + "</a>";
+  }
+
+  // meta
+  var m = D.meta;
+  document.getElementById("hdr-asof").textContent = "As of " + m.asOf;
+  document.getElementById("meta-version").textContent = m.version;
+  document.getElementById("meta-asof").textContent = m.asOf;
+  document.getElementById("meta-ops").textContent = m.counts.operations;
+  document.getElementById("meta-avg").textContent = m.counts.avg;
+
+  // stat cards
+  var stats = [
+    [m.counts.operations, "Scored operations", ""],
+    [m.counts.avg, "Avg effectiveness (1-5)", ""],
+    [m.counts.kills, "Neutralizations (4-5)", "var(--accent-green)"],
+    [m.counts.failures, "Failures (1-2)", "var(--accent-red)"],
+    [m.counts.tbd, "Too recent to score", "var(--accent-orange)"]
+  ];
+  document.getElementById("stat-grid").innerHTML = stats.map(function (s) {
+    return "<div class='stat-card'><div class='num'" + (s[2] ? " style='color:" + s[2] + "'" : "") + ">" + s[0] + "</div><div class='lbl'>" + s[1] + "</div></div>";
+  }).join("");
+
+  // authority scorecard
+  var auths = D.authorities.slice();
+  var authSort = { key: "avg", dir: -1 };
+  function avgColor(a) {
+    if (a == null) return "var(--text-muted)";
+    if (a >= 4) return "var(--accent-green)";
+    if (a >= 3) return "var(--accent-orange)";
+    return "var(--accent-red)";
+  }
+  function renderAuth() {
+    var rows = auths.slice().sort(function (a, b) {
+      var ka = a[authSort.key] == null ? -1 : a[authSort.key];
+      var kb = b[authSort.key] == null ? -1 : b[authSort.key];
+      return (ka < kb ? -1 : ka > kb ? 1 : 0) * authSort.dir;
+    });
+    document.querySelector("#auth-table tbody").innerHTML = rows.map(function (a) {
+      var scored = a.actions - a.tbd;
+      var small = scored < 3 ? "<span class='mut'>*</span>" : "";
+      var bar = a.avg == null ? "" :
+        "<span class='bar-track'><span class='bar-fill' style='width:" + (a.avg / 5 * 100) + "%;background:" + avgColor(a.avg) + "'></span></span>";
+      return "<tr>" +
+        "<td><strong style='color:" + avgColor(a.avg) + "'>" + (a.avg == null ? "n/a" : a.avg.toFixed(2)) + "</strong>" + small + " " + bar + "</td>" +
+        "<td>" + esc(a.name) + "</td>" +
+        "<td>" + a.actions + (a.tbd ? " <span class='mut'>(" + a.tbd + " TBD)</span>" : "") + "</td>" +
+        "<td>" + (a.kills || "<span class='mut'>0</span>") + "</td>" +
+        "<td>" + (a.failures ? "<span style='color:var(--accent-red)'>" + a.failures + "</span>" : "<span class='mut'>0</span>") + "</td>" +
+        "<td class='dim'>" + esc(a.signature) + "</td>" +
+        "<td class='dim'>" + esc(a.note) + "</td></tr>";
+    }).join("");
+  }
+  document.querySelectorAll("#auth-table th.sortable").forEach(function (th) {
+    th.addEventListener("click", function () {
+      var k = th.getAttribute("data-sort");
+      if (authSort.key === k) authSort.dir *= -1; else { authSort.key = k; authSort.dir = -1; }
+      renderAuth();
+    });
+  });
+  renderAuth();
+
+  // distribution
+  var dist = {};
+  D.operations.forEach(function (o) { var k = String(o.score); dist[k] = (dist[k] || 0) + 1; });
+  var labels = { "5": "5 Neutralized", "4": "4 Brand dead / inert", "3": "3 Degraded", "2": "2 Displaced", "1": "1 No effect", "TBD": "TBD Too recent" };
+  var colors = { "5": "var(--accent-green)", "4": "var(--accent-green)", "3": "var(--accent-orange)", "2": "var(--accent-red)", "1": "var(--accent-red)", "TBD": "var(--text-muted)" };
+  var maxCount = Math.max.apply(null, Object.keys(labels).map(function (k) { return dist[k] || 0; }));
+  document.getElementById("dist-chart").innerHTML = Object.keys(labels).map(function (k) {
+    var c = dist[k] || 0;
+    return "<div class='dist-row'><span class='dist-label'>" + labels[k] + "</span>" +
+      "<span class='dist-count'>" + c + "</span>" +
+      "<span class='dist-bar-track'><span class='dist-bar' style='width:" + (maxCount ? c / maxCount * 100 : 0) + "%;background:" + colors[k] + "'></span></span></div>";
+  }).join("");
+
+  // displacement watch
+  document.querySelector("#disp-table tbody").innerHTML = D.operations.filter(function (o) {
+    return typeof o.score === "number" && o.score <= 2;
+  }).map(function (o) {
+    return "<tr><td class='mono'>" + esc(o.date) + "</td><td>" + esc(o.operation) + "</td>" +
+      "<td>" + scoreChip(o.score) + "</td><td class='dim'>" + esc(o.successor || o.recovery) + "</td></tr>";
+  }).join("");
+
+  // benchmarks
+  document.querySelector("#bench-table tbody").innerHTML = D.benchmarks.map(function (b) {
+    return "<tr><td>" + esc(b.event) + "</td><td class='mono'>" + esc(b.time) + "</td>" +
+      "<td class='dim'>" + esc(b.layer) + "</td><td>" + confChip(b.confidence) + "</td></tr>";
+  }).join("");
+
+  // operations table
+  var filters = { band: "all", layer: "all", year: "all", q: "" };
+  var opSort = { key: "date", dir: -1 };
+  function layerOf(o) {
+    var t = String(o.targetType).toLowerCase();
+    if (/hosting/.test(t)) return "bph";
+    if (/exchange|launder|payment|stablecoin|darknet/.test(t)) return "financial";
+    if (/ransomware|extortion|affiliates|deployer/.test(t)) return "ransomware";
+    return "malware";
+  }
+  function bandOf(o) {
+    if (o.score === "TBD") return "tbd";
+    if (o.score >= 4) return "kill";
+    if (o.score === 3) return "degraded";
+    return "fail";
+  }
+  function yearOf(o) {
+    var y = String(o.date).slice(0, 4);
+    return y === "2025" || y === "2026" ? y : "pre";
+  }
+  function renderOps() {
+    var rows = D.operations.filter(function (o) {
+      if (filters.band !== "all" && bandOf(o) !== filters.band) return false;
+      if (filters.layer !== "all" && layerOf(o) !== filters.layer) return false;
+      if (filters.year !== "all" && yearOf(o) !== filters.year) return false;
+      if (filters.q) {
+        var hay = (o.operation + " " + o.targets + " " + o.authorities + " " + o.summaryText).toLowerCase();
+        if (hay.indexOf(filters.q) < 0) return false;
+      }
+      return true;
+    });
+    rows.sort(function (a, b) {
+      var ka, kb;
+      if (opSort.key === "score") {
+        ka = a.score === "TBD" ? -1 : a.score; kb = b.score === "TBD" ? -1 : b.score;
+      } else { ka = a.date; kb = b.date; }
+      return (ka < kb ? -1 : ka > kb ? 1 : 0) * opSort.dir;
+    });
+    document.getElementById("op-count").textContent = rows.length + " of " + D.operations.length;
+    document.querySelector("#ops-table tbody").innerHTML = rows.map(function (o) {
+      return "<tr class='op-row' data-n='" + o.n + "'>" +
+        "<td class='mono'>" + esc(o.date) + "</td>" +
+        "<td>" + esc(o.operation) + "</td>" +
+        "<td class='dim'>" + esc(o.targets) + "</td>" +
+        "<td class='dim'>" + esc(o.authorities) + "</td>" +
+        "<td>" + scoreChip(o.score) + "</td>" +
+        "<td class='dim'>" + esc(o.outcome) + "</td>" +
+        "<td>" + confChip(o.confidence) + "</td>" +
+        "<td>" + srcLink(o.source) + "</td></tr>";
+    }).join("");
+    document.querySelectorAll("#ops-table tr.op-row").forEach(function (tr) {
+      tr.addEventListener("click", function (e) {
+        if (e.target.tagName === "A") return;
+        var next = tr.nextElementSibling;
+        if (next && next.classList.contains("detail-row")) { next.remove(); return; }
+        var o = D.operations.filter(function (x) { return x.n == tr.getAttribute("data-n"); })[0];
+        var d = document.createElement("tr");
+        d.className = "detail-row";
+        d.innerHTML = "<td colspan='8'><div class='d-grid'>" +
+          "<span class='d-label'>Components</span><span>" + esc(o.components) + "</span>" +
+          "<span class='d-label'>Recovery</span><span>" + esc(o.recovery) + "</span>" +
+          "<span class='d-label'>Successor</span><span>" + esc(o.successor) + "</span>" +
+          "<span class='d-label'>Personnel</span><span>" + esc(o.personnel) + "</span>" +
+          "<span class='d-label'>Measured impact</span><span>" + esc(o.impact) + "</span>" +
+          "<span class='d-label'>Assessment</span><span>" + esc(o.status) + "</span>" +
+          "<span class='d-label'>Confidence</span><span>" + esc(o.confidence) + "</span>" +
+          "<span class='d-label'>Sources</span><span>" + String(o.source).split(";").map(function (s) {
+            s = s.trim(); return /^http/.test(s) ? "<a href='" + esc(s) + "' target='_blank' rel='noopener'>" + esc(s) + "</a>" : esc(s);
+          }).join("<br>") + "</span>" +
+          "</div></td>";
+        tr.parentNode.insertBefore(d, tr.nextSibling);
+      });
+    });
+  }
+  D.operations.forEach(function (o) {
+    o.summaryText = [o.components, o.successor, o.personnel, o.impact, o.status].join(" ");
+  });
+  document.querySelectorAll(".filter-bar .fchip").forEach(function (ch) {
+    ch.addEventListener("click", function () {
+      var g = ch.getAttribute("data-g");
+      if (!g) return;
+      document.querySelectorAll(".fchip[data-g='" + g + "']").forEach(function (x) { x.classList.remove("on"); });
+      ch.classList.add("on");
+      filters[g] = ch.getAttribute("data-f");
+      renderOps();
+    });
+  });
+  document.getElementById("op-search").addEventListener("input", function (e) {
+    filters.q = e.target.value.toLowerCase().trim();
+    renderOps();
+  });
+  document.querySelectorAll("#ops-table th.sortable").forEach(function (th) {
+    th.addEventListener("click", function () {
+      var k = th.getAttribute("data-sort");
+      if (opSort.key === k) opSort.dir *= -1; else { opSort.key = k; opSort.dir = -1; }
+      renderOps();
+    });
+  });
+  renderOps();
+
+  // findings
+  document.getElementById("findings-list").innerHTML = D.findings.map(function (f) {
+    return "<div class='finding-card'>" +
+      "<div class='f-head'><span class='f-num'>" + String(f.n).padStart(2, "0") + "</span>" +
+      "<span class='f-title'>" + esc(f.finding) + "</span>" + confChip(f.confidence) + "</div>" +
+      "<div class='f-body'>" + esc(f.evidence) + "</div>" +
+      "<div class='f-imp'>" + esc(f.implication) + "</div></div>";
+  }).join("");
+
+  // gaps
+  if (D.gaps.length) {
+    document.getElementById("gap-block").innerHTML =
+      "<div class='gap-note'><strong>The unscored gap:</strong> the following active entities have never been the subject of a scoreable enforcement operation, which is itself the dataset's most important finding: " +
+      D.gaps.map(function (g) {
+        var link = g.page && g.page.indexOf("None") !== 0 ? "<a href='" + esc(g.page) + "'>" + esc(g.entity) + "</a>" : esc(g.entity);
+        return link;
+      }).join(", ") + ".</div>";
+  }
+
+  // scale table
+  document.querySelector("#scale-table tbody").innerHTML = D.scale.map(function (s) {
+    return "<tr><td>" + scoreChip(s.score) + "</td><td><strong>" + esc(s.label) + "</strong></td>" +
+      "<td class='dim'>" + esc(s.definition) + "</td></tr>";
+  }).join("");
+})();
+</script>
+</body>
+</html>

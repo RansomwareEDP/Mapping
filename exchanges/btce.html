@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTC-e / WEX: Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── HEADER ── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* ── STATUS BADGES ── */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-nav li span { display: block; padding: 6px 16px; font-size: 12px; color: var(--text-primary); }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* ── HERO MODULE ── */
+.hero-module {
+  background: linear-gradient(135deg, #1a0a0a 0%, #1c1228 100%);
+  border: 1px solid #4a1515; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-red); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 220px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 60%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+
+/* ── SECTION HEADERS ── */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* ── CONFIDENCE BADGES ── */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+
+/* ── KPI / ATTRIBUTE TABLES ── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* ── CONTENT TABLES ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+
+/* ── TIMELINE ── */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* ── CITATION ── */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* ── WALLET ADDRESSES ── */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* ── GAP FLAGS ── */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "◆ GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* ── GALLERY ── */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-item img.contain { object-fit: contain; background: #0d0d0d; padding: 8px; }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+
+/* ── SOURCES ── */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* ── TIER LABELS ── */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">BTC-e / WEX</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-disrupted">Disrupted 2017</span>
+    <span class="status-badge status-defunct">Defunct</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="node-library"></div>
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  
+
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">July 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">BTC-e status</span><span class="value" style="color:var(--accent-red)">Defunct (seized)</span></div>
+    <div class="sidebar-meta-row"><span class="label">WEX status</span><span class="value" style="color:#94a3b8">Defunct (collapsed)</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">None / Prob. Coop (WEX)</span></div>
+    <div class="sidebar-meta-row"><span class="label">Reg. jurisdiction</span><span class="value">UK shell / Singapore</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : OPERATORS ABOVE FOLD -->
+<div class="hero-module">
+  <div class="hero-label">⚠ Indicted Operators : Hero Module</div>
+  <div class="hero-title">The following individuals are named in U.S. federal indictments connected to the BTC-e/WEX complex. None has ever been OFAC-designated. Two are sheltered in Russia; two are in, or pending, U.S. custody.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Alexander Vinnik</div>
+      <div class="op-alias">Co-founder; beneficial owner, Canton Business Corp.</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian</span></div>
+      <div class="op-row"><span class="k">Charges</span><span class="v">21-count superseding indictment (NDCA, 2017)</span></div>
+      <div class="op-row"><span class="k">Disposition</span><span class="v">Pleaded guilty May 2024; case dismissed Feb 2025</span></div>
+      <div class="op-row"><span class="k">Current status</span><span class="v">Released in Fogel prisoner swap; in Russia</span></div>
+      <div class="op-row"><span class="k">Other actions</span><span class="v">FinCEN $12M penalty; France 5-yr conviction 2020</span></div>
+      <span class="op-tag op-tag-indicted">Indicted</span>
+      <span class="op-tag op-tag-atlarge">In Russia</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Aleksey Bilyuchenko</div>
+      <div class="op-alias">aka Alexey Ivanov-Bilyuchenko : technical administrator; WEX beneficial owner</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian</span></div>
+      <div class="op-row"><span class="k">Charges</span><span class="v">NDCA (BTC-e); SDNY (Mt. Gox hack, with Verner)</span></div>
+      <div class="op-row"><span class="k">US status</span><span class="v">Fugitive; USSS Most Wanted</span></div>
+      <div class="op-row"><span class="k">Russia</span><span class="v">Sentenced 3.5 yrs (WEX case); 18B RUB claim overturned 2025</span></div>
+      <span class="op-tag op-tag-indicted">Indicted</span>
+      <span class="op-tag op-tag-atlarge">In Russia</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Dmitry Vasilyev</div>
+      <div class="op-alias">WEX nominal owner and CEO (front for Bilyuchenko)</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Russian (Minsk-born)</span></div>
+      <div class="op-row"><span class="k">Charges</span><span class="v">Fraud, money laundering (BTC-e/WEX case)</span></div>
+      <div class="op-row"><span class="k">Arrests</span><span class="v">Italy 2019, Poland 2021, Croatia 2022, Poland 2024</span></div>
+      <div class="op-row"><span class="k">Current status</span><span class="v">Extradited Poland to U.S., June 2025</span></div>
+      <span class="op-tag op-tag-indicted">Indicted</span>
+      <span class="op-tag op-tag-custody">In Custody (US)</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Aliaksandr Klimenka</div>
+      <div class="op-alias">Soft-FX : maintained BTC-e's U.S.-based servers</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Belarusian / Cypriot</span></div>
+      <div class="op-row"><span class="k">Charges</span><span class="v">Money laundering conspiracy; unlicensed MSB (NDCA)</span></div>
+      <div class="op-row"><span class="k">Arrested</span><span class="v">Latvia, December 2023</span></div>
+      <div class="op-row"><span class="k">Current status</span><span class="v">U.S. prosecution pending</span></div>
+      <span class="op-tag op-tag-indicted">Indicted</span>
+      <span class="op-tag op-tag-custody">In Custody</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Processed Volume</div>
+      <div class="kpi-value">$9B+</div>
+      <div class="kpi-sub">2011 to 2017, 1M+ users (DOJ forfeiture complaint, 2025)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ransomware Cash-Out Share</div>
+      <div class="kpi-value">95%</div>
+      <div class="kpi-sub">Of tracked ransom payments since 2014 (Google/Chainalysis/UCSD/NYU, Black Hat 2017)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">FinCEN Penalty</div>
+      <div class="kpi-value">$110M</div>
+      <div class="kpi-sub">$110,003,314 vs BTC-e; $12M vs Vinnik (July 2017)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Mt. Gox Stolen BTC</div>
+      <div class="kpi-value">300K+ BTC</div>
+      <div class="kpi-sub">Traceable to the Mt. Gox theft, processed by BTC-e (FinCEN 2017)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">BTC Deposits Received</div>
+      <div class="kpi-value">$4B+</div>
+      <div class="kpi-sub">Over course of operation (DOJ 2017 indictment)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">WEX Assets Lost</div>
+      <div class="kpi-value">~$450M</div>
+      <div class="kpi-sub">2018 collapse of direct successor (BBC Russian Service, RBC)</div>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <div class="callout-label">Overall Assessment</div>
+    BTC-e (2011 to 2017) was the founding node of the Russian low-KYC exchange model that Garantex, Grinex, and today's post-Garantex network still follow. It cashed out 95% of tracked ransomware payments, laundered the Mt. Gox theft, and was seized by U.S. authorities in July 2017 because its servers sat in New Jersey. Its only <strong>direct</strong> organizational successor was WEX, launched 52 days later by BTC-e's own technical administrator using BTC-e's customer database, and destroyed within 14 months by an alleged FSB-linked expropriation of ~$450M and an exit-scam collapse. No later exchange, including Garantex, has a documented personnel, funds, or code inheritance from BTC-e/WEX. The lineage ended organizationally in 2018; what survived is the business model, the impunity pattern, and roughly $700M+ in still-moving operator-controlled wallets.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Entity (operating)</td><td>Canton Business Corporation ("BTC-E a/k/a Canton Business Corporation" per FinCEN)</td></tr>
+      <tr><td>UK front entity</td><td>Always Efficient LLP : Companies House OC394172, London (Seychelles nominee officers)</td></tr>
+      <tr><td>Successor entity (direct)</td><td>WEX : World Exchange Services Pte. Ltd., Singapore (Sept 2017 to late 2018)</td></tr>
+      <tr><td>Registration jurisdiction</td><td>Nominal UK (Always Efficient LLP); site claimed Bulgaria location under Cyprus law, Seychelles operations base; domains registered to shells in Singapore, BVI, France, New Zealand (DOJ)</td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>United States : servers in New Jersey, leased and maintained via Aliaksandr Klimenka and Soft-FX (DOJ)</td></tr>
+      <tr><td>Operator location (assessed)</td><td>Russia (Vinnik, Bilyuchenko); WEX front Vasilyev itinerant Europe/CIS</td></tr>
+      <tr><td>Operational period (BTC-e)</td><td>July 2011 to July 25, 2017 (seizure)</td></tr>
+      <tr><td>Operational period (WEX)</td><td>September 15, 2017 to late 2018 (withdrawals frozen from July 2018)</td></tr>
+      <tr><td>Criminal enforcement</td><td>21-count superseding indictment, NDCA 3:16-cr-00227 (unsealed July 2017); NDCA 3:22-cr-00255 (Bilyuchenko); SDNY 1:19-cr-00936 (Mt. Gox); Klimenka (2024); civil forfeiture D.D.C. 1:25-cv-02085 (2025, active)</td></tr>
+      <tr><td>FinCEN action</td><td>$110,003,314 civil money penalty (BTC-e) + $12M (Vinnik), July 2017 : first FinCEN action against a foreign-located MSB</td></tr>
+      <tr><td>OFAC / EU / UK sanctions</td><td>None, ever. Verified negative July 2026 (OFAC list search, OpenSanctions). Enforcement was criminal and FinCEN-regulatory only; BTC-e predates crypto-exchange sanctions practice</td></tr>
+      <tr><td>State nexus tier</td><td>NONE documented (BTC-e period); PROBABLE COOPERATION indicators in the 2018 WEX expropriation episode (single source) plus post-hoc protection of operators</td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>Chainalysis, Crystal Intelligence, Elliptic, WizSec (Mt. Gox attribution)</td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img class="contain" src="https://upload.wikimedia.org/wikipedia/commons/0/08/BTC-e_Seizure_Banner.png"
+           alt="U.S. law enforcement seizure banner displayed on btc-e.com, July 2017"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">btc-e.com Seizure Banner : July 2017</div>
+        <div class="cap-source">Source: U.S. Department of Justice / FBI / USSS / IRS-CI / HSI / FDIC-OIG, via Wikimedia Commons, 2017.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://www.chainalysis.com/wp-content/uploads/2022/12/btc-e-scaled-1.jpeg"
+           alt="Chainalysis Reactor graph of November 2022 movement of 10,000 BTC from BTC-e/WEX wallet"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">10,000 BTC Moves From BTC-e Wallet, Nov 2022</div>
+        <div class="cap-source">Source: Chainalysis, Key Crypto Moments From 2022, 2022. Largest withdrawal by BTC-e's controllers since April 2018.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img class="contain" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnPRJ-vG95-oNPpAsgdKlvc8elqpZe6rR9RUf8EkZpYkTkRHsE3mweyaOS1JAs8AVxg08-Y1yPk63tOXzktVKvVomKEfuTdY3I-LURjVvg9HdYmMO1ufZa97_tWf7VmDQSkeAKcmWBlG8/s640/theft_flow.png"
+           alt="WizSec flow chart tracing stolen Mt. Gox bitcoins to BTC-e accounts"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Mt. Gox Theft Flow Into BTC-e (WizSec)</div>
+        <div class="cap-source">Source: WizSec (Kim Nilsson), Breaking open the MtGox case, 2017.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img class="contain" src="https://upload.wikimedia.org/wikipedia/commons/e/e4/BTC-e_logo.png"
+           alt="BTC-e exchange logo"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">BTC-e Platform Branding</div>
+        <div class="cap-source">Source: BTC-e website (archived), via Wikimedia Commons.</div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img class="contain" src="https://upload.wikimedia.org/wikipedia/commons/4/48/WEX.nz_Logo.png"
+           alt="WEX.nz exchange logo, BTC-e's direct successor"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">WEX : Direct Successor Branding (2017)</div>
+        <div class="cap-source">Source: WEX.nz website (archived), via Wikimedia Commons.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding : The Only Direct Successor Is WEX</div>
+    WEX is the single documented organizational successor to BTC-e: same hidden administrator (Bilyuchenko), the entire BTC-e customer database and balances, a cloned interface, and treasury wallet continuity confirmed on-chain. The chain ends there. The planned second successor, Vladex, never launched. Claims that BTC-e personnel went on to found Garantex are <strong>not supported by any official document</strong>: the June 2023 DOJ statement that Bilyuchenko "went on to help set up the notorious BTC-e virtual currency exchange" refers to BTC-e itself and is frequently misquoted as referring to Garantex. <span class="cite">[DOJ 2023, verified against full text]</span>
+  </div>
+
+  <h3>BTC-e → WEX Successor Chain</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">July 2011</div>
+        <div class="timeline-text">BTC-e launches, founded by Vinnik and Bilyuchenko. Grows into one of the "Big Four" exchanges, at one point handling ~2.5% of all bitcoin exchange volume. <span class="cite">[DOJ, Bitcoin Wiki]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">2011 to 2014</div>
+        <div class="timeline-text">Mt. Gox theft proceeds flow in: of ~647,000 stolen BTC, ~530,000 went to accounts at three services (BTC-e, Trade Hill, Mt. Gox itself), with ~300,000 BTC to three BTC-e accounts ("Vamnedam", "Grmbit", "Petr") linked to Bilyuchenko and Verner. <span class="cite">[SDNY indictment 2023, WizSec]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">January 2017</div>
+        <div class="timeline-text">Sealed 21-count superseding indictment returned in NDCA (3:16-cr-00227; original indictment 2016). Co-defendants beyond Vinnik and the BTC-e entity include Nikonorov, Golovanov, and Buyanov <span class="badge badge-single">Single Source</span>. <span class="cite">[Court docket, Sammis Law]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">July 25, 2017</div>
+        <div class="timeline-text">Vinnik arrested in Ouranoupoli, Greece. U.S. agents seize BTC-e's New Jersey servers and the btc-e.com domain. FinCEN assesses $110,003,314 against BTC-e and $12M against Vinnik on July 26 to 27. <span class="cite">[DOJ, FinCEN]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">July 30 to 31, 2017</div>
+        <div class="timeline-text">Days after the seizure, ~929.5 BTC and ~485,705 ETH move out of BTC-e-controlled addresses, "including to WEX" per the DOJ forfeiture record. Treasury continuity between the two platforms begins before WEX publicly exists. <span class="cite">[DOJ complaint 2025, Dynamis]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">September 15, 2017</div>
+        <div class="timeline-text">WEX launches, announced through BTC-e's own Twitter account, 52 days after the takedown. All former BTC-e accounts and balances migrate (62% crypto / 38% "WEX tokens" representing frozen equity). Nominal owner: Vasilyev via World Exchange Services Pte. Ltd. (Singapore); actual owner per BBC: Bilyuchenko. Peak daily turnover ~$80M (RBC). <span class="cite">[CoinDesk 2017, BBC/Meduza]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">April 2018</div>
+        <div class="timeline-text">Alleged FSB expropriation: Bilyuchenko testified he was taken to FSB offices in Moscow over three days and surrendered cold-wallet access; ~30,000 BTC and ~700,000 LTC (~$350M to $450M) left WEX wallets, money he was told would go to "the FSB Russia fund". <span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span> <span class="cite">[BBC Russian Service 2019]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">July 2018</div>
+        <div class="timeline-text">Withdrawals halt; BTC trades on WEX at &gt;$9,000 against a ~$6,400 global price (locked-exit premium). Ownership-transfer agreement signed July 21, 2018 with Dmitry Khavchenko ("Moryachok"), ex-DNR militiaman close to Malofeev. <span class="cite">[Bitcoinist, ForkLog via Quadriga Initiative]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">Late 2018</div>
+        <div class="timeline-text">WEX collapses; ~$400M to $450M in customer assets lost. ~93,000 ETH (~$18M) from WEX cold wallets moves through Binance, which freezes two accounts. Domains drift (wex.fit, wex.in, wex.ink) then die. <span class="cite">[Bitcoinist, Quadriga Initiative]</span></div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot green"></div></div>
+      <div class="timeline-content">
+        <div class="timeline-date">2019 to 2026</div>
+        <div class="timeline-text">No third organizational reconstitution. Vladex (planned Malofeev-backed successor) never launches. Enforcement grinds on: Vasilyev arrests (2019 to 2024) ending in U.S. extradition June 2025; Bilyuchenko/Verner indictments 2023; Klimenka 2024; Vinnik plea 2024 and swap 2025; civil forfeiture filed June 2025, active into 2026. <span class="cite">[DOJ, TASS, CourtListener]</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Evidentiary Pillars : BTC-e/WEX Continuity</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Pillar</th><th>Evidence</th><th>Source</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Personnel continuity</td><td>Bilyuchenko (BTC-e technical admin) was WEX's actual owner; Vasilyev, a top BTC-e client, fronted as CEO</td><td>BBC Russian Service; DOJ (Vasilyev charged in the case "originally opened against Vinnik" per his counsel)</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Customer-base continuity</td><td>Entire BTC-e user database and account balances migrated to WEX at launch</td><td>CoinDesk 2017, BBC, Quadriga Initiative</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Fund/treasury continuity</td><td>~929.5 BTC + ~485,705 ETH moved from BTC-e addresses July 30 to 31, 2017, "including to WEX"; shared BTC-e/WEX treasury wallet active through Nov 2022</td><td>DOJ forfeiture record; Chainalysis; Crystal Intelligence</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Brand/interface continuity</td><td>WEX cloned BTC-e's design, functionality, and trading pairs; launch announced on BTC-e's Twitter</td><td>CoinDesk 2017</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>Balance-token continuity</td><td>WEX tokens ($1 peg) issued against frozen BTC-e equity : the template later reused by Garantex/Grinex (A7A5) for balance recovery</td><td>CoinDesk, Quadriga Initiative; parallel is analyst observation</td><td><span class="badge badge-confirmed">Confirmed</span> (mechanism); <span class="badge badge-inference">Analyst Inference</span> (template parallel)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operator Profiles (Full Roster)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Role</th><th>Nationality</th><th>Status (July 2026)</th><th>Legal exposure</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Alexander Vinnik</strong></td><td>BTC-e co-founder; beneficial owner of Canton Business Corp.</td><td>Russian</td><td>In Russia; released Feb 2025 in prisoner swap for Marc Fogel; appeared at Moscow Blockchain Forum 2026 <span class="badge badge-single">Single Source</span></td><td>Pleaded guilty May 2024 (ML conspiracy, Count 2); case dismissed on swap. FinCEN $12M penalty. France: 5 years, Dec 2020. NZ: NZ$140M restrained</td></tr>
+        <tr><td><strong>Aleksey Bilyuchenko</strong></td><td>BTC-e co-founder/technical admin; WEX actual owner</td><td>Russian</td><td>In Russia; detained there March 2022; sentenced ~3.5 years in Moscow (WEX case); Russian Supreme Court overturned 18B RUB civil claim late 2025 <span class="badge badge-credible">Credible</span></td><td>NDCA 3:22-cr-00255 (BTC-e: ML conspiracy, unlicensed MSB); SDNY 1:19-cr-00936 (Mt. Gox laundering, with Verner); USSS Most Wanted</td></tr>
+        <tr><td><strong>Aleksandr Verner</strong></td><td>Mt. Gox hack co-conspirator; BTC-e account holder</td><td>Russian</td><td>At large (assessed Russia)</td><td>SDNY 1:19-cr-00936 (Mt. Gox laundering conspiracy)</td></tr>
+        <tr><td><strong>Dmitry Vasilyev</strong></td><td>WEX nominal owner/CEO (front)</td><td>Russian (Minsk-born)</td><td>Extradited Poland to U.S. late June 2025; Russian Embassy demanding consular updates July 2025</td><td>U.S. fraud and money laundering charges, exposure to 25 years (per his counsel); prior Kazakh fraud case reportedly closed Oct 2024 <span class="badge badge-single">Single Source</span></td></tr>
+        <tr><td><strong>Aliaksandr Klimenka</strong></td><td>Soft-FX; leased and maintained BTC-e's U.S. servers</td><td>Belarusian / Cypriot</td><td>Arrested Latvia Dec 2023; U.S. prosecution pending (NDCA)</td><td>ML conspiracy + unlicensed MSB; max 25 years</td></tr>
+        <tr><td><strong>Dmitry Khavchenko</strong> ("Moryachok")</td><td>WEX buyer (July 21, 2018, via family)</td><td>Ukrainian, Russia-aligned (ex-DNR militia)</td><td>Assessed Donbas/Russia; no Western charges identified</td><td>None identified</td></tr>
+        <tr><td><strong>Konstantin Malofeev</strong></td><td>Alleged orchestrator of WEX database/asset handover; Tsargrad owner</td><td>Russian</td><td>In Russia; denies WEX role ("fabricated materials")</td><td>US/EU sanctioned for Ukraine destabilization (pre-existing, unrelated to BTC-e); BBC-authenticated audio ties his voice to WEX coercion <span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span></td></tr>
+        <tr><td><strong>Anton Nemkin</strong> (assessed)</td><td>Alleged ex-FSB intermediary; named author of the "Vladex" project</td><td>Russian</td><td>Denies involvement; later a State Duma deputy</td><td>No charges. BBC assesses "probably" the intermediary "Anton" <span class="badge badge-single">Single Source</span></td></tr>
+        <tr><td><strong>Nikonorov, Golovanov, Buyanov</strong></td><td>NDCA superseding-indictment co-defendants; Buyanov also PSC of Always Efficient LLP; Golovanov named in NZ/FXOpen fund records</td><td>Russian</td><td>At large</td><td>NDCA 3:16-cr-00227 <span class="badge badge-single">Single Source</span> (co-defendant naming)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Disputed Assessments</h3>
+  <p><span class="badge badge-single">Single Source</span> The entire FSB-expropriation account rests on one underlying investigation: Bilyuchenko's testimony to Russian investigators plus BBC-obtained audio recordings authenticated by forensic experts (BBC Russian Service, Andrey Zakharov, Nov 2019). It is widely re-reported (Meduza, Moscow Times, OCCRP, CoinDesk) but never independently confirmed by any Western government or blockchain-forensics attribution. Malofeev denies everything. The on-chain outflow of ~30,000 BTC and ~700,000 LTC in April 2018 is itself verifiable; the FSB destination is not.</p>
+  <p><span class="badge badge-inference">Analyst Inference</span> Chainalysis's description of the November 2022 movement as "the largest withdrawal by BTC-e's controllers since April 2018" independently confirms that major operator-controlled outflows occurred in April 2018, consistent with, but not proof of, the BBC account's timing.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 03 : OPERATIONS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Centralized spot exchange: BTC, LTC, and altcoins against USD, RUB, and EUR, with internal "code" instruments (transferable balance codes) that functioned as a bearer-value layer popular with cash-out brokers. Users could buy, sell, and store largely anonymously; accounts required only a username, password, and email address. <span class="cite">[DOJ 2017, FinCEN]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> WEX replicated the product set one-for-one at launch, including trading pairs and the token-for-frozen-balance mechanism. <span class="cite">[CoinDesk 2017]</span></p>
+
+  <h3>KYC/AML : Stated Policy vs. Observed Behavior</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Stated vs. Observed</div>
+    BTC-e made essentially no public compliance claims; its site was seized in 2017 and no verbatim KYC policy text survives in available sourcing. This is therefore a documented failure profile rather than a claims-versus-reality gap: the exchange never registered with FinCEN, maintained no meaningful KYC or AML program, and marketed the resulting anonymity.
+  </div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Dimension</th><th>Stated / Written</th><th>Observed (LE / Regulatory)</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>MSB registration</td><td>None claimed</td><td>Never registered with FinCEN despite substantial U.S. business : basis of the $110M penalty, first ever against a foreign-located MSB</td><td>FinCEN 2017</td></tr>
+        <tr><td>Customer identification</td><td>Not recovered</td><td>Accounts opened with username/email only; no identity verification; DOJ: users could trade "with high levels of anonymity"</td><td>DOJ 2017</td></tr>
+        <tr><td>AML program</td><td>Not recovered</td><td>"Lacked basic anti-money laundering controls and policies" (FinCEN); knowingly serviced criminal proceeds across every major crimeware vertical</td><td>FinCEN, DOJ</td></tr>
+        <tr><td>Corporate transparency</td><td>Site claimed Bulgaria location under Cyprus law</td><td>Shell lattice: Canton Business Corp. operating entity, Always Efficient LLP UK front with Seychelles nominees, domains registered to shells in four countries</td><td>DOJ, Companies House</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Fiat Rail Analysis (Mandatory)</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> No conventional named banking relationships are documented for BTC-e; that absence was structural, not an intelligence gap in the ordinary sense. Fiat moved through shell companies and third-party processors rather than exchange-named bank accounts. The one hard documented fiat reservoir: Canton Business Corporation balances of ~USD $89.68M (plus AUD/RUB/GBP) held at FXOpen / XP Solutions Limited (New Zealand/Australia), restrained under a Dec 2019 NDCA warrant, subject of the June 2020 NZ Police NZ$140M restraint (largest in NZ Police history), and claimed again in the 2025 U.S. forfeiture complaint. <span class="cite">[NZ Police, DOJ complaint 2025]</span></p>
+  <p><span class="badge badge-credible">Credible</span> Czech bank accounts of Nano ABC LP appear as additional defendant property in the 2025 complaint, indicating a further European fiat holding channel. <span class="cite">[DOJ complaint 2025, Dynamis]</span></p>
+  <div class="gap-flag">Day-to-day retail fiat rails (which processors and cash brokers moved customer RUB/USD in and out, 2011 to 2017) remain undocumented in official sources. Contrast with successors Garantex (Sberbank/Tinkoff/Alfa cards) where retail rails are well documented.</div>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> No license in any jurisdiction at any time. FinCEN treated BTC-e as a foreign-located MSB doing U.S. business without registration; no EU/UK authorization existed for Always Efficient LLP, which filed dormant-style accounts under nominee officers until they resigned in September 2017. <span class="cite">[FinCEN, Companies House]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 04 : TECHNICAL -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domains and Hosting</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Asset</th><th>Status</th><th>Detail</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>btc-e.com</td><td>Seized July 2017</td><td>Multi-agency seizure banner (DOJ, FBI, USSS, IRS-CI, HSI, FDIC-OIG); domains had been registered to shell companies in Singapore, BVI, France, and New Zealand</td><td>DOJ 2017</td></tr>
+        <tr><td>U.S. servers</td><td>Seized July 25, 2017</td><td>Physical servers in New Jersey; leased to and maintained by Aliaksandr Klimenka and Soft-FX per DOJ. This U.S. footprint created the jurisdictional hook for the entire takedown</td><td>DOJ complaint 2025, DOJ Klimenka 2024</td></tr>
+        <tr><td>wex.nz</td><td>Defunct</td><td>Launched Sept 15, 2017; late-life domain drift to wex.fit, wex.in, wex.ink before end-2018 shutdown</td><td>CoinDesk, Bitcoinist</td></tr>
+        <tr><td>WEX hosting</td><td>Undocumented</td><td>No public hosting-provider or server-location record for WEX</td><td>: </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Platform Continuity and Codebase</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> WEX reproduced BTC-e's interface, feature set, and trading pairs and imported the customer database wholesale : the clearest platform-level continuity indicator in the lineage. <span class="cite">[CoinDesk 2017, BBC]</span></p>
+
+  <h3>Post-Disruption Resilience Assessment</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">Reconstitution Pattern : Origin of the Playbook</div>
+    BTC-e wrote the first draft of the reconstitution playbook later perfected by Garantex/Grinex: pre-moving treasury funds within days of seizure, relaunching under a new brand within weeks on the same customer base, and issuing $1-pegged tokens against frozen balances. Unlike Garantex, the successor was not pre-positioned before disruption, and the model proved fragile: WEX survived 14 months and died from internal predation (the alleged FSB expropriation and exit-scam sale), not Western enforcement.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 05 : FINANCIAL -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Volume Estimates by Source</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Volume Sourcing Note</div>
+    Figures below measure different things across different periods and must not be averaged or collapsed. The widely repeated "3% of global bitcoin volume" claim could not be sourced; the closest documented figure is 2.5% ("Big Four" era, Bitcoin Wiki) and it is weakly sourced.
+  </div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Figure</th><th>Amount</th><th>Period / Scope</th><th>Source</th><th>Methodology note</th></tr></thead>
+      <tbody>
+        <tr><td>Total processed volume</td><td><strong>$9B+</strong></td><td>2011 to 2017, all transactions, 1M+ users</td><td>DOJ forfeiture complaint (2025)</td><td>Government tracing, full lifespan</td></tr>
+        <tr><td>BTC deposits received</td><td><strong>$4B+</strong></td><td>Course of operation</td><td>DOJ press release (2017)</td><td>Bitcoin-denominated deposits only; media often misframe as "Vinnik laundered $4B"</td></tr>
+        <tr><td>Ransomware cash-out share</td><td><strong>95%</strong></td><td>Tracked ransom payments 2014 to mid-2017</td><td>Google / Chainalysis / UCSD / NYU (Black Hat USA 2017; IEEE S&amp;P 2018)</td><td>Cohort of tracked families; not all global ransomware</td></tr>
+        <tr><td>Ransomware-linked inflows</td><td><strong>$3M+ / $10.3M</strong></td><td>FinCEN direct attribution / DOJ complaint minimum</td><td>FinCEN 2017; DOJ complaint 2025</td><td>Different tracing scopes; do not combine</td></tr>
+        <tr><td>Market share</td><td><strong>~2.5%</strong></td><td>"Big Four" era global BTC exchange volume</td><td>Bitcoin Wiki</td><td><span class="badge badge-single">Single Source</span>, weak; "3%" variant unsupported</td></tr>
+        <tr><td>WEX peak turnover</td><td><strong>~$80M/day</strong></td><td>Late 2017 peak; ~$39M/day July 2018</td><td>RBC via Quadriga Initiative; CoinMarketCap</td><td>Self-reported exchange tickers, manipulable</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Three-Phase On-Chain Flow</h3>
+  <h4>Phase 1 : Receipt</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> Documented criminal inflows per the 2025 forfeiture complaint: at least $68.3M from darknet marketplaces, $14.0M from fraud shops, $10.3M from ransomware perpetrators, $20.0M from virtual currency mixers, and $8.25M from the Mt. Gox hack. FinCEN separately traced 300,000+ Mt. Gox-stolen BTC and $3M+ in ransomware payments (CryptoLocker, Locky). <span class="cite">[DOJ complaint 2025, FinCEN 2017]</span></p>
+  <h4>Phase 2 : Layering</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> Internal anonymity by design: no-KYC accounts, internal balance codes transferable between users, and commingling in exchange-controlled wallets. The three Mt. Gox-fed accounts ("Vamnedam", "Grmbit", "Petr") operated inside the exchange the operators themselves controlled : laundering into one's own institution. <span class="cite">[SDNY indictment, FinCEN]</span></p>
+  <h4>Phase 3 : Extraction</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> Fiat exit through shell-held accounts (FXOpen/XP Solutions NZ/AU, Czech Nano ABC LP) and third-party cash-out brokers; 95% of tracked ransomware ransoms exited to fiat here before July 2017. <span class="cite">[DOJ complaint, Black Hat 2017 study]</span></p>
+
+  <h3>Post-Seizure Wallet Movements (Treasury Continuity)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Date</th><th>Movement</th><th>Attribution</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>July 30 to 31, 2017</td><td>~929.5 BTC + ~485,705 ETH out of BTC-e addresses, "including to WEX"</td><td>DOJ forfeiture record</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>April 2018</td><td>~30,000 BTC + ~700,000 LTC (~$350M to $450M) leave WEX wallets</td><td>On-chain outflow verifiable; FSB destination per Bilyuchenko/BBC only</td><td><span class="badge badge-confirmed">Confirmed</span> (outflow) / <span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span> (destination)</td></tr>
+        <tr><td>Sept to Nov 2021</td><td>~$30M ETH moves within days of Vasilyev's Warsaw arrest; 10,000+ ETH (~$46M) withdrawn Nov 2021; Russian MVD declines victims' freeze request</td><td>The Block; Bitcoin.com News</td><td><span class="badge badge-credible">Credible</span></td></tr>
+        <tr><td>November 23, 2022</td><td>10,000 BTC (~$165M) moves from BTC-e/WEX wallet <span class="wallet-addr">1LfV1tSt3KNyHpFJnAzrqsLFdeD2EvU1MK</span> : first movement since 2017; "largest withdrawal by BTC-e's controllers since April 2018"</td><td>Crystal Intelligence, Chainalysis (first flagged by Mendeleev)</td><td><span class="badge badge-confirmed">Confirmed</span></td></tr>
+        <tr><td>March 2023</td><td>Parts of a 3,299 BTC tranche reach KuCoin, MEXC, and OTC desk "BTC2pm"</td><td>Crystal Intelligence</td><td><span class="badge badge-credible">Credible</span></td></tr>
+        <tr><td>October 17, 2025</td><td>Dormant wallet linked by analysts to Bilyuchenko moves ~6,500 BTC (~$694M); follow-on sales ~$114M reported into 2026</td><td>On-chain analyst consensus (Coinspeaker, CoinDesk/Yahoo)</td><td><span class="badge badge-credible">Credible</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Seized and Contested Assets</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> U.S. civil forfeiture (D.D.C. 1:25-cv-02085, filed June 30, 2025): ~925.94 BTC, ~4,036.92 ETH, ~2,249.25 LTC, ~33.04 DASH, plus NMC/NVC/PPC seized Aug 2017; the 929.5 BTC moved July 31, 2017; ~485,705 ETH; FXOpen/XP Solutions balances (~$89.68M USD equivalent); Czech Nano ABC LP accounts. Claims deadline passed Sept 2, 2025; contested by multiple individual claimants and by Mt. Gox trustee Nobuaki Kobayashi (claim filed Aug 20, 2025). Litigation active as of June 2026. <span class="cite">[CourtListener, Dynamis, forfeiturelawfirm.com]</span></p>
+  <p><span class="badge badge-confirmed">Confirmed</span> New Zealand: NZ$140M restrained June 2020 (largest NZ Police restraint ever); March 2023 High Court found reasonable grounds Vinnik unlawfully benefited; no final forfeiture order located; the same fund pool is claimed in the U.S. case. <span class="cite">[NZ Police, NZ Herald]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 06 : CLIENTELE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Actor type</th><th>Specific actors / evidence</th><th>Transaction confidence</th><th>Facilitation assessment</th><th>Source tier</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Ransomware operators</strong></td>
+          <td>95% of tracked ransom payments (2014 to 2017) cashed out via BTC-e; CryptoLocker and Locky named by FinCEN ($3M+ direct); $10.3M minimum in forfeiture complaint</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+          <td><span class="tier-structural">Structural enablement</span> : French court convicted Vinnik of laundering but acquitted him of direct Locky involvement</td>
+          <td>Google/Chainalysis/UCSD/NYU study; FinCEN; DOJ</td>
+        </tr>
+        <tr>
+          <td><strong>Mt. Gox theft (insider-linked laundering)</strong></td>
+          <td>~300,000 stolen BTC to three BTC-e accounts controlled by the operators' own network (Bilyuchenko/Verner); $8.25M specifically traced in complaint</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+          <td><span class="tier-active">Active facilitation</span> : operators laundered into their own exchange</td>
+          <td>SDNY indictment; FinCEN; WizSec</td>
+        </tr>
+        <tr>
+          <td><strong>Darknet marketplaces</strong></td>
+          <td>At least $68.3M received (complaint minimum); era of Silk Road, AlphaBay, Hansa, RAMP</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+          <td><span class="tier-structural">Structural enablement</span></td>
+          <td>DOJ complaint 2025</td>
+        </tr>
+        <tr>
+          <td><strong>Fraud shops and identity theft</strong></td>
+          <td>At least $14.0M from fraud shops; DOJ lists identity thieves, corrupt public officials, narcotics rings among the client base</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+          <td><span class="tier-structural">Structural enablement</span></td>
+          <td>DOJ 2017, DOJ complaint 2025</td>
+        </tr>
+        <tr>
+          <td><strong>Mixer throughput</strong></td>
+          <td>At least $20.0M received from virtual currency mixers</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+          <td><span class="tier-structural">Structural enablement</span></td>
+          <td>DOJ complaint 2025</td>
+        </tr>
+        <tr>
+          <td><strong>Russian state-linked cyber actors</strong></td>
+          <td>Elliptic tracing (cited via Bloomberg) connected bitcoin used by GRU-linked Fancy Bear operations to BTC-e</td>
+          <td><span class="badge badge-credible">CREDIBLE</span> <span class="badge badge-single">Single Source</span></td>
+          <td><span class="tier-incidental">Incidental processing</span> (no evidence of knowing state servicing)</td>
+          <td>Elliptic via Bloomberg</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Geographic Patterns</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Russian-language interface and support with global reach: 1M+ users worldwide, RUB pairs, and a cash-out broker ecosystem concentrated in Russia/CIS. The 95% ransomware figure demonstrates BTC-e functioned as the global cash-out chokepoint of its era, not merely a regional venue. <span class="cite">[DOJ, Black Hat 2017]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 07 : NEXUS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Four-Tier Classification : Assessed Tier</div>
+    <strong>BTC-e operating period (2011 to 2017): NONE documented.</strong> <strong>WEX phase and aftermath (2018 to present): PROBABLE COOPERATION indicators, resting on a single-source account, plus confirmed post-hoc state protection of operators.</strong> The alleged April 2018 FSB expropriation, if accurate, is not "cooperation" in the safe-harbor sense but coercive state capture of criminal proceeds : the state as predator, not patron. It is scored conservatively because it rests on one underlying investigation.
+  </div>
+
+  <h3>BTC-e Period : Evidence of Absence</h3>
+  <ul style="margin: 0 0 16px 20px; color: var(--text-secondary); font-size: 13px;">
+    <li style="margin-bottom: 6px;">What a nexus would look like: hosting inside Russia, tip-offs ahead of Western action, tasking of the platform for state operations. None is documented. BTC-e hosted its core infrastructure in the United States, the single decision that enabled its destruction : inconsistent with state operational guidance. <span class="badge badge-confirmed">Confirmed</span> (absence)</li>
+    <li style="margin-bottom: 6px;">All disruption was Western (U.S. seizure, Greek arrest, FinCEN penalty). No Russian enforcement against BTC-e while it operated. <span class="badge badge-confirmed">Confirmed</span></li>
+  </ul>
+
+  <h3>WEX Phase and Aftermath : Elevation Indicators</h3>
+  <ul style="margin: 0 0 16px 20px; color: var(--text-secondary); font-size: 13px;">
+    <li style="margin-bottom: 6px;">Alleged FSB extraction of ~$450M from WEX (April 2018), per Bilyuchenko's testimony and BBC-authenticated audio implicating Malofeev's circle and serving FSB officers "Igor" and "Grigori". <span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span></li>
+    <li style="margin-bottom: 6px;">The planned successor "Vladex" was explicitly pitched as regulated infrastructure to "protect the financial and economic sovereignty of the Russian Federation" : state-aligned by design, though never launched. <span class="badge badge-credible">Credible</span> <span class="cite">[Meduza/BBC]</span></li>
+    <li style="margin-bottom: 6px;">Post-hoc protection: Russia filed competing extradition requests for Vinnik (2017 to 2020), traded Fogel to repatriate him (Feb 2025), and keeps Bilyuchenko domestically prosecuted but unextradited; the MVD declined WEX victims' request to freeze moving funds (2021); the Supreme Court erased the 18B RUB civil claim (2025). <span class="badge badge-confirmed">Confirmed</span> (swap, non-extradition) / <span class="badge badge-credible">Credible</span> (court actions)</li>
+    <li style="margin-bottom: 6px;">April 2024: Kommersant reported MVD cyber-unit officer Georgy Satyukov charged in absentia over ~5B RUB in crypto bribes for "patronizing" WEX : direct krysha allegation from Russia's own record. <span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span></li>
+  </ul>
+
+  <h3>Negative Evidence : Against Direct Control</h3>
+  <ul style="margin: 0 0 16px 20px; color: var(--text-secondary); font-size: 13px;">
+    <li style="margin-bottom: 6px;">No document names any Russian state body as operator or owner of BTC-e or WEX at any point. <span class="badge badge-confirmed">Confirmed</span></li>
+    <li style="margin-bottom: 6px;">The alleged 2018 FSB action was expropriation from the operators, implying the state did not control the platform beforehand. <span class="badge badge-inference">Analyst Inference</span></li>
+  </ul>
+
+  <h3>Jurisdictional Separation (Mandatory)</h3>
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Registration jurisdiction (BTC-e)</td><td>UK front (Always Efficient LLP, London); operating shell Canton Business Corporation; site claimed Bulgaria/Cyprus/Seychelles</td></tr>
+      <tr><td>Registration jurisdiction (WEX)</td><td>Singapore (World Exchange Services Pte. Ltd.)</td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>BTC-e: United States (New Jersey). WEX: unknown, undocumented</td></tr>
+      <tr><td>Assessed operator location</td><td>Russia (Vinnik, Bilyuchenko throughout; both physically in Russia as of July 2026)</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 08 : DISRUPTION -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+  </div>
+
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="exchanges/btce.html" defer></script>
+
+  <h3>Criminal Cases</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Defendant / Case</th><th>Charges</th><th>Status (July 2026)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Vinnik + BTC-e</strong> : NDCA 3:16-cr-00227 (superseding, Jan 2017; unsealed July 2017)</td><td>21 counts: unlicensed MSB (§1960), ML conspiracy (§1956(h)), 17x money laundering, 2x unlawful monetary transactions. BTC-e the entity charged alongside</td><td>Vinnik pleaded guilty to Count 2 (May 3, 2024); dismissed Feb 11, 2025 for the Fogel swap. Entity charge unresolved; co-defendants at large</td></tr>
+        <tr><td><strong>Bilyuchenko</strong> : NDCA 3:22-cr-00255 (unsealed June 9, 2023)</td><td>ML conspiracy + unlicensed MSB (operating BTC-e 2011 to 2017); max 25 years</td><td>Fugitive in Russia; USSS Most Wanted</td></tr>
+        <tr><td><strong>Bilyuchenko + Verner</strong> : SDNY 1:19-cr-00936 (unsealed June 9, 2023)</td><td>Conspiracy to launder ~647,000 BTC from Mt. Gox hack</td><td>Both at large</td></tr>
+        <tr><td><strong>Klimenka</strong> : NDCA (announced Feb 2024)</td><td>ML conspiracy + unlicensed MSB via Soft-FX server operation; max 25 years</td><td>Arrested Latvia Dec 2023; prosecution pending; Bloomberg Law reports the Vinnik swap complicated the case</td></tr>
+        <tr><td><strong>Vasilyev</strong> (WEX)</td><td>Fraud and money laundering, per counsel up to 25 years; charged in the case lineage opened against Vinnik</td><td>Extradited Poland to U.S. late June 2025; no public docket developments located since</td></tr>
+        <tr><td><strong>France</strong> (Vinnik)</td><td>Money laundering (Locky ransomware nexus)</td><td>Convicted Dec 7, 2020: 5 years + €100,000; acquitted on direct ransomware counts</td></tr>
+        <tr><td><strong>Russia</strong> (Bilyuchenko)</td><td>WEX embezzlement case</td><td>Sentenced ~3.5 years (Moscow); 18B RUB civil claim overturned by Supreme Court late 2025 <span class="badge badge-credible">Credible</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Regulatory and Financial Actions</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Date</th><th>Authority</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>July 26 to 27, 2017</td><td>FinCEN</td><td>$110,003,314 CMP vs "BTC-E a/k/a Canton Business Corporation" + $12M vs Vinnik. First action against a foreign-located MSB. No Section 311 action (contrast Bitzlato 2023, PM2BTC 2024)</td></tr>
+        <tr><td>June 2020</td><td>NZ Police</td><td>NZ$140M restrained (Canton/Vinnik funds at FXOpen/XP Solutions); March 2023 High Court ruling sustains restraint</td></tr>
+        <tr><td>June 30, 2025</td><td>DOJ MLARS/CCIPS</td><td>Civil forfeiture complaint, D.D.C. 1:25-cv-02085, against all BTC-e operating-wallet crypto and related fiat; contested, active into 2026</td></tr>
+        <tr><td>Never</td><td>OFAC / EU / UK</td><td>No sanctions designation of BTC-e, Canton, Always Efficient, WEX, or any operator, ever (verified negative July 2026)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Post-Disruption Reconstitution Assessment (Mandatory)</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Reconstitution Status : One Full Cycle, Then Terminal</div>
+    One confirmed reconstitution: BTC-e → WEX, 52 days from seizure to relaunch, on the same customer base with pre-moved treasury funds. The second planned reconstitution (WEX → Vladex, Malofeev-backed, Vladivostok) never launched. After WEX's late-2018 collapse the lineage never rebuilt an exchange. Residual operator capability persists as wallet control: movements in 2021, 2022, 2023, and October 2025 (~$694M) show keys survive inside the network, most plausibly with Bilyuchenko's circle in Russia. <span class="badge badge-credible">Credible</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Two-tier model applied to all entries. <strong>Tier 1 : Transaction confidence:</strong> how confident are we that funds transited this exchange from/to the entity? <strong>Tier 2 : Facilitation assessment:</strong> characterization of the exchange's role (Active facilitation / Structural enablement / Incidental processing). These are independent assessments and must not be collapsed.</p>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Relationship type</th>
+          <th>Tier 1: Transaction confidence</th>
+          <th>Tier 2: Facilitation assessment</th>
+          <th>Corroborating vendors</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>WEX</strong></td>
+          <td>Direct successor exchange</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">~929.5 BTC + ~485,705 ETH moved out July 30 to 31, 2017 "including to WEX" (DOJ record); shared treasury wallet active to Nov 2022.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Same operators; WEX IS the BTC-e organization relaunched.</span></td>
+          <td>DOJ; Chainalysis; Crystal Intelligence</td>
+          <td>No disagreeing vendor on successor status.</td>
+        </tr>
+        <tr>
+          <td><strong>Mt. Gox hack proceeds</strong></td>
+          <td>Stolen-fund laundering channel</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">~300,000 BTC to three BTC-e accounts (SDNY); 300,000+ BTC (FinCEN); $8.25M itemized (2025 complaint). Note: the 530,000 figure is a three-service total incl. Trade Hill and Mt. Gox itself.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Operator-controlled accounts; Vinnik/Bilyuchenko personally implicated.</span></td>
+          <td>DOJ/FinCEN; WizSec; Chainalysis (via CoinDesk reporting)</td>
+          <td>Mt. Gox trustee now claims BTC-e forfeiture assets (Aug 2025).</td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware ecosystem (CryptoLocker, Locky, et al.)</strong></td>
+          <td>Cash-out chokepoint</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">95% of tracked ransom payments (academic study); $3M+ FinCEN; $10.3M complaint minimum.</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">French court: laundering conviction, but acquittal on direct Locky participation.</span></td>
+          <td>Chainalysis (study co-author); Google/UCSD/NYU; FinCEN; DOJ</td>
+          <td>Elliptic and TRM have not published BTC-e-specific ransomware totals.</td>
+        </tr>
+        <tr>
+          <td><strong>Darknet markets / fraud shops / mixers</strong></td>
+          <td>Deposit sources</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">$68.3M DNMs, $14.0M fraud shops, $20.0M mixers (complaint minimums).</span></td>
+          <td><span class="tier-structural">Structural enablement</span></td>
+          <td>DOJ (government tracing)</td>
+          <td>Vendor-published market-by-market breakdowns not available.</td>
+        </tr>
+        <tr>
+          <td><strong>Soft-FX / Klimenka</strong></td>
+          <td>Infrastructure operator (U.S. servers)</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">DOJ charging documents: servers leased to and maintained by Klimenka and Soft-FX.</span></td>
+          <td><span class="tier-active">Active facilitation</span><br><span style="font-size:11px;color:var(--text-muted)">Charged as co-operator of the exchange.</span></td>
+          <td>DOJ 2024</td>
+          <td>Klimenka contests charges; case pending.</td>
+        </tr>
+        <tr>
+          <td><strong>FXOpen / XP Solutions (NZ/AU)</strong></td>
+          <td>Fiat reservoir for Canton Business Corp.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">~$89.68M USD-equivalent Canton balances; restrained Dec 2019 (NDCA warrant) and June 2020 (NZ Police).</span></td>
+          <td><span class="tier-active">Active facilitation</span> (by BTC-e of its own treasury)<br><span style="font-size:11px;color:var(--text-muted)">Assessment describes BTC-e's use of the channel, not FXOpen culpability, which is unadjudicated.</span></td>
+          <td>NZ Police; DOJ complaint</td>
+          <td>Earlier "WML" company naming could not be verified; use FXOpen/XP Solutions.</td>
+        </tr>
+        <tr>
+          <td><strong>Liberty Reserve</strong></td>
+          <td>Predecessor-era digital currency overlap</td>
+          <td><span class="badge badge-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">FinCEN noted BTC-e customer/flow overlap with Liberty Reserve.</span></td>
+          <td><span class="tier-structural">Structural enablement</span></td>
+          <td>FinCEN</td>
+          <td><span class="badge badge-single">Single Source</span> (regulatory statement; no vendor quantification).</td>
+        </tr>
+        <tr>
+          <td><strong>Fancy Bear / GRU-linked operations</strong></td>
+          <td>Alleged transit of operational bitcoin</td>
+          <td><span class="badge badge-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">Elliptic tracing reported via Bloomberg.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">No evidence of knowing state servicing.</span></td>
+          <td>Elliptic (via Bloomberg)</td>
+          <td><span class="badge badge-single">Single Source</span>. Chainalysis/TRM have not published corroboration.</td>
+        </tr>
+        <tr>
+          <td><strong>Vladex (planned)</strong></td>
+          <td>Never-launched successor project</td>
+          <td><span class="tier-inference">N/A : NO TRANSACTIONS</span><br><span style="font-size:11px;color:var(--text-muted)">Planned Malofeev-backed, Vladivostok-based regulated exchange to inherit the WEX user database; Nemkin named as project author.</span></td>
+          <td><span class="tier-incidental">Not applicable</span> (never operational)</td>
+          <td>BBC Russian Service (re-reported Meduza, OCCRP)</td>
+          <td><span class="badge badge-single">Single Source</span> investigation. No launch evidence found through 2026.</td>
+        </tr>
+        <tr>
+          <td><strong>Garantex</strong></td>
+          <td>Market-niche successor only : no organizational tie</td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span> (negative finding)<br><span style="font-size:11px;color:var(--text-muted)">No documented personnel, funds, or code inheritance from BTC-e/WEX. Garantex founders (Mendeleev, Drugalev, Mira Serda) appear nowhere in BTC-e/WEX operational reporting; Mendeleev's only documented role is as a public commentator on BTC-e/WEX wallet movements.</span></td>
+          <td><span class="tier-incidental">Not applicable</span> (no established flows in either direction documented)</td>
+          <td>Negative check vs DOJ full text; TI-Russia frames continuity as thematic only</td>
+          <td>The claim "DOJ said Bilyuchenko set up Garantex" is a misquote of the June 2023 release, which says BTC-e. Flagged because it circulates widely.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Displacement</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> BTC-e's 2017 seizure displaced its volume first into WEX (briefly the largest Russian-language exchange), then, after WEX's 2018 collapse, diffusely across the Russian-language exchange ecosystem. Garantex, founded 2019, filled the same market niche without organizational inheritance. The niche has never since been vacant: BTC-e → WEX → (gap) → Garantex → Grinex → post-Garantex network. <span class="cite">[CoinDesk, Elliptic, TRM]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    The BTC-e action remains the template case for what works and what does not. What worked: attacking the U.S. infrastructure footprint, the fiat reservoirs (NZ), and the operators' travel (Greece, Italy, Poland, Croatia, Latvia, India analogues later). What did not: the customer base, keys, and personnel survived intact inside Russia, reconstituting in 52 days. Terminal degradation ultimately came less from Western enforcement than from intra-Russian predation, the alleged 2018 FSB expropriation and exit-scam sale, an outcome that destroyed the platform but transferred, rather than removed, the criminal proceeds.
+  </div>
+
+  <h3>Current Status</h3>
+  <p>BTC-e brand: <strong>Defunct</strong> since July 2017. WEX brand: <strong>Defunct</strong> since late 2018. Reconstitution as a platform: <strong>None since 2018</strong>. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Residual operator capability: <strong>Active wallet control</strong>, with ~$694M moved October 2025 and follow-on sales into 2026. Asset recovery: contested civil forfeiture active in D.D.C.; NZ restraint unresolved; Mt. Gox trustee competing for the same assets. <span class="badge badge-credible">Credible</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Retail fiat rails 2011 to 2017 (processors, cash brokers, card channels) undocumented in official sources.</div>
+  <div class="gap-flag">WEX hosting locations and providers never documented.</div>
+  <div class="gap-flag">FSB-destination claim for the April 2018 WEX outflow rests on a single underlying investigation; no Western on-chain attribution published.</div>
+  <div class="gap-flag">Vasilyev's U.S. case: no public docket developments located since the June 2025 extradition; charge instrument not yet publicly detailed.</div>
+  <div class="gap-flag">Whether the October 2025 6,500 BTC mover is Bilyuchenko-controlled is analyst consensus, not official attribution; and how ~$694M can move freely from wallets known to U.S. authorities since 2017 is unexplained in public sources.</div>
+  <div class="gap-flag">Nemkin's FSB service status at the time of the alleged 2018 coercion remains unresolved.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- RECENT REPORTING -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[June 2026]</span> D.D.C. forfeiture case remains active; last known filing June 3, 2026. No dispositive ruling. <span class="cite">[CourtListener]</span></p>
+  <p><span class="cite">[Spring 2026]</span> Vinnik appears at Blockchain Forum 2026 in Moscow, claiming BTC-e cold-wallet holdings remained "outside the perimeter seized by the FBI" and urging former users into the U.S. claims process. <span class="badge badge-single">Single Source</span> <span class="cite">[Cryptopolitan]</span></p>
+  <p><span class="cite">[Late 2025]</span> Russian Supreme Court overturns the 18 billion ruble (~$221M) civil claim against Bilyuchenko, closing the main domestic recovery avenue for WEX victims. <span class="badge badge-credible">Credible</span> <span class="cite">[Cryptopolitan, crypto trade press]</span></p>
+  <p><span class="cite">[October 2025]</span> Dormant wallet linked by analysts to Bilyuchenko moves ~6,500 BTC (~$694M); ~$114M in follow-on sales reported into 2026. <span class="badge badge-credible">Credible</span> <span class="cite">[Coinspeaker, CoinDesk/Yahoo]</span></p>
+  <p><span class="cite">[August 2025]</span> Mt. Gox trustee Nobuaki Kobayashi files a verified claim to BTC-e forfeiture assets (Aug 20); claims deadline expires Sept 2. <span class="cite">[Court record via forfeiturelawfirm.com]</span></p>
+  <p><span class="cite">[June to July 2025]</span> DOJ files civil forfeiture (June 30). Poland extradites Vasilyev to the U.S. (late June); Russian Embassy demands consular updates (July). <span class="cite">[DOJ, TASS, Cryptonews]</span></p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SOURCES -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://www.justice.gov/usao-ndca/pr/russian-national-and-bitcoin-exchange-charged-21-count-indictment-operating-alleged" target="_blank">DOJ NDCA: Russian National And Bitcoin Exchange Charged In 21-Count Indictment : July 26, 2017</a></li>
+    <li><a href="https://www.fincen.gov/news/news-releases/fincen-fines-btc-e-virtual-currency-exchange-110-million-facilitating-ransomware" target="_blank">FinCEN: Fines BTC-e Virtual Currency Exchange $110 Million : July 2017</a></li>
+    <li><a href="https://www.fincen.gov/system/files/enforcement_action/2017-07-27/Assessment%20for%20BTCeVinnik%20FINAL2.pdf" target="_blank">FinCEN: Assessment of Civil Money Penalty, BTC-E a/k/a Canton Business Corporation and Alexander Vinnik</a></li>
+    <li><a href="https://www.justice.gov/archives/opa/pr/btc-e-operator-pleads-guilty-money-laundering-conspiracy" target="_blank">DOJ: BTC-e Operator Pleads Guilty to Money Laundering Conspiracy : May 2024</a></li>
+    <li><a href="https://www.justice.gov/archives/opa/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating-another" target="_blank">DOJ: Russian Nationals Charged With Hacking One Cryptocurrency Exchange and Illicitly Operating Another (Bilyuchenko/Verner) : June 9, 2023</a></li>
+    <li><a href="https://www.justice.gov/archives/opa/pr/foreign-national-charged-international-money-laundering-conspiracy-and-role-operation" target="_blank">DOJ: Foreign National Charged (Klimenka / Soft-FX) : February 2024</a></li>
+    <li><a href="https://www.courtlistener.com/docket/64894369/united-states-v-btc-e/" target="_blank">CourtListener: United States v. BTC-e, 3:16-cr-00227 (N.D. Cal.)</a></li>
+    <li><a href="https://www.courtlistener.com/docket/70674493/united-states-v-all-virtual-currency-held-in-the-btc-e-operating-wallets/" target="_blank">CourtListener: U.S. v. All Virtual Currency Held in the BTC-e Operating Wallets, 1:25-cv-02085 (D.D.C.)</a></li>
+    <li><a href="https://storage.courtlistener.com/recap/gov.uscourts.dcd.282163/gov.uscourts.dcd.282163.1.0_2.pdf" target="_blank">Civil Forfeiture Complaint (June 30, 2025), full text PDF</a></li>
+    <li><a href="https://www.dynamisllp.com/knowledge/btc-e-asset-recovery-doj-complaint" target="_blank">Dynamis LLP: Defending Cryptocurrency Seizures : the BTC-e Forfeiture Complaint</a></li>
+    <li><a href="https://criminaldefenseattorneytampa.com/asset-seizure-asset-forfeiture/cryptocurrency/btc-e/" target="_blank">Sammis Law Firm: Victims of the BTC-e Seizure for Forfeiture (asset schedule, claims process)</a></li>
+    <li><a href="https://forfeiturelawfirm.com/mtgox-trustee-claims-btce-assets-contain-stolen-bitcoin-in-civil-forfeiture-case/" target="_blank">Mt. Gox Trustee Claims BTC-e Assets Contain Stolen Bitcoin : August 2025</a></li>
+    <li><a href="https://www.coindesk.com/markets/2017/09/15/meet-wex-bitcoin-exchange-launches-for-btc-e-users-with-btc-e-design" target="_blank">CoinDesk: Meet WEX: Bitcoin Exchange Launches for BTC-e Users, With BTC-e Design : September 15, 2017</a></li>
+    <li><a href="https://www.bbc.com/russian/features-50420738" target="_blank">BBC Russian Service (Zakharov): How $450M disappeared from the WEX exchange into an "FSB fund" : November 2019</a></li>
+    <li><a href="https://meduza.io/en/feature/2019/11/15/crypto-corruption" target="_blank">Meduza: Crypto-corruption (English summary of the BBC WEX investigation)</a></li>
+    <li><a href="https://www.themoscowtimes.com/2019/11/15/russias-fsb-linked-450m-bitcoin-disappearance-a68195" target="_blank">Moscow Times: Russia's FSB Linked to $450M Bitcoin Disappearance</a></li>
+    <li><a href="https://www.occrp.org/en/news/russian-agents-suspected-of-cleaning-bitcoin-exchange-platform" target="_blank">OCCRP: Russian Agents Suspected of Cleaning Out Bitcoin Exchange Platform</a></li>
+    <li><a href="https://quadrigainitiative.com/casestudy/wexshutdownbyauthorities.php" target="_blank">Quadriga Initiative: WEX case study (launch, collapse, Khavchenko sale, Vasilyev webinar)</a></li>
+    <li><a href="https://www.chainalysis.com/blog/key-crypto-moments-from-2022/" target="_blank">Chainalysis: Key Crypto Moments From 2022 (BTC-e 10,000 BTC movement, Reactor graph)</a></li>
+    <li><a href="https://www.coindesk.com/tech/2022/11/23/bitcoin-wallet-of-the-failed-btc-e-exchange-wakes-up" target="_blank">CoinDesk: Bitcoin Wallet of the Failed BTC-e Exchange Wakes Up : November 23, 2022</a></li>
+    <li><a href="https://news.bitcoin.com/10000-bitcoin-withdrawn-from-wallet-of-defunct-crypto-exchange-wex-former-btc-e/" target="_blank">Bitcoin.com News: 10,000 BTC Withdrawn From Wallet of Defunct Crypto Exchange WEX</a></li>
+    <li><a href="https://www.coindesk.com/consensus-magazine/2023/03/24/bitcoin-from-defunct-btc-e-on-the-move-again-report" target="_blank">CoinDesk: Bitcoin From Defunct BTC-e on the Move Again (Crystal) : March 2023</a></li>
+    <li><a href="https://elie.net/talk/tracking-desktop-ransomware-payments-end-to-end" target="_blank">Bursztein et al.: Tracking Ransomware End to End (Black Hat USA 2017; Google/Chainalysis/UCSD/NYU)</a></li>
+    <li><a href="https://www.bleepingcomputer.com/news/security/95-percent-of-all-ransomware-payments-were-cashed-out-via-btc-e-platform/" target="_blank">BleepingComputer: 95% of All Ransomware Payments Were Cashed Out via BTC-e</a></li>
+    <li><a href="https://www.police.govt.nz/news/release/nz-police-restrains-140-million-international-investigation" target="_blank">NZ Police: NZ Police restrains $140 million in international investigation : June 2020</a></li>
+    <li><a href="https://find-and-update.company-information.service.gov.uk/company/OC394172" target="_blank">UK Companies House: Always Efficient LLP (OC394172), officers and PSC records</a></li>
+    <li><a href="https://www.secretservice.gov/newsroom/releases/2022/08/alleged-russian-cryptocurrency-money-launderer-extradited-united-states" target="_blank">U.S. Secret Service: Alleged Russian Cryptocurrency Money Launderer Extradited : August 2022</a></li>
+    <li><a href="https://www.coindesk.com/policy/2025/02/12/us-to-release-jailed-btc-e-operator-vinnik-in-russia-prisoner-swap" target="_blank">CoinDesk: U.S. to Release Jailed BTC-e Operator Vinnik in Russia Prisoner Swap : February 2025</a></li>
+    <li><a href="https://tass.com/world/1982693" target="_blank">TASS: Ex-head of WEX crypto exchange Vasilyev extradited to U.S. : June 29, 2025</a></li>
+    <li><a href="https://www.cryptopolitan.com/russian-court-overturns-fine-bilyuchenko/" target="_blank">Cryptopolitan: Russian Supreme Court overturns 18B ruble claim against Bilyuchenko : late 2025</a></li>
+    <li><a href="https://www.coinspeaker.com/dormant-bitcoin-wallet-linked-to-btc-e-founder-moves-694m/" target="_blank">Coinspeaker: Dormant Bitcoin Wallet Linked to BTC-e Founder Moves $694M : October 2025</a></li>
+    <li><a href="https://www.cryptopolitan.com/btc-e-crypto-in-cold-wallets-not-seized-us/" target="_blank">Cryptopolitan: Vinnik claims BTC-e cold-wallet crypto was never seized (Blockchain Forum 2026)</a></li>
+    <li><a href="https://blog.wizsec.jp/2017/07/breaking-open-mtgox-1.html" target="_blank">WizSec (Kim Nilsson): Breaking open the MtGox case : July 2017</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/BTC-e" target="_blank">Wikipedia: BTC-e</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). All volume figures cited with source and methodology; figures from different vendors are not averaged. Two-tier connected entity model applied throughout Section 09.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+<script src="../assets/node-library.js"></script>
+</body>
+</html>
