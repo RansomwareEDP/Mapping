@@ -66,11 +66,14 @@
   });
   if (curType && (curSlug === curType.folder || curSlug === 'index' || curSlug === '')) curSlug = 'index';
 
-  /* ---- styles (uses page theme variables, with fallbacks) ---- */
+  /* ---- styles (self-contained: every sidebar and index header on the site is dark,
+          so fixed dark-friendly colors are used deliberately; page theme variables
+          are NOT used for text or background because their meaning differs per page) ---- */
   var css = [
-    '.node-library{padding:14px 16px 12px;border-bottom:1px solid var(--border,rgba(128,128,128,.25));}',
-    '.node-library .nl-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim,var(--gray-400,#8a93a3));margin-bottom:7px;}',
-    '.node-library select{display:block;width:100%;background:var(--bg-card,var(--navy-mid,#141a26));border:1px solid var(--border,rgba(255,255,255,.15));color:var(--text,var(--gray-200,#d7dde6));padding:6px 8px;border-radius:4px;font-size:12px;margin-bottom:7px;cursor:pointer;}',
+    '.node-library{padding:14px 16px 12px;border-bottom:1px solid rgba(128,128,128,.25);}',
+    '.node-library .nl-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a93a3;margin-bottom:7px;}',
+    '.node-library select{display:block;width:100%;background:#1b2330;border:1px solid rgba(255,255,255,.22);color:#dfe6ef;padding:6px 8px;border-radius:4px;font-size:12px;margin-bottom:7px;cursor:pointer;}',
+    '.node-library select option{background:#1b2330;color:#dfe6ef;}',
     '.node-library select:last-child{margin-bottom:0;}',
     '.node-library-inline{border-bottom:none;padding:16px 0 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}',
     '.node-library-inline .nl-label{margin-bottom:0;}',
