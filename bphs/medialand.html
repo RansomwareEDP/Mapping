@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Media Land LLC / Yalishanda: BPH Analytical Profile v2.1 | EDP</title>
+  <title>Media Land LLC / Yalishanda: BPH Analytical Profile v2.2 | EDP</title>
   <style>
     :root {
       --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
@@ -245,7 +245,7 @@
     <a href="#changelog" class="nav-link"><span class="nav-num"></span> Annex A: Change Record</a>
   </nav>
   <div class="sidebar-footer">
-    <div class="sidebar-meta">EDP // BPH Library<br>Profile v2.1 // July 2026<br>Full indictment read<br>Supersedes v2<br>Author: Reno</div>
+    <div class="sidebar-meta">EDP // BPH Library<br>Profile v2.2 // July 2026<br>Indictment read + IOC sweep<br>Supersedes v2.1<br>Author: Reno</div>
   </div>
 </nav>
 
@@ -276,7 +276,7 @@
     <!-- CURRENCY NOTICE -->
     <div class="currency-notice">
       <div class="currency-row">
-        <span class="currency-badge">v2.1</span>
+        <span class="currency-badge">v2.2</span>
         <span class="currency-text"><strong>Current as of 27 July 2026.</strong> Supersedes v2 (26 July 2026) and v1 (June 2026). Built on direct review of the charging document in <em>United States v. Volosovik et al.</em>, Case 1:24-CR-001161 (N.D. Ohio).</span>
       </div>
       <div class="currency-row">
@@ -285,7 +285,7 @@
       </div>
       <div class="currency-row">
         <span class="currency-badge">Changes</span>
-        <span class="currency-text">Since v2: count structure corrected to <strong>thirteen counts</strong> plus a domain-registration enhancement and a forfeiture allegation; the Count 13 money laundering theory is now documented; 56 falsely registered domains added as indicators. <a href="#changelog">Full change record</a>.</span>
+        <span class="currency-text">Since v2.1: all 56 charged domains swept against RDAP and live DNS. <strong>medialand.pro</strong> found live in Media Land's own address space and named in no source; <strong>ffv2.ru</strong> found on German hosting created after the sanctions; live Deutsche Telekom phishing in the designated prefix; and <strong>Grisha Maslinikov</strong> identified on two prefixes but in no enforcement action. <a href="#changelog">Full change record</a>.</span>
       </div>
     </div>
 
@@ -770,6 +770,41 @@
         <tr><td><code>s777shop.ru</code></td><td>Named by Spamhaus alongside ffv2.ru as a botnet controller, Nov 2014</td><td>Not further described in the read portion</td></tr>
       </tbody>
     </table>
+
+    <h3>Post-Indictment Domain and IP Sweep, 27 July 2026 <span class="badge-new">New v2.2</span></h3>
+    <p>All 56 domains named in the paragraph 253 enhancement were checked against RDAP registration data and live DNS, and the resolved addresses were traced back to their announcing networks. Method: RDAP for registration state, DNS-over-HTTPS for current resolution, RIPE and Hurricane Electric for prefix attribution. <span class="badge inference">Analyst Inference</span> throughout on questions of who controls what, since registration records for these domains are privacy-shielded and .ru carries no public RDAP.</p>
+
+    <div class="callout alert">
+      <div class="callout-label">Finding A: Media Land's own domains are live inside its own IP space, after sanctions</div>
+      <p><span class="badge confirmed">Confirmed</span> <code>sshvps.net</code>, the abuse-handling front that Volosovik registered in his own name with Media Land as Administrator Organization, still resolves to <code>45.141.85.101</code>. That address sits inside <code>45.141.85.0/24</code>, announced by AS206728 and registered to Media Land LLC. The same address carries the PTR <code>ml.cloud</code> and also serves <strong><code>medialand.pro</code></strong>. A second host, <code>45.141.85.50</code>, has PTR <code>ns1.ml.cloud</code> and serves <code>ns1.medialand.pro</code>, <code>ns1.ml.cloud</code> and <code>ns1.sshvps.net</code>.</p>
+      <p><strong><code>medialand.pro</code> is not named in the indictment</strong>, nor in any sanctions listing or vendor reporting reviewed for this profile. It is a new indicator. The self-referential naming and the shared nameserver set place it firmly in the same estate.</p>
+      <p>The RIPE route object for <code>45.141.85.0/24</code> was <strong>last modified 24 November 2025, five days after the trilateral sanctions</strong>. Someone was administering this prefix after designation.</p>
+    </div>
+
+    <div class="callout alert">
+      <div class="callout-label">Finding B: the fast-flux platform domain has moved to German hosting since sanctions</div>
+      <p><span class="badge confirmed">Confirmed</span> <code>ffv2.ru</code> currently resolves to <code>144.31.255.18</code>, PTR <code>vm1112055.hosted-by.u1host.com</code>. The prefix <code>144.31.255.0/24</code> is announced by <strong>AS213877, U1 DIGITAL SERVICES LTD</strong>, registrant <em>u1host ltd</em>, maintainer <code>u1host-mnt</code>, sited in Frankfurt. Its RIPE route object was <strong>created 15 December 2025</strong>, roughly a month after the sanctions.</p>
+      <p>Movement history for this one domain now reads: New Jersey at <code>104.194.11.236</code> until 23 June 2024, then Russia at <code>45.141.85.184</code>, and now Germany at <code>144.31.255.18</code>.</p>
+      <p><span class="badge inference">Analyst Inference</span> Treat with care. The u1host range is a commodity VPS estate of roughly 196 hosts with generic <code>vmNNNNNN</code> PTRs, so presence there is cheap and proves little on its own. Three readings are open and the evidence does not separate them: the operators re-pointed the domain to disposable hosting after designation; the domain lapsed and was re-registered by an unrelated party; or it is parked. <code>.ru</code> publishes no RDAP, so registration date and registrant cannot be checked. What can be said is that a domain central to ten wire fraud counts is live on a European prefix created after the sanctions, and that is worth a vendor with passive DNS history resolving properly.</p>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-label">Finding C: the charged domain estate is almost entirely abandoned</div>
+      <p><span class="badge confirmed">Confirmed</span> Of 47 gTLD domains checked by RDAP, <strong>42 are no longer registered</strong>, including both operator-derived names (<code>volosovichkov.info</code>, <code>volosovichkov-taxi.info</code>), the platform bot domain <code>ffv2panelbot.info</code>, <code>cardhouse.info</code>, and every brand-impersonation domain. Only two are registered, and both look like ordinary drop-catch by unrelated parties rather than continuity: <code>s3dns.com</code> re-registered 8 November 2025 through Cloudflare and parked on IONOS in Berlin, and <code>publicdns.info</code> re-registered 6 January 2026 through NameCheap, resolving to OVH in France on nameservers at <code>upstelecom.com</code>. Neither has any observable tie to Media Land.</p>
+      <p><span class="badge inference">Analyst Inference</span> The pattern is consistent with a burned estate. These were disposable domains for a fast-flux product, and once the product was charged there was no reason to renew them. It also means the enhancement list is largely of historical value for pivoting, not a live target set. The exception is the small live cluster in Finding A.</p>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-label">Finding D: live phishing content in Media Land address space</div>
+      <p><span class="badge confirmed">Confirmed</span> <code>45.141.85.173</code>, in the same Media Land prefix, currently serves <code>treueprogramm-magentamoments-bestandskunden.com</code>. The name is a German-language lure impersonating Deutsche Telekom's MagentaMoments customer loyalty programme. Also on the prefix: nameservers for <code>cherrymail.net</code>, and a cluster of algorithmically-styled <code>.ru</code> names (<code>alendelm.ru</code>, <code>werbongo.ru</code>, <code>wertengo.ru</code>, <code>akeqant.ru</code>, <code>belpvale.ru</code>, <code>percevogen.ru</code>, <code>frencowep.ru</code>, <code>frolovale.ru</code>, <code>arturowen.ru</code>, <code>rolexform.ru</code>) consistent with the bulk registration and random name generator advertised in the December 2018 Exploit post.</p>
+      <p>This is criminal hosting continuing in designated address space, which bears directly on the Section 10 trajectory assessment.</p>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">Finding E: an unexploited name in the registry records</div>
+      <p><span class="badge confirmed">Confirmed</span> RDAP returns <strong>Grisha Maslinikov</strong> as the organisation contact on <code>45.141.85.0/24</code>, and Hurricane Electric records the same name as the registrant of <code>45.141.87.0/24</code>. Both are Media Land prefixes under AS206728, and <code>45.141.87.0/24</code> contains the IP Zatolokin used in his speed-test message to BlackBasta.</p>
+      <p><span class="badge inference">Analyst Inference</span> Maslinikov appears in <strong>no sanctions listing and no count of the indictment</strong>. He may be a nominee, an administrative contact, or a real staff member. Either way a name attached to two prefixes of a designated bulletproof host, absent from every enforcement action, is an unexploited lead and the most promising single thread this sweep produced.</p>
+    </div>
 
     <h3>Falsely Registered Domains (18 U.S.C. 3559(g)(1)) <span class="badge-new">New v2.1</span></h3>
     <p><span class="badge confirmed">Confirmed</span> Paragraph 253 of the indictment enumerates roughly 56 domains that Volosovik and Zatolokin registered with false names and addresses and used in furtherance of Counts 1 to 13. This list appears in no press release and is the single largest set of new indicators the document provides. Grouped below by evident function.</p>
