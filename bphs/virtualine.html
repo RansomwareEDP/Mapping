@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIRTUALINE - BPH Analytical Profile | EDP</title>
+  <style>
+    :root {
+      --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+      --border: #30363d; --border-light: #21262d;
+      --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+      --accent: #58a6ff; --accent-dim: #1f6feb;
+      --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+      --credible-bg: #341a00; --credible-text: #e3b341;
+      --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+      --ss-bg: #2d1a17; --ss-text: #f85149;
+      --internal-bg: #2a1a3a; --internal-text: #bc8cff;
+      --disrupted: #e3b341; --active: #3fb950; --defunct: #8b949e;
+      --sidebar-width: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+    .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: var(--inference-bg); color: var(--inference-text); border: 1px solid var(--accent-dim); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .group-switcher { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .group-switcher-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 6px; }
+    .group-select { width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 4px; font-size: 12px; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all .15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+    .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+
+    /* MAIN */
+    .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; }
+    .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+    .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .profile-title-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+    .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); max-width: 900px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+    .status-badge.active { background: rgba(63,185,80,.12); color: var(--active); border: 1px solid rgba(63,185,80,.3); }
+    .status-badge.disrupted { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-badge.degraded { background: rgba(227,179,65,.12); color: var(--disrupted); border: 1px solid rgba(227,179,65,.3); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* SECTIONS */
+    section { padding: 32px 40px; border-bottom: 1px solid var(--border-light); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+    h3 { font-size: 15px; font-weight: 600; color: var(--text-heading); margin: 20px 0 10px; }
+    h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .05em; }
+    p { margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 12px 20px; line-height: 2; }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .kpi-value { font-size: 20px; font-weight: 700; color: var(--text-heading); line-height: 1.2; }
+    .kpi-value.active { color: var(--active); }
+    .kpi-value.disrupted { color: var(--disrupted); }
+    .kpi-value.accent { color: var(--accent); }
+    .kpi-value.danger { color: var(--ss-text); }
+    .kpi-value.muted { color: var(--text-muted); }
+    .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+
+    /* OPERATOR HERO */
+    .operator-hero { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .operator-hero-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ss-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .operator-hero-label::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--ss-text); border-radius: 50%; }
+    .operator-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .operator-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .operator-name { font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .operator-role { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .operator-meta { font-size: 11px; color: var(--text); line-height: 1.7; }
+    .operator-meta strong { color: var(--text-heading); }
+    .sanction-flag { display: inline-block; padding: 2px 8px; background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .04em; margin-top: 6px; }
+    .sanction-flag.detained { background: var(--credible-bg); color: var(--credible-text); border-color: rgba(158,106,3,.3); }
+
+    /* TABLES */
+    .attr-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .attr-table th, .attr-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; vertical-align: top; }
+    .attr-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; width: 200px; background: var(--bg-secondary); }
+    .attr-table tr:last-child th, .attr-table tr:last-child td { border-bottom: none; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    .data-table th { background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13px; color: var(--text); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    .badge.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); border: 1px solid rgba(35,134,54,.3); }
+    .badge.credible { background: var(--credible-bg); color: var(--credible-text); border: 1px solid rgba(158,106,3,.3); }
+    .badge.inference { background: var(--inference-bg); color: var(--inference-text); border: 1px solid rgba(31,111,235,.3); }
+    .badge.single-source { background: var(--ss-bg); color: var(--ss-text); border: 1px solid rgba(248,81,73,.3); }
+    .badge.internal { background: var(--internal-bg); color: var(--internal-text); border: 1px solid rgba(188,140,255,.3); }
+
+    /* TWO-TIER */
+    .two-tier { display: flex; flex-direction: column; gap: 5px; }
+    .tier-row { display: flex; align-items: center; gap: 8px; }
+    .tier-label { font-size: 10px; color: var(--text-muted); min-width: 200px; }
+
+    /* VERBATIM */
+    .verbatim { background: var(--bg-secondary); border-left: 3px solid var(--accent-dim); padding: 12px 16px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+    .verbatim-source { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .verbatim-text { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.6; }
+
+    /* CALLOUT */
+    .callout { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 14px 0; }
+    .callout.warning { border-left: 3px solid var(--disrupted); }
+    .callout.info { border-left: 3px solid var(--accent); }
+    .callout.danger { border-left: 3px solid var(--ss-text); }
+    .callout-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout.warning .callout-label { color: var(--disrupted); }
+    .callout.info .callout-label { color: var(--accent); }
+    .callout.danger .callout-label { color: var(--ss-text); }
+
+    /* GALLERY */
+    .gallery-heading { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 24px 0 12px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .gallery-item img { width: 100%; height: 180px; object-fit: contain; display: block; background: var(--bg-secondary); padding: 20px; }
+    .gallery-caption { padding: 10px 12px; }
+    .gallery-caption-text { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .gallery-source { font-size: 10px; color: var(--text-muted); }
+    .gallery-placeholder { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); color: var(--text-muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; text-align: center; padding: 20px; }
+
+    /* CONNECTED ENTITY */
+    .connected-entity { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .entity-name { font-size: 15px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+    .entity-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .entity-confidence { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+    .entity-confidence-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .entity-text { font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+    .vendor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .vendor-tag { padding: 2px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text-muted); }
+    .vendor-tag.cor { border-color: rgba(35,134,54,.3); color: var(--confirmed-text); }
+    .vendor-tag.ss { border-color: rgba(248,81,73,.3); color: var(--ss-text); }
+
+    /* JURISDICTIONS */
+    .jurisdiction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+    .jurisdiction-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .jurisdiction-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .jurisdiction-value { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+    .jurisdiction-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; margin: 16px 0; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -16px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--bg); }
+    .timeline-date { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+    .timeline-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* GAPS */
+    .gap-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .gap-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+    .gap-item strong { color: var(--text-heading); font-size: 13px; }
+    .gap-item p { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
+
+    /* BLOCKLIST */
+    .bl-listed { color: var(--ss-text); font-weight: 700; font-size: 11px; }
+    .bl-probable { color: var(--disrupted); font-weight: 700; font-size: 11px; }
+    .bl-unknown { color: var(--text-muted); font-weight: 700; font-size: 11px; }
+    .bl-clear { color: var(--active); font-weight: 700; font-size: 11px; }
+
+    /* SOURCES */
+    .sources-list { display: flex; flex-direction: column; gap: 7px; }
+    .source-item { display: flex; gap: 12px; font-size: 12px; line-height: 1.5; }
+    .source-num { color: var(--accent); font-weight: 700; min-width: 28px; }
+    .source-text a { color: var(--accent); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
+    code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; background: var(--bg-secondary); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+    .ref { font-size: 11px; color: var(--text-muted); vertical-align: super; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; }
+      .jurisdiction-grid { grid-template-columns: 1fr; }
+      section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">EDP // Ransomware Ecosystem</div>
+    <div class="sidebar-title">VIRTUALINE</div>
+    <span class="node-type-badge">Bulletproof Hosting Provider</span>
+  </div>
+  <div class="node-library"></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Profile Sections</div>
+    <a href="#overview" class="nav-link"><span class="nav-num">01</span> Executive Summary</a>
+    <a href="#lineage" class="nav-link"><span class="nav-num">02</span> Lineage &amp; Heritage</a>
+    <a href="#operations" class="nav-link"><span class="nav-num">03</span> Business Model</a>
+    <a href="#technical" class="nav-link"><span class="nav-num">04</span> Technical Footprint</a>
+    <a href="#financial" class="nav-link"><span class="nav-num">05</span> Financial Infrastructure</a>
+    <a href="#clientele" class="nav-link"><span class="nav-num">06</span> Client Profile</a>
+    <a href="#nexus" class="nav-link"><span class="nav-num">07</span> State Nexus</a>
+    <a href="#disruption" class="nav-link"><span class="nav-num">08</span> LE Response</a>
+    <a href="#connected" class="nav-link"><span class="nav-num">09</span> Connected Groups</a>
+    <a href="#status" class="nav-link"><span class="nav-num">10</span> Trajectory</a>
+    <div class="nav-section-label" style="margin-top:8px">Additional</div>
+    <a href="#recent-reporting" class="nav-link"><span class="nav-num"></span> Recent Reporting</a>
+    <a href="#sources" class="nav-link"><span class="nav-num"></span> Sources</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">EDP // BPH Library<br>Profile v1 // July 2026<br>Author: Reno</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-breadcrumb">
+      <a href="https://research.therenoproject.org/bphs/">BPH Providers</a> /
+      VIRTUALINE
+    </div>
+    <div class="profile-title-row">
+      <div>
+        <div class="profile-name">VIRTUALINE</div>
+        <div class="profile-subtitle">Russia-linked bulletproof hosting cluster (Virtualine Technologies) // advertises openly on Russian-language forums as "DMCA &amp; Abuse Ignored" // operates through the Railnet LLC (Kentucky) backbone and rotating fronts (OMEGATECH, and the fraudulently registered AS209800/metaspinner) // European footprint via German upstream aurologic GmbH // not sanctioned as of July 2026</div>
+      </div>
+      <span class="status-badge active"><span class="status-dot"></span>Active</span>
+    </div>
+  </div>
+
+  <!-- SECTION 01 -->
+  <section id="overview">
+    <div class="section-label">Section 01</div>
+    <h2>Executive Summary and Provider Overview</h2>
+
+    <div class="callout danger">
+      <div class="callout-label">Operator Attribution: Open Gap (No Hero Module)</div>
+      <p>Unlike sanctioned peers (Aeza, ZServers), no individual operator, administrator, or handle has been publicly and specifically attributed to Virtualine. No Virtualine principal has been named, indicted, or sanctioned by any authority. Per the operator-profiles rule, no escalated hero module is presented; the absence of a named operator is itself a material finding and is documented as a primary intelligence gap (see Sections 02 and 10). <span class="ref">[2][3][9]</span></p>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value active">Active</div><div class="kpi-label">Operational Status</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">AS214943</div><div class="kpi-label">Backbone ASN (Railnet)</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">~19</div><div class="kpi-label">Railnet IPv4 Prefixes (Aug 2025)</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">ASN-DROP</div><div class="kpi-label">Spamhaus Standing</div></div>
+      <div class="kpi-card"><div class="kpi-value muted">0</div><div class="kpi-label">Sanctioning Authorities</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">0 named</div><div class="kpi-label">Operators Identified</div></div>
+      <div class="kpi-card"><div class="kpi-value danger">642,001</div><div class="kpi-label">Honeypot Hits (OMEGATECH, Mar 2026)</div></div>
+      <div class="kpi-card"><div class="kpi-value accent">~95%</div><div class="kpi-label">Railnet Traffic via aurologic</div></div>
+    </div>
+
+    <h3>Quick-Reference Attributes</h3>
+    <table class="attr-table">
+      <tr><th>Common Names</th><td>Virtualine; Virtualine Technologies; virtualine.net / virtualine.org; associated brands Railnet (RAILNET), OMEGATECH-AS</td></tr>
+      <tr><th>Node Type</th><td>Bulletproof Hosting Provider (rotating shell-company / ASN cluster)</td></tr>
+      <tr><th>Status</th><td><span class="status-badge active" style="margin-top:0"><span class="status-dot"></span>Active</span> - live and marketing as of July 2026; OMEGATECH (AS202412) actively hosting malware C2; core storefront virtualine.net operational; ongoing ASN acquisition via IP brokers. <span class="ref">[2][3][4]</span></td></tr>
+      <tr><th>Entity Registration Jurisdiction</th><td><strong>Split / obfuscated.</strong> Backbone front Railnet LLC registered in Kentucky, US (registered agent White Label Networks LLC, Israel). OMEGATECH front associated with Seychelles. The "Virtualine Technologies" brand itself has no confirmed single legal registration in open reporting; assessed Russia-linked. AS209800 was registered by fraudulently impersonating a legitimate German company (metaspinner net GmbH). <span class="ref">[3][5][4]</span></td></tr>
+      <tr><th>Infrastructure Hosting Jurisdiction</th><td>Primary European footprint routed through Germany (aurologic GmbH, Langen; secondary Pfcloud UG). ASN registrations span RIPE region (Seychelles/GB/UK country codes). No confirmed self-operated Russian datacenter documented. <span class="ref">[2][3]</span></td></tr>
+      <tr><th>Assessed Operator Location</th><td>Russia (assessed). Virtualine is described across vendor reporting as a "Russia-based" / "Russia-linked" provider advertised on Russian-language forums; specific operator identity and physical location are unknown. <span class="ref">[2][5]</span></td></tr>
+      <tr><th>Active Period</th><td>Tracked by Intrinsec across at least three reports, March 2025 to June 2026; Railnet ASN (AS214943) and Virtualine brand observed from early 2025; ongoing. <span class="ref">[1][2]</span></td></tr>
+      <tr><th>Primary ASNs</th><td><code>AS214943</code> (RAILNET, backbone); <code>AS202412</code> (OMEGATECH-AS); <code>AS215789</code>, <code>AS214940</code> (Virtualine-linked); <code>AS209800</code> (metaspinner impersonation). <span class="ref">[2][3][7]</span></td></tr>
+      <tr><th>Upstream Transit</th><td><code>AS30823</code> aurologic GmbH (Germany, primary upstream, ~95% of Railnet traffic); <code>AS51396</code> Pfcloud UG (Germany, secondary). <span class="ref">[3]</span></td></tr>
+      <tr><th>Abuse Posture</th><td>Verbatim self-marketing: "DMCA &amp; Abuse Ignored"; "Пуленепробиваемый" (bulletproof). Support via 24/7 web ticket portal and Telegram bot @virtualine_bot. <span class="ref">[Perplexity/forum ad]</span></td></tr>
+      <tr><th>Sanctions</th><td><span class="badge inference">NOT SANCTIONED</span> No OFAC SDN, EU, UK, or Australian designation identified against Virtualine, Railnet LLC, White Label Networks LLC, or OMEGATECH as of July 2026. <span class="ref">[9][10]</span></td></tr>
+      <tr><th>Blocklist Standing</th><td><span class="bl-listed">Spamhaus ASN-DROP: RAILNET (AS214943) LISTED</span> ("under control of cyber-criminals"); OMEGATECH (AS202412) flagged by Spamhaus as a Virtualine front; abuse.ch ThreatFox IOC-level entries on OMEGATECH IPs. <span class="ref">[2][3][4]</span></td></tr>
+      <tr><th>State Nexus Tier</th><td>No confirmed state nexus (Tier: NONE) - with a client-side caveat (hosted UAC-0050, assessed by CERT-UA as Russian-law-enforcement-linked). <span class="ref">[1]</span></td></tr>
+    </table>
+
+    <h3>Overall Assessment</h3>
+    <p>Virtualine (Virtualine Technologies) is a Russia-linked bulletproof hosting cluster that advertises openly on Russian-language underground forums as abuse-tolerant "offshore" hosting while presenting a legitimate-looking retail storefront at virtualine.net. Rather than a single stable legal entity, it operates as a rotating set of shell-company fronts and autonomous-system brands, principally the Railnet LLC backbone (AS214943, Kentucky-registered) plus OMEGATECH (AS202412) and, most recently, AS209800, an autonomous system registered by fraudulently impersonating a legitimate German software company. Spamhaus attributes OMEGATECH directly as "just another network created by hosting provider Virtualine," and Recorded Future / Insikt Group lists Virtualine Technologies among the threat activity enablers dependent on German upstream aurologic GmbH. <span class="ref">[2][3][4]</span></p>
+    <p>The operating model is classic BPH: legitimate-looking retail hosting UI paired with explicit "DMCA &amp; Abuse Ignored" advertising to criminal buyers, low-friction unvetted onboarding, persistent Spamhaus ASN-DROP listing, and rapid ASN/prefix churn to evade blocklisting. The cluster hosts a broad crimeware portfolio: ransomware C2 (Lynx), malspam and JS-backdoor campaigns (BEC/EAC), multi-family RAT and botnet C2 (one OMEGATECH subnet observed hosting 67 C2 servers across 16 malware families), a DDoS/loader botnet (Kamasers), and phishing. <span class="ref">[2][8]</span></p>
+    <p>Virtualine is assessed as <strong>Active</strong>. As of the May 2026 Intrinsec reporting, OMEGATECH generated 642,001 honeypot hits in March 2026 alone and continued to host live malware C2, and the Monero-branded VPS product line remained on sale at virtualine.net. The two defining analytical features are (1) a genuinely traceable US/Israel corporate front (Railnet LLC in Kentucky, registered agent White Label Networks LLC), which is the strongest structural leverage point, and (2) the complete absence of any named operator or any sanctions designation, in sharp contrast to sanctioned peers Aeza and ZServers. The single largest external dependency is the German upstream aurologic GmbH, which carries roughly 95% of Railnet traffic. <span class="ref">[2][3]</span></p>
+
+    <!-- Gallery -->
+    <div class="gallery-heading">Provider Presence and Infrastructure Evidence</div>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="https://www.recordedfuture.com/research/media_193b4efed9243f1a6ed18f6c2c67c6a8d69ffbd3e.png"
+             alt="RIPE record: IP sub-allocation from Rapidnet to Virtualine Technologies, routed through Railnet LLC"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="gallery-placeholder" style="display:none">Recorded Future // Virtualine sub-allocation via Railnet</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">RIPE evidence (Recorded Future Figure 19) of an IP sub-allocation from Rapidnet to Virtualine Technologies, routed through Railnet LLC. Direct documentary link between the Virtualine brand and the Railnet backbone ASN.</div>
+          <div class="gallery-source">Source: Recorded Future / Insikt Group, aurologic GmbH report, 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://www.recordedfuture.com/research/media_1c1bad981c7652598acee699855ecdaac2a184085.png"
+             alt="BGP visualization of Railnet LLC routing through aurologic GmbH as of August 2025"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="gallery-placeholder" style="display:none">Recorded Future // Railnet upstream via aurologic</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">BGP visualization (Recorded Future Figure 18) of Railnet LLC's routing through aurologic GmbH as of August 28, 2025. Railnet originated nineteen IPv4 prefixes, roughly 95% routed via aurologic, with a single /24 via Pfcloud UG.</div>
+          <div class="gallery-source">Source: Recorded Future / Insikt Group, aurologic GmbH report, 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://www.recordedfuture.com/research/media_1d4cce9b1ca10e427d8417d4093d9c8998fccaae1.png"
+             alt="Visualization of IPv4 prefixes assigned to metaspinner AS209800"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="gallery-placeholder" style="display:none">Recorded Future // AS209800 metaspinner impersonation</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Visualization (Recorded Future Figure 11) of IPv4 prefixes assigned to "metaspinner" (AS209800). The AS was registered by fraudulently impersonating legitimate German company metaspinner net GmbH; threat actors assessed as affiliated with Virtualine Technologies.</div>
+          <div class="gallery-source">Source: Recorded Future / Insikt Group, aurologic GmbH report, 2025</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://www.intrinsec.com/wp-content/uploads/2026/05/CTI_REPORT_Pages_De_Garde-2026-05-26T144509.130-724x1024.png"
+             alt="Intrinsec CTI report cover: Pivoting on a malspam infrastructure backed by bulletproof networks"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="gallery-placeholder" style="display:none">Intrinsec // Malspam / OMEGATECH report</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">Intrinsec CTI report (May 26, 2026) attributing the OMEGATECH network (AS202412) to Virtualine and documenting its use to host JS-backdoor malspam C2, including the 642,001 March 2026 honeypot-hit figure.</div>
+          <div class="gallery-source">Source: Intrinsec, 2026</div>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhyn6_CYEeKgJOfc2wTpZ3H_9COzhVbW3m8syp5pI0nM5icv2O3ruj3oYlp4m3Ckt5S4BoTmRYfGVWFfVvEERgaXlMYBQF2MrNC1_aQNYoilHfHBmVUgasn-laGa8wuHvckYgNXN795LqqUQgRmyrK9GvGj5SbhR5jJxJJyWXQZ5yySRzh7N6vvp_Pe1YIN/s16000/Screenshot%202025-04-01%20at%2012.22.09%E2%80%AFAM.webp"
+             alt="Content of a UAC-0050 phishing email hosted on Virtualine-linked infrastructure"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="gallery-placeholder" style="display:none">Intrinsec / GBHackers // UAC-0050 phishing lure</div>
+        <div class="gallery-caption">
+          <div class="gallery-caption-text">A UAC-0050 phishing email documented in Intrinsec's 2025 UAC infrastructure report, part of the spam activity hosted on Virtualine (AS215789 / AS214943). UAC-0050 is assessed by CERT-UA as linked to Russian law enforcement.</div>
+          <div class="gallery-source">Source: Intrinsec via GBHackers, 2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02 -->
+  <section id="lineage">
+    <div class="section-label">Section 02</div>
+    <h2>Lineage and Organizational Heritage</h2>
+
+    <h3>Corporate Structure and Shell Layering</h3>
+    <p>Virtualine's most consistently documented legal front is <strong>Railnet LLC</strong>, a shell company registered in Kentucky, United States. Railnet LLC's registered agent is <strong>White Label Networks LLC</strong>, an Israeli company that Intrinsec identifies as "known for its links with illicit hosting networks." This produces a concrete, named US-jurisdiction pressure point: a Kentucky LLC (subject to Secretary of State disclosure and process-service requirements) fronted by an Israeli-registered agent, both named explicitly in primary reporting rather than assessed by inference. <span class="ref">[1][2]</span></p>
+    <p>Recorded Future / Insikt Group provides the clearest structural picture: Railnet LLC is the backbone that originates the prefixes, and the "Virtualine Technologies" brand appears as a downstream sub-allocation (from Rapidnet) routed through Railnet. Insikt Group lists Virtualine Technologies among the threat activity enablers (TAEs) dependent on aurologic GmbH, alongside Femo IT Solutions, Global-Data System IT Corporation, and the sanctioned Aeza Group. <span class="ref">[3]</span></p>
+
+    <div class="callout info">
+      <div class="callout-label">Backbone / Front Relationship: CONFIRMED (infrastructure)</div>
+      <p><span class="badge confirmed">Confirmed</span> Railnet LLC (AS214943) is the operational backbone. RIPE sub-allocation records (via Recorded Future) show Virtualine Technologies, and additional downstream brands DripHosting and RetryHost, receiving IP space routed through Railnet LLC. Spamhaus independently attributes OMEGATECH (AS202412) as "just another network created by hosting provider Virtualine." <span class="ref">[3][2]</span></p>
+    </div>
+
+    <h3>Brand, Entity, and Sibling Structure</h3>
+    <table class="data-table">
+      <thead><tr><th>Entity / Brand / ASN</th><th>Jurisdiction / Identifier</th><th>Role</th><th>Active Window (Observed)</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Railnet LLC (RAILNET, AS214943)</strong></td><td>Kentucky, US (LLC); UK country code in some ASN records</td><td>Backbone entity; originates prefixes; Spamhaus ASN-DROP listed</td><td>Early 2025 - present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>White Label Networks LLC</strong></td><td>Israel</td><td>Registered agent for Railnet LLC; "known for links with illicit hosting networks"</td><td>Observed 2025-2026</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>Virtualine Technologies (AS215789, AS214940)</strong></td><td>Assessed Russia-linked; sub-allocated from Rapidnet, routed via Railnet</td><td>Core brand; hosted UAC-0050/UAC-0006 spam infrastructure</td><td>2025 - present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>OMEGATECH-AS (AS202412)</strong></td><td>Seychelles (RIPE region); domain virtualine.org</td><td>Front network; hosted JS-backdoor and multi-family C2</td><td>~Jan 2026 - present</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>AS209800 ("metaspinner")</strong></td><td>Registered by fraudulent impersonation of metaspinner net GmbH (Hamburg, DE)</td><td>Newly acquired front; heavy malware footprint; routed via aurologic</td><td>Created Apr 25, 2025; expansion reported Sep-Nov 2025</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td><strong>DripHosting; RetryHost</strong></td><td>Sub-allocated from Euro Crypt EOOD / Telco Power Ltd, routed via Railnet</td><td>Downstream reseller/sub-brands on Railnet backbone</td><td>2025 (RIPE-observed)</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td><strong>GHOSTYNETWORKS (AS205759)</strong></td><td>Kentucky, US</td><td>Sibling BPH network co-hosting the same malspam; assessed OPTIBOUNCE/AnonRDP rebrand, NOT confirmed Virtualine-owned</td><td>Allocated Jan 2026 - mid-2026</td><td><span class="badge credible">Credible</span> (distinct)</td></tr>
+        <tr><td><strong>FDN3 (AS211736) cluster</strong></td><td>Ukraine / Seychelles</td><td>Inherited Virtualine prefix 88.210.63.0/24 (Jun 2025); linked to Global Connectivity Solutions LLP / Zservers ecosystem</td><td>ASN created Aug 2021; prefix moved Jun 2025</td><td><span class="badge credible">Credible</span> (distinct)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <div class="callout-label">Lineage Integrity: Do Not Collapse Three Distinct Clusters</div>
+      <p>Reporting frequently discusses three related-but-distinct BPH entities together because they co-host the same malspam campaigns and share German upstreams: (1) Virtualine / Railnet / OMEGATECH; (2) GHOSTYNETWORKS / OPTIBOUNCE / AnonRDP; and (3) the FDN3 / Ukrainian-Seychelles cluster linked to Global Connectivity Solutions LLP and Zservers. Intrinsec treats these as <strong>separate operations with only infrastructural/upstream overlap, not shared ownership.</strong> Analysts should not merge them despite their consistent joint appearance. <span class="ref">[2][3]</span></p>
+    </div>
+
+    <h3>Evidence Basis for Lineage Claims</h3>
+    <table class="data-table">
+      <thead><tr><th>Evidence Type</th><th>Finding</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Infrastructure continuity</td><td>Virtualine Technologies sub-allocation (from Rapidnet) routed through Railnet LLC; RIPE-documented</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Infrastructure continuity</td><td>OMEGATECH (AS202412) attributed by Spamhaus as "just another front of Virtualine"; domain virtualine.org tied to the ASN</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Infrastructure continuity</td><td>Prefix 88.210.63.0/24 moved from Virtualine (AS214940/AS214943) to FDN3 (AS211736), June 2025</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Corporate / legal continuity</td><td>Railnet LLC (Kentucky) to White Label Networks LLC (Israel) registered-agent chain, across multiple Intrinsec reports</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>Personnel / handle continuity</td><td>No named individual operator publicly attributed to Virtualine</td><td><span class="badge single-source">Gap - not established</span></td></tr>
+        <tr><td>Upstream continuity</td><td>Shared aurologic (AS30823) / Pfcloud (AS51396) upstream pairing across cluster; ~95% of Railnet traffic via aurologic</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Operator Profiles (Mandatory Subsection)</h3>
+    <div class="callout danger">
+      <div class="callout-label">No Individual Operator Publicly Attributed - Material Gap</div>
+      <p>No individual operator, administrator, or handle has been publicly and specifically attributed to Virtualine itself in available reporting. This is a significant intelligence gap, flagged rather than inferred:</p>
+    </div>
+    <ul>
+      <li><strong>Railnet LLC / White Label Networks LLC:</strong> No named principal, officer, or beneficial owner publicly disclosed in sourced reporting. Nationality/location of the controlling operator is unknown. Legal status: not sanctioned, not indicted, not publicly named as an individual defendant. Railnet LLC has not appeared on the OFAC SDN list per available search tooling. <span class="ref">[9][10]</span></li>
+      <li><strong>Adjacent (distinct) network for contrast:</strong> The GHOSTYNETWORKS / OPTIBOUNCE network's registered organizer, <strong>Daniel Mishayev</strong>, is named across Kentucky business filings tied to Spamhaus-blocked ASNs; an upstream (SMARTNET LIMITED) reportedly stated Mishayev "only provides the ASN and company registration" and is "not involved in everyday operations." This individual is <strong>not</strong> confirmed connected to Virtualine/Railnet; the two are parallel BPH operations that share upstreams and appear in the same campaigns. <span class="ref">[2]</span></li>
+    </ul>
+    <p>Kentucky's registered-agent structure means Railnet LLC's filings and registered agent are publicly searchable through the Kentucky Secretary of State's online business database. This is the same public-records mechanism used to identify the organizer behind the separate GHOSTYNETWORKS/OPTIBOUNCE network, underscoring that these Kentucky shell registrations are traceable even when underlying operators are offshore. <span class="ref">[2]</span></p>
+  </section>
+
+  <!-- SECTION 03 -->
+  <section id="operations">
+    <div class="section-label">Section 03</div>
+    <h2>Operational and Business Model</h2>
+
+    <h3>Service Model</h3>
+    <p>Virtualine markets itself as abuse-tolerant, general-purpose "offshore hosting" rather than positioning narrowly as crimeware-specific. The public storefront (virtualine.net) advertises standard consumer hosting (cPanel, LiteSpeed, Softaculous, Imunify360, SSL) alongside its bulletproof/DMCA-ignored offshore tier. This dual-branding, a legitimate-looking retail UI paired with explicit "abuse ignored" advertising on criminal forums, is the standard BPH pattern for maintaining plausible deniability with upstream and payment partners while marketing openly to criminal buyers on Russian-language forums (XSS, Exploit, nohide.space). <span class="ref">[2]</span></p>
+
+    <h3>Verbatim Advertising Copy</h3>
+    <div class="verbatim">
+      <div class="verbatim-source">nohide.space forum listing, ~March 2025 (as documented in the primary research)</div>
+      <div class="verbatim-text">
+        "[BULLETPROOF] Windows/Linux/MacOS VPS from $4.99 &#9733; DMCA &amp; Abuse Ignored &#9733; cPanel Hosting from $0.79 &#9733; Offshore Locations | Virtualine.net | Fully NVMe"<br>
+        Russian copy: "&#1054;&#1092;&#1092;&#1096;&#1086;&#1088;&#1085;&#1099;&#1081; &#1074;&#1077;&#1073;-&#1093;&#1086;&#1089;&#1090;&#1080;&#1085;&#1075; &#1086;&#1090; $0.79 &#9733; &#1054;&#1092;&#1092;&#1096;&#1086;&#1088;&#1085;&#1099;&#1077; &#1083;&#1086;&#1082;&#1072;&#1094;&#1080;&#1080;, &#9733; &#1055;&#1091;&#1083;&#1077;&#1085;&#1077;&#1087;&#1088;&#1086;&#1073;&#1080;&#1074;&#1072;&#1077;&#1084;&#1099;&#1081;, &#9733; NVMe SSD" (translation: "Offshore web hosting from $0.79, offshore locations, bulletproof, NVMe SSD").<br>
+        Support: 24/7 web ticket portal and Telegram bot @virtualine_bot.
+      </div>
+    </div>
+    <div class="callout warning">
+      <div class="callout-label">Explicit Self-Description as Bulletproof</div>
+      <p>Unlike Aeza (which relied on resellers to use the word "bulletproof"), Virtualine markets the term directly. The Russian "&#1055;&#1091;&#1083;&#1077;&#1085;&#1077;&#1087;&#1088;&#1086;&#1073;&#1080;&#1074;&#1072;&#1077;&#1084;&#1099;&#1081;" (bulletproof) and English "DMCA &amp; Abuse Ignored" are used as primary self-description in dated, sourced forum advertising.</p>
+    </div>
+
+    <h3>Pricing (Documented Examples)</h3>
+    <table class="data-table">
+      <thead><tr><th>Tier</th><th>Config</th><th>Price</th></tr></thead>
+      <tbody>
+        <tr><td>Bulletproof VPS (Windows/Linux/MacOS)</td><td>entry tier</td><td>from $4.99/mo</td></tr>
+        <tr><td>cPanel offshore hosting</td><td>entry tier</td><td>from $0.79/mo</td></tr>
+        <tr><td>Monero Cloud VPS Standard #1</td><td>2 GB RAM / 30 GB NVMe</td><td>$7.49/mo</td></tr>
+        <tr><td>Monero Cloud VPS Storage Optimized #8</td><td>64 GB RAM / 1 TB NVMe</td><td>$189.99/mo</td></tr>
+        <tr><td>Additional IPv4</td><td>per address</td><td>$1 each</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Onboarding</h3>
+    <p>Public self-service signup through virtualine.net combined with a 24/7 Telegram bot (@virtualine_bot) for support: a low-friction, largely unvetted (no-KYC) onboarding model typical of BPH providers seeking volume over selectivity. <span class="ref">[2]</span></p>
+
+    <h3>Reseller / Downstream Chain</h3>
+    <p><span class="badge credible">Credible</span> Recorded Future RIPE evidence shows the Railnet backbone routing multiple downstream sub-brands beyond the core Virtualine brand, including <strong>DripHosting</strong> (sub-allocated from Euro Crypt EOOD) and <strong>RetryHost</strong> (from Telco Power Ltd). This indicates Railnet functions as a multi-brand backbone reselling IP space to several downstream hosting fronts, not a single storefront. The full identity and scale of the downstream reseller network remain incompletely documented. <span class="ref">[3]</span></p>
+
+    <h3>Abuse-Handling and OPSEC Posture</h3>
+    <p>The verbatim "DMCA &amp; Abuse Ignored" claim, combined with sustained Spamhaus SBL/ASN-DROP listings across every Virtualine-linked ASN and the practice of acquiring new prefixes through Turkey- and US-based IP brokers with poor vetting (and, in the AS209800 case, outright fraudulent AS registration), indicates a deliberate non-response-to-abuse policy and an evasion-first OPSEC model. Upstream providers aurologic GmbH and Pfcloud UG have been separately documented (Recorded Future) as tolerating abusive downstream customers, effectively shielding Virtualine/OMEGATECH from upstream-level abuse enforcement. <span class="ref">[2][3][4]</span></p>
+  </section>
+
+  <!-- SECTION 04 -->
+  <section id="technical">
+    <div class="section-label">Section 04</div>
+    <h2>Technical Capabilities and Infrastructure Footprint</h2>
+
+    <h3>ASN Details</h3>
+    <table class="data-table">
+      <thead><tr><th>ASN</th><th>Name</th><th>Registration Country</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>AS214943</code></td><td>RAILNET</td><td>US (Kentucky LLC); UK country code in some ASN records</td><td>Backbone; Spamhaus ASN-DROP "Blocked - under control of cyber-criminals"; ~19 prefixes (Aug 2025), ~95% via aurologic</td></tr>
+        <tr><td><code>AS214940</code></td><td>Virtualine-linked</td><td>US-attributed</td><td>Prefix 88.210.63.0/24 later inherited by FDN3</td></tr>
+        <tr><td><code>AS215789</code></td><td>Virtualine</td><td>Assessed Russia-linked</td><td>Hosted UAC-0050 spam infrastructure, 2025</td></tr>
+        <tr><td><code>AS202412</code></td><td>OMEGATECH-AS</td><td>Seychelles (RIPE region); domain virtualine.org</td><td>9 IPv4 CIDR blocks incl. 45.132.180.0/24, 91.92.240.0/22, 94.26.38.0/24, 94.154.35.0/24, 130.12.180.0/24, 146.19.125.0/24, 158.94.208.0/22, 178.16.52.0/22, 193.30.241.0/24</td></tr>
+        <tr><td><code>AS209800</code></td><td>"metaspinner" (fraudulent)</td><td>Impersonated metaspinner net GmbH (Hamburg, DE)</td><td>Created Apr 25, 2025; announced exclusively via aurologic; heavy malware footprint (SmokeLoader, TinyLoader, Stealc, Amadey, Cobalt Strike, Moobot); later re-described as "LANEDONET"</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Upstream Transit and Provider Chain</h3>
+    <p><span class="badge confirmed">Confirmed</span> Virtualine's cluster depends on two German upstreams: <strong>aurologic GmbH (AS30823)</strong> and <strong>Pfcloud UG (AS51396)</strong>. Recorded Future's August 2025 BGP snapshot shows Railnet originating nineteen IPv4 prefixes with roughly 95% routed via aurologic and a single /24 via Pfcloud UG. aurologic (formed 2023 from Combahton GmbH's fastpipe.io network, operating from Tornado Datacenter GmbH in Langen, Germany) is documented by Recorded Future / Insikt Group as a central enabler for multiple Russia-linked BPH networks, including the sanctioned Aeza Group, Femo IT Solutions, Global-Data System, and Railnet itself. <span class="ref">[3]</span></p>
+    <div class="callout warning">
+      <div class="callout-label">Upstream De-Peering: None Documented (Required Subsection)</div>
+      <p>No upstream de-peering event specific to Virtualine, Railnet, or OMEGATECH has been documented in available sources. aurologic continued to provide connectivity to Railnet and to the fraudulently registered AS209800 through at least late 2025, and continued serving the US/UK-sanctioned Aeza International over the same period, indicating no de-peering has yet occurred against Virtualine-linked networks through this upstream. This is a key structural observation: the German upstream remains the un-actioned chokepoint. <span class="ref">[3]</span></p>
+    </div>
+
+    <h3>Resilience Techniques</h3>
+    <p>The cluster exhibits classic BPH resilience: rapid ASN churn (Virtualine to OMEGATECH to AS209800 fronts), prefix hopping between related networks (88.210.63.0/24 moved to FDN3, June 2025), acquisition of fresh IPv4 space through poorly-vetting Turkey- and US-based IP brokers, fraudulent AS-level impersonation of a legitimate company (metaspinner), and reliance on abuse-tolerant German upstreams to maintain connectivity despite persistent blocklisting. <span class="ref">[2][3][4]</span></p>
+
+    <h3>Hosted Activity Types</h3>
+    <table class="data-table">
+      <thead><tr><th>Category</th><th>Evidence Basis</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Ransomware C2 (Lynx)</td><td>DFIR Report / Intrinsec attribute a specific IP to Railnet LLC/Virtualine in a Lynx case (195.211.190[.]189)</td><td><span class="badge credible">Credible</span> (IP not re-verified this pass)</td></tr>
+        <tr><td>Ransomware initial access (Black Basta, Cactus, RansomHub)</td><td>Attributed via related Global Connectivity Solutions LLP / Railnet ecosystem enabling brute-force initial access</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Malspam / JS-backdoor C2 (BEC/EAC)</td><td>Intrinsec May 2026 report; OMEGATECH hosting C2 (e.g., 91.92.243[.]79, 158.94.211[.]76)</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+        <tr><td>DCRat / stealer C2 and phishing</td><td>abuse.ch ThreatFox entry on OMEGATECH AS202412 (91.92.240[.]117:80); 35+ Apple iCloud/Find My phishing domains</td><td><span class="badge credible">Credible</span> (single tracker)</td></tr>
+        <tr><td>Multi-family botnet/RAT hosting</td><td>BreakGlass Intelligence: one OMEGATECH subnet hosting 67 C2 servers across 16 malware families (Remcos, AsyncRAT, Amadey, Latrodectus, XWorm, Stealc, DCRat, LOBSHOT, Mirai, Bashlite, Quasar, ClearFake, SectopRAT, and others)</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>DDoS / loader botnet (Kamasers)</td><td>C2 on Railnet ASN; April 2026; Latrodectus (TA577) links; targeting CH, DE, UA, PL, FR</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>SSL VPN/RDP brute-force initial access</td><td>Via inherited prefix 88.210.63.0/24 (Virtualine to FDN3); peak July 6-8, 2025</td><td><span class="badge credible">Credible</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Blocklist Standing</h3>
+    <table class="data-table">
+      <thead><tr><th>Blocklist</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Spamhaus SBL / ASN-DROP</td><td><span class="bl-listed">LISTED</span></td><td>AS214943 (RAILNET) flagged "Blocked - under control of cyber-criminals"; AS202412 (OMEGATECH) flagged as a Virtualine front; AS209800 reported by Spamhaus as an AS-level impersonation</td></tr>
+        <tr><td>abuse.ch ThreatFox</td><td><span class="bl-listed">LISTED (IOC-level)</span></td><td>Direct IOC entries for OMEGATECH IPs, e.g., 91.92.240[.]117:80 (DCRat C2)</td></tr>
+        <tr><td>abuse.ch URLhaus</td><td><span class="bl-listed">LISTED</span></td><td>Malware distribution URLs recorded for AS214943 (RAILNET)</td></tr>
+        <tr><td>abuse.ch Feodo Tracker</td><td><span class="bl-unknown">Not located</span></td><td>No specific Feodo entry tied to Virtualine ranges located this pass</td></tr>
+        <tr><td>Firehol Level 1/2</td><td><span class="bl-unknown">Not verified</span></td><td>No direct citation located; verify via direct Firehol dataset query if required</td></tr>
+        <tr><td>Delisting attempts</td><td><span class="bl-unknown">None documented</span></td><td>Consistent with "abuse ignored" model rather than compliance-seeking behavior</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Known Weaknesses</h3>
+    <p>The most significant documented weakness is the traceable Kentucky/Israel shell-company chain (Railnet LLC / White Label Networks LLC), which gives US and allied researchers a concrete legal entity and jurisdiction to pursue, unlike fully offshore-registered peers. Kentucky's public business-entity search portal makes registered-agent and filing history directly queryable without subpoena. The second is the ~95% dependency on a single German upstream (aurologic), a de-peering chokepoint that has not yet been actioned. The third, newly evident, is that the AS209800 acquisition relied on fraudulent impersonation of a real company (metaspinner net GmbH), which provided that company documentary grounds to disavow the AS and creates a fraud-based enforcement angle. <span class="ref">[2][3][4]</span></p>
+  </section>
+
+  <!-- SECTION 05 -->
+  <section id="financial">
+    <div class="section-label">Section 05</div>
+    <h2>Financial Infrastructure</h2>
+
+    <h3>Payment Methods</h3>
+    <p>Virtualine advertises cryptocurrency support and specifically markets a dedicated "Monero Cloud Server" product line "customized for Monero," a privacy coin favored for its non-traceable properties, from $7.49/month. This is an advertised (not inferred) financial feature aimed at the criminal-market segment. <span class="ref">[Perplexity/storefront]</span></p>
+
+    <h3>Wallet Clusters and On-Chain Attribution</h3>
+    <div class="callout warning">
+      <div class="callout-label">No Published On-Chain Attribution - Material Gap</div>
+      <p>No published on-chain wallet clusters or TRM Labs / Chainalysis / Elliptic entity-specific attributions for Virtualine were located in available reporting. No documented three-phase laundering pattern (acquisition / layering / extraction) specific to Virtualine's payment infrastructure has been publicly disclosed. These are material gaps versus the schema's financial-infrastructure requirements and should be pursued with proprietary blockchain-intelligence tooling; open-source reporting does not extend to this level of financial forensic detail for this provider. The Monero-centric product design is itself an intelligence obstacle: it is engineered to defeat exactly the on-chain tracing that produced attributions for BTC/TRON-based peers such as Aeza.</p>
+    </div>
+
+    <h3>Sanctions and Risk Ratings</h3>
+    <p><span class="badge inference">NOT SANCTIONED</span> No OFAC SDN, EU Official Journal, UK FCDO, or Australian designation has been identified against Virtualine, Railnet LLC, White Label Networks LLC, or OMEGATECH as of July 2026. No VASP-level risk designation was located. The July 13, 2026 US/OFAC action targeting bulletproof/VPN enablers (FirstVPN/1VPNS and associated individuals) did <strong>not</strong> include Virtualine or Railnet. This unsanctioned status is consistent with the query framing and is a defining contrast with sanctioned peers. <span class="ref">[9][10][11]</span></p>
+  </section>
+
+  <!-- SECTION 06 -->
+  <section id="clientele">
+    <div class="section-label">Section 06</div>
+    <h2>Client Profile and Hosted Operations</h2>
+
+    <h3>Crimeware Verticals by Evidence Tier</h3>
+    <table class="data-table">
+      <thead><tr><th>Client Category</th><th>Evidence Basis</th><th>Classification</th></tr></thead>
+      <tbody>
+        <tr><td>Ransomware (Lynx)</td><td>Direct IP attribution (195.211.190[.]189) to Railnet LLC/Virtualine in a DFIR Report incident writeup</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Ransomware initial access (Black Basta, Cactus, RansomHub)</td><td>Attributed via associated Global Connectivity Solutions LLP / Railnet ecosystem in Intrinsec 2025 UAC report</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Russian-LE-linked mercenary actor (UAC-0050 / "DaVinci Group")</td><td>Direct hosting of spam infrastructure on Virtualine AS215789/AS214943; CERT-UA assesses UAC-0050 as linked to Russian law enforcement</td><td><span class="badge confirmed">Confirmed</span> (hosting)</td></tr>
+        <tr><td>Financially motivated cybercrime (UAC-0006 / SmokeLoader)</td><td>Indirect, via related Global Connectivity Solutions LLP infrastructure sharing upstreams with the broader cluster</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>Botnet/RAT operators (16 malware families on one OMEGATECH subnet)</td><td>Direct technical finding (BreakGlass Intelligence)</td><td><span class="badge credible">Credible</span></td></tr>
+        <tr><td>BEC/EAC malspam operators (JS backdoor)</td><td>Direct technical finding (Intrinsec, March-May 2026)</td><td><span class="badge confirmed">Confirmed</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Client / Target Geography</h3>
+    <div class="callout info">
+      <div class="callout-label">Anti-CIS-Exclusion Signal</div>
+      <p>The March-April 2026 malspam campaigns hosted on OMEGATECH/GHOSTYNETWORKS targeted organizations across CIS and non-CIS states alike (Ukraine, Russia, Poland, Germany, Transnistria), and Intrinsec explicitly flags this as evidence <strong>against</strong> a CIS-based operator, since CIS-origin actors typically avoid targeting CIS member states. This departs from the classic "CIS exclusion zone" pattern and should be treated as a specific analytical nuance for these particular campaigns rather than a settled attribution of the provider's own location. <span class="ref">[2]</span></p>
+    </div>
+
+    <h3>Notable Hosted Cases</h3>
+    <ul>
+      <li><strong>Lynx ransomware:</strong> Railnet LLC/Virtualine infrastructure (195.211.190[.]189) cited in a DFIR Report incident writeup as the hosting layer for threat-actor infrastructure. <span class="badge credible">Credible</span> (IP not re-verified this pass).</li>
+      <li><strong>Kamasers DDoS/loader botnet (April 2026):</strong> C2 on a Railnet ASN; loader capability used toward ransomware deployment; Latrodectus (TA577) associations; targeting Switzerland, Germany, Ukraine, Poland, France. <span class="badge credible">Credible</span>.</li>
+      <li><strong>TeamPCP supply-chain attacks (LiteLLM PyPI trojanization, March 2026):</strong> hosted on the closely associated but <strong>distinct</strong> GHOSTYNETWORKS (C2 domain litellm[.]cloud), not confirmed as Virtualine directly. Included here only to mark the boundary between the two networks. <span class="ref">[2]</span></li>
+    </ul>
+  </section>
+
+  <!-- SECTION 07 -->
+  <section id="nexus">
+    <div class="section-label">Section 07</div>
+    <h2>State Nexus Assessment</h2>
+
+    <div class="jurisdiction-grid">
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Entity Registration Jurisdiction</div>
+        <div class="jurisdiction-value">US (Kentucky) + Seychelles</div>
+        <div class="jurisdiction-detail">Railnet LLC (Kentucky, US), registered agent White Label Networks LLC (Israel); OMEGATECH front associated with Seychelles; AS209800 via fraudulent DE impersonation. No confirmed registration for the Virtualine Technologies brand itself.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Infrastructure Hosting Jurisdiction</div>
+        <div class="jurisdiction-value">Germany (upstream)</div>
+        <div class="jurisdiction-detail">European footprint routed via aurologic GmbH (Langen, DE) and Pfcloud UG (DE). ASN records span Seychelles/GB. No confirmed self-operated Russian datacenter documented.</div>
+      </div>
+      <div class="jurisdiction-card">
+        <div class="jurisdiction-label">Assessed Operator Location</div>
+        <div class="jurisdiction-value">Russia (assessed)</div>
+        <div class="jurisdiction-detail">Described across vendor reporting as Russia-based/Russia-linked and advertised on Russian-language forums; specific operator identity and physical location unknown.</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">Assessed Tier: NONE (No Confirmed State Nexus) - with client-side caveat</div>
+      <p>Available reporting does not establish direct evidence of Russian state tasking, coordination, or protection specific to Virtualine. The relationship documented is a commercial hosting-customer dynamic consistent with a tolerated criminal marketplace, not probable operational cooperation or direct control. Overall confidence: <strong>MODERATE</strong>.</p>
+    </div>
+
+    <h4>Expected Indicators If Nexus Existed (and Their Absence)</h4>
+    <ul>
+      <li><strong>No sanctions designation citing state-directed activity:</strong> Virtualine has no OFAC/EU/UK designation at all, let alone one alleging state tasking (contrast Aeza, sanctioned partly for hosting the Kremlin-directed Social Design Agency).</li>
+      <li><strong>No documented law-enforcement immunity specific to Virtualine operators:</strong> because no operator is named, no pattern of selective non-enforcement can be attributed to the individual level.</li>
+      <li><strong>No direct financial or personnel links to Russian intelligence services</strong> appear in the sourced material.</li>
+      <li><strong>Behavioral counter-indicator:</strong> the March-April 2026 campaigns hosted on the cluster targeted CIS states (including Russia), which is atypical of state-protected Russian actors and argues against a protected-asset reading of at least those campaigns.</li>
+    </ul>
+
+    <h4>Client-Side Caveat (Not Provider-Side Evidence)</h4>
+    <p>Virtualine/Railnet infrastructure hosted spam campaigns for <strong>UAC-0050</strong>, which CERT-UA assesses with high confidence to be "a mercenary group associated with Russian law enforcement agencies," reportedly operating under an entity called "DaVinci Group" established shortly before the 2022 invasion. This establishes that a Virtualine <strong>client</strong> has an assessed state-security connection, but it is a statement about the client's affiliations, not evidence that Virtualine itself receives state tasking, protection, or coordination. It is flagged as a data point warranting continued monitoring, not a finding that escalates the provider's tier. <span class="ref">[1]</span></p>
+
+    <table class="data-table">
+      <thead><tr><th>Nexus Tier</th><th>Assessment</th></tr></thead>
+      <tbody>
+        <tr><td>Direct Control</td><td><span class="bl-unknown">Rejected</span> - no evidence</td></tr>
+        <tr><td>Probable Cooperation</td><td><span class="bl-unknown">Rejected</span> - no provider-level tasking/protection evidence</td></tr>
+        <tr><td>Tolerated Safe Harbor</td><td><span class="bl-probable">Possible baseline</span> - plausible given assessed Russia location, but not evidenced at operator level (operator unnamed)</td></tr>
+        <tr><td>No Nexus</td><td><span class="bl-listed">ASSESSED</span> - best-supported tier at the provider level on current evidence; UAC-0050 client relationship monitored</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SECTION 08 -->
+  <section id="disruption">
+    <div class="section-label">Section 08</div>
+    <h2>Law Enforcement and Regulatory Response</h2>
+
+    <div class="callout danger">
+      <div class="callout-label">No Enforcement Action To Date</div>
+      <p><span class="badge confirmed">Confirmed (negative finding)</span> As of July 2026, there is no known arrest, indictment, seizure, or sanctions designation against Virtualine, Railnet LLC, White Label Networks LLC, OMEGATECH, or the upstream aurologic GmbH by any authority. Virtualine remains an <strong>un-actioned</strong> node, in sharp contrast to sanctioned peers (Aeza, ZServers) in the same ecosystem. <span class="ref">[9][10][11]</span></p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-date">March 2025</div><div class="timeline-text">Intrinsec publishes UAC infrastructure report naming Railnet LLC (AS214943) and Virtualine Technologies as hosting UAC-0050/UAC-0006 spam infrastructure. GBHackers coverage identifies "Railnet LLC operates under Virtualine Technologies, a Russia-based bulletproof hosting provider." <span class="ref">[1][5]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">April 25, 2025</div><div class="timeline-text">AS209800 created; announced exclusively through aurologic. Later assessed as a fraudulent impersonation of metaspinner net GmbH by actors affiliated with Virtualine. <span class="ref">[3]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">June 2025</div><div class="timeline-text">Virtualine prefix 88.210.63.0/24 (AS214940/AS214943) moves to FDN3 (AS211736); brute-force initial-access activity peaks July 6-8, 2025. <span class="ref">[2]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">September 2025</div><div class="timeline-text">Spamhaus publicly reports Virtualine Technologies expanding to AS209800 via Turkey- and US-based IP brokers with poor vetting. <span class="ref">[4]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">November 6, 2025</div><div class="timeline-text">Recorded Future / Insikt Group publishes the aurologic GmbH report, naming Virtualine Technologies and Railnet LLC as aurologic-dependent threat activity enablers; documents Railnet's 19 prefixes (~95% via aurologic). <span class="ref">[3]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">November 10, 2025</div><div class="timeline-text">metaspinner net GmbH provides evidence confirming its identity was fraudulently used to register AS209800; prefixes later re-described as "LANEDONET." <span class="ref">[3]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">March-May 2026</div><div class="timeline-text">Intrinsec attributes OMEGATECH (AS202412) to Virtualine; documents 642,001 honeypot hits in March 2026 and live JS-backdoor C2 hosting. <span class="ref">[2]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">April 2026</div><div class="timeline-text">Kamasers DDoS/loader botnet C2 observed on a Railnet ASN. <span class="ref">[8]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">July 13, 2026</div><div class="timeline-text">OFAC sanctions FirstVPN/1VPNS and associated individuals (a separate BPH/VPN enabler). Virtualine and Railnet are NOT included. <span class="ref">[11]</span></div></div>
+      <div class="timeline-item"><div class="timeline-date">As of July 2026</div><div class="timeline-text">No arrest, indictment, seizure, or sanctions action specific to Virtualine, Railnet, or aurologic identified in open sources. Status assessed Active/un-actioned.</div></div>
+    </div>
+
+    <h3>Post-Disruption Client Migration</h3>
+    <p>No disruption event has occurred, so no post-disruption client migration applies. The observable pattern is instead offensive-side infrastructure churn (front rotation and fresh prefix acquisition) driven by blocklisting pressure rather than by any enforcement action. <span class="ref">[2][3]</span></p>
+  </section>
+
+  <!-- SECTION 09 -->
+  <section id="connected">
+    <div class="section-label">Section 09</div>
+    <h2>Connected Groups and Ecosystem Relationships</h2>
+    <p>Each connected-entity claim carries two independent confidence tiers: Tier 1 (infrastructure relationship: did Virtualine/Railnet host or route their infrastructure?) and Tier 2 (operational relationship: did the Virtualine operator know the entity's identity or coordinate operationally?). Given Virtualine's no-KYC, multi-brand-backbone model and its entirely unnamed operator, Tier 2 assessments are inference-level throughout: with no identified operator, operator-level knowledge cannot be evidenced for any client.</p>
+
+    <div class="connected-entity">
+      <div class="entity-name">aurologic GmbH (AS30823) - Upstream</div>
+      <div class="entity-meta">German ISP; primary upstream carrying ~95% of Railnet traffic</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row"><span class="tier-label">Tier 1 - Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+        <div class="tier-row" style="margin-top:5px"><span class="tier-label">Tier 2 - Operational Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+      </div>
+      <div class="entity-text">Tier 1 CONFIRMED: Recorded Future BGP data shows ~95% of Railnet's prefixes routed via aurologic; AS209800 announced exclusively through aurologic. Tier 2 INFERENCE: aurologic is documented as tolerating abusive downstreams across many BPH clients; whether it knowingly coordinates with Virtualine specifically (versus providing willfully-blind transit) is not evidenced. This is the single most important ecosystem relationship and the primary de-peering leverage point.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: Recorded Future/Insikt, Spamhaus</span>
+        <span class="vendor-tag">Not assessed: TRM, Chainalysis, Elliptic (no formal Virtualine assessment)</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">OMEGATECH-AS (AS202412)</div>
+      <div class="entity-meta">Seychelles-associated front; domain virtualine.org</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row"><span class="tier-label">Tier 1 - Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+        <div class="tier-row" style="margin-top:5px"><span class="tier-label">Tier 2 - Operational Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+      </div>
+      <div class="entity-text">Tier 1 and Tier 2 CONFIRMED: Spamhaus attributes OMEGATECH as "just another network created by hosting provider Virtualine," and the domain virtualine.org ties the ASN to the brand. This is not a client but a same-operator front; the operational relationship is definitional rather than a separate coordination question.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: Spamhaus, Intrinsec</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">DripHosting; RetryHost (downstream brands)</div>
+      <div class="entity-meta">Sub-allocations (Euro Crypt EOOD / Telco Power Ltd) routed via Railnet</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row"><span class="tier-label">Tier 1 - Infrastructure Relationship:</span><span class="badge confirmed">Confirmed</span></div>
+        <div class="tier-row" style="margin-top:5px"><span class="tier-label">Tier 2 - Operational Relationship:</span><span class="badge credible">Credible</span></div>
+      </div>
+      <div class="entity-text">Tier 1 CONFIRMED: RIPE records (via Recorded Future) show both routed through Railnet LLC. Tier 2 CREDIBLE: routing through the same backbone implies a reseller/sub-brand relationship, but whether these are Virtualine-owned or independent customers of the Railnet backbone is not fully resolved. <span class="badge single-source">[SINGLE SOURCE]</span></div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: Recorded Future/Insikt</span>
+        <span class="vendor-tag ss">Single source</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">GHOSTYNETWORKS (AS205759) / OPTIBOUNCE / AnonRDP</div>
+      <div class="entity-meta">Parallel Kentucky-registered BPH; organizer Daniel Mishayev</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row"><span class="tier-label">Tier 1 - Infrastructure Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+        <div class="tier-row" style="margin-top:5px"><span class="tier-label">Tier 2 - Operational Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+      </div>
+      <div class="entity-text">Both tiers INFERENCE / not established as Virtualine-owned. GHOSTYNETWORKS co-hosts the same malspam campaigns and shares upstreams, but Intrinsec assesses it as a rebrand of OPTIBOUNCE (linked to AnonRDP), a separate operation. Its named organizer Daniel Mishayev is NOT confirmed connected to Virtualine. Included to mark the boundary and prevent conflation. <span class="badge single-source">[Distinct entity]</span></div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating (as distinct): Intrinsec</span>
+        <span class="vendor-tag ss">Do not merge with Virtualine</span>
+      </div>
+    </div>
+
+    <div class="connected-entity">
+      <div class="entity-name">FDN3 (AS211736) / Global Connectivity Solutions LLP / Zservers cluster</div>
+      <div class="entity-meta">Ukrainian-Seychelles BPH cluster; inherited a Virtualine prefix</div>
+      <div class="entity-confidence">
+        <div class="entity-confidence-label">Two-Tier Confidence Assessment</div>
+        <div class="tier-row"><span class="tier-label">Tier 1 - Infrastructure Relationship:</span><span class="badge credible">Credible</span></div>
+        <div class="tier-row" style="margin-top:5px"><span class="tier-label">Tier 2 - Operational Relationship:</span><span class="badge inference">Analyst Inference</span></div>
+      </div>
+      <div class="entity-text">Tier 1 CREDIBLE: FDN3 inherited Virtualine's prefix 88.210.63.0/24 in June 2025, an infrastructure hand-off. Tier 2 INFERENCE: prefix transfer does not by itself establish shared ownership or operational coordination; Intrinsec treats this cluster as distinct from Virtualine, with overlap at the infrastructure/upstream layer only.</div>
+      <div class="vendor-tags">
+        <span class="vendor-tag cor">Corroborating: Intrinsec</span>
+        <span class="vendor-tag ss">Do not merge with Virtualine</span>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-label">Vendor Coverage Note</div>
+      <p>Corroborating vendors on the core Virtualine/Railnet/OMEGATECH attribution: Intrinsec, Spamhaus, Recorded Future/Insikt Group, and (secondary) GBHackers/BreakGlass Intelligence. No vendor has published a formal assessment that contradicts the Virtualine-Railnet-OMEGATECH linkage. TRM Labs, Chainalysis, and Elliptic have not published Virtualine-specific on-chain assessments (a financial-attribution gap, Section 05). No named-operator attribution exists from any vendor.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section id="status">
+    <div class="section-label">Section 10</div>
+    <h2>Trajectory Assessment</h2>
+
+    <h3>Infrastructure Churn</h3>
+    <p>Churn is assessed HIGH and deliberate. Within roughly one year the cluster rotated through Virtualine (AS215789/AS214940) to OMEGATECH (AS202412) to the fraudulently registered AS209800, moved prefix 88.210.63.0/24 to FDN3, and continued acquiring fresh IPv4 space through poorly-vetting Turkey- and US-based IP brokers. Churn is driven by blocklisting pressure (Spamhaus ASN-DROP) rather than by any enforcement action. <span class="ref">[2][3][4]</span></p>
+
+    <h3>Market Position</h3>
+    <p>Virtualine is an active, mid-tier but growing BPH operator with an industrial-scale abuse footprint (642,001 OMEGATECH honeypot hits in March 2026) and a diversified crimeware portfolio (ransomware C2, malspam, multi-family botnet/RAT hosting, DDoS/loader, phishing). Recorded Future's placement of Virtualine Technologies alongside the sanctioned Aeza Group in the aurologic-dependent TAE cohort indicates it is treated by top-tier vendors as a significant node, not a fringe reseller. <span class="ref">[2][3]</span></p>
+
+    <h3>Disruption History</h3>
+    <p>No successful disruption has occurred. The only friction points are blocklisting (Spamhaus/abuse.ch), which the operator absorbs via churn, and the metaspinner company's public disavowal of AS209800, which created reputational/fraud exposure but no takedown. The German upstream aurologic has not de-peered any Virtualine-linked network despite doing business with US/UK-sanctioned Aeza over the same period. <span class="ref">[3][4]</span></p>
+
+    <div class="callout warning">
+      <div class="callout-label">Assessed Trajectory: Active and Expanding, Un-Actioned</div>
+      <p>Virtualine is assessed as active and, on the AS209800 evidence, expanding rather than contracting. The most likely near-term trajectory is continued operation with periodic ASN/prefix rotation and fresh broker-sourced IP space. The two highest-value structural leverage points are (1) the traceable Kentucky/Israel corporate front (Railnet LLC / White Label Networks LLC), which offers a US-jurisdiction disclosure and process-service path absent for fully-offshore peers, and (2) the ~95% dependency on German upstream aurologic GmbH, an un-actioned de-peering chokepoint. The fraudulent metaspinner registration adds a third, fraud-based enforcement angle with a cooperative victim company already on record.</p>
+    </div>
+
+    <h3>Mandatory Intelligence Gaps</h3>
+    <div class="gap-list">
+      <div class="gap-item"><strong>Named operator identity</strong><p>No individual operator, administrator, or handle has been attributed to Virtualine/Railnet. The controlling operator behind the Railnet LLC / White Label Networks LLC chain is unnamed in open source. Highest-priority gap.</p></div>
+      <div class="gap-item"><strong>On-chain / financial attribution</strong><p>No TRM/Chainalysis/Elliptic entity-specific wallet clusters or laundering-model documentation for Virtualine; Monero-centric design actively frustrates tracing.</p></div>
+      <div class="gap-item"><strong>Railnet LLC corporate filing detail</strong><p>Kentucky SoS organizer/officer detail behind Railnet LLC and the specifics of the White Label Networks LLC agency relationship are not captured in open reporting (public-record pull recommended).</p></div>
+      <div class="gap-item"><strong>Downstream reseller scope</strong><p>Beyond DripHosting and RetryHost, the full set of brands routed through the Railnet backbone and their ownership relationship to Virtualine are unresolved.</p></div>
+      <div class="gap-item"><strong>Firehol / Feodo standing</strong><p>Firehol Level 1/2 and abuse.ch Feodo standing for the Virtualine ASNs were not located this pass; direct dataset queries needed.</p></div>
+      <div class="gap-item"><strong>Specific IOC re-verification</strong><p>Several IP-level IOCs carried from the primary research (e.g., 195.211.190[.]189 for Lynx; 91.92.240[.]117 DCRat C2) were not independently re-verified in this pass and are labeled Credible pending direct tracker confirmation.</p></div>
+      <div class="gap-item"><strong>Self-operated datacenter footprint</strong><p>Whether Virtualine controls any physical hosting (versus reselling broker-sourced IP over German upstreams) is undocumented.</p></div>
+    </div>
+  </section>
+
+  <!-- RECENT REPORTING -->
+  <section id="recent-reporting">
+    <div class="section-label">Recent Reporting</div>
+    <h2>Recent Reporting</h2>
+
+    <h3>Follow-On Verification (July 2026)</h3>
+    <div class="callout info">
+      <div class="callout-label">Verification Pass Summary</div>
+      <p>This profile was built from a primary research document plus a July 2026 follow-on pass. Verified against primary sources: the Virtualine-Railnet-OMEGATECH linkage (Intrinsec May 2026; Spamhaus; Recorded Future Nov 2025); Railnet's ~19 prefixes and ~95% aurologic dependency (Recorded Future BGP data, Aug 28, 2025); the Virtualine Technologies sub-allocation routed through Railnet and the DripHosting/RetryHost downstream brands (RIPE via Recorded Future); the "Railnet LLC operates under Virtualine Technologies, a Russia-based bulletproof hosting provider" characterization (GBHackers, Mar 2025); and the unsanctioned status (no OFAC/EU/UK/AU designation located).</p>
+    </div>
+    <div class="callout warning">
+      <div class="callout-label">Post-Cutoff Development: AS209800 / metaspinner Impersonation</div>
+      <p>A significant development after the primary research cutoff: Spamhaus (Sept 2025) and Recorded Future (Nov 2025) documented Virtualine Technologies expanding to AS209800 by fraudulently impersonating a legitimate German company, metaspinner net GmbH. metaspinner provided evidence on November 10, 2025 confirming its identity was unlawfully used; the prefixes were later re-described as "LANEDONET." This adds a fraud-based enforcement angle and confirms continued, active expansion.</p>
+    </div>
+    <div class="callout warning">
+      <div class="callout-label">No Enforcement Escalation Identified</div>
+      <p>No arrest, indictment, seizure, or sanctions designation specific to Virtualine, Railnet LLC, White Label Networks LLC, OMEGATECH, or aurologic GmbH was identified in open sources through July 2026. The July 13, 2026 OFAC action (FirstVPN/1VPNS) targeted a different enabler and did not name Virtualine. The un-actioned status is the single most notable standing anomaly.</p>
+    </div>
+    <div class="callout danger">
+      <div class="callout-label">Single-Source and Unverified-IOC Flags</div>
+      <p>The DripHosting/RetryHost downstream-brand relationship rests on a single vendor's RIPE reading (Recorded Future). Several IP-level IOCs carried from the primary research were not re-verified this pass and are labeled Credible. No named-operator attribution exists from any source; the operator hero module is intentionally omitted for that reason.</p>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <div class="section-label">Sources</div>
+    <h2>Sources</h2>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Citations renumbered for this profile from verified follow-on research. The primary research document (Perplexity Deep Research, BPH_Research_Template_v2) supplied the initial structure and several IOCs; where a claim rests only on that document and was not independently re-verified, it is marked in-line rather than given a numbered web source.</p>
+    <div class="sources-list">
+      <div class="source-item"><div class="source-num">[1]</div><div class="source-text"><a href="https://www.intrinsec.com/wp-content/uploads/2025/03/TLP-CLEAR-From-espionage-to-PsyOps-Tracking-operations-and-infrastructure-of-UACs-in-2025-EN-1.pdf" target="_blank">From Espionage to PsyOps: Tracking Operations and Infrastructure of UACs in 2025</a> - Intrinsec, March 2025</div></div>
+      <div class="source-item"><div class="source-num">[2]</div><div class="source-text"><a href="https://www.intrinsec.com/en/pivoting-on-a-malspam-infrastructure-delivering-js-malware-backed-by-bulletproof-networks/" target="_blank">Pivoting on a Malspam Infrastructure Delivering JS Malware Backed by Bulletproof Networks</a> - Intrinsec, May 26, 2026</div></div>
+      <div class="source-item"><div class="source-num">[3]</div><div class="source-text"><a href="https://www.recordedfuture.com/research/malicious-infrastructure-finds-stability-with-aurologic-gmbh" target="_blank">Malicious Infrastructure Finds Stability with aurologic GmbH</a> - Recorded Future / Insikt Group, November 6, 2025</div></div>
+      <div class="source-item"><div class="source-num">[4]</div><div class="source-text"><a href="https://infosec.exchange/@spamhaus/115225449245944633" target="_blank">Virtualine Technologies Expands to AS209800 (metaspinner impersonation)</a> - The Spamhaus Project, September 2025</div></div>
+      <div class="source-item"><div class="source-num">[5]</div><div class="source-text"><a href="https://gbhackers.com/russian-hackers-leverage-bulletproof-hosting/" target="_blank">Russian Hackers Leverage Bulletproof Hosting to Shift Network Infrastructure</a> - GBHackers, March 31, 2025</div></div>
+      <div class="source-item"><div class="source-num">[6]</div><div class="source-text"><a href="https://gbhackers.com/ghostynetworks-and-omegatech/" target="_blank">Hackers Host JS Malware on GHOSTYNETWORKS and OMEGATECH</a> - GBHackers, 2026</div></div>
+      <div class="source-item"><div class="source-num">[7]</div><div class="source-text"><a href="https://bgpview.io/asn/214943" target="_blank">AS214943 Railnet LLC - BGP Network Information</a> - BGPView</div></div>
+      <div class="source-item"><div class="source-num">[8]</div><div class="source-text"><a href="https://blog.rankiteo.com/the1777393755-virtualine-cyber-attack-april-2026/" target="_blank">Virtualine: Kamasers DDoS Botnet with Loader Capabilities</a> - Rankiteo, April 2026</div></div>
+      <div class="source-item"><div class="source-num">[9]</div><div class="source-text"><a href="https://sanctionssearch.ofac.treas.gov/" target="_blank">OFAC Sanctions List Search (no Virtualine/Railnet/OMEGATECH designation as of July 2026)</a> - U.S. Department of the Treasury / OFAC</div></div>
+      <div class="source-item"><div class="source-num">[10]</div><div class="source-text"><a href="https://www.gov.uk/government/publications/financial-sanctions-consolidated-list-of-targets" target="_blank">UK Consolidated List of Financial Sanctions Targets (no Virtualine designation as of July 2026)</a> - UK OFSI</div></div>
+      <div class="source-item"><div class="source-num">[11]</div><div class="source-text"><a href="https://home.treasury.gov/news/press-releases/sb0559" target="_blank">Treasury Sanctions Malware and Infrastructure Providers (FirstVPN/1VPNS; Virtualine not included)</a> - OFAC, July 13, 2026</div></div>
+      <div class="source-item"><div class="source-num">[12]</div><div class="source-text"><a href="https://cybersecuritynews.com/hackers-use-ghostynetworks-and-omegatech/" target="_blank">Hackers Use GHOSTYNETWORKS and OMEGATECH to Host JS Malware Infrastructure</a> - Cyber Security News, 2026</div></div>
+      <div class="source-item"><div class="source-num">[13]</div><div class="source-text"><a href="https://gbhackers.com/german-isp-aurologic/" target="_blank">German ISP aurologic GmbH Identified as Key Hub for Malicious Hosting</a> - GBHackers, November 2025</div></div>
+      <div class="source-item"><div class="source-num">[P]</div><div class="source-text">Primary research document (Perplexity Deep Research, BPH_Research_Template_v2) - source for the verbatim nohide.space forum ad, virtualine.net storefront/pricing details, and several IP-level IOCs; single-source items and un-reverified IOCs flagged in-line.</div></div>
+    </div>
+  </section>
+
+</main>
+<script src="../assets/node-library.js?v=3"></script>
+</body>
+</html>
