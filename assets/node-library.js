@@ -51,6 +51,7 @@
       ['dedbropro', 'DEDBROPRO'],
       ['medialand', 'Media Land / Yalishanda'],
       ['stark', 'Stark Industries / THE.Hosting'],
+      ['virtualine', 'Virtualine'],
       ['zservers', 'ZServers / XHost']
     ]}
   ];
