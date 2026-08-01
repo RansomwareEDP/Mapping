@@ -212,7 +212,7 @@
     <a href="#sources" class="nav-link"><span class="nav-num"></span> Sources</a>
   </nav>
   <div class="sidebar-footer">
-    <div class="sidebar-meta">EDP // BPH Library<br>Analysis v1 // July 2026<br>Author: Reno</div>
+    <div class="sidebar-meta">EDP // Cross-Cutting Analysis<br>Analysis v1 // July 2026<br>Author: Reno</div>
   </div>
 </nav>
 
@@ -222,7 +222,7 @@
   <div class="profile-header">
     <div class="profile-breadcrumb">
       <a href="https://therenoproject.org/">EDP</a> /
-      <a href="https://research.therenoproject.org/bphs/">BPH Providers</a> /
+      <a href="https://research.therenoproject.org/">Research</a> /
       The Enablement Layer
     </div>
     <div class="profile-title-row">
@@ -245,7 +245,7 @@
       <div class="kpi-card"><div class="kpi-value danger">0</div><div class="kpi-label">RIR Revocations for Sanctions</div></div>
       <div class="kpi-card"><div class="kpi-value degraded">24 hrs</div><div class="kpi-label">OFAC to Reallocation (Aeza)</div></div>
       <div class="kpi-card"><div class="kpi-value degraded">2008</div><div class="kpi-label">Last Full BPH De-peering</div></div>
-      <div class="kpi-card"><div class="kpi-value accent">4 of 6</div><div class="kpi-label">Profiles with Western Upstream</div></div>
+      <div class="kpi-card"><div class="kpi-value accent"><span data-bph="count-fraction">5 of 7</span></div><div class="kpi-label">Profiles with Western Upstream</div></div>
     </div>
 
     <p>Every bulletproof hosting provider profiled in this library depends on a chain of commercial services it does not own: transit connectivity, IP address allocations, physical rack space, corporate registration, and payment rails. Each link in that chain is operated by a company that is, in most cases, entirely lawful, frequently European, and under no legal obligation to look at what its customer is doing.</p>
@@ -288,7 +288,7 @@
         </tr>
         <tr>
           <td>The upstream lever is not available against every provider</td>
-          <td>Four of six published profiles have at least one upstream inside an EU, UK, or US jurisdiction. Media Land and Bearhost/PROSPERO route through Russian carriers and, in the Bearhost case, a Russian security vendor's ASN, placing them outside the reach of Western transit pressure.</td>
+          <td><span data-bph="count-words">Five of seven</span> published profiles have at least one upstream inside an EU, UK, or US jurisdiction, and two of them depend on the same German carrier. Media Land and Bearhost/PROSPERO route through Russian carriers and, in the Bearhost case, a Russian security vendor's ASN, placing them outside the reach of Western transit pressure.</td>
           <td><span class="badge credible">Credible</span></td>
         </tr>
         <tr>
@@ -301,12 +301,14 @@
 
     <table class="attr-table">
       <tr><th>Scope</th><td>Commercial and governance infrastructure sitting above bulletproof hosting providers. Excludes state protection, which is covered per-profile in Section 07.</td></tr>
-      <tr><th>Providers referenced</th><td>Aeza Group, Bearhost / PROSPERO / PROTON66, DEDBROPRO, Media Land, Stark Industries / THE.Hosting, ZServers / XHost</td></tr>
+      <tr><th>Providers referenced</th><td><span data-bph="provider-list">Aeza Group, Bearhost / PROSPERO, DEDBROPRO, Media Land, Stark / THE.Hosting, Virtualine / Railnet, ZServers / XHost</span></td></tr>
       <tr><th>Enabler jurisdictions</th><td>Germany, Netherlands, Bulgaria, United Kingdom, United States, Russia, Montenegro, Serbia, Seychelles, Turkey</td></tr>
       <tr><th>Governing legal instruments</th><td>EU Digital Services Act (Regulation 2022/2065) Article 4; German Digitale-Dienste-Gesetz (DDG); RIPE NCC Standard Service Agreement; EU restrictive measures regulations</td></tr>
       <tr><th>Primary evidence base</th><td>Recorded Future Insikt Group (Nov 2025); Spamhaus Project (Jun 2026); Binding Hook / Virtual Routes (Oct 2025); KrebsOnSecurity; Qurium; RIPE NCC published policy and transparency reporting</td></tr>
-      <tr><th>Last reviewed</th><td>28 July 2026</td></tr>
+      <tr><th>Last reviewed</th><td>31 July 2026</td></tr>
     </table>
+
+    <div class="glossary" data-terms="prefix,asn,upstream,peering,ripe,lir,sponsor,freeze,conduit,designation"></div>
   </section>
 
   <!-- 02 -->
@@ -314,7 +316,7 @@
     <div class="section-label">Section 02</div>
     <h2>The Enablement Stack</h2>
 
-    <p>A bulletproof host is not a self-contained business. It is an assembly of five purchased dependencies, each obtainable from a limited number of suppliers, and each representing a distinct point at which the service could be denied. The layers are ordered below by disruption leverage, highest first.</p>
+    <p>A bulletproof host is not a self-contained business. It is an assembly of purchased dependencies, each obtainable from a limited number of suppliers, and each representing a distinct point at which the service could be denied. The two panels below show that position as the ecosystem map records it: what feeds the hosting layer, and what the hosting layer feeds.</p>
 
     <!-- EMBEDDED SUBGRAPH: derived view of the ecosystem map -->
     <div class="subgraph-wrap">
@@ -331,6 +333,27 @@
       </div>
       <noscript><div class="subgraph-note">This diagram requires JavaScript. The same relationships are described in the layer stack below and in Section 03.</div></noscript>
     </div>
+
+    <!-- EMBEDDED SUBGRAPH 2: what the layer keeps online -->
+    <div class="subgraph-wrap">
+      <div class="subgraph-head">
+        <div>
+          <div class="subgraph-label">Ecosystem Map, Filtered View</div>
+          <div class="subgraph-title">What the enablement layer keeps online</div>
+        </div>
+        <a class="subgraph-link" href="/map" target="_blank">Open the full map &#8599;</a>
+      </div>
+      <div id="subgraph-down" role="img" aria-label="Diagram: the bulletproof hosting node and the eight downstream criminal nodes that depend on it, coloured by ecosystem layer."></div>
+      <div class="subgraph-note">
+        The same node, viewed downward. Colours are the ecosystem layer each dependent node belongs to, matching the full map. This is the blast radius of a single upstream termination: one action against the hosting layer reaches six ecosystem layers at once, which is why Section 08 assesses transit as the highest-yield single lever available.
+      </div>
+      <noscript><div class="subgraph-note">This diagram requires JavaScript. The dependency is described in Section 08.</div></noscript>
+    </div>
+
+    <h3>The five dependencies in full</h3>
+    <p>The map models the enablement layer as three nodes, because those are the three that can be given a distinct owner and a distinct disruption pathway. The full dependency chain has five links. The list below expands the three that appear in the panels above, and adds the two the map does not model separately: physical facilities, which are covered by the hosting jurisdiction rather than by a supplier relationship, and payment rails, which are treated as a financial node elsewhere in the map.</p>
+
+    <p>Read downward. The ordering is by disruption leverage, highest first, and it is not the order in which enforcement has actually been attempted.</p>
 
     <div class="stack">
       <div class="stack-layer l1">
@@ -372,53 +395,16 @@
     <h2>Upstream Transit: The Intermediary Layer</h2>
 
     <h3>Cross-profile upstream dependency map</h3>
-    <p>Upstream chains as documented in Section 04 of each published profile. Jurisdiction here refers to the transit provider, not the bulletproof host.</p>
+    <p>Upstream chains as documented in Section 04 of each published profile. Jurisdiction here refers to the transit provider, not the bulletproof host. This table and every count derived from it are generated from a shared data file, so a newly published profile appears here as soon as it is registered there.</p>
 
     <table class="data-table">
       <thead><tr><th style="width:18%">Provider</th><th style="width:38%">Documented upstream chain</th><th style="width:20%">Reachable jurisdiction</th><th>Transit lever</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><a href="aeza.html" style="color:var(--accent);text-decoration:none">Aeza Group</a></td>
-          <td>aurologic GmbH (AS30823, Germany, primary European upstream and colocation); Hetzner (AS24940, Germany); Hurricane Electric (AS6939, US); Zayo (AS8218, US)</td>
-          <td>Germany, United States</td>
-          <td>Available and unused. aurologic remained a primary upstream after US, UK, and Australian designations.</td>
-        </tr>
-        <tr>
-          <td><a href="stark.html" style="color:var(--accent);text-decoration:none">Stark / THE.Hosting</a></td>
-          <td>MIRhosting (Almere, Netherlands), physical colocation and transit to AMS-IX and DE-CIX Frankfurt</td>
-          <td>Netherlands, Germany</td>
-          <td>Available. Exercised indirectly through the May 2026 Dutch seizure and arrests rather than through de-peering.</td>
-        </tr>
-        <tr>
-          <td><a href="zservers.html" style="color:var(--accent);text-decoration:none">ZServers / XHost</a></td>
-          <td>Hostkey (Netherlands) confirmed as at least one upstream via the September 2024 breach; additional transit undocumented</td>
-          <td>Netherlands</td>
-          <td>Available. Not used: the February 2025 action went straight to sanctions and physical seizure.</td>
-        </tr>
-        <tr>
-          <td><a href="dedbropro.html" style="color:var(--accent);text-decoration:none">DEDBROPRO</a></td>
-          <td>Belcloud (AS44901, Bulgaria); CJSC RASCOM (AS20764, Russia)</td>
-          <td>Bulgaria (EU)</td>
-          <td>Available and unused. No designation exists against the entity, so no compulsion pathway currently applies.</td>
-        </tr>
-        <tr>
-          <td><a href="medialand.html" style="color:var(--accent);text-decoration:none">Media Land</a></td>
-          <td>NetCom-R (AS49531, RU); MegaFon (AS20632, RU); SYSECT D.O.O. (AS202799, Montenegro); Lavrentyev A.A. (AS51538, RU). Historical: Vimpelcom/Beeline (AS3216), ERTH (AS9049)</td>
-          <td>Montenegro only</td>
-          <td>Effectively absent. All four peers remained in place through the November 2025 sanctions and the July 2026 indictment and EU designation.</td>
-        </tr>
-        <tr>
-          <td><a href="bearhost.html" style="color:var(--accent);text-decoration:none">Bearhost / PROSPERO</a></td>
-          <td>Kaspersky Lab (AS209030) since December 2024. Kaspersky denies an intentional relationship. PROTON66 upstream chain not documented.</td>
-          <td>None</td>
-          <td>Absent. Transit sits inside Russia with a vendor that is itself outside Western regulatory reach.</td>
-        </tr>
-      </tbody>
+      <tbody id="bph-upstream-rows"></tbody>
     </table>
 
     <div class="callout info">
       <div class="callout-label">Analytic Implication</div>
-      <p style="margin:0">Transit pressure is a jurisdiction-dependent tool, not a universal one. It is available against Aeza, Stark, ZServers, and DEDBROPRO, and unavailable against Media Land and Bearhost. Disruption planning that assumes a uniform upstream lever will misallocate effort against exactly the two providers where seizure and designation are the only options. <span class="badge inference">Analyst Inference</span></p>
+      <p style="margin:0">Transit pressure is a jurisdiction-dependent tool, not a universal one. It is available against <span data-bph="western-names">Aeza, Stark, ZServers, DEDBROPRO and Virtualine</span>, and unavailable against <span data-bph="none-names">Media Land and Bearhost</span>. Disruption planning that assumes a uniform upstream lever will misallocate effort against exactly the two providers where seizure and designation are the only options. <span class="badge inference">Analyst Inference</span></p>
     </div>
 
     <h3>Case study: aurologic GmbH as concentration point</h3>
@@ -431,6 +417,11 @@
       <li>All eleven of Global-Data System IT Corporation's IPv4 prefixes routed solely through aurologic, with no diversification. Roughly 95 percent of Railnet's nineteen prefixes did the same.</li>
       <li>Approximately 13.5 percent of DDoSia tier 1 command-and-control addresses observed between July 2024 and July 2025 were announced either by aurologic directly or by networks taking transit from it.</li>
     </ul>
+
+    <div class="callout warning">
+      <div class="callout-label">Concentration Within This Library</div>
+      <p style="margin:0">The concentration is visible without leaving this profile set. Two of the seven providers profiled here, Aeza and Virtualine, depend on aurologic as their primary upstream, and Virtualine routes roughly 95 percent of its backbone traffic through it. One of those two is designated by three authorities and the other by none, yet both are carried by the same German company, over the same period, with no distinction in treatment. A single termination decision at one carrier would reach two of the seven providers in this library at once. <span class="badge inference">Analyst Inference</span></p>
+    </div>
 
     <p>Aeza's dependence on aurologic was itself the product of an earlier upstream decision. After Qurium published its Doppelganger investigation in July 2024, UK provider DataCamp Limited (AS60068) terminated its contract with Aeza. Aeza publicly stated it then partnered with aurologic to continue operations. One upstream acted; the customer moved to another that did not. <span class="badge confirmed">Confirmed</span></p>
 
@@ -510,6 +501,20 @@
         <div class="timeline-date">October 2025</div>
         <div class="timeline-text">Twelve prefixes announced under a fraudulently registered ASN impersonating a legitimate Hamburg software company are re-allocated to a newly created Amsterdam-registered organisation at a serviced-office address, at the peak of observed malicious activity on that space. <span class="badge confirmed">Confirmed</span></div>
       </div>
+    </div>
+
+    <h3>Why routing security is not the lever it appears to be</h3>
+    <p>A reader familiar with BGP will ask the obvious question: if the registry issues the cryptographic certificates that networks use to validate route announcements, why not revoke a designated provider's certificates and let route filtering do the work? The answer is that this does not function as an off switch, for three separate reasons.</p>
+
+    <p><strong>A freeze does not reach the certificates.</strong> RIPE NCC's certification terms give an exhaustive list of revocation triggers: inconsistency with the registration records, technical or security compromise, violation of the terms, and voluntary termination. Sanctions designation is not among them, and the certification practice statement omits it as well. Because a freeze preserves the registration record rather than altering it, the inconsistency trigger never fires. Whether a frozen member retains day-to-day access to manage its own route origin authorisations is undocumented, and no published RIPE NCC position addresses it. <span class="badge confirmed">Confirmed</span></p>
+
+    <p><strong>Revocation would not remove reachability.</strong> A prefix is treated as invalid only when a valid authorisation covers it and the announcement fails to match. Revoking a member's certificate destroys all of that member's authorisations at once, so nothing covers the prefix and its status falls back to unknown, which every network accepts, including those that discard invalid routes. Certificate revocation therefore strips a provider of protection against hijacking rather than taking it offline. Prefixes only become invalid once the space is deregistered and reallocated to a different holder who authorises it to a different network, a sequence that runs on months to years. <span class="badge confirmed">Confirmed</span></p>
+
+    <p><strong>The community has already considered and rejected the idea.</strong> A March 2022 multistakeholder statement on internet sanctions, circulated on the RIPE list and signed by senior figures including a then member of the RIPE NCC Executive Board, examined manipulating routing security attestations as a sanctions instrument and concluded that it "could risk the withdrawal of networks from the system entirely" and constituted an unacceptable risk. The reasoning is that a security mechanism repurposed for enforcement stops being one that operators voluntarily adopt. <span class="badge confirmed">Confirmed</span></p>
+
+    <div class="callout info">
+      <div class="callout-label">Assessment</div>
+      <p style="margin:0">This is the strongest form of the counterargument to this page's central claim. The registry layer's refusal to act is not simple inertia at this particular point: it reflects a documented judgement that converting routing security into an enforcement tool would degrade the security system itself. That judgement is defensible on its own terms, and it further narrows the registry lever to the falsified-data route described above, which bites slowly and through reallocation rather than through anything sudden. <span class="badge inference">Analyst Inference</span></p>
     </div>
 
     <h3>Sponsoring LIR abuse</h3>
@@ -619,7 +624,14 @@
     <div class="section-label">Section 08</div>
     <h2>When the Backbone Acts</h2>
 
-    <p>The evidentiary case for upstream leverage rests on a small number of instances, because upstream action is rare. Those instances are consistent.</p>
+    <h3>What upstream termination actually does</h3>
+    <p>One distinction the field tends to blur. Transit is a smaller network paying a larger one to carry its traffic to the rest of the internet. Peering is two networks exchanging traffic directly, usually without money changing hands. The term de-peering is commonly applied to both, but the action that removes a bulletproof host is termination of transit.</p>
+
+    <p>A network is reachable because its upstream carrier announces to everyone it connects to that traffic for a given set of addresses should be sent through it. That announcement propagates outward until every major network on the internet knows the path. End the contract, the carrier stops making the announcement, and the route drains out of the global routing table within seconds to a few minutes.</p>
+
+    <p>Nothing is confiscated. The servers keep running, the disks still hold the data, and the operator can still reach the machines locally. The addresses simply cease to exist as far as the rest of the internet is concerned. It is not a seizure, it is a refusal to carry, and that is precisely why it outperforms every other instrument available: it takes minutes rather than months, it reaches every hosted service at once rather than one brand at a time, it requires no warrant, and it avoids the jurisdictional problem entirely because the carrier is only deciding who its own customers are. <span class="badge confirmed">Confirmed</span></p>
+
+    <p>The evidentiary case for this lever rests on a small number of instances, because upstream action is rare. Those instances are consistent.</p>
 
     <table class="data-table">
       <thead><tr><th style="width:22%">Event</th><th style="width:14%">Date</th><th style="width:34%">Action</th><th>Outcome</th></tr></thead>
@@ -655,6 +667,55 @@
       <div class="callout-label">Assessment</div>
       <p style="margin:0">Upstream termination is the highest-yield single action available against a bulletproof host, and the evidence that it works is eighteen years old because it has essentially not been attempted since at comparable scale. Where a single upstream has acted in isolation, the customer has relocated to a more permissive carrier within weeks. This suggests the effective form of the lever is coordinated rather than unilateral: simultaneous refusal by the realistic set of alternative carriers, not termination by one. <span class="badge inference">Analyst Inference</span></p>
     </div>
+
+    <h3>Why the lever is not pulled</h3>
+    <p>The instrument is fast, cheap, and effective, and it sits unused. That is not an oversight. Every incentive acting on a transit carrier points away from using it.</p>
+
+    <table class="data-table">
+      <thead><tr><th style="width:26%">Disincentive</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>The law rewards inaction</td>
+          <td>A carrier that does not inspect what it carries has no liability for it, and no obligation to go looking. Acting on suspicion rather than formal notice moves the carrier out of that shelter. Doing nothing is not merely permitted, it is the legally optimal position.</td>
+        </tr>
+        <tr>
+          <td>The customer holds a contract</td>
+          <td>Terminating a paying customer without a clear breach or a legal instrument invites a breach of contract claim. Carriers want an instrument that makes disconnection safe: a court order, a designation naming that specific customer, or a formal law enforcement notice.</td>
+        </tr>
+        <tr>
+          <td>The designated entity is usually not the customer</td>
+          <td>Sanctions name a legal person; the carrier's contract is frequently with a different legal person one or two steps removed. This is the documented aurologic position on Aeza, where the public defence was that the designated entity was not the contractual customer. Accurate as stated, and it dissolves the obligation.</td>
+        </tr>
+        <tr>
+          <td>Revenue</td>
+          <td>High-abuse customers are often high-margin customers, and a carrier known for disconnecting on suspicion loses legitimate business as well. The aurologic CEO stated the trade-off publicly and without embarrassment.</td>
+        </tr>
+        <tr>
+          <td>Whoever moves first pays for nothing</td>
+          <td>A carrier acting alone bears the entire cost, in lost revenue, legal exposure, and public argument, while the customer relocates to a more permissive carrier within weeks. DataCamp terminated Aeza and Aeza moved to aurologic. The first mover produces displacement rather than disruption and subsidises a competitor.</td>
+        </tr>
+        <tr>
+          <td>Nobody owns the decision</td>
+          <td>Sanctions authorities designate entities; they do not route traffic. No regulator is tasked with directing a carrier to disconnect a customer, so the action falls between institutions and rests on a voluntary commercial judgement by a company that has not itself been accused of anything.</td>
+        </tr>
+        <tr>
+          <td>The neutrality objection is genuine</td>
+          <td>Carriers making judgements about who deserves connectivity establishes that carriers can make such judgements, which is the precedent an authoritarian government wants. This is the same reasoning the RIPE community used to reject routing security as a sanctions instrument in 2022. It serves as convenient cover, and it is also a position held in good faith.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <div class="callout-label">The Structural Trap</div>
+      <p style="margin:0">The disincentives are not equally weighted. Most could be overcome by a determined carrier, but the first mover problem cannot be overcome by any carrier acting alone, because it is a property of the market rather than of the firm. Unilateral action is, from the carrier's own perspective, correctly identified as pointless: it costs real money and achieves relocation rather than removal. That is the finding with the clearest policy implication on this page, and it means that appeals to individual carriers to behave responsibly are aimed at the wrong unit of analysis. <span class="badge inference">Analyst Inference</span></p>
+    </div>
+
+    <h3>What would change the calculation</h3>
+    <ul>
+      <li><strong>Designate the carrier, not only the host.</strong> Converts a voluntary decision into a compliance obligation and removes the contract problem entirely. Politically significant, since it would set precedent affecting lawful European carriers.</li>
+      <li><strong>Coordinate across the realistic alternative set.</strong> Removes the first mover penalty and leaves the customer nowhere to relocate. This is the form the lever needs to take, and it requires a convening authority that does not currently exist.</li>
+      <li><strong>Create safe harbour for acting on verified evidence.</strong> Removes the asymmetry whereby acting carries more legal risk than not acting. The cheapest of the three, and the one that requires no new enforcement capacity.</li>
+    </ul>
 
     <h3>The facilitator model</h3>
     <p>Spamhaus published its own formulation of this argument in June 2026, framing IP address brokers, network carriers, and datacenters as facilitators whose services are essential, difficult to obtain independently, and available from a finite number of sources. Its stated position is that pursuing individual bulletproof hosts without pursuing facilitators treats symptoms rather than causes. The mechanism Spamhaus describes is escalation of SBL listing against the facilitator's own network, combined with the observation that clustering bulletproof customers increases a facilitator's attractiveness to law enforcement. Reputational cost is a consequence of that approach rather than the stated lever. <span class="badge confirmed">Confirmed</span></p>
@@ -714,6 +775,10 @@
         <p>RIPE NCC stated in November 2021 that it would continue to investigate the possibility of a blanket exemption for internet number resources from EU sanctions regulation, after the Dutch Ministry of Foreign Affairs indicated there was no legal basis for one. If such an exemption were ever granted, the freeze mechanism weakens further. Status as of July 2026 not confirmed in this pass.</p>
       </div>
       <div class="gap-item">
+        <strong>Whether a frozen member retains routing security management access</strong>
+        <p>No published RIPE NCC position states whether a member under a sanctions freeze can still create or modify route origin authorisations. A 2020 board announcement described frozen members as unable to access RIPE NCC services, which would imply they cannot, but every transparency report since 2022 defines the freeze narrowly and never mentions the certification service. No one in the RIPE community appears to have asked. Low operational significance given the analysis in Section 04, but it is an open question that a direct request to RIPE NCC would settle.</p>
+      </div>
+      <div class="gap-item">
         <strong>Non-RIPE registry exposure</strong>
         <p>This analysis is RIPE-weighted because the profiled providers are RIPE-region. ARIN and APNIC policy on sanctioned members has not been assessed to the same depth.</p>
       </div>
@@ -747,11 +812,274 @@
       <div class="source-item"><span class="source-num">[20]</span><span class="source-text">EDP BPH provider profiles, Section 04 upstream transit chains: Aeza, Bearhost, DEDBROPRO, Media Land, Stark Industries, ZServers. <a href="https://research.therenoproject.org/bphs/" target="_blank">research.therenoproject.org</a></span></div>
       <div class="source-item"><span class="source-num">[21]</span><span class="source-text">EDP Module 09, Bulletproof Hosting Providers, and its Intelligence Annex (internal corpus, Node 03 upstream dependency and chokepoint analysis).</span></div>
       <div class="source-item"><span class="source-num">[22]</span><span class="source-text">UK Companies House register, Aeza International Ltd (company 15109642, dissolved 24 March 2026) and Hypercore Ltd (company 16558658, dissolved 23 December 2025 under s1002A Companies Act 2006). <a href="https://find-and-update.company-information.service.gov.uk/company/15109642" target="_blank">find-and-update.company-information.service.gov.uk</a></span></div>
-      <div class="source-item"><span class="source-num">[23]</span><span class="source-text">RIPE NCC, RIPE-858, "Closure of Members, Deregistration of Internet Resources and Legacy Internet Resources." <a href="https://www.ripe.net/publications/docs/ripe-858/" target="_blank">ripe.net</a></span></div>
+      <div class="source-item"><span class="source-num">[23]</span><span class="source-text">RIPE NCC, RIPE-858, "Closure of Members, Deregistration of Internet Resources and Legacy Internet Resources" (certificate revocation on closure and deregistration). <a href="https://www.ripe.net/publications/docs/ripe-858/" target="_blank">ripe.net</a></span></div>
+      <div class="source-item"><span class="source-num">[24]</span><span class="source-text">RIPE NCC Certification Service Terms and Conditions, Article 5.2 (exhaustive revocation triggers) and Article 3.11 (removal of signed objects on termination). <a href="https://www.ripe.net/manage-ips-and-asns/resource-management/rpki/legal/ripe-ncc-certification-service-terms-and-conditions/" target="_blank">ripe.net</a></span></div>
+      <div class="source-item"><span class="source-num">[25]</span><span class="source-text">RIPE NCC, RIPE-549, Certification Practice Statement for the Resource Public Key Infrastructure, section 4.9 (revocation circumstances, processing times, and CRL publication). <a href="https://www.ripe.net/publications/docs/ripe-549/" target="_blank">ripe.net</a></span></div>
+      <div class="source-item"><span class="source-num">[26]</span><span class="source-text">Packet Clearing House and co-signatories, "Multistakeholder Imposition of Internet Sanctions," March 2022, section on manipulation of routing security attestations; circulated on the RIPE list. <a href="https://www.ripe.net/ripe/mail/archives/ripe-list/2022-March/002478.html" target="_blank">ripe.net</a></span></div>
+      <div class="source-item"><span class="source-num">[27]</span><span class="source-text">APNIC Labs, RPKI route origin validation adoption statistics (share of networks discarding invalid routes). <a href="https://stats.labs.apnic.net/rpki" target="_blank">stats.labs.apnic.net</a></span></div>
     </div>
   </section>
 
 </main>
-<script src="../assets/node-library.js?v=3"></script>
+<script src="assets/node-library.js?v=3"></script>
+<script src="assets/glossary.js?v=1"></script>
+<script src="assets/bph-upstreams.js?v=1"></script>
+
+<!-- Ecosystem map data: single source of truth for nodes, edges, confidence and tier values -->
+<script src="data/ecosystem-map-data.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var ENAB = '#9aa7b6';   /* commercial enablement lane */
+  var RU   = '#a85a73';   /* Russian state lane */
+  /* numeric ecosystem layers, matching the full map */
+  var LAYER_COLOR = ['#4a90d9','#6eb84a','#e0960a','#e06030','#cc2a18','#8840c8','#28a898','#58a038','#1a7038'];
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function name(n) { return Array.isArray(n.label) ? n.label.join(' ') : n.label; }
+  function colorOf(n) {
+    if (n.layer === 'enab') return ENAB;
+    if (n.layer === 'state') return RU;
+    if (n.layer === 'exo') return '#c9a227';
+    return LAYER_COLOR[n.layer] || '#707090';
+  }
+
+  /* shared tooltip */
+  var tip = null;
+  function ensureTip() {
+    if (tip) return tip;
+    tip = document.createElement('div');
+    tip.className = 'sg-tip';
+    document.body.appendChild(tip);
+    return tip;
+  }
+  function show(html, ev) {
+    var t = ensureTip();
+    t.innerHTML = html;
+    t.classList.add('on');
+    var r = t.getBoundingClientRect();
+    var x = ev.clientX + 16, y = ev.clientY + 16;
+    if (x + r.width > window.innerWidth - 12) x = ev.clientX - r.width - 16;
+    if (y + r.height > window.innerHeight - 12) y = ev.clientY - r.height - 16;
+    t.style.left = (x + window.pageXOffset) + 'px';
+    t.style.top = (y + window.pageYOffset) + 'px';
+  }
+  function hide() { if (tip) tip.classList.remove('on'); }
+
+  /* ------------------------------------------------------------------
+     render(cfg)
+       cfg.hostId  element to draw into
+       cfg.keep    node ids to include, in draw order
+       cfg.pos     { id: {x,y,w,h} }
+       cfg.size    [width, height] of the viewBox
+       cfg.lanes   optional [{x, anchor, text, color, lineFrom, lineTo}]
+       cfg.legend  optional array of legend entries
+       cfg.extras  optional array of raw svg strings appended last
+     ------------------------------------------------------------------ */
+  function render(cfg) {
+    var host = document.getElementById(cfg.hostId);
+    if (!host) return;
+
+    function fallback(msg) {
+      host.innerHTML = '<div class="subgraph-fallback">' + msg + '</div>';
+    }
+    if (typeof NODES === 'undefined' || typeof EDGES === 'undefined') {
+      fallback('Map data not loaded. The same relationships are described in the layer stack below.');
+      return;
+    }
+
+    var byId = {};
+    NODES.forEach(function (n) { if (cfg.keep.indexOf(n.id) > -1) byId[n.id] = n; });
+    var missing = cfg.keep.filter(function (id) { return !byId[id]; });
+    if (missing.length) {
+      fallback('Map data is present but does not yet define: ' + missing.join(', ') +
+               '. This diagram renders automatically once those nodes exist in the map data file.');
+      return;
+    }
+
+    var links = EDGES.filter(function (e) {
+      if (!byId[e.s] || !byId[e.t]) return false;
+      return cfg.edgeFilter ? cfg.edgeFilter(e) : true;
+    });
+    function box(id) {
+      var p = cfg.pos[id];
+      return { x: p.x, y: p.y, w: p.w, h: p.h, cx: p.x + p.w / 2, cy: p.y + p.h / 2 };
+    }
+
+    var W = cfg.size[0], H = cfg.size[1];
+    var svg = ['<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">'];
+
+    /* arrow markers, one per distinct colour used */
+    var used = {};
+    links.forEach(function (e) { used[colorOf(byId[e.s])] = 1; });
+    svg.push('<defs>');
+    Object.keys(used).forEach(function (c, i) {
+      svg.push('<marker id="' + cfg.hostId + '-arr-' + i + '" viewBox="0 0 10 10" refX="9" refY="5" ' +
+               'markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+               '<path d="M0,0 L10,5 L0,10 z" fill="' + c + '"/></marker>');
+    });
+    svg.push('</defs>');
+    var markerFor = {};
+    Object.keys(used).forEach(function (c, i) { markerFor[c] = cfg.hostId + '-arr-' + i; });
+
+    /* lane headings */
+    (cfg.lanes || []).forEach(function (l) {
+      svg.push('<text class="sg-lane-label" x="' + l.x + '" y="30"' +
+               (l.anchor ? ' text-anchor="' + l.anchor + '"' : '') +
+               ' fill="' + l.color + '">' + esc(l.text) + '</text>');
+      if (l.lineFrom != null) {
+        svg.push('<line x1="' + l.lineFrom + '" y1="40" x2="' + l.lineTo + '" y2="40" stroke="' +
+                 l.color + '" stroke-opacity=".35" stroke-width="1"/>');
+      }
+    });
+
+    /* edges */
+    links.forEach(function (e, i) {
+      var s = box(e.s), t = box(e.t), c = colorOf(byId[e.s]), d;
+      if (Math.abs(s.cx - t.cx) < 20) {
+        var ox = s.x + s.w + 34;
+        d = 'M' + (s.x + s.w) + ',' + s.cy + ' C' + ox + ',' + s.cy + ' ' + ox + ',' + t.cy +
+            ' ' + (t.x + t.w + 9) + ',' + t.cy;
+      } else {
+        var x1, x2;
+        if (s.cx < t.cx) { x1 = s.x + s.w; x2 = t.x - 9; } else { x1 = s.x; x2 = t.x + t.w + 9; }
+        var mx = (x1 + x2) / 2;
+        d = 'M' + x1 + ',' + s.cy + ' C' + mx + ',' + s.cy + ' ' + mx + ',' + t.cy + ' ' + x2 + ',' + t.cy;
+      }
+      svg.push('<path class="sg-edge" data-i="' + i + '" d="' + d + '" fill="none" stroke="' + c + '" ' +
+               'stroke-width="' + (e.p ? 2 : 1.2) + '" stroke-opacity="' + (e.p ? .85 : .5) + '" ' +
+               (e.p ? '' : 'stroke-dasharray="4 3" ') +
+               'marker-end="url(#' + markerFor[c] + ')" style="cursor:default"/>');
+    });
+
+    /* nodes */
+    cfg.keep.forEach(function (id) {
+      var n = byId[id], b = box(id), c = colorOf(n);
+      var lines = Array.isArray(n.label) ? n.label : [n.label];
+      var fs = (cfg.pos[id].big ? 12 : 10.5);
+      var startY = b.y + (b.h - (lines.length - 1) * (fs + 2)) / 2 + fs / 2 + 3;
+      svg.push('<g class="sg-node" data-id="' + id + '">');
+      svg.push('<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h +
+               '" rx="7" fill="' + c + '" fill-opacity="0.14" stroke="' + c +
+               '" stroke-width="1.25" stroke-opacity="0.82"/>');
+      lines.forEach(function (ln, i) {
+        svg.push('<text x="' + b.cx + '" y="' + (startY + i * (fs + 2)) + '" text-anchor="middle" ' +
+                 'fill="#e0eaf5" font-size="' + fs + 'px" font-weight="650">' + esc(ln) + '</text>');
+      });
+      if (n.nodeRef) {
+        svg.push('<text x="' + (b.x + b.w - 6) + '" y="' + (b.y + 11) + '" text-anchor="end" ' +
+                 'fill="#6284a7" font-size="7.5px">' + esc(n.nodeRef) + '</text>');
+      }
+      if (n.protected) {
+        svg.push('<circle cx="' + (b.x + b.w - 10) + '" cy="' + (b.y + b.h - 10) +
+                 '" r="4" fill="#b25656" opacity="0.82"/>');
+      }
+      svg.push('</g>');
+    });
+
+    (cfg.extras || []).forEach(function (s) { svg.push(s); });
+
+    /* legend */
+    if (cfg.legend) {
+      var ly = H - 16;
+      cfg.legend.forEach(function (item) {
+        if (item.dot) {
+          svg.push('<circle cx="' + (item.x + 4) + '" cy="' + ly + '" r="4" fill="' + item.color + '" opacity="0.82"/>');
+        } else {
+          svg.push('<line x1="' + item.x + '" y1="' + ly + '" x2="' + (item.x + 28) + '" y2="' + ly +
+                   '" stroke="' + item.color + '" stroke-width="' + (item.dash ? 1.2 : 2) +
+                   '" stroke-opacity="' + (item.dash ? .5 : .85) + '"' +
+                   (item.dash ? ' stroke-dasharray="4 3"' : '') + '/>');
+        }
+        svg.push('<text x="' + (item.x + (item.dot ? 14 : 34)) + '" y="' + (ly + 3.5) +
+                 '" fill="#6284a7" font-size="9.5px">' + esc(item.text) + '</text>');
+      });
+    }
+
+    svg.push('</svg>');
+    host.innerHTML = svg.join('');
+
+    /* interactions */
+    host.querySelectorAll('.sg-node').forEach(function (g) {
+      var n = byId[g.getAttribute('data-id')];
+      var meta = [n.conf, n.tier ? 'Tier ' + n.tier : '', n.replace ? 'Replaceability ' + n.replace : '']
+        .filter(Boolean).join(' &middot; ');
+      var html = '<div class="sg-tip-title">' + esc(name(n)) + '</div>' +
+                 '<div class="sg-tip-meta">' + meta + '</div>' + esc(n.desc || '');
+      g.addEventListener('mousemove', function (ev) { show(html, ev); });
+      g.addEventListener('mouseleave', hide);
+    });
+    host.querySelectorAll('.sg-edge').forEach(function (p) {
+      var e = links[+p.getAttribute('data-i')];
+      var html = '<div class="sg-tip-title">' + esc(name(byId[e.s])) + ' &rarr; ' + esc(name(byId[e.t])) + '</div>' +
+                 '<div class="sg-tip-meta">' + (e.p ? 'Primary dependency' : 'Secondary dependency') + '</div>' +
+                 esc(e.note || '');
+      p.addEventListener('mousemove', function (ev) { show(html, ev); });
+      p.addEventListener('mouseleave', hide);
+    });
+  }
+
+  /* ---- PANEL 1: what feeds the hosting layer ---- */
+  render({
+    hostId: 'subgraph',
+    keep: ['enab-transit', 'enab-registry', 'enab-corp', 'bph', 'fsb', 'gru'],
+    size: [900, 380],
+    pos: {
+      'enab-transit':  { x: 60,  y: 62,  w: 132, h: 46 },
+      'enab-registry': { x: 60,  y: 160, w: 132, h: 46 },
+      'enab-corp':     { x: 60,  y: 258, w: 132, h: 46 },
+      'bph':           { x: 384, y: 152, w: 156, h: 62, big: true },
+      'fsb':           { x: 708, y: 108, w: 132, h: 46 },
+      'gru':           { x: 708, y: 206, w: 132, h: 46 }
+    },
+    lanes: [
+      { x: 60,  text: 'Permission // Western Commercial', color: ENAB, lineFrom: 60,  lineTo: 330 },
+      { x: 840, text: 'Protection // Russian State', color: RU, anchor: 'end', lineFrom: 570, lineTo: 840 }
+    ],
+    extras: [
+      '<text x="462" y="242" text-anchor="middle" fill="#6284a7" font-size="10px">' +
+        (typeof EDGES !== 'undefined' ? EDGES.filter(function (e) { return e.s === 'bph'; }).length : 8) +
+        ' downstream criminal nodes depend on this one</text>',
+      '<text x="462" y="256" text-anchor="middle" fill="#6284a7" font-size="9px">drawn in the panel below</text>'
+    ],
+    legend: [
+      { x: 60,  color: ENAB, text: 'Primary dependency' },
+      { x: 232, color: RU,   text: 'Secondary dependency', dash: true },
+      { x: 424, color: '#b25656', text: 'State-protected node', dot: true }
+    ]
+  });
+
+  /* ---- PANEL 2: what the hosting layer keeps online ---- */
+  (function () {
+    var order = ['forums', 'crypters', 'loaders', 'stealers', 'iab', 'raas', 'affiliate', 'leaksite'];
+    var pos = { 'bph': { x: 60, y: 196, w: 156, h: 62, big: true } };
+    var top = 40, step = 48;
+    order.forEach(function (id, i) {
+      pos[id] = { x: 560, y: top + i * step, w: 200, h: 40 };
+    });
+    render({
+      hostId: 'subgraph-down',
+      keep: ['bph'].concat(order),
+      size: [900, 460],
+      pos: pos,
+      /* direct dependencies only: the dependent nodes also connect to each other,
+         and drawing those here would obscure the point this panel is making */
+      edgeFilter: function (e) { return e.s === 'bph'; },
+      lanes: [
+        { x: 60,  text: 'Single point of dependency', color: '#4a90d9', lineFrom: 60,  lineTo: 300 },
+        { x: 840, text: 'Six ecosystem layers reached', color: '#8b949e', anchor: 'end', lineFrom: 560, lineTo: 840 }
+      ],
+      legend: [
+        { x: 60,  color: '#4a90d9', text: 'Primary dependency' },
+        { x: 232, color: '#8b949e', text: 'Secondary dependency', dash: true },
+        { x: 424, color: '#b25656', text: 'State-protected node', dot: true }
+      ]
+    });
+  })();
+})();
+</script>
 </body>
 </html>

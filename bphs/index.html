@@ -144,6 +144,79 @@
       line-height: 1.6;
     }
 
+    /* FEATURED BANNER: the layer above the providers */
+    .feature-section {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 3rem 0;
+    }
+    .feature-banner {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      padding: 1.75rem 2rem;
+      background: linear-gradient(135deg, rgba(88,166,255,.10) 0%, rgba(20,20,20,.6) 55%);
+      border: 1px solid rgba(88,166,255,.32);
+      border-left: 3px solid #58a6ff;
+      transition: border-color .18s, background .18s, transform .18s;
+    }
+    .feature-banner:hover {
+      border-color: rgba(88,166,255,.6);
+      background: linear-gradient(135deg, rgba(88,166,255,.16) 0%, rgba(20,20,20,.6) 55%);
+      transform: translateY(-2px);
+    }
+    .feature-kicker {
+      font-family: 'Space Mono', monospace;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #58a6ff;
+      margin-bottom: .6rem;
+    }
+    .feature-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--white);
+      margin-bottom: .55rem;
+    }
+    .feature-sub {
+      font-size: .93rem;
+      line-height: 1.65;
+      color: var(--light-gray);
+      max-width: 74ch;
+      margin-bottom: 1rem;
+    }
+    .feature-meta { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.1rem; }
+    .feature-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: .64rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      border: 1px solid var(--border);
+      padding: .25rem .55rem;
+    }
+    .feature-cta {
+      font-family: 'Space Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #58a6ff;
+    }
+    .grid-heading {
+      font-family: 'Space Mono', monospace;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      margin-bottom: 1rem;
+    }
+
     /* BPH GRID */
     .group-section {
       position: relative;
@@ -387,11 +460,16 @@
       .nav-links { display: none; }
       .page-header { padding: 7rem 1.5rem 2rem; }
       .group-section { padding: 1.5rem 1.5rem 4rem; }
+      .feature-section { padding: 1.5rem 1.5rem 0; }
+      .feature-banner { padding: 1.4rem 1.4rem; }
+      .feature-title { font-size: 1.5rem; }
     }
 
     @media (max-width: 560px) {
       .group-grid { grid-template-columns: 1fr 1fr; }
       .mascot-name { font-size: 1.1rem; }
+      .feature-title { font-size: 1.3rem; }
+      .feature-sub { font-size: .86rem; }
     }
   </style>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -432,8 +510,26 @@
     <div class="node-library node-library-inline"></div>
   </div>
 
+  <!-- Featured: the layer above the providers -->
+  <div class="feature-section">
+    <a class="feature-banner" href="/enablement-layer.html">
+      <div class="feature-kicker">Read first &nbsp;&middot;&nbsp; Cross-cutting analysis</div>
+      <div class="feature-title">The Enablement Layer</div>
+      <div class="feature-sub">Every provider below depends on a commercial chain it does not own: upstream transit carriers, address registries, datacenters, and formation agents. This analysis covers why that layer permits them to operate, and where the leverage sits. State protection is assessed separately in Section 07 of each profile.</div>
+      <div class="feature-meta">
+        <span class="feature-tag">Upstream transit</span>
+        <span class="feature-tag">RIPE freeze, not revoke</span>
+        <span class="feature-tag">EU mere conduit</span>
+        <span class="feature-tag">Formation agents</span>
+        <span class="feature-tag">Cross-profile upstream map</span>
+      </div>
+      <div class="feature-cta">Read the analysis <span>&#8599;</span></div>
+    </a>
+  </div>
+
   <!-- BPH grid -->
   <div class="group-section">
+    <div class="grid-heading">Provider Profiles</div>
     <div class="group-grid">
 
       <!-- BEARHOST -->
@@ -560,22 +656,6 @@
           <div class="mascot-name">Virtualine</div>
           <div class="mascot-meta">Russia-linked cluster advertised as "DMCA &amp; Abuse Ignored." Railnet LLC (Kentucky) backbone, ~95% routed via German upstream aurologic. OMEGATECH front and a fraudulently registered AS209800 (metaspinner impersonation). No named operator, no sanctions as of July 2026.</div>
           <div class="mascot-cta">View Profile <span>&#8599;</span></div>
-        </div>
-      </a>
-
-      <a class="mascot-card" href="enablement-layer.html">
-        <div class="mascot-accent" style="background: #58a6ff;"></div>
-        <div class="card-bg">
-          <div class="card-bg-glyph">EL</div>
-          <div class="card-bg-asn">Cross-cutting analysis</div>
-        </div>
-        <div class="mascot-overlay"></div>
-        <div class="mascot-status" style="background: rgba(88,166,255,.12); color: #58a6ff; border: 1px solid rgba(88,166,255,.3);">Analysis</div>
-        <div class="mascot-content">
-          <div class="mascot-group-id">BPH-XC / Multi-jurisdiction / Enabler Layer</div>
-          <div class="mascot-name">The Enablement Layer</div>
-          <div class="mascot-meta">How and why bulletproof hosting is allowed to exist. Upstream transit carriers, RIPE NCC freeze-not-revoke policy, EU mere conduit liability, formation agents, and the cross-profile upstream dependency map. Covers the commercial half of the problem; state protection is assessed per profile.</div>
-          <div class="mascot-cta">Read Analysis <span>&#8599;</span></div>
         </div>
       </a>
 
