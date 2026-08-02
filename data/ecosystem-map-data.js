@@ -2,7 +2,7 @@
    RANSOMWARE ECOSYSTEM MAP : DATA FILE
    ───────────────────────────────────────────────────────────────
    Monthly data updates happen ONLY in this file. The map page
-   (ransomware-ecosystem-v3.0-preview.html) is never edited for
+   (the current map page) is never edited for
    data updates; it reads this file automatically via
    <script src="data/ecosystem-map-data.js"></script>.
 
@@ -666,20 +666,21 @@ const ANNEX_DATA = {
 /* EDP module PDF references. Deduped: each distinct PDF appears once.
    Alias module ids used by some nodes resolve via MODULE_ALIASES. */
 const MODULE_DOCS = {
-  'M01':  { pdf:'docs/EDP_Module01_Stealers_v1.pdf',            label:'EDP Module 01 — Stealers' },
-  'M02':  { pdf:'docs/EDP_Module02_Loaders_v1.pdf',             label:'EDP Module 02 — Loaders' },
-  'M03':  { pdf:'docs/EDP_Module03_Crypters_v1.pdf',            label:'EDP Module 03 — Crypters & Packers' },
-  'M04':  { pdf:'docs/EDP_Module04_Callers_v1.pdf',             label:'EDP Module 04 — Callers & Spammers' },
-  'M05':  { pdf:'docs/EDP_Module05_IABs_v1.pdf',                label:'EDP Module 05 — Initial Access Brokers' },
-  'M06':  { pdf:'docs/EDP_Module06_ExploitBrokers_v1.pdf',      label:'EDP Module 06 — Exploit Brokers' },
-  'M07':  { pdf:'docs/EDP_Module07_RaaS_ScopeReduced_v1.pdf',   label:'EDP Module 07 — RaaS' },
-  'M08':  { pdf:'docs/EDP_Module08_LeakSiteOps_v1.pdf',         label:'EDP Module 08 — Leak Site Operations' },
-  'M09':  { pdf:'docs/EDP_Module09_BPH_v1.pdf',                 label:'EDP Module 09 — Bulletproof Hosting' },
-  'M10':  { pdf:'docs/EDP_Module10_UndergroundForums_v1.pdf',   label:'EDP Module 10 — Underground Forums' },
-  'M11':  { pdf:'docs/EDP_Module11_CryptoMixers_v1.pdf',        label:'EDP Module 11 — Crypto Mixers' },
-  'M12':  { pdf:'docs/EDP_Module12_OTCBrokers_v1.pdf',          label:'EDP Module 12 — OTC Brokers' },
-  'M13':  { pdf:'docs/EDP_Module13_MoneyLaunderers_v1.pdf',     label:'EDP Module 13 — Money Launderers' },
-  'M14':  { pdf:'docs/EDP_Module14_MuleNetworks_v1.pdf',        label:'EDP Module 14 — Mule Networks' },
-  'M15':  { pdf:'docs/EDP_Module15_NegotiationServices_v1.pdf', label:'EDP Module 15 — Negotiation Services' },
+  'M01':  { pdf:'modules/module-01-stealers.html',            label:'EDP Module 01 — Stealers' },
+  'M02':  { pdf:'modules/module-02-loaders.html',             label:'EDP Module 02 — Loaders' },
+  'M03':  { pdf:'modules/module-03-crypters.html',            label:'EDP Module 03 — Crypters & Packers' },
+  'M04':  { pdf:'modules/module-04-callers.html',             label:'EDP Module 04 — Callers & Spammers' },
+  'M05':  { pdf:'modules/module-05-iabs.html',                label:'EDP Module 05 — Initial Access Brokers' },
+  'M06':  { pdf:'modules/module-06-exploit-brokers.html',      label:'EDP Module 06 — Exploit Brokers' },
+  'M07':  { pdf:'modules/module-07-raas-affiliates.html',   label:'EDP Module 07 — RaaS' },
+  'M08':  { pdf:'modules/module-08-leak-site-ops.html',         label:'EDP Module 08 — Leak Site Operations' },
+  'M09':  { pdf:'modules/module-09-bph.html',                 label:'EDP Module 09 — Bulletproof Hosting' },
+  'M10':  { pdf:'modules/module-10-underground-forums.html',   label:'EDP Module 10 — Underground Forums' },
+  'M11':  { pdf:'modules/module-11-crypto-mixers.html',        label:'EDP Module 11 — Crypto Mixers' },
+  'M12':  { pdf:'modules/module-12-otc-brokers.html',          label:'EDP Module 12 — OTC Brokers' },
+  'M13':  { pdf:'modules/module-13-money-launderers.html',     label:'EDP Module 13 — Money Launderers' },
+  'M14':  { pdf:'modules/module-14-mule-networks.html',        label:'EDP Module 14 — Mule Networks' },
+  'M15':  { pdf:'modules/module-15-negotiation-services.html', label:'EDP Module 15 — Negotiation Services' },
+  'ENAB': { pdf:'bphs/enablement-layer.html',               label:'Permission Layer — Enablement Analysis' },
 };
 const MODULE_ALIASES = { 'M11b':'M11', 'M13b':'M13', 'M13c':'M13' };
