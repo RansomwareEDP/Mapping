@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 05: Initial Access Brokers (IABs) | EDP Document Library</title>
+  <style>
+
+    :root {
+      --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+      --border: #30363d; --border-light: #21262d;
+      --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+      --accent: #58a6ff; --accent-dim: #1f6feb;
+      --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+      --credible-bg: #341a00; --credible-text: #e3b341;
+      --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+      --critical: #f85149; --state: #bc8cff;
+      --sidebar-width: 260px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.65; display: flex; min-height: 100vh; }
+    .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .sidebar-logo a { color: var(--text-muted); text-decoration: none; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+    .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: rgba(248,81,73,.12); color: var(--critical); border: 1px solid rgba(248,81,73,.35); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all .15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+    .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+    .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+    .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; max-width: calc(100% - var(--sidebar-width)); }
+    .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+    .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+    .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); max-width: 900px; }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .hbadge { display: inline-flex; align-items: center; padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .hbadge.critical { background: rgba(248,81,73,.12); color: var(--critical); border: 1px solid rgba(248,81,73,.3); }
+    .hbadge.node { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+    .hbadge.pdf { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+    .hbadge.pdf a { color: var(--text); text-decoration: none; }
+    .doc-main { padding: 24px 40px; max-width: 1000px; }
+    .doc-h2 { font-size: 17px; font-weight: 700; color: var(--text-heading); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing: .01em; }
+    .doc-h3 { font-size: 14px; font-weight: 700; color: var(--accent); margin: 24px 0 10px; }
+    .doc-p { margin: 0 0 12px; }
+    .doc-list { margin: 0 0 14px 22px; }
+    .doc-list li { margin-bottom: 8px; }
+    .tbl-wrap { overflow-x: auto; margin: 14px 0 18px; border: 1px solid var(--border); border-radius: 6px; }
+    .doc-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .doc-table th { background: var(--bg-secondary); color: var(--text-heading); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+    .doc-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .chip { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+    .chip.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); }
+    .chip.credible { background: var(--credible-bg); color: var(--credible-text); }
+    .chip.inference { background: var(--inference-bg); color: var(--inference-text); }
+    /* Ecosystem inset */
+    .eco-inset { margin: 24px 40px 8px; max-width: 1000px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .eco-inset-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .eco-inset-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .eco-inset-link { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .eco-inset-link:hover { text-decoration: underline; }
+    .eco-inset svg { display: block; width: 100%; height: auto; }
+    .eco-caption { padding: 10px 18px 14px; font-size: 11.5px; color: var(--text-muted); border-top: 1px solid var(--border-light); }
+    .eco-caption .leg { display: inline-flex; align-items: center; gap: 5px; margin-right: 16px; white-space: nowrap; }
+    .leg-line { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--accent); }
+    .leg-line.dashed { border-top-style: dashed; border-top-color: var(--text-muted); }
+    .leg-line.state { border-top-style: dotted; border-top-color: var(--state); }
+    @media (max-width: 860px) { .sidebar { display: none; } .content { margin-left: 0; max-width: 100%; } .doc-main, .eco-inset { padding-left: 18px; padding-right: 18px; margin-left: 12px; margin-right: 12px; } }
+  
+    .hbadge.high { background: rgba(227,179,65,.12); color: #e3b341; border: 1px solid rgba(227,179,65,.3); }
+    .hbadge.medium { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+    .node-type-badge.high { background: rgba(227,179,65,.12); color: #e3b341; border-color: rgba(227,179,65,.35); }
+    .node-type-badge.medium { background: rgba(88,166,255,.1); color: var(--accent); border-color: rgba(88,166,255,.35); }
+\n    .doc-note { margin: 0 0 18px; padding: 12px 16px; background: var(--bg-secondary); border-left: 3px solid var(--credible-text); border-radius: 0 6px 6px 0; font-size: 13px; color: var(--text); }\n
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+      <div class="sidebar-title">EDP Module 05<br>Initial Access Brokers</div>
+      <span class="node-type-badge high">HIGH Tier</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">On This Page</div>
+      <a class="nav-link" href="#map-inset"><span class="nav-num">&#9670;</span> Position in Ecosystem</a>
+      <a class="nav-link" href="#s1"><span class="nav-num">01</span> What It Is</a>
+      <a class="nav-link" href="#s2"><span class="nav-num">02</span> Key Actors and Examples</a>
+      <a class="nav-link" href="#s3"><span class="nav-num">03</span> Infrastructure Dependencies</a>
+      <a class="nav-link" href="#s4"><span class="nav-num">04</span> Disruption Leverage Points</a>
+      <a class="nav-link" href="#s5"><span class="nav-num">05</span> Resilience and Replace Difficulty</a>
+      <a class="nav-link" href="#s6"><span class="nav-num">06</span> Indicators and KPIs</a>
+      <a class="nav-link" href="#s7"><span class="nav-num">07</span> Sources and Confidence</a>
+      <a class="nav-link" href="#s8"><span class="nav-num">08</span> Analyst Assessment</a>
+      <div class="nav-section-label" style="margin-top:10px">Related</div>
+      <a class="nav-link" href="/map">Ecosystem Map (current)</a>
+      <a class="nav-link" href="/library/">Document Library</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-meta">Ecosystem Dependency Project<br>Research: April 2026<br>Handling: Interagency</div>
+    </div>
+  </aside>
+  <main class="content">
+    <header class="profile-header">
+      <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / Module 05</div>
+      <div class="profile-name">Module 05: Initial Access Brokers (IABs)</div>
+      <div class="profile-subtitle">Validated foothold brokers reselling access to ransomware affiliates at major markup. Node 04 in the EDP Dependency Map, assessed HIGH tier with MEDIUM replace difficulty.</div>
+      <div class="badge-row">
+        <span class="hbadge high">HIGH Tier</span><span class="hbadge node">Node 04 / M05</span><span class="hbadge node">Phase B</span><span class="hbadge pdf"><a href="../docs/EDP_Module05_IABs_v1.pdf">Download PDF</a></span>
+      </div>
+    </header>
+
+    <section class="eco-inset" id="map-inset">
+      <div class="eco-inset-head">
+        <span class="eco-inset-title">Position in Ecosystem: Node 04, Initial Access Brokers</span>
+        <a class="eco-inset-link" href="/map">Open the full ecosystem map &#8599;</a>
+      </div>
+      <svg viewBox="0 0 960 428" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Initial Access Brokers node and its first-degree ecosystem connections"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/></marker><marker id="arrowdim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/></marker></defs><path d="M 205 55 C 280 55 300 214 358 214" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><path d="M 205 108 C 280 108 300 214 358 214" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><path d="M 205 161 C 280 161 300 214 358 214" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><path d="M 205 214 C 280 214 300 214 358 214" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><path d="M 205 267 C 280 267 300 214 358 214" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><path d="M 205 320 C 280 320 300 214 358 214" fill="none" stroke="#8b949e" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#arrowdim)"/><path d="M 205 373 C 280 373 300 214 358 214" fill="none" stroke="#bc8cff" stroke-width="2" stroke-dasharray="2,4"/><path d="M 600 214 C 660 214 690 188 748 188" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><path d="M 600 214 C 660 214 690 240 748 240" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arrow)"/><g><title>Validated footholds are sold and brokered through forum reputation systems, escrow, and section-level trust controls.</title><rect x="60" y="35" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="136" y="52" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">Underground Forums</text><text x="136" y="66" text-anchor="middle" fill="#8b949e" font-size="9.5">Upstream dependency</text></g><g><title>Human-layer access generation can be converted into saleable footholds for IAB resale.</title><rect x="60" y="88" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="136" y="105" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">Callers &amp; Spammers</text><text x="136" y="119" text-anchor="middle" fill="#8b949e" font-size="9.5">Upstream dependency</text></g><g><title>Loader infections create raw footholds that can be validated, packaged, and sold into the IAB market.</title><rect x="60" y="141" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="136" y="158" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">Loaders &amp; Botnets</text><text x="136" y="172" text-anchor="middle" fill="#8b949e" font-size="9.5">Upstream dependency</text></g><g><title>Credential logs and session data are a major supply source for initial access brokers.</title><rect x="60" y="194" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="136" y="211" text-anchor="middle" fill="#c9d1d9" font-size="10.2" font-weight="600">Stealers &amp; Log Markets</text><text x="136" y="225" text-anchor="middle" fill="#8b949e" font-size="9.5">Upstream dependency</text></g><g><title>Exploit-driven intrusions can be converted into validated access sold by IABs.</title><rect x="60" y="247" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="136" y="264" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">Exploit Brokers</text><text x="136" y="278" text-anchor="middle" fill="#8b949e" font-size="9.5">Upstream dependency</text></g><g><title>Some IAB infrastructure uses bulletproof hosting for listings, broker comms, or staging, though the dependency is less direct.</title><rect x="60" y="300" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2" stroke-dasharray="4,3"/><text x="136" y="317" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">Bulletproof Hosting</text><text x="136" y="331" text-anchor="middle" fill="#8b949e" font-size="9.5">Upstream (partial)</text></g><g><title>IABs sit in MVD Department K’s enforcement lane when they lack confirmed FSB protection; laundering and fraud framing works better than cyber framing.</title><rect x="60" y="353" width="152" height="40" rx="7" fill="#1c2128" stroke="#bc8cff" stroke-width="1.2"/><text x="136" y="370" text-anchor="middle" fill="#bc8cff" font-size="11.5" font-weight="600">MVD Dept K</text><text x="136" y="384" text-anchor="middle" fill="#8b949e" font-size="9.5">State protection / tolerance</text></g><g><title>IABs are the main commercial transfer point moving validated footholds to ransomware operators.</title><rect x="748" y="168" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="824" y="184" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">RaaS Operator</text><text x="824" y="198" text-anchor="middle" fill="#8b949e" font-size="9.5">Primary dependency</text></g><g><title>Affiliates buy pre-positioned access from brokers to shorten time from intrusion to encryption.</title><rect x="748" y="220" width="152" height="40" rx="7" fill="#1c2128" stroke="#30363d" stroke-width="1.2"/><text x="824" y="238" text-anchor="middle" fill="#c9d1d9" font-size="11.5" font-weight="600">RaaS Affiliates</text><text x="824" y="252" text-anchor="middle" fill="#8b949e" font-size="9.5">Primary dependency</text></g><g><title>Validated foothold brokers reselling access to ransomware affiliates at major markup.</title><rect x="358" y="169" width="242" height="90" rx="10" fill="#161b22" stroke="#e3b341" stroke-width="2"/><text x="479" y="201" text-anchor="middle" fill="#f0f6fc" font-size="14" font-weight="700">INITIAL ACCESS BROKERS</text><text x="479" y="221" text-anchor="middle" fill="#8b949e" font-size="11">Node 04 / M05</text><text x="479" y="241" text-anchor="middle" fill="#e3b341" font-size="11" font-weight="700">HIGH TIER / REPLACE: MEDIUM</text></g></svg>
+      <div class="eco-caption">
+        <span class="leg"><span class="leg-line"></span> Primary dependency</span>
+        <span class="leg"><span class="leg-line dashed"></span> Partial dependency</span>
+        <span class="leg"><span class="leg-line state"></span> State protection / dual use</span>
+        <span style="display:block; margin-top:6px;">First-degree connections as assessed in the current ecosystem map (v3.0). Hover any node for the dependency note. Left side: what this node draws on or is protected by. Right side: what depends on it.</span>
+      </div>
+    </section>
+
+    <article class="doc-main">
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Module Number</th><th>05</th></tr><tr><td>Module Name</td><td>Initial Access Brokers (IABs)</td></tr><tr><td>EDP Node Reference</td><td>Node 04 — Initial Access Broker (IAB) Markets (Phase B)</td></tr><tr><td>Ecosystem Layer</td><td>Initial Access / Supply</td></tr><tr><td>Upstream Connections</td><td>Node 10 (Stealer Logs / Module 01), Node 05 (Loaders / Module 02), Node 07 (Underground Forums / Module 10), Node 03 (BPH / Module 09)</td></tr><tr><td>Downstream Connections</td><td>Module 07 (RaaS Groups — primary buyers), Nation-state APT buyers (secondary), BEC/fraud operators</td></tr><tr><td>Research Date</td><td>April 2026</td></tr><tr><td>Primary Researcher</td><td>Reno</td></tr><tr><td>Source Tools Used</td><td>Perplexity AI; Rapid7 Access Brokers Reports (2025, 2026); Cyberint IAB Report 2025; WatchGuard IAB Analysis 2023; KELA; Picus Security; Zscaler / HP Threat Research</td></tr><tr><td>Classification</td><td>INTERAGENCY</td></tr></table></div>
+<h2 class="doc-h2" id="s1">Section 1: What It Is</h2>
+<h3 class="doc-h3">Definition</h3>
+<p class="doc-p">Initial Access Brokers (IABs) are cybercriminal specialists who compromise corporate networks and sell that unauthorized access to other threat actors — primarily ransomware affiliates, nation-state proxies, and fraud operators. They function as the dedicated supply layer of the ransomware-as-a-service (RaaS) economy, converting technical exploitation capability into a tradeable commodity and enabling division of labor across the criminal ecosystem.  <span class="chip confirmed">CONFIRMED</span></p>
+<h3 class="doc-h3">How It Functions: Step-by-Step</h3>
+<ul class="doc-list">
+<li>Step 1 — Targeting and Reconnaissance: IABs identify victim organizations through automated scanning tools (Shodan, Censys, FOFA), stealer log databases purchased from credential markets (Node 10 / Module 01), and forum intelligence on exposed services and vulnerable perimeter devices.</li>
+<li>Step 2 — Initial Compromise: Exploitation of exposed RDP and VPN endpoints; credential stuffing using stealer-derived passwords; exploitation of known vulnerabilities in edge devices (firewalls, VPN appliances, Citrix, Exchange). Access type mix across observed listings: VPN 23.5%, Domain User 19.9%, RDP 16.7%.  <span class="chip confirmed">CONFIRMED</span></li>
+<li>Step 3 — Access Validation: Confirming that obtained credentials remain valid and assessing the access level achieved — domain user, local admin, or domain admin. Testing AV/EDR presence and detection surface.</li>
+<li>Step 4 — Enrichment (Boutique IABs): Privilege escalation to domain admin or multiple footholds; documentation of victim profile including revenue, headcount, sector, and security stack. 71.4% of observed IAB transactions offered privileged access.  <span class="chip confirmed">CONFIRMED</span></li>
+<li>Step 5 — Listing and Sale: Posting access on underground forums (Exploit, XSS, RAMP, DarkForums) or negotiating privately via encrypted channels (Telegram, TOX) for high-value transactions. H2 2025 saw a confirmed shift from legacy forums toward RAMP and DarkForums.  <span class="chip confirmed">CONFIRMED</span></li>
+<li>Step 6 — Handoff: Delivery of credentials, VPN configurations, or interactive shell access to the buyer. Boutique IABs may include post-exploitation playbooks, network maps, or operational scripts bundled with the access package.</li>
+</ul>
+<h3 class="doc-h3">Role in the Ransomware Ecosystem</h3>
+<p class="doc-p">IABs bridge the capability gap between intrusion specialists and ransomware operators, enabling RaaS affiliates to focus on deployment, lateral movement, and extortion rather than initial compromise. This division of labor increases operational velocity for ransomware groups and insulates individual actors from full-chain exposure. The IAB market is the upstream supply node that directly gates ransomware deployment tempo.  <span class="chip confirmed">CONFIRMED</span></p>
+<p class="doc-p">The structural position of IABs — between credential and loader infrastructure upstream and RaaS deployment downstream — makes Node 04 a high-leverage interdiction point whose disruption compounds across the entire supply chain.  <span class="chip inference">ANALYST INFERENCE</span></p>
+<h3 class="doc-h3">Business Model Variants</h3>
+<ul class="doc-list">
+<li>Bulk / Volume Model: High listing volume; prices $500–$1,000 (approximately 40% of listings); minimal enrichment; broad victim profiles; access sold as-is via public forum threads.</li>
+<li>Boutique / Premium Model: Low volume; prices $2,700–$10,000+ per access; detailed victim dossiers (revenue, headcount, AV/EDR presence); privileged access only; buyer vetting common.</li>
+<li>Hybrid / Overflow Model: RaaS affiliates who run stealer and loader campaigns, use a subset of access for ransomware deployment, then sell remaining or stale access on forums to monetize overflow. Maintain direct RaaS program relationships.</li>
+<li>Platform-as-IAB Model: Malware ecosystems (Raspberry Robin) functioning as automated access factories. Multi-year infrastructure investment; USB and multi-vector delivery; compromised NAS/IoT C2 network with &gt;200 unique C2 domains across more than 20 TLDs. Feeds high-quality access to ransomware and espionage crews.  <span class="chip confirmed">CONFIRMED</span></li>
+<li>Forum-Embedded Collective Model: Broker collectives tied to specific market sections. High-value deals moved to encrypted channels; sometimes bundle operational playbooks and scripts with access packages.</li>
+</ul>
+<h2 class="doc-h2" id="s2">Section 2: Key Actors and Examples</h2>
+<h3 class="doc-h3">Named Actors and Archetypes</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Actor / Archetype</th><th>Type</th><th>Key TTPs</th><th>Confidence</th></tr><tr><td>High-volume Bulk IABs
+(multiple handles; RU-language forums)</td><td>Volume access resellers
+(low-mid price; many victims)</td><td>Scan/exploit exposed RDP and VPN; leverage stealer logs for credentials; minimal enrichment; sell as-is via public forum threads; high listing velocity</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>High-end Boutique IABs
+(long-lived Exploit/XSS brokers; Rapid7, Cyberint, WatchGuard reporting)</td><td>Premium access sellers
+(fewer, larger victims)</td><td>Target large-revenue enterprises and government/critical infrastructure; privilege escalation to domain admin; provide detailed victim profiles (revenue, headcount, sector, AV/EDR stack); price $2,700–$10,000+</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>Raspberry Robin
+(malware-based IAB platform)</td><td>Platform-scale IAB
+(automated access factory)</td><td>USB worm + multi-vector loader (WSF, Discord CDN, 0-day exploitation); fast-flux C2 network on compromised NAS/IoT; &gt;200 C2 domains across 20+ TLDs; feeds high-quality access to ransomware and espionage crews</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>Forum-Embedded IAB Collectives
+(RAMP / DarkForums broker groups)</td><td>Broker collectives tied to specific markets</td><td>Curated corporate access sections only; buyer vetting; move high-value deals to Telegram/TOX; sometimes bundle operational playbooks with access packages</td><td><span class="chip credible">CREDIBLE</span></td></tr><tr><td>IAB-RaaS Hybrid Crews
+(ransomware affiliates selling overflow access)</td><td>Mixed IAB + RaaS affiliate</td><td>Run stealer/loader campaigns; use subset of access for ransomware; sell remaining or stale access on forums; maintain direct RaaS program relationships</td><td><span class="chip credible">CREDIBLE</span></td></tr></table></div>
+<h3 class="doc-h3">Geographic Concentration</h3>
+<p class="doc-p">Russia and the broader CIS region dominate the IAB market. RU-language forums — Exploit, XSS, RAMP, and DarkForums — are the primary transaction venues. Eastern European operators (historically including Ukrainian actors pre-2022) remain active, though post-invasion dynamics have consolidated Russian-language forum dominance. English-language activity on BreachForums declined following successive seizures in 2023–2024.  <span class="chip confirmed">CONFIRMED</span></p>
+<p class="doc-p">H2 2025 saw a confirmed migration of activity from Exploit and XSS toward RAMP and DarkForums, accompanied by increasing asking prices and a shift toward larger-revenue victims. Government, Retail, and IT sectors saw increased targeting frequency.  <span class="chip confirmed">CONFIRMED</span>  Source: Rapid7 2026.</p>
+<h3 class="doc-h3">Scale and Volume</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Metric</th><th>Value</th><th>Source</th><th>Year</th></tr><tr><td>Average sale price</td><td>~$2,700</td><td>Rapid7</td><td>2025</td></tr><tr><td>Most common price range</td><td>$500–$1,000 (approx. 40% of listings)</td><td>Rapid7</td><td>2025</td></tr><tr><td>Premium listing threshold</td><td>&gt;$10,000 (large enterprises / critical infra)</td><td>Rapid7, Cyberint</td><td>2025</td></tr><tr><td>Privileged access share</td><td>71.4% of observed transactions</td><td>Rapid7</td><td>2025</td></tr><tr><td>Market concentration</td><td>5 entities = approx. 25% of all IAB offers</td><td>WatchGuard</td><td>2023</td></tr><tr><td>Corporate networks sold (top 5 entities)</td><td>&gt;2,300 corporate network accesses</td><td>WatchGuard</td><td>2023</td></tr><tr><td>Average price (WatchGuard dataset)</td><td>~$2,800 per access</td><td>WatchGuard</td><td>2023</td></tr><tr><td>VPN share of listings</td><td>23.5% (Rapid7) / ~33% (Cyberint)</td><td>Rapid7 / Cyberint</td><td>2025</td></tr><tr><td>RDP share of listings</td><td>16.7% (Rapid7) / ~55% (Cyberint)</td><td>Rapid7 / Cyberint</td><td>2025</td></tr><tr><td>Domain User share of listings</td><td>19.9%</td><td>Rapid7</td><td>2025</td></tr></table></div>
+<p class="doc-p">Note: RDP/VPN share discrepancy between Rapid7 and Cyberint likely reflects methodology or dataset composition differences (forum coverage scope). Both sets cited; reconciliation requires a third-party comparison dataset.</p>
+<h3 class="doc-h3">State Adjacency</h3>
+<p class="doc-p">No confirmed direct state ownership or control of IAB operations is documented in public reporting.  <span class="chip confirmed">CONFIRMED</span>  FSB has historically leveraged access obtained through cybercriminal proxies for intelligence purposes, and IAB-generated access to government and critical infrastructure organizations likely generates passive FSB interest.  <span class="chip credible">CREDIBLE</span></p>
+<p class="doc-p">Dark Covenant 3.0 (Recorded Future) screening is required before any public attribution of Russia-based IAB operators, particularly boutique brokers who may have established protection relationships. Financial designation and infrastructure disruption actions carry LOW backfire risk. Individual attribution without prior screening carries MEDIUM to HIGH backfire risk.  <span class="chip inference">ANALYST INFERENCE</span></p>
+<h2 class="doc-h2" id="s3">Section 3: Infrastructure Dependencies</h2>
+<h3 class="doc-h3">Upstream Dependencies</h3>
+<ul class="doc-list">
+<li>Stealer Log Markets (Node 10 / Module 01): Primary credential pipeline. IABs purchase stealer logs to source VPN, RDP, and Active Directory credentials without conducting independent initial compromise. Degrading Node 10 directly raises IAB sourcing cost and access quality.</li>
+<li>Loader and Botnet Ecosystems (Node 05 / Module 02): Malware-based IABs (Raspberry Robin) operate as hybrid loader/IAB platforms. Loaders also deliver stealers that generate the credential pipeline consumed by traditional IABs downstream.</li>
+<li>Underground Forums (Node 07 / Module 10): Sales venue, trust and vetting infrastructure, escrow mechanisms, and reputation systems. IAB market health is directly tied to forum ecosystem health — without functioning trust infrastructure, IAB transaction volume collapses.</li>
+<li>Bulletproof Hosting (Node 03 / Module 09): C2 infrastructure hosting, particularly for platform-based IABs. Raspberry Robin maintains a fast-flux C2 network with &gt;200 unique domains across more than 20 TLDs on compromised NAS/IoT and BPH infrastructure.</li>
+<li>Cryptocurrency Payment Rails: USDT/TRON dominant for IAB transaction settlement. OTC brokers (Node 01) and non-compliant exchanges (Node 02) provide financial off-ramp.</li>
+</ul>
+<h3 class="doc-h3">Downstream Outputs</h3>
+<ul class="doc-list">
+<li>Ransomware Groups and RaaS Affiliates (Module 07 — primary buyers): Use IAB-sourced access to initiate ransomware deployment campaigns. IAB access quality directly determines deployment time-to-encryption.</li>
+<li>Nation-State APT Groups (secondary buyers): Purchase high-value government and critical infrastructure access for espionage operations. Attribution of APT involvement in IAB purchases is limited by operational security on both sides.</li>
+<li>Business Email Compromise and Fraud Operators: Use lower-tier access (VPN user credentials, limited domain access) for BEC campaigns and financial fraud.</li>
+</ul>
+<h3 class="doc-h3">Critical Chokepoints</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Chokepoint</th><th>Why Critical</th><th>Who Owns Disruption</th></tr><tr><td>Forum trust and vetting infrastructure</td><td>IABs require forum reputation to sell; buyers require vetting to trust access quality. Without trust mechanisms, both volume and price collapse.</td><td>FVEY LE + private sector forum monitoring (Intel 471, Flashpoint)</td></tr><tr><td>Stealer log credential pipeline (Node 10)</td><td>Most bulk IAB credential sourcing runs through log markets. Degrading log supply raises sourcing cost and forces more resource-intensive direct exploitation.</td><td>FVEY LE — Node 10 disruption compounds directly to Node 04</td></tr><tr><td>Cryptocurrency settlement rails (USDT/TRON)</td><td>IABs require pseudonymous, liquid payment rails. Tracing and designation of financial flows enables attribution and OFAC action against high-revenue operators.</td><td>OFAC + blockchain forensics (Chainalysis, TRM Labs, Elliptic)</td></tr><tr><td>Raspberry Robin C2 infrastructure</td><td>Platform-scale IAB depends on &gt;200 C2 domains and compromised NAS/IoT fleet. Sinkholing degrades access handoff and forces infrastructure reconstitution (estimated 6–18 months).</td><td>FVEY IC + LE (infrastructure takedown, upstream provider notification)</td></tr></table></div>
+<h3 class="doc-h3">Cross-Module Linkages</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Module</th><th>Node</th><th>Relationship</th><th>Direction</th></tr><tr><td>01 — Stealers</td><td>Node 10</td><td>Credential sourcing: stealer logs are the primary input for bulk IAB access listing pipelines</td><td>Upstream to IABs</td></tr><tr><td>02 — Loaders</td><td>Node 05</td><td>Malware-based IABs (Raspberry Robin) blur the loader/IAB boundary; loaders also deliver stealers that generate IAB credential input</td><td>Upstream to IABs</td></tr><tr><td>07 — RaaS Groups</td><td>No dedicated node</td><td>Primary buyer relationship; IAB access directly enables ransomware deployment velocity</td><td>IABs to Downstream</td></tr><tr><td>09 — BPH</td><td>Node 03</td><td>C2 infrastructure hosting for platform-based IABs; also used for scanning and reconnaissance infrastructure</td><td>Upstream to IABs</td></tr><tr><td>10 — Underground Forums</td><td>Node 07</td><td>Sales venue, trust and vetting infrastructure, escrow — IAB market health directly tied to forum ecosystem health</td><td>Upstream to IABs</td></tr></table></div>
+<h3 class="doc-h3">Technical Infrastructure</h3>
+<p class="doc-p">IABs maintain variable technical infrastructure depending on model type. Bulk IABs rely on commodity scanning tools (Shodan, Masscan), stealer log databases, and forum accounts. Boutique IABs maintain post-exploitation tooling (Cobalt Strike, Metasploit, custom scripts), victim profiling workflows, and encrypted communication channels for buyer negotiation.</p>
+<p class="doc-p">Platform-based IABs (Raspberry Robin) represent the most complex technical infrastructure in the IAB space: a multi-vector malware delivery system, fast-flux C2 network with &gt;200 unique domains, compromised NAS and IoT device fleet, and custom tooling evolved across multiple years of operation. This infrastructure investment creates significantly higher replace difficulty than traditional IAB models.  <span class="chip confirmed">CONFIRMED</span></p>
+<h2 class="doc-h2" id="s4">Section 4: Disruption Leverage Points</h2>
+<h3 class="doc-h3">EDP Node Reference</h3>
+<p class="doc-p">Node 04 — Initial Access Broker (IAB) Markets  |  Tier: HIGH  |  Replace Difficulty: MEDIUM  |  Backfire: LOW  |  Phase B</p>
+<p class="doc-p">Phase B encompasses Nodes 04 (IAB Markets), 07 (Underground Forums), and 08 (Mixing/Obfuscation). Phase B actions are most effective when Phase A financial and infrastructure pressure (Nodes 01, 02, 03) is already applied. Isolated Phase B action without Phase A support risks rapid recovery through price adjustment and forum migration.</p>
+<h3 class="doc-h3">Primary Disruption Levers</h3>
+<ul class="doc-list">
+<li>Forum disruption: Targeting sales infrastructure on Exploit, XSS, RAMP, and DarkForums. Disrupting forum trust mechanisms — vetting, escrow, reputation systems — raises transaction costs and buyer risk. Most effective when coordinated with Node 07 (Underground Forums) action to prevent simple migration.</li>
+<li>Financial designation (OFAC): Designation of identified high-volume or boutique IAB operators. Cryptocurrency tracing of USDT/TRON flows from known high-value transactions provides the attribution pipeline. Backfire LOW — financial actions do not trigger FSB protection reflex.</li>
+<li>Infrastructure takedown (platform-based IABs): Targeting C2 infrastructure for Raspberry Robin-type platforms. Sinkholing C2 domains, upstream provider notification for compromised NAS/IoT, and BPH engagement degrades access handoff capability with estimated 6–18 month reconstitution cost.</li>
+<li>Credential pipeline interdiction (compounding action): Coordinated degradation of stealer log markets (Module 01 / Node 10) compounds IAB operational cost by raising sourcing overhead. Most effective as simultaneous action alongside forum disruption, not sequential.</li>
+</ul>
+<h3 class="doc-h3">Who Owns Disruption</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Lever</th><th>Best Method</th><th>Primary Owner</th><th>Backfire Risk</th></tr><tr><td>Forum disruption
+(RAMP, DarkForums, Exploit, XSS)</td><td>Forum section infiltration + coordinated takedown of IAB-specific market areas</td><td>FVEY LE + Intel 471, Flashpoint (intelligence support)</td><td>LOW</td></tr><tr><td>Financial designation
+(high-volume / boutique operators)</td><td>Blockchain tracing (USDT/TRON) to attribution pipeline; OFAC SDN designation</td><td>OFAC + Chainalysis, TRM Labs, Elliptic</td><td>LOW</td></tr><tr><td>C2 infrastructure takedown
+(Raspberry Robin)</td><td>Sinkholing, upstream provider notification, BPH engagement; coordinate with Node 03 action</td><td>FVEY IC + LE</td><td>LOW–MEDIUM</td></tr><tr><td>Stealer log market disruption
+(compounding — Node 10)</td><td>Forum section takedown + purchase disruption; coordinate with Module 01 action</td><td>FVEY LE + private sector</td><td>LOW</td></tr><tr><td>Individual attribution
+(Russia-based boutique IABs)</td><td>Dark Covenant 3.0 screening required before any public attribution; protection mapping first</td><td>FVEY LE + Recorded Future</td><td>MEDIUM–HIGH if screening skipped</td></tr></table></div>
+<h3 class="doc-h3">Compounding Actions</h3>
+<ul class="doc-list">
+<li>Simultaneous disruption of Node 07 (Underground Forums) degrades the trust and vetting infrastructure IABs depend on for transactions — forum disruption and IAB market disruption compound bidirectionally.</li>
+<li>Credential pipeline disruption (Node 10 / Module 01) raises IAB sourcing cost, particularly for bulk operators who depend on stealer log purchases rather than direct exploitation capability.</li>
+<li>OFAC financial designation creates a chilling effect on forum participation; boutique IABs rely on established forum reputations that cannot be rebuilt under new handles on a disrupted or compromised forum.</li>
+<li>Phase A pressure (Nodes 01–03: OTC brokers, exchanges, BPH) degrades the financial off-ramp and hosting infrastructure simultaneously, reducing the effective value of IAB-held access and increasing operational overhead.</li>
+</ul>
+<h2 class="doc-h2" id="s5">Section 5: Resilience and Replace Difficulty</h2>
+<h3 class="doc-h3">Replace Difficulty Assessment: MEDIUM (Node 04)</h3>
+<p class="doc-p">The overall MEDIUM rating reflects the heterogeneous nature of the IAB market. Bulk IABs have LOW replace difficulty — commodity tools and techniques, minimal operational security requirements, and low entry barriers mean disrupted bulk operators are replaced within days to weeks. Boutique IABs and platform-based IABs have significantly higher replace difficulty, pulling the aggregate toward MEDIUM.</p>
+<h3 class="doc-h3">Replace Difficulty by Level</h3>
+<ul class="doc-list">
+<li>Bulk IABs — LOW replace difficulty: Scanning tools are commodity (Shodan, Masscan, commercial exploit kits). Stealer logs are commercially available on underground markets. RDP/VPN exploitation is widely practiced. A disrupted bulk IAB can be replaced by a new entrant within days to weeks.</li>
+<li>Boutique IABs — MEDIUM-HIGH replace difficulty: Require significant technical skill for privilege escalation and victim profiling. Forum reputation built over months or years cannot be transferred to a new handle. Trusted buyer relationships are personal and non-transferable. Post-disruption, boutique market capacity is degraded for 3–12 months.</li>
+<li>Platform-based IABs (Raspberry Robin) — HIGH replace difficulty: Multi-year infrastructure investment encompassing custom malware tooling, &gt;200 C2 domains, and a compromised NAS/IoT fleet. Reconstitution following major infrastructure disruption estimated at 6–18 months based on observed evolution timeline and infrastructure complexity.</li>
+</ul>
+<h3 class="doc-h3">Redundancy and Distributed Structure</h3>
+<p class="doc-p">The IAB market is distributed across multiple forums and private channels; no single forum controls the entire market. This structural redundancy is a primary resilience factor. H2 2025 migration from legacy forums (Exploit/XSS/BreachForums) to RAMP and DarkForums demonstrates consistent adaptive migration capacity following forum disruption events.  <span class="chip confirmed">CONFIRMED</span></p>
+<p class="doc-p">High-value IAB transactions are increasingly conducted off-forum via Telegram and TOX, reducing law enforcement and private sector visibility into the highest-value market segment. This off-forum migration increases resilience by reducing the disruption surface for the most valuable access categories.  <span class="chip credible">CREDIBLE</span></p>
+<h3 class="doc-h3">Historical Reconstitution</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Disruption Event</th><th>Outcome</th><th>Reconstitution Time</th></tr><tr><td>BreachForums seizure (2023)</td><td>IAB activity migrated to Exploit, XSS, and RAMP within weeks; minimal sustained disruption to listing volume</td><td>2–4 weeks</td></tr><tr><td>BreachForums v2 seizure (2024)</td><td>Accelerated migration to RAMP and DarkForums; activity continued with minimal interruption; confirmed by Rapid7 2026 reporting</td><td>1–3 weeks</td></tr><tr><td>Genesis Market takedown (2023) — credential market disruption</td><td>IABs shifted stealer log sourcing to alternative markets; temporary increase in direct exploitation activity observed</td><td>4–8 weeks (sourcing adaptation)</td></tr></table></div>
+<h3 class="doc-h3">Durability Assessment</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Factor</th><th>Assessment</th><th>Confidence</th></tr><tr><td>Technical barrier to entry (bulk)</td><td>LOW — commodity tools, well-documented techniques, widely available credential inputs</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>Technical barrier to entry (boutique)</td><td>MEDIUM-HIGH — skill, reputation, and buyer relationships are non-transferable</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>Forum ecosystem dependency</td><td>HIGH — IAB market health directly tied to forum trust infrastructure health</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>Geographic concentration (Russia/CIS)</td><td>Provides partial protection from Western LE action; CIS non-extradition norm persists</td><td><span class="chip credible">CREDIBLE</span></td></tr><tr><td>Platform-based resilience (Raspberry Robin)</td><td>HIGH infrastructure investment; HIGH reconstitution cost; not a rapid-rebuild scenario</td><td><span class="chip confirmed">CONFIRMED</span></td></tr><tr><td>Off-forum migration trend</td><td>Increasing Telegram/TOX usage for high-value deals reduces collection visibility and disruption surface</td><td><span class="chip credible">CREDIBLE</span></td></tr></table></div>
+<h3 class="doc-h3">Ecosystem Adaptation</h3>
+<p class="doc-p">IABs have demonstrated a consistent and rapid pattern of migrating to new forums following takedowns, with reconstitution times declining across successive disruption events — weeks in 2023, days in 2024. This acceleration suggests IAB operators have developed institutional resilience practices and pre-established fallback venues.</p>
+<p class="doc-p">Price increases in H2 2025 indicate the market is internalizing disruption costs and risk premiums rather than collapsing under law enforcement pressure. Higher average prices per access reflect a market absorbing friction costs, not a market in distress.  <span class="chip credible">CREDIBLE</span></p>
+<h2 class="doc-h2" id="s6">Section 6: Indicators and KPIs</h2>
+<h3 class="doc-h3">Health Indicators</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Indicator</th><th>Normal State</th><th>Under Pressure</th></tr><tr><td>Monthly listing volume (major forums)</td><td>Stable or increasing trend; consistent thread frequency on Exploit/XSS/RAMP/DarkForums</td><td>20%+ decline in monthly listings sustained over 30 days</td></tr><tr><td>Average asking price</td><td>~$2,700; trending upward with target quality increase (H2 2025 trend)</td><td>Sudden price spike (scarcity signal) or price collapse (quality/volume degradation)</td></tr><tr><td>Access type mix (VPN/RDP/Domain User share)</td><td>VPN ~23–33%, RDP ~17–55%, Domain User ~20% across observed datasets</td><td>Shift toward lower-quality access types; decline in domain admin share</td></tr><tr><td>Privileged access share</td><td>~71% of transactions offer privileged access (Rapid7 2025)</td><td>Decline below 60% — indicates sourcing capability degradation</td></tr><tr><td>Forum activity level (Exploit/XSS/RAMP/DarkForums)</td><td>Regular broker threads, active buyer engagement, escrow use</td><td>Reduced thread frequency, fewer buyer responses, increased escrow disputes</td></tr><tr><td>Off-forum migration signals</td><td>Low; most deals originate on-forum with some high-value private negotiation</td><td>Majority of high-value listings directing to Telegram/TOX-only channels</td></tr><tr><td>Raspberry Robin C2 domain count</td><td>&gt;200 active domains across 20+ TLDs</td><td>Decline below 100 active domains; sinkholed domains; reduced beacon traffic</td></tr></table></div>
+<h3 class="doc-h3">Disruption KPIs</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>KPI</th><th>Baseline</th><th>Target</th><th>Collection Method</th></tr><tr><td>Forum listing volume (monthly)</td><td>Establish from Exploit/XSS/RAMP/DarkForums monitoring</td><td>30% reduction sustained over 60 days</td><td>Intel 471, Flashpoint, Recorded Future forum monitoring</td></tr><tr><td>Average sale price</td><td>~$2,700 (Rapid7 2025)</td><td>Price spike &gt;$6,000 (scarcity) or volume collapse &gt;40%</td><td>Underground market price tracking; private sector reports</td></tr><tr><td>Privileged access share</td><td>71.4% (Rapid7 2025)</td><td>Below 55% of observed transactions</td><td>Forum listing analysis; private sector access broker reporting</td></tr><tr><td>Raspberry Robin active C2 domains</td><td>&gt;200 active domains</td><td>Below 50 sustained active domains</td><td>Picus Security, Zscaler, HP Threat Research telemetry</td></tr><tr><td>Top 5 IAB entity market share</td><td>~25% of all observed offers (WatchGuard 2023)</td><td>Confirmed disruption of 2+ entities from top 5</td><td>FVEY LE attribution + Intel 471, Flashpoint</td></tr><tr><td>Time from compromise to sale</td><td>Days–weeks (bulk); 1–4 weeks (boutique)</td><td>Increase to 30+ days average across listing types</td><td>Victim notification correlation with forum listing dates</td></tr></table></div>
+<h3 class="doc-h3">Collection Methods</h3>
+<ul class="doc-list">
+<li>Underground forum monitoring: Intel 471, Flashpoint, Recorded Future — continuous tracking of listing volume, pricing, access type mix, and actor handles on Exploit, XSS, RAMP, and DarkForums.</li>
+<li>Blockchain transaction tracing: Chainalysis, TRM Labs, Elliptic — USDT/TRON flow analysis from known IAB wallet addresses; transaction pattern analysis for attribution pipeline.</li>
+<li>Victim notification programs: FBI, CISA, sector CERTs — notification data enables correlation between forum listing dates and actual compromise timelines; validates access authenticity.</li>
+<li>Malware telemetry (Raspberry Robin): Picus Security, Zscaler, HP Threat Research — C2 domain tracking, beacon traffic analysis, compromised NAS/IoT device inventory.</li>
+<li>Law enforcement undercover purchasing programs: Direct forum access purchases for access validation, actor identification, and pricing verification.</li>
+</ul>
+<h3 class="doc-h3">Baseline Data</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Metric</th><th>Value</th><th>Source</th><th>Date</th></tr><tr><td>Average sale price</td><td>~$2,700</td><td>Rapid7</td><td>2025</td></tr><tr><td>Price range (most common)</td><td>$500–$1,000 (approx. 40% of listings)</td><td>Rapid7</td><td>2025</td></tr><tr><td>Premium listing threshold</td><td>&gt;$10,000</td><td>Rapid7, Cyberint</td><td>2025</td></tr><tr><td>Privileged access share</td><td>71.4% of observed transactions</td><td>Rapid7</td><td>2025</td></tr><tr><td>Top 5 entities market share</td><td>~25% of all observed IAB offers</td><td>WatchGuard</td><td>2023</td></tr><tr><td>Corporate networks sold (top 5)</td><td>&gt;2,300 network accesses</td><td>WatchGuard</td><td>2023</td></tr><tr><td>Average price (WatchGuard dataset)</td><td>~$2,800</td><td>WatchGuard</td><td>2023</td></tr><tr><td>VPN share</td><td>23.5% (Rapid7) / ~33% (Cyberint)</td><td>Rapid7 / Cyberint</td><td>2025</td></tr><tr><td>RDP share</td><td>16.7% (Rapid7) / ~55% (Cyberint)</td><td>Rapid7 / Cyberint</td><td>2025</td></tr><tr><td>Domain User share</td><td>19.9%</td><td>Rapid7</td><td>2025</td></tr><tr><td>Raspberry Robin active C2 domains</td><td>&gt;200 unique across 20+ TLDs</td><td>Picus Security</td><td>2025</td></tr></table></div>
+<h3 class="doc-h3">Alert Thresholds</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Indicator</th><th>Alert Threshold</th><th>Priority</th></tr><tr><td>Monthly listing volume decline</td><td>&gt;20% sustained over 30 days (may indicate disruption or migration)</td><td>HIGH</td></tr><tr><td>Average price spike</td><td>&gt;$6,000 average (100%+ increase — scarcity signal, not market health)</td><td>MEDIUM</td></tr><tr><td>Major forum disruption</td><td>Takedown or access loss for Exploit, XSS, RAMP, or DarkForums</td><td>HIGH — collection retasking required</td></tr><tr><td>Raspberry Robin C2 domain count</td><td>Below 100 active domains</td><td>HIGH — infrastructure pressure signal</td></tr><tr><td>Forum migration event</td><td>New primary venue identified (successor to RAMP or DarkForums)</td><td>HIGH — collection retasking required</td></tr><tr><td>Off-forum migration (Telegram/TOX)</td><td>Majority of high-value deals confirmed to originate exclusively off-forum</td><td>HIGH — significant collection visibility loss</td></tr></table></div>
+<h2 class="doc-h2" id="s7">Section 7: Sources and Confidence</h2>
+<h3 class="doc-h3">Primary Sources</h3>
+<ul class="doc-list">
+<li>Rapid7 — &quot;Compromise for Sale: Inside the 2025 Access Brokers Report.&quot; Primary dataset for pricing, privilege percentages, and access type breakdown. Blog and PDF release.</li>
+<li>Rapid7 — &quot;Initial Access Brokers Have Shifted to High-Value Targets and Premium Pricing&quot; (2026). H2 2025 market shift, forum migration, sector targeting changes.</li>
+<li>Cyberint — &quot;Initial Access Brokers Report 2025&quot; (PDF). RDP/VPN access mix, pricing range corroboration. Note: RDP/VPN percentage discrepancy with Rapid7 dataset.</li>
+<li>WatchGuard — &quot;Five cybercriminal entities sell access to 2,300 corporate networks.&quot; Market concentration analysis and average pricing in independent dataset. (2023)</li>
+<li>KELA — &quot;Access Brokers: Their Pivotal Role in Cybercrime.&quot; Structural role analysis, forum mechanics, actor taxonomy.</li>
+<li>Picus Security — &quot;Raspberry Robin Malware in 2025: From USB Worm to Elite Initial Access Broker.&quot; C2 infrastructure analysis, platform evolution, domain count.</li>
+</ul>
+<h3 class="doc-h3">Secondary Sources</h3>
+<ul class="doc-list">
+<li>Arctic Wolf — Initial Access Brokers overview. General taxonomy and definitional framework.</li>
+<li>Darknet.org — &quot;Initial Access Brokers (IAB) in 2025 — From Dark Web Listings to Supply-Chain Ransomware Events.&quot; Dark web listing patterns, RaaS buyer dynamics.</li>
+<li>Zscaler / HP Threat Research — Raspberry Robin C2 infrastructure and evolution. Corroborating telemetry for Picus Security findings on platform scale.</li>
+</ul>
+<h3 class="doc-h3">Gaps and Uncertainties</h3>
+<ul class="doc-list">
+<li>Attribution of specific high-volume IAB handles remains limited. Most operators maintain multiple aliases, compartmentalize operations, and operate within RU/CIS jurisdictions that limit Western LE reach.</li>
+<li>Pricing for private and Telegram-negotiated deals (off-forum transactions) is not observable through standard forum monitoring. Reported pricing represents a floor estimate; high-end boutique pricing may substantially exceed $10,000.</li>
+<li>RDP vs. VPN share discrepancy between Rapid7 (RDP 16.7%) and Cyberint (RDP ~55%) is unresolved and may reflect differences in dataset methodology, forum coverage, or collection time period. Reconciliation requires a third-party comparison dataset.</li>
+<li>Government adjacency of IAB operators: limited confirmed public reporting on direct FSB-IAB relationships. Dark Covenant 3.0 screening is required before any public attribution of Russia-based operators.</li>
+<li>IAB buyer composition: the proportion of access purchased by nation-state APT buyers versus RaaS affiliates is not precisely documented in public reporting. APT involvement is inferred from targeting patterns rather than direct attribution.</li>
+</ul>
+<p class="doc-p">Confidence Notes</p>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Claim</th><th>Confidence</th><th>Basis</th></tr><tr><td>Typical sale price ~$2,700</td><td><span class="chip confirmed">CONFIRMED</span></td><td>Rapid7 2025 primary dataset; corroborated by WatchGuard 2023 (~$2,800 in independent dataset)</td></tr><tr><td>71.4% of transactions offer privileged access</td><td><span class="chip confirmed">CONFIRMED</span></td><td>Rapid7 2025 primary dataset</td></tr><tr><td>VPN = 23.5%, Domain User = 19.9%, RDP = 16.7% of listings</td><td><span class="chip confirmed">CONFIRMED</span></td><td>Rapid7 2025 primary dataset</td></tr><tr><td>5 entities = ~25% of all IAB offers; &gt;2,300 corporate networks</td><td><span class="chip credible">CREDIBLE</span></td><td>WatchGuard 2023; dataset composition not fully specified in public reporting</td></tr><tr><td>H2 2025 shift toward RAMP/DarkForums; higher prices; government/retail/IT targeting increase</td><td><span class="chip confirmed">CONFIRMED</span></td><td>Rapid7 2026 market shift report</td></tr><tr><td>Raspberry Robin functions as elite IAB platform with &gt;200 C2 domains</td><td><span class="chip confirmed">CONFIRMED</span></td><td>Picus Security 2025; corroborated by Zscaler and HP Threat Research</td></tr><tr><td>FSB passive interest in IAB-generated government and critical infrastructure access</td><td><span class="chip inference">ANALYST INFERENCE</span></td><td>Structural reasoning from observed APT-cybercriminal access overlap; no confirmed direct FSB-IAB relationship in public reporting</td></tr><tr><td>Off-forum migration increasing for high-value deals</td><td><span class="chip credible">CREDIBLE</span></td><td>Single-source (Rapid7 trend reporting); consistent with operational security logic</td></tr></table></div>
+<h2 class="doc-h2" id="s8">Section 8: Analyst Assessment</h2>
+<p class="doc-p">Generated by Claude (Anthropic) — April 2026  |  EDP Module 05 — Initial Access Brokers (IABs)</p>
+<h3 class="doc-h3">Key Takeaway</h3>
+<p class="doc-p">The IAB layer is the most commercially mature segment of the ransomware supply chain. Prices are trending upward, targets are concentrating around higher-revenue victims, and the market is migrating to more-vetted, less-monitored forums. This structural maturation is simultaneously increasing the cost-per-disruption of law enforcement action and degrading passive collection visibility. The leverage window for sustained degradation is Phase B — but only if forum trust infrastructure (Node 07) and financial rails (Nodes 01 and 02) are targeted simultaneously. Isolated IAB takedowns without upstream credential market pressure and downstream forum disruption have historically produced weeks-long disruptions, not sustained ecosystem degradation.  <span class="chip credible">CREDIBLE</span></p>
+<h3 class="doc-h3">Priority Recommendation</h3>
+<p class="doc-p">Two coordinated actions are the recommended primary IAB disruption pathway:</p>
+<ul class="doc-list">
+<li>Boutique IAB financial designation pipeline: Use blockchain tracing of USDT/TRON flows from known high-value transactions to identify and OFAC-designate the highest-revenue boutique operators. Boutique IABs account for disproportionate value per transaction and maintain trusted RaaS buyer relationships that are difficult to reconstitute post-designation. Backfire risk is LOW. Dark Covenant 3.0 screening required before any Russia-based operator attribution.</li>
+<li>Forum trust infrastructure disruption (RAMP, DarkForums): Coordinate IAB-specific forum section takedown with Node 07 (Underground Forums) action. These two actions compound: boutique IABs cannot rebuild forum reputation on a disrupted or compromised forum. Sustained pressure over 90+ days forces permanent migration overhead and trust system reconstitution costs that bulk operators will absorb but boutique operators cannot.</li>
+</ul>
+<h3 class="doc-h3">Secondary Recommendation</h3>
+<p class="doc-p">Maintain sustained Raspberry Robin C2 sinkholing pressure. The platform represents a high-automation, high-volume access pipeline with multi-year infrastructure investment. Sustained sinkholing and upstream provider notification forces infrastructure reconstitution estimated at 6–18 months — compared to days-to-weeks for traditional forum-based IAB recovery. This is the highest-durability disruption option in the IAB node and requires no attribution risk.</p>
+<h3 class="doc-h3">Connection to EDP Playbook</h3>
+<p class="doc-p">Node 04 is Phase B (alongside Nodes 07 — Underground Forums and 08 — Mixing/Obfuscation Services). Phase B actions are most effective when Phase A financial and infrastructure foundation pressure is already applied. Initiating Phase B without Phase A progress risks IABs simply absorbing disruption through price adjustments and forum migration, as the financial off-ramp (Nodes 01 and 02) and hosting infrastructure (Node 03) remain intact. Current market evidence — rising prices, higher-value targets, accelerating forum migration — suggests the ecosystem has not yet experienced sustained Phase A pressure. Sequencing matters: Phase A first, then Phase B in coordination.</p>
+<h3 class="doc-h3">Dependency Map Update Recommendations</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Node</th><th>Current Status</th><th>Recommended Update</th><th>Rationale</th></tr><tr><td>Node 04 — IAB Markets</td><td>HIGH tier, MEDIUM replace difficulty, Phase B, LOW backfire</td><td>No change required; mapping is accurate</td><td>Research confirms Node 04 characterization across all assessed dimensions</td></tr><tr><td>Node 05 — Loaders/Botnets</td><td>HIGH tier, HIGH replace difficulty, Phase C</td><td>Add cross-reference to Node 04: Raspberry Robin blurs the Node 04/05 boundary and should be noted in both node descriptions</td><td>Raspberry Robin data demonstrates that platform-based IABs operate as hybrid loader/IAB systems — cross-node dependency is not currently reflected in the map</td></tr><tr><td>New sub-node consideration</td><td>Not currently in Dependency Map</td><td>Assess addition of a Platform-Based IAB sub-node under Node 04 or as a standalone cross-cutting node</td><td>Malware-based IABs have a distinct disruption profile (infrastructure takedown vs. forum disruption) with HIGH replace difficulty vs. MEDIUM for the Node 04 aggregate — the heterogeneity is analytically significant</td></tr></table></div>
+<h3 class="doc-h3">Follow-On Research</h3>
+<ul class="doc-list">
+<li>Attribution pipeline for top 5 market-concentration entities (WatchGuard 2023 dataset): Identify actor handles, correlate with USDT/TRON financial flows, run Dark Covenant 3.0 screening, and assess OFAC designation eligibility for the highest-revenue operators.</li>
+<li>RDP vs. VPN share reconciliation (Rapid7 vs. Cyberint discrepancy): Request methodology clarification from both vendors or reconcile against a third-party dataset. The discrepancy (16.7% vs. ~55% for RDP) is large enough to affect access-type-specific disruption targeting priorities.</li>
+<li>Off-forum transaction scope: Quantify the proportion of IAB transactions conducted via Telegram/TOX versus on-forum. If the majority of high-value deals are off-forum, forum disruption impact is significantly overstated and collection retargeting is required.</li>
+<li>Module 07 (RaaS Groups) buyer relationship mapping: Identify which RaaS programs maintain preferred or exclusive IAB relationships, and whether specific boutique IABs serve specific RaaS programs. This mapping would directly prioritize designation targets.</li>
+<li>Nation-state APT buyer composition: Quantify the proportion of IAB access purchased by APT-aligned buyers versus RaaS affiliates. APT involvement in IAB markets has implications for Dark Covenant screening requirements and attribution backfire risk profiling.</li>
+</ul>
+    </article>
+  </main>
+</body>
+</html>
