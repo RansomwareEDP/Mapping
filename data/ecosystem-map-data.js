@@ -681,6 +681,6 @@ const MODULE_DOCS = {
   'M13':  { pdf:'modules/module-13-money-launderers.html',     label:'EDP Module 13 — Money Launderers' },
   'M14':  { pdf:'modules/module-14-mule-networks.html',        label:'EDP Module 14 — Mule Networks' },
   'M15':  { pdf:'modules/module-15-negotiation-services.html', label:'EDP Module 15 — Negotiation Services' },
-  'ENAB': { pdf:'bphs/enablement-layer.html',               label:'Permission Layer — Enablement Analysis' },
+  'ENAB': { pdf:'/enablement-layer.html',               label:'Permission Layer — Enablement Analysis' },
 };
 const MODULE_ALIASES = { 'M11b':'M11', 'M13b':'M13', 'M13c':'M13' };
