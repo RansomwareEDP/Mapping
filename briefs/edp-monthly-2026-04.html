@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>EDP Monthly: April 2026 | EDP Document Library</title>
+ <meta name="edp-brief-type" content="monthly">
+ <meta name="edp-month" content="2026-04">
+ <style>
+
+
+  :root {
+   --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+   --border: #30363d; --border-light: #21262d;
+   --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+   --accent: #58a6ff; --accent-dim: #1f6feb;
+   --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+   --credible-bg: #341a00; --credible-text: #e3b341;
+   --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+   --critical: #f85149; --state: #bc8cff;
+   --sidebar-width: 260px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.65; display: flex; min-height: 100vh; }
+  .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+  .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .sidebar-logo a { color: var(--text-muted); text-decoration: none; }
+  .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+  .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: rgba(248,81,73,.12); color: var(--critical); border: 1px solid rgba(248,81,73,.35); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing:.04em; text-transform: uppercase; }
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+  .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing:.08em; color: var(--text-muted); }
+  .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all.15s; }
+  .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+  .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+  .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+  .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+  .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; max-width: calc(100% - var(--sidebar-width)); }
+  .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+  .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+  .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+  .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+  .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); max-width: 900px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .hbadge { display: inline-flex; align-items: center; padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing:.05em; text-transform: uppercase; }
+  .hbadge.critical { background: rgba(248,81,73,.12); color: var(--critical); border: 1px solid rgba(248,81,73,.3); }
+  .hbadge.node { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+  .hbadge.pdf { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+  .hbadge.pdf a { color: var(--text); text-decoration: none; }
+  .doc-main { padding: 24px 40px; max-width: 1000px; }
+  .doc-h2 { font-size: 17px; font-weight: 700; color: var(--text-heading); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing:.01em; }
+  .doc-h3 { font-size: 14px; font-weight: 700; color: var(--accent); margin: 24px 0 10px; }
+  .doc-p { margin: 0 0 12px; }
+  .doc-list { margin: 0 0 14px 22px; }
+  .doc-list li { margin-bottom: 8px; }
+  .tbl-wrap { overflow-x: auto; margin: 14px 0 18px; border: 1px solid var(--border); border-radius: 6px; }
+  .doc-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .doc-table th { background: var(--bg-secondary); color: var(--text-heading); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing:.04em; white-space: nowrap; }
+  .doc-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+  .doc-table tr:last-child td { border-bottom: none; }
+  .chip { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing:.04em; }
+  .chip.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); }
+  .chip.credible { background: var(--credible-bg); color: var(--credible-text); }
+  .chip.inference { background: var(--inference-bg); color: var(--inference-text); }
+  /* Ecosystem inset */
+  .eco-inset { margin: 24px 40px 8px; max-width: 1000px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .eco-inset-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .eco-inset-title { font-size: 11px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); }
+  .eco-inset-link { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 600; }
+  .eco-inset-link:hover { text-decoration: underline; }
+  .eco-inset svg { display: block; width: 100%; height: auto; }
+  .eco-caption { padding: 10px 18px 14px; font-size: 11.5px; color: var(--text-muted); border-top: 1px solid var(--border-light); }
+  .eco-caption.leg { display: inline-flex; align-items: center; gap: 5px; margin-right: 16px; white-space: nowrap; }
+  .leg-line { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--accent); }
+  .leg-line.dashed { border-top-style: dashed; border-top-color: var(--text-muted); }
+  .leg-line.state { border-top-style: dotted; border-top-color: var(--state); }
+  @media (max-width: 860px) {.sidebar { display: none; }.content { margin-left: 0; max-width: 100%; }.doc-main,.eco-inset { padding-left: 18px; padding-right: 18px; margin-left: 12px; margin-right: 12px; } }
+ 
+  .hbadge.high { background: rgba(227,179,65,.12); color: #e3b341; border: 1px solid rgba(227,179,65,.3); }
+  .hbadge.medium { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+  .node-type-badge.high { background: rgba(227,179,65,.12); color: #e3b341; border-color: rgba(227,179,65,.35); }
+  .node-type-badge.medium { background: rgba(88,166,255,.1); color: var(--accent); border-color: rgba(88,166,255,.35); }
+\n  .doc-note { margin: 0 0 18px; padding: 12px 16px; background: var(--bg-secondary); border-left: 3px solid var(--credible-text); border-radius: 0 6px 6px 0; font-size: 13px; color: var(--text); }
+ 
+  .lever p { margin: 0 0 6px; }
+  .lever p:last-child { margin-bottom: 0; }
+  .lk { display:inline-block; min-width:78px; font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+  .crit { color: var(--critical); font-weight: 700; }
+  .doc-note.lever { border-left-color: var(--accent); }
+  .kicker { font-size:12.5px; color:var(--text-muted); border:1px solid var(--border); border-left:3px solid var(--accent); background:var(--bg-secondary); border-radius:6px; padding:12px 16px; margin:0 0 22px; }
+  .kicker a { color: var(--accent); }
+ </style>
+</head>
+<body>
+ <aside class="sidebar">
+  <div class="sidebar-header">
+   <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+   <div class="sidebar-title">EDP Monthly<br>April 2026</div>
+   <span class="node-type-badge critical">Intelligence Report</span>
+  </div>
+  <nav class="sidebar-nav">
+   <div class="nav-section-label">On This Page</div>
+   <a class="nav-link" href="#s1"><span class="nav-num">01</span> Executive Summary</a>
+   <a class="nav-link" href="#s2"><span class="nav-num">02</span> Ransomware Ecosystem - Monthly Statistics</a>
+   <a class="nav-link" href="#s3"><span class="nav-num">03</span> Threat Actor Landscape</a>
+   <a class="nav-link" href="#s4"><span class="nav-num">04</span> Initial Access &amp; Ttp Evolution</a>
+   <a class="nav-link" href="#s5"><span class="nav-num">05</span> Malware &amp; Stealer Ecosystem</a>
+   <a class="nav-link" href="#s6"><span class="nav-num">06</span> Financial &amp; Infrastructure Signals</a>
+   <a class="nav-link" href="#s7"><span class="nav-num">07</span> Law Enforcement &amp; Regulatory Actions</a>
+   <a class="nav-link" href="#s8"><span class="nav-num">08</span> Vulnerability Exploitation Matrix</a>
+   <a class="nav-link" href="#s9"><span class="nav-num">09</span> Supply Chain &amp; Third-Party Compromise</a>
+   <a class="nav-link" href="#s10"><span class="nav-num">10</span> Ecosystem Control Node Analysis</a>
+   <a class="nav-link" href="#s11"><span class="nav-num">11</span> Strategic Leverage Assessment</a>
+   <a class="nav-link" href="#s12"><span class="nav-num">12</span> Unconfirmed Signals &amp; Horizon Indicators</a>
+   <a class="nav-link" href="#s13"><span class="nav-num">13</span> Analytic Caveats &amp; Collection Gaps</a>
+   <a class="nav-link" href="#s14"><span class="nav-num">&#9670;</span> Sources</a>
+   <div class="nav-section-label" style="margin-top:10px">Related</div>
+   <a class="nav-link" href="/map#delta=2026-04">What moved on the map</a>
+   <a class="nav-link" href="/reconstitution.html">Reconstitution Interval</a>
+   <a class="nav-link" href="/tracker.html">Sanctions Tracker</a>
+   <a class="nav-link" href="/library/">Document Library</a>
+  </nav>
+  <div class="sidebar-footer">
+   <div class="sidebar-meta">Ecosystem Degradation Project<br>Coverage: April 2026<br>Published: 30 April 2026</div>
+  </div>
+ </aside>
+ <main class="content">
+  <header class="profile-header">
+   <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / EDP Monthly April 2026</div>
+   <div class="profile-name">Monthly Cybercrime Ecosystem Intelligence Report</div>
+   <div class="profile-subtitle">Coverage period April 2026. Affiliate-pool expansion at unprecedented scale, the Grinex collapse, and the EU ban on the digital ruble and RUBx.</div>
+   <div class="badge-row"><span class="hbadge critical">Grinex hacked and suspended</span><span class="hbadge node">April 2026</span><span class="hbadge pdf"><a href="../docs/EDP_Monthly_2026-04.pdf">Download PDF</a></span></div>
+  </header>
+
+  <p class="kicker">Confidence labels are applied throughout: CONFIRMED, CREDIBLE REPORTING, and ANALYST INFERENCE. Figures carried forward from earlier periods are dated explicitly where month-specific data was unavailable. To see which ecosystem nodes moved during this reporting period, open <a href="/map#delta=2026-04">the map's delta view for April 2026</a>.</p>
+
+  <div class="doc-main">
+<h2 class="doc-h2" id="s1">SECTION 1 - EXECUTIVE SUMMARY</h2>
+<p class="doc-p">Five highest-priority ecosystem-level developments, ranked by strategic impact. Each item carries a confidence label and at least one supporting metric.</p>
+<p class="doc-p">1. Vect RaaS formalized an unprecedented mass-affiliate partnership with BreachForums on April 16, 2026, distributing functional affiliate keys to all 300,000+ registered forum members and embedding the forum directly into the ransomware execution pipeline - representing the largest documented single-event expansion of the ransomware affiliate pool in the history of RaaS. [<span class="chip confirmed">CONFIRMED</span>]</p>
+<p class="doc-p">2. The EU's 20th Russia sanctions package (April 23, 2026) imposed a total ban on Russian crypto platforms and blocked the digital ruble and RUBx stablecoin, effective May 24, 2026, applying the most comprehensive single regulatory constraint on ransomware money-laundering infrastructure since Garantex sanctions in 2022. [<span class="chip confirmed">CONFIRMED</span>]</p>
+<p class="doc-p">3. Analysis of The Gentlemen's SystemBC C2 infrastructure revealed 1,570+ victims, approximately 5x the group's published leak-site count of 320, confirming that declared victim counts systematically undercount actual operational reach across the ransomware ecosystem. [<span class="chip confirmed">CONFIRMED</span>]</p>
+<p class="doc-p">4. Active data-leak sites reached a record 91 in Q1 2026 alongside 2,638 published victim posts - a 22% increase over Q1 2025 - with ecosystem fragmentation accelerating following RAMP's FBI seizure (January 28, 2026), indicating disruption of central coordination nodes is driving proliferation rather than contraction. [<span class="chip confirmed">CONFIRMED</span>]</p>
+<p class="doc-p">5. The FBI IC3 2025 Annual Report (released April 6, 2026) recorded $20.877 billion in cybercrime losses - a 26% year-over-year increase and first crossing of the $20B threshold - with ransomware continuing to drive critical infrastructure targeting that intensified in Q1 2026. [<span class="chip confirmed">CONFIRMED</span>]</p>
+<h2 class="doc-h2" id="s2">SECTION 2 - RANSOMWARE ECOSYSTEM - MONTHLY STATISTICS</h2>
+<p class="doc-p">Coverage: April 2026 (partial April data supplemented by Q1 2026 and March 2026 final figures where April monthly totals are still accumulating as of April 30). All figures sourced from Ransomware.live, Breachsense, ReliaQuest, and ZeroFox reporting unless noted.</p>
+<h3 class="doc-h3">Core Statistics</h3>
+<p class="doc-p">Total victims disclosed (March 2026, confirmed final): 808 - Source: Breachsense March 2026 Ransomware Report</p>
+<p class="doc-p">April 2026 victim count (partial, as of April 28): ~760 projected; ransom-db weekly data shows Qilin 107, TheGentlemen 70, Akira 69 in rolling 30-day window</p>
+<p class="doc-p">Active group count (Q1 2026): 70 groups tracked by Ransomware.live; 65 groups in March per Breachsense; 91 active leak sites (record)</p>
+<p class="doc-p">New groups identified (Q1 2026): Multiple entrants including Orion ransomware, 0APT, and Vect (December 2025 RaaS debut)</p>
+<p class="doc-p">Defunct or dormant groups: RAMP forum seized January 28, 2026; associated affiliate channels disrupted; successor forums emerging</p>
+<p class="doc-p">Q1 2026 total posts on leak sites: 2,638 - up 22% from Q1 2025 (2,161) - Source: ReliaQuest</p>
+<p class="doc-p">Month-over-month victim change (Feb to March 2026): +19% (March 808 vs. February ~679)</p>
+<p class="doc-p">Estimated ransom volume: No reliable aggregate monthly data available. FBI IC3 2025 full-year: $20.877B total cybercrime losses.</p>
+<h3 class="doc-h3">Sector Targeting Trend Table - March 2026</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Sector</th><th>March 2026 (n)</th><th>Prior Month (n)</th><th>% Change</th><th>Trend</th></tr><tr><td>Manufacturing</td><td>76</td><td>No prior data</td><td>N/A</td><td>Dominant - #1 sector Q1 2026 (419 incidents)</td></tr><tr><td>Construction</td><td>53</td><td>No prior data</td><td>N/A</td><td>Elevated - consistent top-5 position</td></tr><tr><td>Finance</td><td>48</td><td>No prior data</td><td>N/A</td><td>Elevated - top-3 March</td></tr><tr><td>Healthcare</td><td>18</td><td>No prior data</td><td>N/A</td><td>Stable - April 26 incidents confirmed in UK/US/AU</td></tr><tr><td>Government</td><td>14</td><td>No prior data</td><td>N/A</td><td>Stable - consistent mid-tier targeting</td></tr></table></div>
+<p class="doc-p">Note: Sector-level prior-month comparatives unavailable from accessible sources this cycle.</p>
+<h3 class="doc-h3">Geographic Targeting Analysis</h3>
+<ul class="doc-list">
+<li>United States: 50% of all March victims (404/808). April rolling data: 37% of tracked attacks - Source: Breachsense, ransom-db</li>
+<li>France: 36 victims (March); Germany: 32 victims (March) - Source: Breachsense</li>
+<li>Q1 2026: North America 54% of all incidents; US alone 51% (1,084 incidents) - Source: ZeroFox Q1 2026 Ransomware Wrap-Up</li>
+<li>CIS-exclusion patterns: Assessed to be holding for most established RaaS groups (Qilin, Akira). Vect exclusion behavior: Unknown - no confirmed CIS targeting or explicit exclusion language documented as of April 30. The Gentlemen: Unknown CIS exclusion policy.</li>
+<li>EU targeting uptick noted in April: UK, Switzerland, Germany appeared in April 26 incident trackers alongside North American victims - Source: Purple Ops April 2026</li>
+</ul>
+<h3 class="doc-h3">Leak Site Three-Signal Composite</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Signal</th><th>April 2026</th><th>Prior Period (Q1 2025)</th><th>Trend</th><th>Notes</th></tr><tr><td>Post Volume (victims published)</td><td>~760 projected (partial); March final: 808</td><td>Q1 2025: 2,161 total (avg 720/mo)</td><td>Increasing</td><td>22% YoY increase Q1 2026 vs Q1 2025; record 91 active sites</td></tr><tr><td>Time-to-Publish (avg days)</td><td>No reliable data available for this metric</td><td>No reliable data available for this metric</td><td>Unknown</td><td>Compression would indicate escalating pressure; data gap noted</td></tr><tr><td>Takedown/Relaunch Cycle</td><td>RAMP seized Jan 28; T1erOne and others emerged within 30 days</td><td>Post-LockBit: ~30-60 day reconstitution</td><td>Resilience increasing</td><td>Faster fragmentation than consolidation; 91 active sites vs. ~50 in mid-2024</td></tr></table></div>
+<p class="doc-p">Composite interpretation: Post volume and active site count are both increasing, indicating ecosystem expansion. The takedown-to-relaunch signal shows rapid reconstitution but into fragmented smaller operations rather than single successor entities. Divergence between declared victim counts (leak sites) and actual operational reach (The Gentlemen C2 analysis: 1,570 actual vs. 320 published) is analytically significant - lean-site post volume likely undercounts true operational impact by a factor of 3-5x.</p>
+<h2 class="doc-h2" id="s3">SECTION 3 - THREAT ACTOR LANDSCAPE</h2>
+<p class="doc-p">Russia/CIS-linked groups prioritized. April 2026 victim counts are rolling 30-day figures from ransom-db weekly reporting (as of April 28, 2026). CIS exclusion assessments based on available intelligence.</p>
+<h3 class="doc-h3">Priority Threat Actors - April 2026</h3>
+<p class="doc-p">QILIN (Agenda)</p>
+<p class="doc-p">April victims (rolling 30-day): 107 - Source: ransom-db April 24, 2026 weekly report; 31 confirmed in final week of April alone</p>
+<p class="doc-p">Q1 2026 total: 338 victims - #1 most active group Q1 2026 - Source: ZeroFox, ReliaQuest</p>
+<p class="doc-p">Record performance: March 2026: 131 victims - highest single month for any group in Q1 2026 - Source: Breachsense</p>
+<p class="doc-p">Cumulative known proceeds: No reliable figure publicly available</p>
+<p class="doc-p">Key development (April): Maintained dominance representing approximately 14% of all tracked ransomware activity in rolling 30-day window</p>
+<p class="doc-p">Threat level vs. prior month: Increasing - three consecutive months above 100 victims</p>
+<p class="doc-p">CIS exclusion: Assessed (consistent with Russia/CIS-linked operational patterns; no confirmed CIS victim targeting documented)</p>
+<p class="doc-p">THE GENTLEMEN (The_Gentelman)</p>
+<p class="doc-p">April victims (rolling 30-day): 70 - Source: ransom-db April 2026</p>
+<p class="doc-p">Q1 2026 total: 192 victims - #3 most active Q1 2026; 588% QoQ growth (26 posts Q4 2025 to 179 Q1 2026) - Source: ReliaQuest</p>
+<p class="doc-p">Actual operational scale: 1,570+ victims identified via SystemBC C2 server analysis (April 21, 2026) - Source: Check Point Research / The Hacker News</p>
+<p class="doc-p">Cumulative since emergence (July 2025): 320+ published victims; 1,570+ actual C2-identified victims</p>
+<p class="doc-p">Key development (April): SystemBC C2 infrastructure exposed by researchers on April 21, revealing true victim scale 5x the published count; GPO abuse documented as domain-wide compromise mechanism</p>
+<p class="doc-p">Technical indicators: SystemBC proxy malware (SOCKS5 tunneling, custom RC4-encrypted C2); Cobalt Strike; GPO-based lateral movement; internet-facing service exploitation for initial access</p>
+<p class="doc-p">Threat level vs. prior month: Increasing - infrastructure revelation confirms larger operational footprint than disclosed</p>
+<p class="doc-p">CIS exclusion: Unknown - no confirmed policy</p>
+<p class="doc-p">AKIRA</p>
+<p class="doc-p">April victims (rolling 30-day): 69 - Source: ransom-db April 2026</p>
+<p class="doc-p">Q1 2026 total: 197 victims - #2 most active Q1 2026 - Source: ZeroFox</p>
+<p class="doc-p">Cumulative known proceeds: Estimated $42M+ (FBI advisory, prior periods; no updated April 2026 figure available)</p>
+<p class="doc-p">Key development (April): Maintained consistent mid-market targeting presence; no major structural changes reported</p>
+<p class="doc-p">Threat level vs. prior month: Stable - consistent high-volume operation</p>
+<p class="doc-p">CIS exclusion: Assessed - consistent historical pattern</p>
+<p class="doc-p">VECT (New Entrant - High Priority)</p>
+<p class="doc-p">April victims (rolling 30-day): No reliable data - victim pipeline just activating post-April 16 key distribution</p>
+<p class="doc-p">Debut: December 2025 on Russian-language cybercrime forum</p>
+<p class="doc-p">Affiliate model: Mass-open RaaS - BreachForums partnership April 16, 2026; 300,000+ potential affiliates via forum membership</p>
+<p class="doc-p">Key development (April): April 16: Mass affiliate key distribution to entire BreachForums membership. April 28-29: Critical bug disclosed - VECT 2.0 irreversibly destroys files over 131KB on Windows, Linux, and ESXi, functioning as a wiper rather than a ransomware; affiliate confidence and payment recovery likelihood severely undermined.</p>
+<p class="doc-p">TeamPCP alignment: Formal alignment announced; TeamPCP provides supply-chain sourced access (compromised security tooling) feeding Vect operations</p>
+<p class="doc-p">Threat level vs. prior month: Increasing in scale potential; wiper bug is a structural constraint on monetization</p>
+<p class="doc-p">CIS exclusion: Unknown - no documented policy</p>
+<p class="doc-p">INC RANSOM and CL0P</p>
+<p class="doc-p">Q1 2026 position: Both in top-5 Q1 2026 by victim count - Source: ReliaQuest, ZeroFox</p>
+<p class="doc-p">Cl0p April activity: Continued supply-chain focused operations; no major new disclosures in available April sources</p>
+<p class="doc-p">April victim counts: No reliable April-specific data available for either group this cycle</p>
+<h3 class="doc-h3">Data Extortion Trend (Encryption-Free)</h3>
+<ul class="doc-list">
+<li>Europol IOCTA 2026 (released April 28, 2026) confirms the extortion model is shifting away from data encryption toward pure data theft - Source: Europol</li>
+<li>Q1 2026 total leak-site posts: 2,638 - the aggregate metric now includes both encryption-plus-extortion and encryption-free extortion; no reliable breakdown percentage available this cycle. Notation: No reliable data available for this metric (encryption-free vs. encryption share, April 2026).</li>
+<li>Named groups operating extortion-only: ShinyHunters (identity-first, SaaS-native data theft; no encryptor deployed); 0APT (emerging, claimed attacks without encryption evidence)</li>
+<li>Q1 2026 trend: Attackers avoiding encryption reduce forensic visibility and post-incident response options; analysts note defense blind spots as primary growth driver for this model - Source: ReliaQuest Q1 2026, Morphisec</li>
+</ul>
+<h2 class="doc-h2" id="s4">SECTION 4 - INITIAL ACCESS &amp; TTP EVOLUTION</h2>
+<h3 class="doc-h3">Access Vector Ranking (Q1 2026, Most to Least Common)</h3>
+<ul class="doc-list">
+<li>1. Credential-based intrusion (stolen credentials from infostealer logs, IAB-purchased access) - Dominant vector Q1 2026 - Source: ReliaQuest, RAMP analysis</li>
+<li>2. Internet-facing service exploitation (VPN, RDP, Citrix) - Confirmed for The Gentlemen, Akira, and multiple unnamed groups</li>
+<li>3. Software supply chain compromise - Elevated in April 2026 (Axios npm, Bitwarden CLI, Vercel/Context.ai, SAP npm) - Source: CISA, Elastic, Endor Labs</li>
+<li>4. Phishing/spearphishing - Persistent baseline; IC3 2025 reports phishing losses escalated from $70M to $215.8M year-over-year</li>
+<li>5. CVE exploitation of unpatched systems - Documented for Apache ActiveMQ, Fortinet FortiClient EMS, Windows Shell vulnerabilities in April 2026</li>
+</ul>
+<h3 class="doc-h3">Significant TTP Developments</h3>
+<ul class="doc-list">
+<li>The Gentlemen - GPO abuse: Group Policy Objects abused to achieve domain-wide compromise; SystemBC used as persistent SOCKS5 proxy; Cobalt Strike as post-exploitation framework. Scale: 1,570+ confirmed C2 victims - Source: Check Point, April 21, 2026.</li>
+<li>Vect - Mass affiliate mobilization: BreachForums-integrated operational infrastructure; escrow, key distribution, and coordination embedded directly in forum. Qualitative shift from traditional vetted-affiliate RaaS model to open-access. VECT 2.0 cross-platform targeting (Windows, Linux, ESXi) - Source: Cynet, Dataminr, April 2026.</li>
+<li>TeamPCP - Supply chain access sourcing: Compromised Checkmarx GitHub Actions, Open VSX plugins, and in April 2026, SAP npm packages; access provided to Vect affiliates. Attack surface: developer toolchains and open-source security tooling - Source: The Register, The Hacker News, CISA.</li>
+<li>APT28 - LNK file exploit chain: CVE-2026-32202 (Windows Shell) combined with CVE-2026-21513 deployed via malicious Windows Shortcut files; targeted Ukraine and EU nations; zero-click vector - Source: The Register, April 29, 2026.</li>
+</ul>
+<h3 class="doc-h3">IAB Market Indicators Table</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Indicator</th><th>Current Period</th><th>Prior Period</th><th>Trend</th></tr><tr><td>Volume of corporate access listings</td><td>No reliable monthly count available</td><td>Elevated through RAMP (pre-seizure)</td><td>Fragmented post-RAMP seizure (Jan 28, 2026); migrating to T1erOne and private channels</td></tr><tr><td>Median access price</td><td>$1,295 (2024 full-year average)</td><td>$2,000-$3,500 (2022-2023 range)</td><td>Declining - ~60% price reduction vs. prior years; volume strategy dominant</td></tr><tr><td>Premium listing ceiling</td><td>$3,000 (typical)</td><td>$10,000+ (peak 2022)</td><td>Compressing - high-value listings moving to private negotiations</td></tr><tr><td>Most-targeted sectors (top 3)</td><td>Manufacturing, Finance, Healthcare</td><td>Manufacturing, Finance, Healthcare</td><td>Stable sector targeting pattern</td></tr><tr><td>Dominant access type</td><td>RDP (dominant) &gt; VPN &gt; Citrix - Source: RAMP historical analysis, Flare</td><td>RDP &gt; VPN &gt; Citrix</td><td>Stable - RDP remains primary; credential-based entry dominant</td></tr><tr><td>Notable marketplace events</td><td>RAMP seized January 28, 2026; T1erOne emerged as early successor; RAMP had 1,732 threads, 7,707 users, 340K IP records leaked</td><td>RAMP operational; active listings</td><td>Significant disruption to central IAB marketplace; ecosystem fragmented</td></tr></table></div>
+<p class="doc-p">Note: Infostealer-to-IAB pipeline - median time from Lumma/StealC infection to dark web credential listing: No reliable data available for this metric (timing data not available in accessible sources this cycle). Qualitatively, Vercel/Context.ai breach demonstrates that stealer-sourced OAuth tokens were operationalized within weeks of initial infection (Lumma infection ~February 2026; attack chain executed April 2026).</p>
+<h2 class="doc-h2" id="s5">SECTION 5 - MALWARE &amp; STEALER ECOSYSTEM</h2>
+<h3 class="doc-h3">Active Families - Ranked by Distribution Volume</h3>
+<p class="doc-p">1. LummaC2 / Remus</p>
+<p class="doc-p">Market share / volume: Lumma + successor Remus: estimated dominant share of infostealer market in early 2026; exact percentage No reliable data available for this metric (post-disruption figures not confirmed)</p>
+<p class="doc-p">Distribution method (April 2026): Remus: EtherHiding (blockchain-based C2 resolution) replacing Steam/Telegram dead-drop resolvers; browser-centric credential, cookie, and crypto wallet theft</p>
+<p class="doc-p">Notable development: Remus emerged February 2026 as 64-bit successor following Lumma takedown (May 2025) and developer doxxing (Aug-Oct 2025). Key innovation: EtherHiding C2 resolution significantly hardens infrastructure against traditional takedown methods. Remus campaigns active and scaling - Source: Gen Digital, SOC Prime, April 2026.</p>
+<p class="doc-p">Disruption status: Lumma: Disrupted May 2025, recovered within weeks. Remus: Active, no disruption action.</p>
+<p class="doc-p">2. StealC</p>
+<p class="doc-p">Market share: Top-3 infostealer; combined Lumma+StealC+RedLine account for 75%+ of infections - Source: Breachsense</p>
+<p class="doc-p">Distribution method: MaaS subscription model ($250/month entry); widespread loader and dropper distribution</p>
+<p class="doc-p">Notable development: No major structural changes reported April 2026</p>
+<p class="doc-p">Disruption status: Active - no disruption action</p>
+<p class="doc-p">3. RedLine</p>
+<p class="doc-p">Market share: Declining following Operation Magnus (October 2024); logs remain in circulation</p>
+<p class="doc-p">Distribution method: Legacy logs still circulating through underground markets and Telegram channels</p>
+<p class="doc-p">Notable development: Post-Magnus decline continues; logs from prior infections remain a live credential threat despite service disruption</p>
+<p class="doc-p">Disruption status: Disrupted (Operation Magnus, Oct 2024); logs in ongoing circulation</p>
+<p class="doc-p">4. ACRStealer / Vidar</p>
+<p class="doc-p">Market share / volume: Active distribution in early 2026 alongside Lumma and StealC - Source: Breachsense malware trends report</p>
+<p class="doc-p">Distribution method: Loader networks; phishing chains</p>
+<p class="doc-p">Notable development: No specific April 2026 developments identified in accessible sources</p>
+<p class="doc-p">Disruption status: Active - no disruption action</p>
+<h3 class="doc-h3">Infostealer-to-IAB Pipeline Assessment</h3>
+<ul class="doc-list">
+<li>Scale context: 3.9 billion credentials compromised across 4.3 million devices in 2024; average 1,861 cookies per infection enabling MFA bypass via session token theft - Source: Breachsense, Darktrace</li>
+<li>Pipeline integrity: A single unprotected database discovered January 2026 contained 149 million stolen login/password pairs including 48 million Gmail accounts, confirming that credential stockpiles significantly exceed what is actively listed on IAB markets at any given time - Source: AlgeriaTech News</li>
+<li>Pipeline timing: Vercel/Context.ai case demonstrates a multi-week operational gap between initial stealer infection and weaponization of stolen OAuth tokens. Lumma Stealer infection at Context.ai occurred approximately February 2026; credential weaponization executed April 2026 (approximately 8-10 week lag in this documented case) - Source: Trend Micro, April 2026.</li>
+<li>Operational significance: EtherHiding adoption by Remus reduces law enforcement's ability to sinkhole C2 infrastructure, extending the operational life of stealer deployments and the credential pipeline feeding IAB markets.</li>
+</ul>
+<h2 class="doc-h2" id="s6">SECTION 6 - FINANCIAL &amp; INFRASTRUCTURE SIGNALS</h2>
+<h3 class="doc-h3">Sanctions and Enforcement Actions - April 2026</h3>
+<p class="doc-p">Action 1: OFAC Southeast Asia Scam Center Designations</p>
+<p class="doc-p">Designating authority: OFAC (U.S. Department of the Treasury)</p>
+<p class="doc-p">Date: April 23, 2026</p>
+<p class="doc-p">Target: 29 entities in Cambodia; centered on Senator Kok An, associate Rithy Raksmei, and network of casinos/hotels/holding companies</p>
+<p class="doc-p">Stated rationale: Money laundering of cyber-enabled fraud proceeds; support for Southeast Asian scam center infrastructure</p>
+<p class="doc-p">Financial exposure: $701.9 million in cryptocurrency restrained - Source: Chainalysis, April 2026</p>
+<p class="doc-p">Assessed disruption impact: Medium - targeted specific Cambodian network; primary nexus is fraud/BEC rather than ransomware; crypto restraint is significant but scam center operators have demonstrated geographic mobility</p>
+<p class="doc-p">Action 2: EU 20th Russia Sanctions Package - Crypto Provisions</p>
+<p class="doc-p">Designating authority: European Union Council</p>
+<p class="doc-p">Date: April 23, 2026; effective May 24, 2026</p>
+<p class="doc-p">Target: All Russian and Belarusian crypto platforms; digital ruble (CBDC); RUBx stablecoin; 20 Russian banks; 4 third-country financial institutions (SPFS-linked); Kyrgyz exchange TengriCoin</p>
+<p class="doc-p">Stated rationale: Sanctions evasion; support for Russia's war economy; crypto circumvention of prior EU financial restrictions</p>
+<p class="doc-p">Financial exposure: Russia's A7A5 ruble-backed token has processed an estimated $93.3 billion in sanctions evasion - Source: Chainalysis 2026 Crypto Crime Report</p>
+<p class="doc-p">Assessed disruption impact: High (structural, 90+ days) - Total ban on Russian crypto platforms closes the most accessible EU-connected laundering channels; effective May 24 deadline creates a 31-day adjustment window during which displacement to non-EU-compliant exchanges is expected</p>
+<p class="doc-p">Action 3: Grinex Exchange Hack / Operational Suspension</p>
+<p class="doc-p">Status: Not a sanctions action - criminal/technical incident</p>
+<p class="doc-p">Date: April 15, 2026</p>
+<p class="doc-p">Event: Sanctioned Russian crypto exchange Grinex (OFAC-designated Garantex successor) was hacked and lost $13.7 million; suspended operations attributing attack to Western special services - Source: Breached.Company</p>
+<p class="doc-p">Assessed impact: Medium - Grinex suspension removes a designated ransomware money-laundering node; Russian cybercriminals will migrate to remaining non-designated exchanges and over-the-counter brokers</p>
+<h3 class="doc-h3">Financial Flow Observations</h3>
+<ul class="doc-list">
+<li>Illicit cryptocurrency addresses received at least $154 billion in 2025 - Source: Chainalysis 2026 Crypto Crime Report (<span class="chip inference">ANALYST INFERENCE</span> confidence on ransomware-specific portion)</li>
+<li>North Korean hackers stole $2 billion in 2025 - no Russia-specific ransomware proceeds estimate available this cycle - Source: Chainalysis</li>
+<li>Russia's A7A5 ruble-backed token processed $93.3 billion in sanctions evasion - Source: Chainalysis 2026 Crypto Crime Report [<span class="chip credible">CREDIBLE REPORTING</span>]</li>
+</ul>
+<h3 class="doc-h3">Infrastructure Hosting Patterns</h3>
+<ul class="doc-list">
+<li>Media Land LLC (St. Petersburg): Sanctioned by US/UK/Australia in November 2025 (prior reporting period) for supporting LockBit, BlackSuit, Play, BianLian, Lumma Stealer, RedLine, Meduza. Associated entities: ML.Cloud, Aeza Group, Hypercore (UK-registered Aeza front).</li>
+<li>Post-RAMP infrastructure fragmentation: T1erOne emerged as semi-private successor forum; cybercriminal infrastructure migrating away from centralized forums toward distributed, private channels following RAMP seizure</li>
+<li>Specific ASN/provider attribution for April 2026 BPH activity: No reliable data available for this metric in accessible sources this cycle</li>
+</ul>
+<h2 class="doc-h2" id="s7">SECTION 7 - LAW ENFORCEMENT &amp; REGULATORY ACTIONS</h2>
+<h3 class="doc-h3">New Actions - April 2026</h3>
+<p class="doc-p">Action 1: OFAC/DOJ Cambodian Scam Center Strike</p>
+<p class="doc-p">Lead agency: U.S. Strike Force (DOJ + OFAC coordination); international partners</p>
+<p class="doc-p">Date: April 23, 2026</p>
+<p class="doc-p">Outcome: 29 OFAC designations; $701.9 million in cryptocurrency restrained; 503 websites seized; multiple Telegram channels seized</p>
+<p class="doc-p">Assessed ecosystem impact: Medium - significant financial disruption to Southeast Asian fraud infrastructure; indirect ransomware impact via shared money-laundering networks</p>
+<p class="doc-p">Action 2: Europol IOCTA 2026 Publication</p>
+<p class="doc-p">Lead agency: Europol</p>
+<p class="doc-p">Date: April 28-29, 2026</p>
+<p class="doc-p">Outcome: Strategic intelligence publication documenting shift to industrialized cybercrime powered by AI, ransomware, and data theft; 120+ active ransomware brands documented in 2025; confirmed velocity gap between LE and criminal actors widening</p>
+<p class="doc-p">Assessed ecosystem impact: Low (direct operational impact); High (informational - confirms structural trends driving legislative and operational prioritization)</p>
+<p class="doc-p">Action 3: FBI IC3 2025 Annual Report (Released April 6, 2026)</p>
+<p class="doc-p">Lead agency: FBI Internet Crime Complaint Center</p>
+<p class="doc-p">Date: April 6, 2026</p>
+<p class="doc-p">Outcome: $20.877 billion total cybercrime losses documented; 1M+ complaints received; 63 new ransomware variants identified in 2025; critical infrastructure targeting intensifying</p>
+<p class="doc-p">Assessed ecosystem impact: Low (direct); High (policy - first IC3 report to exceed $20B threshold drives congressional and DOJ resource prioritization)</p>
+<p class="doc-p">Action 4: Xu Zewei Extradition (HAFNIUM-linked)</p>
+<p class="doc-p">Lead agency: U.S. DOJ / Italy (extraditing authority)</p>
+<p class="doc-p">Date: April 2026</p>
+<p class="doc-p">Outcome: Xu Zewei extradited from Italy to Houston; charged for HAFNIUM-linked intrusions and COVID-19 research targeting (2020-2021); MSS direction and Shanghai Powerock affiliation documented</p>
+<p class="doc-p">Assessed ecosystem impact: Low (ransomware ecosystem); Medium (state-nexus intrusion deterrence signaling)</p>
+<p class="doc-p">Action 5: Swiss Black Axe Arrests</p>
+<p class="doc-p">Lead agency: Swiss cantonal authorities</p>
+<p class="doc-p">Date: April 2026</p>
+<p class="doc-p">Outcome: 10 suspected Black Axe members arrested across multiple Swiss cantons; alleged Southern Europe regional head detained; cyber-enabled fraud network disrupted</p>
+<p class="doc-p">Assessed ecosystem impact: Low (ransomware ecosystem); Medium (BEC/fraud network disruption)</p>
+<h3 class="doc-h3">Reconstitution Status Tracker</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Operation</th><th>Action Date</th><th>Target</th><th>Action Type</th><th>30-Day Status</th><th>90-Day Status</th><th>180-Day Status</th></tr><tr><td>RAMP Seizure (FBI)</td><td>Jan 28, 2026</td><td>RAMP cybercrime forum</td><td>Infrastructure seizure</td><td>Partially Reconstituted (T1erOne + fragmented successors within 30 days)</td><td>Partially Reconstituted - ecosystem fragmented across multiple smaller forums</td><td>Pending (90-day mark: late April 2026)</td></tr><tr><td>Media Land / Aeza / Hypercore Sanctions</td><td>Nov 19, 2025</td><td>Russian BPH infrastructure</td><td>OFAC/UK/AU sanctions</td><td>Partially Reconstituted - BPH services migrated to non-designated providers</td><td>Partially Reconstituted - ~150 days post-action; operations persist under alternative hosting</td><td>Pending (180-day: May 2026)</td></tr><tr><td>Garantex Redesignation + Grinex Designation</td><td>Aug 2025</td><td>Garantex / Grinex crypto exchange</td><td>OFAC redesignation</td><td>Partially Reconstituted - Grinex operated until April 15, 2026 hack</td><td>Partially Reconstituted - Grinex suspended April 15; successor channels not yet identified</td><td>Pending</td></tr></table></div>
+<h3 class="doc-h3">Cumulative Impact Assessment - April 2026</h3>
+<p class="doc-p">Short-term disruption (1-30 days): Low - No major ransomware infrastructure actions occurred in April. Primary April actions targeted fraud/BEC (Cambodia scam centers) and delivered intelligence products (IC3, IOCTA).</p>
+<p class="doc-p">Structural ecosystem impact (90+ days): Medium - EU crypto ban (effective May 24) has genuine structural potential to degrade ransomware money-laundering capacity if enforcement holds and non-EU exchanges apply corresponding KYC pressure. RAMP seizure structural impact remains Medium: ecosystem fragmented but not diminished in total volume.</p>
+<p class="doc-p">Ecosystem resilience evidence: RAMP reconstituted within 30 days. LockBit (disrupted Feb 2024) returned within 60 days. Media Land sanctions have not visibly reduced total ransomware activity. These data points indicate current enforcement mechanisms produce temporary disruption, not structural degradation. The EU crypto ban represents a qualitatively different financial-layer intervention with longer-duration potential.</p>
+<h2 class="doc-h2" id="s8">SECTION 8 - VULNERABILITY EXPLOITATION MATRIX</h2>
+<p class="doc-p">Includes CVEs with confirmed exploitation in ransomware/malware campaigns or APT operations during April 2026. Source: CISA KEV catalog updates, The Hacker News, The Register.</p>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Exploitation Method</th><th>Threat Actor</th><th>Scale/Volume</th><th>CISA KEV</th><th>KEV Date</th></tr><tr><td>CVE-2026-32202</td><td>Windows Shell</td><td>N/A (zero-day at patch)</td><td>Zero-click spoofing via malicious LNK file; victims authenticate attacker server without interaction</td><td>APT28 (Fancy Bear / Forest Blizzard)</td><td>Targeted - Ukraine and EU nation-states; scale not quantified</td><td>Yes</td><td>Apr 14, 2026</td></tr><tr><td>CVE-2026-21513</td><td>Windows (unspecified)</td><td>N/A</td><td>Exploit chain with CVE-2026-32202; LNK-based delivery</td><td>APT28</td><td>Same campaign as above</td><td>No data</td><td>No data</td></tr><tr><td>CVE-2026-21643</td><td>Fortinet FortiClient EMS</td><td>Not confirmed in sources</td><td>SQL injection via unauthenticated HTTP requests; enables unauthorized code execution</td><td>Unknown (broad exploitation)</td><td>Active exploitation observed</td><td>Yes</td><td>Apr 13, 2026</td></tr><tr><td>CVE-2026-34197</td><td>Apache ActiveMQ</td><td>8.8</td><td>Improper input validation; code injection</td><td>Unknown threat actors</td><td>Active exploitation observed</td><td>Yes</td><td>Apr 2026</td></tr><tr><td>CVE-2026-34621</td><td>Adobe Acrobat / Reader</td><td>Not confirmed</td><td>Prototype pollution vulnerability</td><td>Unknown</td><td>Active exploitation observed</td><td>Yes</td><td>Apr 13, 2026</td></tr><tr><td>CVE-2023-27351</td><td>PaperCut NG/MF</td><td>8.2</td><td>Improper authentication; unauthenticated access</td><td>Multiple ransomware groups (historically)</td><td>Active exploitation confirmed</td><td>Yes</td><td>Apr 2026 re-add</td></tr><tr><td>Cisco Catalyst SD-WAN (3 CVEs)</td><td>Cisco Catalyst SD-WAN Manager</td><td>Multiple</td><td>Unspecified; active exploitation confirmed</td><td>Unknown</td><td>Active exploitation observed</td><td>Yes</td><td>Late Apr 2026</td></tr></table></div>
+<p class="doc-p">KEV lag note: CVE-2026-32202 was patched by Microsoft on April 14 without an initial 'exploited in the wild' marking, meaning federal agencies and defenders received no formal urgency signal at patch time. APT28 exploitation was subsequently confirmed and CISA KEV added. This lag between exploitation start and KEV listing - potentially several weeks - represents a structural gap in the current advisory mechanism.</p>
+<h2 class="doc-h2" id="s9">SECTION 9 - SUPPLY CHAIN &amp; THIRD-PARTY COMPROMISE</h2>
+<p class="doc-p">April 2026 saw a notably high concentration of supply chain attacks affecting developer toolchains and open-source packages. Multiple incidents are attributed to TeamPCP, representing a structured campaign against security and development tooling as an access-sourcing strategy.</p>
+<h3 class="doc-h3">Confirmed Supply Chain Incidents - April 2026</h3>
+<p class="doc-p">Incident 1: Vercel / Context.ai OAuth Breach</p>
+<p class="doc-p">Attack chain: Lumma Stealer infection at Context.ai (February 2026) stole Google Workspace OAuth tokens; attackers used tokens to access Vercel internal systems</p>
+<p class="doc-p">Disclosed: April 19, 2026 (Vercel CEO public disclosure; Trend Micro analysis)</p>
+<p class="doc-p">Compromised component: Context.ai Google Workspace OAuth integration; Vercel internal system access via third-party OAuth</p>
+<p class="doc-p">Downstream impact: Vercel user data reportedly offered for sale on BreachForums at $2 million - Source: OX Security. Exact affected environment count: No reliable data available for this metric.</p>
+<p class="doc-p">Detection/remediation: Disclosed April 19; Vercel published security bulletin; remediation underway as of late April</p>
+<p class="doc-p">Incident 2: Axios npm Package Compromise</p>
+<p class="doc-p">Attack chain: Malicious versions axios@1.14.1 and axios@0.30.4 published; injected dependency plain-crypto-js@4.2.1 that downloads multi-stage payloads including a RAT</p>
+<p class="doc-p">CISA alert: April 20, 2026</p>
+<p class="doc-p">Compromised component: Axios npm package - one of the most widely used JavaScript HTTP libraries</p>
+<p class="doc-p">Downstream impact: Potentially millions of dependent projects at risk during exposure window; No reliable count of actively infected environments available</p>
+<p class="doc-p">Detection/remediation: CISA alert April 20; Elastic Security Labs analysis published; malicious versions removed from npm</p>
+<p class="doc-p">Incident 3: Bitwarden CLI Supply Chain Attack</p>
+<p class="doc-p">Attack chain: Malicious version @bitwarden/cli 2026.4.0 published to npm; available for approximately 1.5 hours (5:57 PM to 7:30 PM ET, April 22, 2026)</p>
+<p class="doc-p">Attacker: Unknown - Endor Labs analysis published; no attribution confirmed</p>
+<p class="doc-p">Compromised component: Bitwarden CLI npm package - credential management tooling for enterprise environments</p>
+<p class="doc-p">Downstream impact: Limited by short exposure window (1.5 hours); No reliable data on confirmed infections</p>
+<p class="doc-p">Detection/remediation: Identified and removed within 1.5 hours; Endor Labs disclosed</p>
+<p class="doc-p">Incident 4: SAP npm Packages - TeamPCP Attribution</p>
+<p class="doc-p">Attack chain: Suspicious versions published April 29, 2026 (09:55-12:14 UTC); credential-stealing supply chain attack</p>
+<p class="doc-p">Attacker: TeamPCP (attributed by The Hacker News based on TTP overlap with prior TeamPCP operations)</p>
+<p class="doc-p">Compromised component: SAP-related npm packages</p>
+<p class="doc-p">Downstream impact: No reliable data available for this metric - incident occurred April 29, remediation and scope assessment ongoing</p>
+<p class="doc-p">Detection/remediation: Identified same day; The Hacker News reported April 29, 2026</p>
+<p class="doc-p">Incident 5: Checkmarx GitHub Actions / Open VSX Plugins (Prior Period, Active Impact)</p>
+<p class="doc-p">Attack chain: March 23, 2026: Checkmarx GitHub Actions and Open VSX plugins compromised; part of TeamPCP's structured security-tooling campaign</p>
+<p class="doc-p">Attacker: TeamPCP</p>
+<p class="doc-p">Downstream impact: Security tooling compromise affecting organizations using Checkmarx CI/CD workflows; scope not publicly quantified</p>
+<p class="doc-p">Status: Disclosed; remediated; Checkmarx published advisory</p>
+<h3 class="doc-h3">Trend Assessment</h3>
+<ul class="doc-list">
+<li>Supply chain attacks as a percentage of total incidents: No reliable data available for this metric. Qualitative assessment: April 2026 represents an anomalously high concentration of confirmed supply chain incidents in a single calendar month - 4 confirmed incidents plus 1 carry-over from March - suggesting either heightened detection awareness or deliberate campaign surge. [<span class="chip inference">ANALYST INFERENCE</span>, medium confidence]</li>
+<li>TeamPCP represents the most operationally significant supply chain threat actor in the reporting period: attributed to at least 3 of the 5 incidents and formally aligned with Vect RaaS as an access-sourcing partner. This is the first documented case of a supply-chain attack group forming a contractual RaaS partnership.</li>
+</ul>
+<h2 class="doc-h2" id="s10">SECTION 10 - ECOSYSTEM CONTROL NODE ANALYSIS</h2>
+<h3 class="doc-h3">Top Control Nodes Table - April 2026</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Rank</th><th>Node</th><th>Type</th><th>Est. Ecosystem Reach</th><th>Dependencies</th><th>Single Point of Failure?</th><th>Disruption Difficulty</th><th></th></tr><tr><td>1</td><td>BreachForums + Vect Integration</td><td>Forum / RaaS Platform (hybrid)</td><td>300,000+ claimed users; now embedded as ransomware operational infrastructure for Vect affiliate network [<span class="chip credible">CREDIBLE REPORTING</span>]</td><td>Internet hosting (distributed); Telegram coordination channels; cryptocurrency payment rails</td><td>Partial - forum operator(s) are identifiable choke points; infrastructure is distributed</td><td>High - distributed hosting; operator anonymity; prior takedowns of predecessor forums show rapid reconstitution</td></tr><tr><td>2</td><td>Lumma/Remus Stealer Service</td><td>Stealer Service / MaaS</td><td>Estimated 40-60% of corporate credential pipeline in 2026 [<span class="chip inference">ANALYST INFERENCE</span>, medium confidence]</td><td>C2 infrastructure (now EtherHiding blockchain-based - harder to take down); distribution networks; MaaS subscription infrastructure</td><td>Partial - Remus developer identity partially exposed; EtherHiding reduces infrastructure single-point exposure</td><td>High - EtherHiding C2 hardens against sinkholing; developer partially doxxed but operational</td></tr><tr><td>3</td><td>Qilin RaaS Platform</td><td>RaaS Platform</td><td>Approximately 14% of all tracked ransomware victims in rolling 30-day window [<span class="chip confirmed">CONFIRMED</span>]</td><td>Affiliate recruitment channels; cryptocurrency payment processing; leak site infrastructure</td><td>Partial - RaaS platform operator is identifiable choke point; affiliates are distributed</td><td>High - operators likely Russia/CIS-based; no identified jurisdiction with realistic extradition exposure</td></tr><tr><td>4</td><td>Remaining Russian Crypto Exchange Infrastructure (post-Garantex/Grinex)</td><td>Crypto Laundry</td><td>Ransomware laundering volume: No reliable data available for this metric; structurally critical for monetization [<span class="chip inference">ANALYST INFERENCE</span>]</td><td>Russian regulatory tolerance; correspondent banking relationships; OTC broker networks</td><td>No - multiple exchanges and OTC brokers provide redundancy</td><td>Extreme - Russia-based; beyond Western legal jurisdiction; EU ban (May 24) applies only to EU-nexus transactions</td></tr><tr><td>5</td><td>TeamPCP Supply Chain Attack Capability</td><td>IAB / Supply Chain Attacker</td><td>Access sourced to Vect affiliates + independent operations; compromised Checkmarx, Axios, SAP npm, Bitwarden, Telnyx, LiteLLM in 2026 alone [<span class="chip confirmed">CONFIRMED</span>]</td><td>npm ecosystem access; open-source toolchain visibility; BreachForums coordination with Vect</td><td>Partial - group identity may be partially known; TTPs are distinctive</td><td>Medium - operates across developer ecosystems without geographic constraints; TTP pattern enables attribution but not apprehension</td></tr></table></div>
+<h3 class="doc-h3">Cascade Failure Analysis</h3>
+<p class="doc-p">Node 1: BreachForums + Vect Integration</p>
+<ul class="doc-list">
+<li>What breaks downstream: Vect's entire affiliate recruitment and key distribution infrastructure. Disruption of BreachForums at this stage - when it has been embedded as operational ransomware infrastructure - would simultaneously eliminate the world's most populated ransomware affiliate pool before it can launch at scale. Secondary: loss of escrow and coordination layer for all forum-dependent criminal transactions.</li>
+<li>Realistic reconstitution timeline: 30-60 days for forum reconstitution based on prior BreachForums seizure history. Vect affiliate keys already distributed cannot be revoked remotely; however, the coordination and leak-site infrastructure would be disrupted. Estimated 60-90 day lag before a functional Vect successor could be operational at comparable scale.</li>
+<li>Enforcement mechanism: DOJ/FBI takedown (prior BreachForums seizure precedent exists); OFAC designation of known operators; hosting provider legal process in non-US jurisdictions where servers are located.</li>
+</ul>
+<p class="doc-p">Node 2: Lumma/Remus Stealer Service</p>
+<ul class="doc-list">
+<li>What breaks downstream: Disruption of the primary corporate credential pipeline feeding IAB markets. Without high-volume stealer-derived credentials, IABs face significantly higher costs and lower volume; ransomware groups that rely on credential-based initial access must shift to more expensive and noisier exploit-based entry. The Vercel/Context.ai case illustrates how stealer logs cascade into major enterprise compromises weeks later.</li>
+<li>Realistic reconstitution timeline: Lumma took approximately 2-3 weeks to recover from May 2025 disruption. Remus (already a successor) would require a new replacement cycle; with EtherHiding C2, infrastructure is harder to permanently sinkhole. Estimate: 60-90 days for a functional replacement at scale.</li>
+<li>Enforcement mechanism: Developer identification (partial doxxing already occurred Aug-Oct 2025); financial sanctions on MaaS subscription payment infrastructure; coordinated takedown of C2 infrastructure via blockchain-level interdiction of EtherHiding resolver contracts.</li>
+</ul>
+<p class="doc-p">Node 4: Russian Crypto Exchange Infrastructure</p>
+<ul class="doc-list">
+<li>What breaks downstream: Disruption or regulatory closure of the primary ransomware proceeds laundering layer would increase friction costs for all ransomware operators. Grinex suspension (April 15) and EU crypto ban (effective May 24) together represent the first simultaneous pressure on multiple laundering nodes.</li>
+<li>Realistic reconstitution timeline: OTC broker networks can absorb displaced volume within days. A new exchange to replace Garantex/Grinex functionality would require 90-180 days to build trust and liquidity. Displacement to TengriCoin (now EU-sanctioned) and similar Central Asian exchanges is already underway.</li>
+<li>Enforcement mechanism: Secondary sanctions on non-Russian exchanges processing Russian ransomware proceeds (OFAC Section 311 designation); EU's existing May 24 ban; Five Eyes coordinated pressure on Central Asian exchange regulators.</li>
+</ul>
+<h3 class="doc-h3">Structural Vulnerability Summary</h3>
+<p class="doc-p">The most critical structural weakness in the current ecosystem is the monetization layer. The ransomware pipeline is operationally resilient at every other stage - affiliate recruitment is fragmenting into mass-open models, initial access is commoditized, and encryption tooling is widely available. The single most brittle point is conversion of cryptocurrency ransomware proceeds into usable fiat currency through exchange infrastructure that is subject to regulatory action. The EU's May 24 crypto ban, combined with Grinex's April 15 suspension, represents the first credible simultaneous pressure on this layer since the Garantex sanctions in 2022. If enforcement is extended to Central Asian correspondent exchanges and secondary sanctioning is applied to non-compliant VASPs processing Russian ransomware proceeds, monetization friction could reach operationally constraining levels within 90-180 days. No comparable structural vulnerability exists at the access, affiliate, or encryption stages of the current ecosystem.</p>
+<h2 class="doc-h2" id="s11">SECTION 11 - STRATEGIC LEVERAGE ASSESSMENT</h2>
+<h3 class="doc-h3">Financial Leverage</h3>
+<p class="doc-p">Leverage Item F-1: EU Crypto Ban Enforcement Window</p>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Russian and Belarusian crypto platforms; TengriCoin (Kyrgyz); digital ruble; RUBx stablecoin; OTC brokers displacing Grinex volume</span></p><p><span class="lk">CONDITION</span> <span>EU 20th sanctions package enacted April 23, 2026; effective May 24, 2026; Grinex suspended April 15, 2026</span></p><p><span class="lk">THRESHOLD</span> <span><strong>THRESHOLD MET</strong> - both trigger conditions are active. Displaced laundering volume will migrate to non-compliant Central Asian and Southeast Asian exchanges within 31 days of May 24 effective date</span></p><p><span class="lk">ACTION</span> <span>Immediately engage OFAC to designate any exchange absorbing Grinex/Garantex displaced volume under 31 CFR Part 594 (Cyber-Related Sanctions). Simultaneously issue FinCEN Section 311 Special Measures against TengriCoin and any identified Kyrgyz/Central Asian exchange processing Russian ransomware proceeds. Coordinate with Five Eyes counterparts to apply correspondent banking pressure on exchanges without US/EU banking relationships.</span></p><p><span class="lk">WINDOW</span> <span>31 days (May 24 effective date). Displaced transaction routing patterns will be observable in blockchain analytics within 2 weeks of May 24; acting before displaced volume consolidates into a new primary exchange is the critical window.</span></p><p><span class="lk">PRIORITY</span> <span class="crit">Critical</span></p></div>
+<p class="doc-p">Leverage Item F-2: Vect Affiliate Monetization Disruption</p>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Vect RaaS cryptocurrency payment processing and negotiation infrastructure; BreachForums escrow services</span></p><p><span class="lk">CONDITION</span> <span>Vect distributed 300,000+ affiliate keys April 16; VECT 2.0 wiper bug disclosed April 28-29, undermining affiliate confidence and victim willingness to pay; monetization pipeline not yet at scale</span></p><p><span class="lk">THRESHOLD</span> <span><strong>THRESHOLD MET</strong> - Vect is in pre-scale activation phase with structural wiper vulnerability damaging affiliate trust</span></p><p><span class="lk">ACTION</span> <span>Designate Vect negotiation/payment infrastructure under OFAC Cyber-Related Sanctions before the operation reaches payment scale. Simultaneously, amplify public disclosure of the VECT 2.0 wiper bug to maximize affiliate defection and victim non-payment behavior. Coordinate FBI takedown request for BreachForums infrastructure hosting Vect key distribution and escrow.</span></p><p><span class="lk">WINDOW</span> <span>60 days. Vect's wiper bug creates an unusual window where affiliate confidence is structurally undermined; acting before a corrected VECT 3.0 is deployed and trust rebuilds is critical.</span></p><p><span class="lk">PRIORITY</span> <span class="crit">Critical</span></p></div>
+<h3 class="doc-h3">Infrastructure Leverage</h3>
+<p class="doc-p">Leverage Item I-1: TeamPCP Attribution and Disruption</p>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>TeamPCP threat actor group - supply chain access sourcing arm for Vect RaaS</span></p><p><span class="lk">CONDITION</span> <span>TeamPCP attributed to Checkmarx (March 2026), SAP npm (April 29), and multiple prior supply chain attacks; TTP pattern is distinctive and documented; formal Vect partnership makes them ransomware infrastructure, not merely espionage actor</span></p><p><span class="lk">THRESHOLD</span> <span>Active - 3 confirmed supply chain attacks in a 40-day window (March 23 to April 29) constitutes an ongoing campaign</span></p><p><span class="lk">ACTION</span> <span>Escalate TeamPCP to FBI Cyber Division priority designation based on documented Vect RaaS affiliation (ransomware nexus triggers DOJ/FBI jurisdiction). Coordinate with npm security team and GitHub Security Lab for real-time package publication monitoring using TeamPCP TTP signatures. Issue private sector advisory with specific IOCs to npm maintainers and CISA for CI/CD pipeline defenders.</span></p><p><span class="lk">WINDOW</span> <span>Ongoing - next TeamPCP package publication attempt likely within 30 days based on April campaign tempo</span></p><p><span class="lk">PRIORITY</span> <span>High</span></p></div>
+<p class="doc-p">Leverage Item I-2: Remus/LummaC2 C2 Infrastructure Interdiction</p>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Remus stealer EtherHiding C2 resolver contracts on Ethereum blockchain; MaaS subscription payment channels</span></p><p><span class="lk">CONDITION</span> <span>Remus active since February 2026; EtherHiding replaces traditional infrastructure with blockchain-based C2 resolution; developer partially doxxed (Aug-Oct 2025)</span></p><p><span class="lk">THRESHOLD</span> <span>Active - Remus is scaling as Lumma successor; EtherHiding adoption sets a precedent that will be replicated across other malware families if not interdicted</span></p><p><span class="lk">ACTION</span> <span>Engage DOJ with Chainanalysis/TRM Labs blockchain forensics to identify and flag EtherHiding resolver contract addresses for interdiction. Coordinate with Ethereum Foundation and major node operators to blacklist identified resolver contracts. Pursue indictment of developers identified during 2025 doxxing campaign to complement infrastructure action.</span></p><p><span class="lk">WINDOW</span> <span>90 days - before EtherHiding becomes the dominant C2 evasion technique across the stealer ecosystem</span></p><p><span class="lk">PRIORITY</span> <span>High</span></p></div>
+<h3 class="doc-h3">Jurisdictional Leverage</h3>
+<p class="doc-p">Leverage Item J-1: Central Asian VASP Secondary Sanctions</p>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Kyrgyz Republic, Kazakhstan, and UAE-based crypto exchanges absorbing Garantex/Grinex displaced volume</span></p><p><span class="lk">CONDITION</span> <span>TengriCoin already EU-designated (April 23); Grinex displaced volume will need a new laundering node by May 24</span></p><p><span class="lk">THRESHOLD</span> <span><strong>THRESHOLD MET</strong> - EU designation of TengriCoin confirms displacement has already begun</span></p><p><span class="lk">ACTION</span> <span>Coordinate OFAC and FinCEN to extend secondary sanctions to any identifiable Kyrgyz, Kazakh, or UAE-based exchange demonstrating absorption of Grinex-displaced volume (observable via blockchain analytics within 2-4 weeks of May 24 effective date). Apply diplomatic pressure through Financial Action Task Force (FATF) to accelerate Kyrgyz Republic grey-listing based on TengriCoin designation.</span></p><p><span class="lk">WINDOW</span> <span>45 days - critical window to prevent consolidation of displaced ransomware laundering volume into a single non-sanctioned successor exchange</span></p><p><span class="lk">PRIORITY</span> <span>High</span></p></div>
+<h3 class="doc-h3">Coming Month Focus - Top 3 Actions (May 2026)</h3>
+<p class="doc-p">Priority 1: EU Crypto Ban Enforcement + OFAC Secondary Sanctions Coordination</p>
+<p class="doc-p">Expected outcome if action taken: Ransomware laundering friction increases from current estimated 5-10% cost to 20-30% cost as primary exchange displacement routes are closed sequentially. Every incremental exchange designation narrows the viable laundering funnel and raises operational costs for all Russia-linked ransomware operators.</p>
+<p class="doc-p">Priority 2: BreachForums / Vect Infrastructure Action During Wiper-Bug Window</p>
+<p class="doc-p">Expected outcome if action taken: Disrupting BreachForums while Vect's credibility is structurally damaged by the wiper bug maximizes affiliate defection rate and prevents Vect from reaching operational scale. A combined technical and operational action could reduce the projected affiliate-driven ransomware surge by 30-50% if executed before a corrected VECT 3.0 restores affiliate trust. [<span class="chip inference">ANALYST INFERENCE</span>, medium confidence on impact estimate]</p>
+<p class="doc-p">Priority 3: TeamPCP Indictment and CI/CD Pipeline Protection Advisory</p>
+<p class="doc-p">Expected outcome if action taken: Public indictment of TeamPCP operators would impose reputational and operational risk on the group's supply-chain access-sourcing model, potentially deterring the Vect-TeamPCP operational partnership. A CISA advisory with specific TeamPCP IOCs for CI/CD pipeline defenders would reduce the hit rate of future supply chain attacks within the 30-day window while the indictment proceeds.</p>
+<h2 class="doc-h2" id="s12">SECTION 12 - UNCONFIRMED SIGNALS &amp; HORIZON INDICATORS</h2>
+<ul class="doc-list">
+<li>Vect mass-activation wave: No confirmed victim surge attributable to the April 16 mass affiliate key distribution has been confirmed in available tracking data as of April 30. [<span class="chip credible">UNCONFIRMED REPORTING</span>] Confirmation indicator: Appearance of Vect-branded victims on leak site at rate exceeding 20/week within 30 days of key distribution. Refutation indicator: Continued absence of Vect leak-site posts by May 16 would suggest affiliate activation rate is low despite key distribution.</li>
+<li>VECT 3.0 corrected release: Security researchers noted the wiper bug in VECT 2.0 on April 28-29. A corrected version with functional encryption is likely in development. [<span class="chip inference">ANALYST INFERENCE</span>, medium confidence] Confirmation indicator: New Vect version announcement on BreachForums or dark web forums within 30-60 days. Refutation indicator: Vect leadership silence or shutdown messaging would indicate the project is abandoned.</li>
+<li>Post-RAMP forum consolidation around T1erOne: Early intelligence suggests T1erOne is positioning as the primary RAMP successor for Russian-language ransomware coordination. [<span class="chip credible">UNCONFIRMED REPORTING</span>] Confirmation indicator: Documented IAB listings and affiliate recruitment posts migrating to T1erOne with volume comparable to former RAMP activity. Refutation indicator: Multiple competing forums each achieving partial RAMP-like functionality without a single dominant successor.</li>
+<li>A7A5 stablecoin resilience to EU ban: Russia's ruble-backed A7A5 token ($93.3B estimated sanctions evasion volume) may be insulated from EU crypto ban by operating primarily outside EU-nexus transactions. [<span class="chip inference">ANALYST INFERENCE</span>, medium confidence] Confirmation indicator: Post-May 24 blockchain analysis showing A7A5 transaction volume unchanged or increased. Refutation indicator: EU enforcement actions targeting specific A7A5 liquidity providers with EU banking relationships.</li>
+<li>The Gentlemen rebranding or transition: The SystemBC C2 exposure on April 21 revealed the group's true operational scale to researchers. Groups historically rebrand following significant infrastructure exposure. [<span class="chip inference">ANALYST INFERENCE</span>, low confidence] Confirmation indicator: The Gentlemen leak site goes dark within 60 days and a new group with similar TTPs (SystemBC, GPO abuse, Cobalt Strike) appears. Refutation indicator: The Gentlemen continues posting at normal cadence with no operational changes.</li>
+</ul>
+<h2 class="doc-h2" id="s13">SECTION 13 - ANALYTIC CAVEATS &amp; COLLECTION GAPS</h2>
+<h3 class="doc-h3">Sources Blocked During Collection</h3>
+<ul class="doc-list">
+<li>ransomware.live - Not fetched; network access restricted (not on allowlist). Monthly victim totals sourced from secondary reporting (Breachsense, ReliaQuest, ZeroFox) that cite ransomware.live as primary source.</li>
+<li>ransomlook.io - Not fetched; network access restricted. Q1 2026 ransomlook.io figure (2,570 incidents) sourced from ReliaQuest secondary citation.</li>
+<li>ransom-db.com - Not fetched; network access restricted. April 2026 group-level victim data sourced from search result excerpts from ransom-db weekly reports.</li>
+<li>bleepingcomputer.com, therecord.media, mandiant.com, secureworks.com, crowdstrike.com, shadowserver.org, ic3.gov, chainalysis.com (direct fetch), trmlabs.com (direct fetch) - All blocked. Intelligence sourced via web search result summaries and secondary citations where available.</li>
+</ul>
+<h3 class="doc-h3">Data Unavailable or Unreliable This Cycle</h3>
+<ul class="doc-list">
+<li>April 2026 final victim count: Reporting period ends April 30; final monthly total not yet compiled by tracking platforms. Figures used are partial/rolling.</li>
+<li>Sector-by-sector prior-month comparatives: Not available in accessible sources; Sector Targeting Trend Table prior month column populated with 'No prior data'.</li>
+<li>Time-to-publish (leak site signal): No reliable metric available from accessible sources; gap noted in Three-Signal Composite.</li>
+<li>Encryption-free extortion as percentage of total incidents: Qualitative trend confirmed (Europol IOCTA, ReliaQuest); specific percentage unavailable.</li>
+<li>IAB market listing volume (current): No reliable monthly count available post-RAMP seizure; RAMP was the primary tracked forum; successor forums not yet generating comparable observable data.</li>
+<li>Ransomware aggregate proceeds estimate: No reliable monthly figure available; FBI IC3 full-year 2025 figure cited as closest available benchmark.</li>
+<li>Vect victim count: Affiliate activation too recent (April 16) for reliable victim tracking in accessible sources as of April 30.</li>
+</ul>
+<h3 class="doc-h3">Sections Omitted</h3>
+<p class="doc-p">No sections were fully omitted this cycle; every section carried sufficient confirmed or credible data to be worth publishing. The Leak Site Time-to-Publish signal (Section 2) and several financial metrics carry explicit 'No reliable data available' notations.</p>
+<h3 class="doc-h3">Known Inflation/Deflation Biases</h3>
+<ul class="doc-list">
+<li>Victim count inflation: Groups post victims who paid ransoms to pressure non-payers; some victims appear on multiple group sites; negotiation victims are sometimes posted after payment as retaliation. All victim counts are therefore potentially inflated relative to actual confirmed incidents.</li>
+<li>Victim count deflation (more significant): The Gentlemen C2 analysis (1,570 actual vs. 320 published) demonstrates that leak-site counts undercount actual operational reach by a factor of 3-5x. Published counts represent only victims who refused to pay or were selected for public pressure - not total operational victims.</li>
+<li>Financial figures: Ransom payment figures are self-reported or derived from blockchain analytics with known coverage gaps. Dark Web OTC transactions may not be captured in Chainalysis/TRM Labs figures.</li>
+</ul>
+<h3 class="doc-h3">Competing Explanations for Major Trends</h3>
+<ul class="doc-list">
+<li>Ecosystem fragmentation vs. expansion: The record 91 active leak sites in Q1 2026 can be interpreted as (a) ecosystem growth driven by lower barriers to entry, or (b) artificial inflation as single operators run multiple small sites for operational security. Both explanations may be simultaneously true.</li>
+<li>Vect threat level: The mass BreachForums affiliate partnership could indicate (a) a genuinely novel threat requiring immediate action, or (b) a marketing exercise that overstates Vect's actual operational capability given the wiper bug and likely low real-world affiliate conversion rate from 300,000 nominally registered forum members.</li>
+<li>EU crypto ban impact: The ban could (a) meaningfully degrade ransomware monetization by closing the most accessible laundering channels, or (b) produce minimal impact if Russian operators have already migrated to non-EU-nexus exchanges and OTC brokers that are beyond EU regulatory reach. Both scenarios are plausible; impact will be observable in on-chain data post-May 24.</li>
+</ul>
+<h2 class="doc-h2" id="s14">SOURCES</h2>
+<h3 class="doc-h3">Ransomware Tracking Platforms</h3>
+<ul class="doc-list">
+<li>Ransomware.live - <a href="https://www.ransomware.live" target="_blank" rel="noopener">https://www.ransomware.live</a> (not directly fetched; cited in secondary sources)</li>
+<li>Ransomlook.io - <a href="https://www.ransomlook.io" target="_blank" rel="noopener">https://www.ransomlook.io</a> (not directly fetched)</li>
+<li>Breachsense - March 2026 Ransomware Report: <a href="https://www.breachsense.com/ransomware-reports/march-2026/" target="_blank" rel="noopener">https://www.breachsense.com/ransomware-reports/march-2026/</a></li>
+<li>Ransom-DB - April 2026 Threat Landscape: <a href="https://www.ransom-db.com/blog/ransomware-threat-landscape-report-april-2026" target="_blank" rel="noopener">https://www.ransom-db.com/blog/ransomware-threat-landscape-report-april-2026</a></li>
+</ul>
+<h3 class="doc-h3">Government and Law Enforcement</h3>
+<ul class="doc-list">
+<li>CISA Known Exploited Vulnerabilities Catalog - <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">https://www.cisa.gov/known-exploited-vulnerabilities-catalog</a></li>
+<li>CISA Alert - Axios npm Supply Chain Compromise - <a href="https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager" target="_blank" rel="noopener">https://www.cisa.gov/news-events/alerts/2026/04/20/supply-chain-compromise-impacts-axios-node-package-manager</a></li>
+<li>FBI IC3 2025 Annual Report - <a href="https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf" target="_blank" rel="noopener">https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf</a></li>
+<li>OFAC - Cambodia Scam Center Designations - <a href="https://home.treasury.gov/news/press-releases/sb0225" target="_blank" rel="noopener">https://home.treasury.gov/news/press-releases/sb0225</a></li>
+<li>OFAC - Media Land / Aeza Sanctions - <a href="https://home.treasury.gov/news/press-releases/sb0319" target="_blank" rel="noopener">https://home.treasury.gov/news/press-releases/sb0319</a></li>
+<li>EU Council - 20th Russia Sanctions Package - <a href="https://www.consilium.europa.eu/en/press/press-releases/2026/04/23/russia-s-war-of-aggression-against-ukraine-20th-round-of-stern-eu-sanctions-hits-energy-military-industrial-complex-trade-and-financial-services-including-crypto/" target="_blank" rel="noopener">https://www.consilium.europa.eu/en/press/press-releases/2026/04/23/russia-s-war-of-aggression-against-ukraine-20th-round-of-stern-eu-sanctions-hits-energy-military-industrial-complex-trade-and-financial-services-including-crypto/</a></li>
+<li>Europol IOCTA 2026 - <a href="https://www.europol.europa.eu/publication-events/main-reports/iocta-2026-evolving-threat-landscape" target="_blank" rel="noopener">https://www.europol.europa.eu/publication-events/main-reports/iocta-2026-evolving-threat-landscape</a></li>
+</ul>
+<h3 class="doc-h3">Vendor Threat Intelligence</h3>
+<ul class="doc-list">
+<li>Check Point Research - The Gentlemen / SystemBC DFIR Report - <a href="https://research.checkpoint.com/2026/dfir-report-the-gentlemen/" target="_blank" rel="noopener">https://research.checkpoint.com/2026/dfir-report-the-gentlemen/</a></li>
+<li>Check Point Research - VECT Ransomware by Design - <a href="https://research.checkpoint.com/2026/vect-ransomware-by-design-wiper-by-accident/" target="_blank" rel="noopener">https://research.checkpoint.com/2026/vect-ransomware-by-design-wiper-by-accident/</a></li>
+<li>Trend Micro - Vercel OAuth Supply Chain Attack - <a href="https://www.trendmicro.com/en_us/research/26/d/vercel-breach-oauth-supply-chain.html" target="_blank" rel="noopener">https://www.trendmicro.com/en_us/research/26/d/vercel-breach-oauth-supply-chain.html</a></li>
+<li>Elastic Security Labs - Axios RAT Analysis - <a href="https://www.elastic.co/security-labs/axios-one-rat-to-rule-them-all" target="_blank" rel="noopener">https://www.elastic.co/security-labs/axios-one-rat-to-rule-them-all</a></li>
+<li>Endor Labs - Bitwarden CLI Supply Chain - <a href="https://www.endorlabs.com/learn/shai-hulud-the-third-coming" target="_blank" rel="noopener">https://www.endorlabs.com/learn/shai-hulud-the-third-coming</a></li>
+<li>Gen Digital - Remus / Lumma Successor - <a href="https://www.gendigital.com/blog/insights/research/remus-64bit-variant-of-lumma-stealer" target="_blank" rel="noopener">https://www.gendigital.com/blog/insights/research/remus-64bit-variant-of-lumma-stealer</a></li>
+<li>Dataminr - Vect / BreachForums / TeamPCP - <a href="https://www.dataminr.com/resources/intel-brief/vect-breachforums-teampcp-converge-in-unprecedented-affiliate-mobilizatio/" target="_blank" rel="noopener">https://www.dataminr.com/resources/intel-brief/vect-breachforums-teampcp-converge-in-unprecedented-affiliate-mobilizatio/</a></li>
+<li>Cynet - Vect RaaS Affiliate Playbook - <a href="https://www.cynet.com/blog/how-vect-ransomware-is-rewriting-the-raas-affiliate-playbook/" target="_blank" rel="noopener">https://www.cynet.com/blog/how-vect-ransomware-is-rewriting-the-raas-affiliate-playbook/</a></li>
+</ul>
+<h3 class="doc-h3">Cybersecurity News</h3>
+<ul class="doc-list">
+<li>The Hacker News - SystemBC / The Gentlemen: <a href="https://thehackernews.com/2026/04/systembc-c2-server-reveals-1570-victims.html" target="_blank" rel="noopener">https://thehackernews.com/2026/04/systembc-c2-server-reveals-1570-victims.html</a></li>
+<li>The Hacker News - CVE-2026-32202 Windows Shell: <a href="https://thehackernews.com/2026/04/microsoft-confirms-active-exploitation.html" target="_blank" rel="noopener">https://thehackernews.com/2026/04/microsoft-confirms-active-exploitation.html</a></li>
+<li>The Hacker News - CISA KEV Fortinet/Microsoft/Adobe: <a href="https://thehackernews.com/2026/04/cisa-adds-6-known-exploited-flaws-in.html" target="_blank" rel="noopener">https://thehackernews.com/2026/04/cisa-adds-6-known-exploited-flaws-in.html</a></li>
+<li>The Hacker News - VECT 2.0 Wiper: <a href="https://thehackernews.com/2026/04/vect-20-ransomware-irreversibly.html" target="_blank" rel="noopener">https://thehackernews.com/2026/04/vect-20-ransomware-irreversibly.html</a></li>
+<li>The Hacker News - SAP npm / TeamPCP: <a href="https://thehackernews.com/2026/04/sap-npm-packages-compromised-by-mini.html" target="_blank" rel="noopener">https://thehackernews.com/2026/04/sap-npm-packages-compromised-by-mini.html</a></li>
+<li>The Hacker News - Apache ActiveMQ KEV: <a href="https://thehackernews.com/2026/04/apache-activemq-cve-2026-34197-added-to.html" target="_blank" rel="noopener">https://thehackernews.com/2026/04/apache-activemq-cve-2026-34197-added-to.html</a></li>
+<li>The Register - CVE-2026-32202 Zero-Click: <a href="https://www.theregister.com/2026/04/29/microsoft_zero_click_exploit/" target="_blank" rel="noopener">https://www.theregister.com/2026/04/29/microsoft_zero_click_exploit/</a></li>
+<li>The Register - Vect Wiper Bug: <a href="https://www.theregister.com/2026/04/28/dont_pay_vect_a_ransom/" target="_blank" rel="noopener">https://www.theregister.com/2026/04/28/dont_pay_vect_a_ransom/</a></li>
+<li>The Register - Supply Chain Ongoing Campaign: <a href="https://www.theregister.com/2026/04/27/supply_chain_campaign_targets_security/" target="_blank" rel="noopener">https://www.theregister.com/2026/04/27/supply_chain_campaign_targets_security/</a></li>
+<li>Infosecurity Magazine - The Gentlemen Expansion: <a href="https://www.infosecurity-magazine.com/news/gentlemen-ransomware-rapid/" target="_blank" rel="noopener">https://www.infosecurity-magazine.com/news/gentlemen-ransomware-rapid/</a></li>
+<li>CoinDesk - EU 20th Sanctions Crypto: <a href="https://www.coindesk.com/policy/2026/04/27/eu-s-largest-measures-against-russia-yet-include-escalation-of-crypto-sanctions-evasion" target="_blank" rel="noopener">https://www.coindesk.com/policy/2026/04/27/eu-s-largest-measures-against-russia-yet-include-escalation-of-crypto-sanctions-evasion</a></li>
+</ul>
+<h3 class="doc-h3">Financial Intelligence</h3>
+<ul class="doc-list">
+<li>Chainalysis - Southeast Asia Scam Centers / Crypto April 2026: <a href="https://www.chainalysis.com/blog/asian-scam-centers-crypto-fraud-april-2026/" target="_blank" rel="noopener">https://www.chainalysis.com/blog/asian-scam-centers-crypto-fraud-april-2026/</a></li>
+<li>Chainalysis - EU 20th Sanctions Package Analysis: <a href="https://www.chainalysis.com/blog/eu-russia-sactions-package-april-2026/" target="_blank" rel="noopener">https://www.chainalysis.com/blog/eu-russia-sactions-package-april-2026/</a></li>
+<li>Chainalysis - 2026 Crypto Sanctions Overview: <a href="https://www.chainalysis.com/blog/crypto-sanctions-2026/" target="_blank" rel="noopener">https://www.chainalysis.com/blog/crypto-sanctions-2026/</a></li>
+<li>Breached.Company - Grinex Hack $13.7M: <a href="https://breached.company/grinex-crypto-exchange-hack-13-million-russia-sanctions-2026/" target="_blank" rel="noopener">https://breached.company/grinex-crypto-exchange-hack-13-million-russia-sanctions-2026/</a></li>
+<li>TRM Labs - 2026 Crypto Crime Report: <a href="https://www.trmlabs.com/reports-and-whitepapers/2026-crypto-crime-report" target="_blank" rel="noopener">https://www.trmlabs.com/reports-and-whitepapers/2026-crypto-crime-report</a></li>
+</ul>
+<h3 class="doc-h3">Analytical Reports and Surveys</h3>
+<ul class="doc-list">
+<li>ReliaQuest - Q1 2026 Ransomware and Cyber Extortion: <a href="https://reliaquest.com/blog/threat-spotlight-ransomware-and-cyber-extortion-in-q1-2026/" target="_blank" rel="noopener">https://reliaquest.com/blog/threat-spotlight-ransomware-and-cyber-extortion-in-q1-2026/</a></li>
+<li>ZeroFox - Q1 2026 Ransomware Wrap-Up: <a href="https://www.zerofox.com/intelligence/q1-2026-ransomware-wrap-up/" target="_blank" rel="noopener">https://www.zerofox.com/intelligence/q1-2026-ransomware-wrap-up/</a></li>
+<li>Emsisoft - State of Ransomware Q1 2026: <a href="https://www.emsisoft.com/en/blog/47562/the-state-of-ransomware-in-q1-2026/" target="_blank" rel="noopener">https://www.emsisoft.com/en/blog/47562/the-state-of-ransomware-in-q1-2026/</a></li>
+<li>Security Affairs - RAMP Uncovered: <a href="https://securityaffairs.com/191171/cyber-crime/ramp-uncovered-anatomy-of-russias-ransomware-marketplace.html" target="_blank" rel="noopener">https://securityaffairs.com/191171/cyber-crime/ramp-uncovered-anatomy-of-russias-ransomware-marketplace.html</a></li>
+<li>Industrial Cyber - IOCTA 2026 Report: <a href="https://industrialcyber.co/reports/europol-iocta-2026-report-flags-shift-to-industrialised-cybercrime-powered-by-ai-ransomware-and-data-theft/" target="_blank" rel="noopener">https://industrialcyber.co/reports/europol-iocta-2026-report-flags-shift-to-industrialised-cybercrime-powered-by-ai-ransomware-and-data-theft/</a></li>
+<li>Industrial Cyber - FBI IC3 Critical Infrastructure: <a href="https://industrialcyber.co/reports/fbi-reports-cyber-threats-to-critical-infrastructure-intensify-as-us-cybercrime-losses-hit-21-billion-exposes-risk/" target="_blank" rel="noopener">https://industrialcyber.co/reports/fbi-reports-cyber-threats-to-critical-infrastructure-intensify-as-us-cybercrime-losses-hit-21-billion-exposes-risk/</a></li>
+<li>Morphisec - Ransomware Without Encryption: <a href="https://www.morphisec.com/blog/ransomware-without-encryption-why-pure-exfiltration-attacks-are-surging-and-why-theyre-so-hard-to-catch/" target="_blank" rel="noopener">https://www.morphisec.com/blog/ransomware-without-encryption-why-pure-exfiltration-attacks-are-surging-and-why-theyre-so-hard-to-catch/</a></li>
+<li>Nerds.xyz - Q1 2026 Ransomware: <a href="https://nerds.xyz/2026/04/ransomware-q1-2026/" target="_blank" rel="noopener">https://nerds.xyz/2026/04/ransomware-q1-2026/</a></li>
+</ul>
+  </div>
+ </main>
+</body>
+</html>

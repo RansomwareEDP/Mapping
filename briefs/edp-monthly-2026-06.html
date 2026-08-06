@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>EDP Monthly: June 2026 | EDP Document Library</title>
+ <meta name="edp-brief-type" content="monthly">
+ <meta name="edp-month" content="2026-06">
+ <style>
+
+
+  :root {
+   --bg: #0d1117; --bg-secondary: #161b22; --bg-card: #1c2128;
+   --border: #30363d; --border-light: #21262d;
+   --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+   --accent: #58a6ff; --accent-dim: #1f6feb;
+   --confirmed-bg: #0d4425; --confirmed-text: #3fb950;
+   --credible-bg: #341a00; --credible-text: #e3b341;
+   --inference-bg: #0c2d6b; --inference-text: #58a6ff;
+   --critical: #f85149; --state: #bc8cff;
+   --sidebar-width: 260px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.65; display: flex; min-height: 100vh; }
+  .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--bg-secondary); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+  .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo { font-size: 10px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .sidebar-logo a { color: var(--text-muted); text-decoration: none; }
+  .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text-heading); line-height: 1.3; }
+  .node-type-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; background: rgba(248,81,73,.12); color: var(--critical); border: 1px solid rgba(248,81,73,.35); border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing:.04em; text-transform: uppercase; }
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+  .nav-section-label { padding: 6px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing:.08em; color: var(--text-muted); }
+  .nav-link { display: flex; align-items: center; gap: 8px; padding: 6px 16px; color: var(--text-muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all.15s; }
+  .nav-link:hover { color: var(--text); background: var(--bg-card); border-left-color: var(--border); }
+  .nav-num { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 18px; }
+  .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+  .sidebar-meta { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+  .content { margin-left: var(--sidebar-width); flex: 1; padding-bottom: 80px; max-width: calc(100% - var(--sidebar-width)); }
+  .profile-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid var(--border); padding: 28px 40px 24px; }
+  .profile-breadcrumb { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+  .profile-breadcrumb a { color: var(--accent); text-decoration: none; }
+  .profile-name { font-size: 28px; font-weight: 700; color: var(--text-heading); letter-spacing: -.02em; }
+  .profile-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-muted); max-width: 900px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .hbadge { display: inline-flex; align-items: center; padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing:.05em; text-transform: uppercase; }
+  .hbadge.critical { background: rgba(248,81,73,.12); color: var(--critical); border: 1px solid rgba(248,81,73,.3); }
+  .hbadge.node { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+  .hbadge.pdf { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+  .hbadge.pdf a { color: var(--text); text-decoration: none; }
+  .doc-main { padding: 24px 40px; max-width: 1000px; }
+  .doc-h2 { font-size: 17px; font-weight: 700; color: var(--text-heading); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing:.01em; }
+  .doc-h3 { font-size: 14px; font-weight: 700; color: var(--accent); margin: 24px 0 10px; }
+  .doc-p { margin: 0 0 12px; }
+  .doc-list { margin: 0 0 14px 22px; }
+  .doc-list li { margin-bottom: 8px; }
+  .tbl-wrap { overflow-x: auto; margin: 14px 0 18px; border: 1px solid var(--border); border-radius: 6px; }
+  .doc-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .doc-table th { background: var(--bg-secondary); color: var(--text-heading); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing:.04em; white-space: nowrap; }
+  .doc-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+  .doc-table tr:last-child td { border-bottom: none; }
+  .chip { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing:.04em; }
+  .chip.confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); }
+  .chip.credible { background: var(--credible-bg); color: var(--credible-text); }
+  .chip.inference { background: var(--inference-bg); color: var(--inference-text); }
+  /* Ecosystem inset */
+  .eco-inset { margin: 24px 40px 8px; max-width: 1000px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .eco-inset-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .eco-inset-title { font-size: 11px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); }
+  .eco-inset-link { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 600; }
+  .eco-inset-link:hover { text-decoration: underline; }
+  .eco-inset svg { display: block; width: 100%; height: auto; }
+  .eco-caption { padding: 10px 18px 14px; font-size: 11.5px; color: var(--text-muted); border-top: 1px solid var(--border-light); }
+  .eco-caption.leg { display: inline-flex; align-items: center; gap: 5px; margin-right: 16px; white-space: nowrap; }
+  .leg-line { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--accent); }
+  .leg-line.dashed { border-top-style: dashed; border-top-color: var(--text-muted); }
+  .leg-line.state { border-top-style: dotted; border-top-color: var(--state); }
+  @media (max-width: 860px) {.sidebar { display: none; }.content { margin-left: 0; max-width: 100%; }.doc-main,.eco-inset { padding-left: 18px; padding-right: 18px; margin-left: 12px; margin-right: 12px; } }
+ 
+  .hbadge.high { background: rgba(227,179,65,.12); color: #e3b341; border: 1px solid rgba(227,179,65,.3); }
+  .hbadge.medium { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+  .node-type-badge.high { background: rgba(227,179,65,.12); color: #e3b341; border-color: rgba(227,179,65,.35); }
+  .node-type-badge.medium { background: rgba(88,166,255,.1); color: var(--accent); border-color: rgba(88,166,255,.35); }
+\n  .doc-note { margin: 0 0 18px; padding: 12px 16px; background: var(--bg-secondary); border-left: 3px solid var(--credible-text); border-radius: 0 6px 6px 0; font-size: 13px; color: var(--text); }
+ 
+  .lever p { margin: 0 0 6px; }
+  .lever p:last-child { margin-bottom: 0; }
+  .lk { display:inline-block; min-width:78px; font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+  .crit { color: var(--critical); font-weight: 700; }
+  .doc-note.lever { border-left-color: var(--accent); }
+  .kicker { font-size:12.5px; color:var(--text-muted); border:1px solid var(--border); border-left:3px solid var(--accent); background:var(--bg-secondary); border-radius:6px; padding:12px 16px; margin:0 0 22px; }
+  .kicker a { color: var(--accent); }
+ </style>
+</head>
+<body>
+ <aside class="sidebar">
+  <div class="sidebar-header">
+   <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+   <div class="sidebar-title">EDP Monthly<br>June 2026</div>
+   <span class="node-type-badge critical">Intelligence Report</span>
+  </div>
+  <nav class="sidebar-nav">
+   <div class="nav-section-label">On This Page</div>
+   <a class="nav-link" href="#s1"><span class="nav-num">01</span> Executive Summary</a>
+   <a class="nav-link" href="#s2"><span class="nav-num">02</span> Ransomware Ecosystem: Monthly Statistics</a>
+   <a class="nav-link" href="#s3"><span class="nav-num">03</span> Threat Actor Landscape</a>
+   <a class="nav-link" href="#s4"><span class="nav-num">04</span> Initial Access &amp; Ttp Evolution</a>
+   <a class="nav-link" href="#s5"><span class="nav-num">05</span> Malware &amp; Stealer Ecosystem</a>
+   <a class="nav-link" href="#s6"><span class="nav-num">06</span> Financial &amp; Infrastructure Signals</a>
+   <a class="nav-link" href="#s7"><span class="nav-num">07</span> Law Enforcement &amp; Regulatory Actions</a>
+   <a class="nav-link" href="#s8"><span class="nav-num">08</span> Vulnerability Exploitation Matrix</a>
+   <a class="nav-link" href="#s9"><span class="nav-num">09</span> Supply Chain &amp; Third-Party Compromise</a>
+   <a class="nav-link" href="#s10"><span class="nav-num">10</span> Ecosystem Control Node Analysis</a>
+   <a class="nav-link" href="#s11"><span class="nav-num">11</span> Strategic Leverage Assessment</a>
+   <a class="nav-link" href="#s12"><span class="nav-num">12</span> Unconfirmed Signals &amp; Horizon Indicators</a>
+   <a class="nav-link" href="#s13"><span class="nav-num">13</span> Analytic Caveats &amp; Collection Gaps</a>
+   <a class="nav-link" href="#s14"><span class="nav-num">&#9670;</span> Sources</a>
+   <div class="nav-section-label" style="margin-top:10px">Related</div>
+   <a class="nav-link" href="/map#delta=2026-06">What moved on the map</a>
+   <a class="nav-link" href="/reconstitution.html">Reconstitution Interval</a>
+   <a class="nav-link" href="/tracker.html">Sanctions Tracker</a>
+   <a class="nav-link" href="/library/">Document Library</a>
+  </nav>
+  <div class="sidebar-footer">
+   <div class="sidebar-meta">Ecosystem Degradation Project<br>Coverage: June 2026<br>Published: 30 June 2026</div>
+  </div>
+ </aside>
+ <main class="content">
+  <header class="profile-header">
+   <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / EDP Monthly June 2026</div>
+   <div class="profile-name">Monthly Cybercrime Ecosystem Intelligence Report</div>
+   <div class="profile-subtitle">Coverage period June 2026. Operation Endgame's June phase against the loader and stealer layer, the AudiA6 laundering takedown, and confirmed CIS-exclusion enforcement.</div>
+   <div class="badge-row"><span class="hbadge critical">Operation Endgame: 326 servers</span><span class="hbadge node">June 2026</span><span class="hbadge pdf"><a href="../docs/EDP_Monthly_2026-06.pdf">Download PDF</a></span></div>
+  </header>
+
+  <p class="kicker">Confidence labels are applied throughout: CONFIRMED, CREDIBLE REPORTING, and ANALYST INFERENCE. Figures carried forward from earlier periods are dated explicitly where month-specific data was unavailable. To see which ecosystem nodes moved during this reporting period, open <a href="/map#delta=2026-06">the map's delta view for June 2026</a>.</p>
+
+  <div class="doc-main">
+<h2 class="doc-h2" id="s1">SECTION 1 - EXECUTIVE SUMMARY</h2>
+<p class="doc-p">Five items, priority ranked by ecosystem-level strategic impact. Each carries a supporting metric and a confidence label.</p>
+<ul class="doc-list">
+<li>Operation Endgame's June 15 to 24 strike on the loader and stealer supply chain (StealC, Amadey, SocGholish) actioned 326 servers and 142 domains, recovered 27 million stolen credentials, and restricted roughly 41 million euros in crypto, hitting the credential-supply layer that feeds ransomware affiliates rather than end-stage payloads. <span class="chip confirmed">CONFIRMED</span>.</li>
+<li>June leak-site volume rose to approximately 722 organizations (BreachSense live index) from 646 in May, a provisional increase near 12 percent that reverses the prior two months of decline, with Qilin assessed as the dominant operator for a sixth consecutive month. <span class="chip credible">CREDIBLE REPORTING</span> / <span class="chip inference">ANALYST INFERENCE</span>.</li>
+<li>OFAC's June 2 designation of four Iranian crypto exchanges (Nobitex alone represents roughly 50 percent of Iranian digital-asset inflows) plus a June 22 ISIS-facilitator action mark the largest US action to date against Iran's digital-asset sector and extend exchange-level financial chokepoints as a primary lever. <span class="chip confirmed">CONFIRMED</span>.</li>
+<li>Encryption-free data extortion consolidated as a dominant model, with World Leaks, ShinyHunters (Oracle PeopleSoft zero-day, 100-plus organizations), and Silent Ransom Group (roughly 100 listed victims) all operating pure-exfiltration in June; the best available baseline is 22 percent of incident-response cases running data-only, up roughly elevenfold year over year. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>A SaaS OAuth-abuse supply-chain compromise (Klue to Salesforce, 14-plus named downstream enterprises) plus a confirmed CIS-exclusion enforcement event (the Nova crew banned an affiliate for hitting Uzbek and Moscow-linked oilfield firm Eriell) confirm both the accelerating SaaS-vendor vector and continued Russian safe-harbor self-policing. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+</ul>
+<h2 class="doc-h2" id="s2">SECTION 2 - RANSOMWARE ECOSYSTEM: MONTHLY STATISTICS</h2>
+<p class="doc-p">Total victims disclosed (June 2026): approximately 722 organizations posted to leak sites (BreachSense live June index). This is a still-accruing tracker count; no finalized month-end analytical report was published as of July 1. <span class="chip credible">CREDIBLE REPORTING</span>.</p>
+<p class="doc-p">Prior month baseline (May 2026): 646 victims, 61 active groups, 73 countries, 59 industries (BreachSense May report). <span class="chip confirmed">CONFIRMED</span> per source.</p>
+<p class="doc-p">Month-over-month change: approximately +12 percent (722 vs 646), computed across two same-methodology BreachSense figures. <span class="chip inference">ANALYST INFERENCE</span>, provisional, given June is still accruing.</p>
+<p class="doc-p">Active group count (2026 YTD): 106 active groups across 130 countries; 4,780 victims YTD through July 1 (ransomware.live). A June-only active-group count is not reliably available.</p>
+<p class="doc-p">New groups identified (2026 YTD): 37 tracked new groups. June debuts include Black X (Jun 2), Triple X (Jun 13), Deadlock (Jun 15), Wallstreet (Jun 26), Settra (Jun 28, 22 victims rapidly), Redact (Jun 28), and Blackfield (Jun 29, demanded $2M from Nidec). <span class="chip credible">CREDIBLE REPORTING</span> (ransomware.live / BleepingComputer).</p>
+<p class="doc-p">Defunct or dormant groups: No reliable June-specific attrition count available. Structural context: The Record reports roughly 50 new groups appear and roughly 30 exit per year; top-10 concentration has fallen to about 50 percent of attacks from 69 percent in 2022.</p>
+<p class="doc-p">Estimated ransom volume: No reliable data available for June. Annual context: the 2025 ransom-paid rate fell to 28 percent (Chainalysis, cited via Securelist).</p>
+<h3 class="doc-h3">Sector Targeting Trend Table</h3>
+<p class="doc-p">June finalized sector-level breakdown was not published as of July 1. The table reflects the most recent complete finalized month (May 2026) versus April 2026, preserving a quantitative backbone. Source: BreachSense monthly reports.</p>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Sector</th><th>May 2026 (n)</th><th>April 2026 (n)</th><th>% Change</th><th>Trend</th></tr><tr><td>Manufacturing</td><td>58</td><td>50</td><td>+16%</td><td>Increasing</td></tr><tr><td>Healthcare</td><td>54</td><td>64</td><td>-16%</td><td>Decreasing</td></tr><tr><td>Construction</td><td>42</td><td>37</td><td>+14%</td><td>Increasing</td></tr><tr><td>Consumer Goods</td><td>38</td><td>37</td><td>+3%</td><td>Stable</td></tr><tr><td>Finance</td><td>31</td><td>28</td><td>+11%</td><td>Increasing</td></tr><tr><td>Technology</td><td>31</td><td>56</td><td>-45%</td><td>Decreasing</td></tr></table></div>
+<h3 class="doc-h3">Geographic Targeting Analysis</h3>
+<ul class="doc-list">
+<li>Countries hit more frequently: The United States remains the dominant target at 39.3 percent of May victims (254 of 646); UK 36, Canada 31, Germany 29, Spain 21. No finalized June geographic breakdown is available. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>CIS-exclusion holding: A confirmed enforcement event occurred in early June. The Nova crew (an affiliate program of the RAlord operation) banned an affiliate for hitting Eriell Group, an oilfield-services firm headquartered in Uzbekistan with Moscow offices, then issued a public apology, pledged no leak, and offered free recovery. This is textbook safe-harbor self-policing to avoid creating domestic victims who trigger Russian law enforcement. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>Targeting divergence: The Gentlemen is a notable outlier, with only about 13 percent of victims US-based (Thailand, UK, Brazil, Germany, India lead), diverging from the ecosystem's typical US-heavy distribution. <span class="chip credible">CREDIBLE REPORTING</span> (The Hacker News).</li>
+</ul>
+<h3 class="doc-h3">Leak Site Three-Signal Composite</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Signal</th><th>This Month (June)</th><th>Prior Month (May)</th><th>Trend</th><th>Notes</th></tr><tr><td>Post Volume (victims published)</td><td>~722 (provisional)</td><td>646</td><td>Increasing ~+12%</td><td>Source: BreachSense / ransomware.live</td></tr><tr><td>Time-to-Publish (avg days, compromise to publication)</td><td>No reliable data</td><td>No reliable data</td><td>N/A</td><td>Collection gap persists; extortion-only actors (SRG) compress to under one business day</td></tr><tr><td>Takedown/Relaunch Cycle (days dark to successor)</td><td>RAMP ~150 days dark; LeakBase ~90 days not reconstituted</td><td>RAMP ~120 days dark</td><td>Lengthening</td><td>Longer cycle = higher resilience cost imposed</td></tr></table></div>
+<p class="doc-p">Composite interpretation: Post volume is rising while time-to-publish remains an unresolved collection gap, so we cannot confirm whether groups are publishing more victims faster or simply publishing more. The lengthening takedown-to-relaunch cycle (RAMP now anomalously dark past 150 days, versus a typical 60-to-90-day gap) is the most analytically significant signal: it indicates enforcement is imposing durable reconstitution cost on the forum layer even as the RaaS victim count climbs. <span class="chip inference">ANALYST INFERENCE</span>, medium confidence.</p>
+<h2 class="doc-h2" id="s3">SECTION 3 - THREAT ACTOR LANDSCAPE</h2>
+<p class="doc-p">Russia and CIS-linked groups prioritized. Victim counts are cumulative or most-recent-finalized where June actuals are unavailable.</p>
+<h3 class="doc-h3">Qilin</h3>
+<ul class="doc-list">
+<li>Victim count (June): no reliable standalone figure; leak feed saturation on June 30 and 546 cumulative victims YTD through May indicate continued dominance.</li>
+<li>Key development: assessed to hold the number-one operator position for a sixth consecutive month; formal BreachForums partnership persists. <span class="chip credible">CREDIBLE REPORTING</span> / <span class="chip inference">ANALYST INFERENCE</span>.</li>
+<li>Threat level shift: Stable (elevated). CIS-exclusion: Assessed (Russian-speaking, Russia-based per The Record).</li>
+</ul>
+<h3 class="doc-h3">The Gentlemen (aka Phantom Mantis / Storm-2697)</h3>
+<ul class="doc-list">
+<li>Victim count: 478 cumulative (The Hacker News, Jun 11); about 483 across 66 countries by mid-June.</li>
+<li>Key development: operator publicly identified as Alexander Andreevich Yapaev of Izhevsk, Russia (Brian Krebs); Go-based, Garble-obfuscated locker with self-propagating worm capability and an anti-recovery wipe routine; 90/10 affiliate split; heavy AI use in development. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>Threat level shift: Increasing. CIS-exclusion: Assessed (Russian-speaking operator, Izhevsk-based).</li>
+</ul>
+<h3 class="doc-h3">INC Ransomware (and Lynx / Sinobi lineage)</h3>
+<ul class="doc-list">
+<li>Victim count: 830-plus cumulative since August 2023, 65-plus percent US; 4th in Q1 2026 (120-plus incidents, ZeroFox).</li>
+<li>Key development: Windows and Linux/ESXi encryptors rewritten in Rust; code-overlapping families Lynx and Sinobi spun off after a May 2024 source-code sale. <span class="chip confirmed">CONFIRMED</span> reporting.</li>
+<li>Threat level shift: Stable. CIS-exclusion: Assessed.</li>
+</ul>
+<h3 class="doc-h3">World Leaks (rebrand of Hunters International)</h3>
+<ul class="doc-list">
+<li>Victim count (June flagship): Tata Electronics, an Apple iPhone contract manufacturer, with 204,341 files / 630.4 GB listed June 12; confirmed by BleepingComputer June 23.</li>
+<li>Key development: operates purely as data extortion with no encryption, following the July 2025 wind-down of Hunters International. <span class="chip confirmed">CONFIRMED</span>.</li>
+<li>Threat level shift: Increasing. CIS-exclusion: Assessed.</li>
+</ul>
+<h3 class="doc-h3">Nova (RAlord affiliate program)</h3>
+<ul class="doc-list">
+<li>Victim count: 23 in May; a June affiliate ban is the notable event rather than a volume figure.</li>
+<li>Key development: enforced its CIS-exclusion rule in early June by banning an affiliate who hit Eriell Group and publicly apologizing. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>Threat level shift: Stable. CIS-exclusion: Confirmed (actively enforced).</li>
+</ul>
+<h3 class="doc-h3">Silent Ransom Group / UNC3753 (Luna Moth, Conti offshoot)</h3>
+<ul class="doc-list">
+<li>Victim count: roughly 100 victims listed as of June across LEAKEDDATA and a business-data-leaks domain.</li>
+<li>Key development: end-to-end extortion within one business day using vishing plus in-person USB theft; leak infrastructure runs on an 18-country, 22-ISP residential botnet to resist takedown. <span class="chip confirmed">CONFIRMED</span> (Mandiant / Resecurity).</li>
+<li>Threat level shift: Increasing. CIS-exclusion: Assessed (Conti lineage, Russian-language).</li>
+</ul>
+<h3 class="doc-h3">Data Extortion Trend</h3>
+<ul class="doc-list">
+<li>Current share of encryption-free extortion: best available baseline is 22 percent of Arctic Wolf incident-response cases running data-only. The primary source failed retrieval, so treat as <span class="chip credible">CREDIBLE REPORTING</span>, not confirmed. No verified June-specific percentage is available.</li>
+<li>Named extortion-only groups active in June: World Leaks, ShinyHunters (UNC6240), Silent Ransom Group (UNC3753), and Clop. <span class="chip confirmed">CONFIRMED</span> via multiple June articles.</li>
+<li>Month-over-month change: No reliable data. Year-over-year context: an approximately elevenfold rise (2 percent to 22 percent of IR cases) over the prior twelve months. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+</ul>
+<h2 class="doc-h2" id="s4">SECTION 4 - INITIAL ACCESS &amp; TTP EVOLUTION</h2>
+<p class="doc-p">Access-vector ranking below uses the most recent complete incident-response dataset (Cisco Talos IR Trends, Q1 2026), as no net-new June ranking was published. Source: Talos.</p>
+<ul class="doc-list">
+<li>Phishing: reclaimed the number-one initial-access position, appearing in over one third of engagements, after the ToolShell/SharePoint exploitation wave subsided.</li>
+<li>Valid accounts: 24 percent of engagements.</li>
+<li>Exploitation of public-facing applications: 18 percent, down sharply from 62 percent as ToolShell activity declined.</li>
+</ul>
+<p class="doc-p">TTP developments (June-specific):</p>
+<ul class="doc-list">
+<li>ClickFix as-a-service evolution (published June 30): payloads are now generated on demand by API servers that wrap each request in rotating encryption (Base64/AES/TripleDES/Rijndael/Deflate) over a shared in-memory PowerShell core, with 25-language lures and macOS plus Windows targeting. A new Downloads-folder AMSI-evasion method keeps malicious code out of the clipboard. ClickFix accounted for 47 percent of Microsoft Defender Experts initial-access cases and now carries MITRE ATT&amp;CK ID T1204.004. <span class="chip confirmed">CONFIRMED</span> / <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>Execution drift: actors moved from the Win+R Run box to Win+X / Windows Terminal to avoid leaving RunMRU forensic artifacts; top launchers are PowerShell and cmd (about 39 percent each) and msiexec (about 34 percent). <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+<li>First documented adversarial use of a named AI web-builder (Softr, vibe coding) to construct a phishing and credential-harvest page in a Talos IR case. <span class="chip confirmed">CONFIRMED</span>.</li>
+</ul>
+<h3 class="doc-h3">IAB Market Indicators Table</h3>
+<p class="doc-p">No net-new June IAB market report was published; the authoritative dataset remains Rapid7 H2 2025 (published March 31, 2026). Figures below are explicitly dated and used as the best-available baseline.</p>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Indicator</th><th>This Period (H2 2025, latest)</th><th>Prior Period</th><th>Trend</th></tr><tr><td>Volume of corporate access listings</td><td>DarkForums 221 + RAMP 208 threads = 81% of observed IAB threads</td><td>Lower; more dispersed</td><td>Consolidating</td></tr><tr><td>Median access price</td><td>RAMP representative ~$6,400; overall avg base $113,275 (skewed by DarkForums)</td><td>~$2,726 avg base</td><td>Increasing</td></tr><tr><td>Premium listing ceiling</td><td>Tied to avg alleged victim revenue $3.242B</td><td>Lower</td><td>Increasing (up-market shift)</td></tr><tr><td>Most-targeted sectors (top 3)</td><td>Government 14.2%, Retail 13.1%, IT 10.8%</td><td>Comparable</td><td>Stable</td></tr><tr><td>Dominant access type</td><td>RDP 21.2%, then VPN 12.8%, RDWeb 11.2% (Citrix behind RDP/VPN on RAMP)</td><td>RDP-led</td><td>Stable</td></tr><tr><td>Notable marketplace events</td><td>IntelBroker (Kai West) arrest cut BreachForums IAB threads ~52% YoY; Oracle EBS CVE-2025-61882 exploit offered on RAMP</td><td>-</td><td>Enforcement pressure</td></tr></table></div>
+<h2 class="doc-h2" id="s5">SECTION 5 - MALWARE &amp; STEALER ECOSYSTEM</h2>
+<p class="doc-p">Families ranked by June relevance and observed distribution. The defining June event was the Operation Endgame phase targeting the loader and stealer front end of the ransomware supply chain.</p>
+<h3 class="doc-h3">StealC</h3>
+<ul class="doc-list">
+<li>Version 2.2.1 as of June; sold at $300/month by actor plymouth; top infections in the US, Poland, Italy. Distributed via Amadey, MintsLoader, and ClickFix/FileFix. Disruption status: core infrastructure actioned in Operation Endgame (June 15 to 24). <span class="chip confirmed">CONFIRMED</span>.</li>
+</ul>
+<h3 class="doc-h3">Amadey</h3>
+<ul class="doc-list">
+<li>Version 5.87; 11,635 samples distributed in 2025 (peak), 1,837 YTD 2026; its largest botnet cluster delivered Lumma, Vidar, StealC, RedLine, SmokeLoader, XWorm, AsyncRAT, and Rhadamanthys across 53 clusters. Disruption status: actioned in Operation Endgame. <span class="chip confirmed">CONFIRMED</span>.</li>
+</ul>
+<h3 class="doc-h3">SocGholish (Evil Corp-linked)</h3>
+<ul class="doc-list">
+<li>Fake-browser-update injection into compromised WordPress; 14,971 infected WordPress sites remediated during the June operation. Disruption status: disrupted alongside StealC and Amadey. <span class="chip confirmed">CONFIRMED</span>.</li>
+</ul>
+<h3 class="doc-h3">LummaC2</h3>
+<ul class="doc-list">
+<li>Resurfaced within days of its May 2025 takedown (which disrupted over 2,300 domains) and reportedly leads 2026 distribution alongside StealC and Vidar per AhnLab trend data. The primary source could not be fully retrieved, so 2026 market-share ranking is <span class="chip credible">CREDIBLE REPORTING</span>, not confirmed. No confirmed 2026 infection-volume figure obtained.</li>
+</ul>
+<h3 class="doc-h3">RedLine</h3>
+<ul class="doc-list">
+<li>Referenced only as a legacy, declining family whose logs still circulate post-Operation Magnus (October 2024). No change. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+</ul>
+<h3 class="doc-h3">Infostealer-to-IAB Pipeline</h3>
+<ul class="doc-list">
+<li>Constella processed 51.7 million infostealer packages in 2025 (up 72 percent YoY) across 24.8 million unique infected devices. <span class="chip confirmed">CONFIRMED</span> per source.</li>
+<li>78 percent of recently breached organizations had corporate credentials in infostealer logs within the six months before the breach (Constella); Verizon 2025 DBIR reports 54 percent of ransomware victims had domain credentials in stealer-log marketplaces before attack. <span class="chip confirmed">CONFIRMED</span> (secondary citation for DBIR).</li>
+<li>Timing: the widely repeated sub-48-hour infection-to-sale window is <span class="chip credible">CREDIBLE REPORTING</span> only; the fetched primary reframes 48 hours as an exposure-to-exploitation response window, not a measured interval. Freshness commands a premium because session tokens expire, and session cookies (which bypass MFA with no login event) are the most operationally dangerous artifact.</li>
+</ul>
+<h2 class="doc-h2" id="s6">SECTION 6 - FINANCIAL &amp; INFRASTRUCTURE SIGNALS</h2>
+<h3 class="doc-h3">Sanctions &amp; Enforcement Actions</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Authority</th><th>Target</th><th>Rationale</th><th>Est. Exposure</th><th>Impact</th></tr><tr><td>OFAC (Jun 2)</td><td>Nobitex, Wallex, Bitpin, Ramzinex + 4 Nobitex execs</td><td>Sanctions evasion, terror financing, IRGC-linked ransomware facilitation</td><td>Nobitex ~50% of Iranian inflows; ecosystem &gt;$7.78B in 2025</td><td>High</td></tr><tr><td>OFAC (Jun 22)</td><td>3 individuals + 6 entities (Bitcoin Xchange, Spider, Alkaram, 3 Nigerian bureaux); 2 TRON wallets</td><td>ISIS financial facilitation</td><td>Not quantified per source</td><td>Medium</td></tr></table></div>
+<p class="doc-p">Financial-flow observations (dollar figures from named sources):</p>
+<ul class="doc-list">
+<li>AudiA6 laundering service: approximately 336 million euros laundered since 2021; 692,000 euros frozen plus 86,000 euros seized; 393.39 BTC (about $19.2 million) traced from illicit sources within roughly 10,333 BTC deposited. <span class="chip confirmed">CONFIRMED</span> (DOJ / The Hacker News).</li>
+<li>Operation Endgame (June phase): approximately 41 million euros in crypto frozen. <span class="chip confirmed">CONFIRMED</span> (Europol / Infosecurity Magazine).</li>
+<li>Iran campaign: roughly $500 million in regime-linked crypto frozen (Chainalysis/OFAC, <span class="chip confirmed">CONFIRMED</span>); a Treasury figure of roughly $1 billion total recovered attributed to Secretary Bessent is <span class="chip credible">CREDIBLE REPORTING</span>, not independently verified.</li>
+<li>2025 US context: over $20 billion in online-fraud losses (up 26 percent YoY); about $11.36 billion in crypto-scam losses (FBI, via BeInCrypto). <span class="chip confirmed">CONFIRMED</span> per source.</li>
+</ul>
+<h3 class="doc-h3">Infrastructure Hosting Patterns</h3>
+<ul class="doc-list">
+<li>Sanctioned Stark Industries / PQ Hosting reportedly rebranded in June to THE.Hosting under WorkTitans B.V., migrating from AS44477 to AS209847 to evade EU sanctions after a May 18 Dutch seizure of 800-plus servers. The primary June source failed retrieval, so the ASN and WorkTitans detail is <span class="chip credible">CREDIBLE REPORTING</span>, not verified. See Section 12.</li>
+<li>Prior context (out of window): the November 2025 US/AU/UK sanctions on Media Land (St. Petersburg BPH), ML Cloud, and the Aeza/Hypercore rebrand chain remain the baseline for Russian BPH reconstitution behavior. <span class="chip confirmed">CONFIRMED</span> but dated November 2025.</li>
+</ul>
+<h2 class="doc-h2" id="s7">SECTION 7 - LAW ENFORCEMENT &amp; REGULATORY ACTIONS</h2>
+<h3 class="doc-h3">New Actions This Month</h3>
+<ul class="doc-list">
+<li>FBI Operation Riptide (announced June 9 to 10): a 60-day, whole-of-FBI campaign across all 56 field offices implementing Executive Order 14390; search warrants, indictments, worldwide arrests, and millions in crypto seized to date; named target First VPN (alleged to have serviced 25-plus ransomware groups). Assessed ecosystem impact: Medium, because dollar and arrest totals were undisclosed and much of the effort is a strategic umbrella over discrete actions. <span class="chip confirmed">CONFIRMED</span> (BeInCrypto).</li>
+<li>AudiA6 takedown (June 10): Europol, US Secret Service, and IRS-CI with 10 countries; 2 administrators arrested in Georgia; DOJ charged Ruslan Igorevich Tkachuk (37) and Alexander Vladimirovich Ledenev (25); 25 domains, 30-plus servers, and 80-plus vehicles seized, and the linked Dark2Web forum taken down. Assessed impact: Medium-High, dismantling a laundering service tied to 15-plus ransomware and crypto-theft investigations. <span class="chip confirmed">CONFIRMED</span> (The Hacker News).</li>
+<li>Operation Endgame, new chapter (June 15 to 24): Europol, Germany's BKA, and the Netherlands with Microsoft DCU and industry partners dismantled StealC, Amadey, and SocGholish infrastructure; 326 servers and 142 domains actioned, 27 million credentials recovered, over 200 C2 servers disrupted, and 18,000-plus victim computers identified. Assessed impact: High, targeting a core credential-supply layer. <span class="chip confirmed">CONFIRMED</span> (Europol / Security Affairs).</li>
+<li>OFAC designations (June 2 and June 22): detailed in Section 6. Assessed impact: High (Iran exchanges) and Medium (ISIS facilitators).</li>
+</ul>
+<h3 class="doc-h3">Reconstitution Status Tracker</h3>
+<p class="doc-p">Prior-cycle actions updated at 30/90/180-day intervals; June actions added at initiation. Status options: Fully / Partially / Not Reconstituted / Pending / No Data.</p>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Operation</th><th>Action Date</th><th>Target</th><th>Action Type</th><th>30-Day</th><th>90-Day</th><th>180-Day</th></tr><tr><td>RAMP Forum Seizure</td><td>Jan 28, 2026</td><td>RAMP forum</td><td>Seized</td><td>Dark</td><td>Dark (anomalous)</td><td>Not Reconstituted (~150d; 180-day due Jul 28)</td></tr><tr><td>LeakBase Seizure</td><td>Mar 2026</td><td>LeakBase</td><td>Seized</td><td>Not Reconstituted</td><td>Not Reconstituted (~90d)</td><td>Pending</td></tr><tr><td>BKA REvil ID</td><td>Apr 6, 2026</td><td>REvil/GandCrab ops</td><td>Warrants</td><td>No arrest</td><td>No arrest (~85d)</td><td>Pending</td></tr><tr><td>Operation Saffron</td><td>May 19-20, 2026</td><td>1vpns anonymization</td><td>33 servers seized</td><td>Not Reconstituted (~40d)</td><td>Pending</td><td>Pending</td></tr><tr><td>Stark / Dutch FIOD</td><td>May 18-27, 2026</td><td>Stark BPH</td><td>~800 servers seized</td><td>Partially Reconstituted (THE.Hosting/WorkTitans AS209847, CREDIBLE)</td><td>Pending</td><td>Pending</td></tr><tr><td>Lumma Stealer LE</td><td>May 2025</td><td>Lumma C2 (2,300 domains)</td><td>Seized</td><td>Past</td><td>Past</td><td>Fully Reconstituted</td></tr><tr><td>Operation Endgame (StealC/Amadey)</td><td>Jun 15-24, 2026</td><td>Stealer/loader infra</td><td>326 servers</td><td>Pending (~2 wks)</td><td>Pending</td><td>Pending</td></tr><tr><td>AudiA6 Takedown</td><td>Jun 10, 2026</td><td>Laundering service</td><td>Seized</td><td>Pending (~3 wks)</td><td>Pending</td><td>Pending</td></tr></table></div>
+<h3 class="doc-h3">Cumulative Impact Assessment</h3>
+<p class="doc-p">Short-term disruption (1 to 30 days): High. The June actions removed operational infrastructure across three ecosystem layers simultaneously: stealer/loader supply (Operation Endgame), laundering (AudiA6), and exchange-level cashout (OFAC Iran). The 27 million recovered credentials and 41 million euros frozen represent immediate, measurable removal of criminal capacity.</p>
+<p class="doc-p">Structural ecosystem impact (90-plus days): Medium. Reconstitution history tempers the structural score. Lumma fully reconstituted within weeks of its 2025 takedown and is now assessed to lead 2026 distribution; the Stark BPH network appears to have rebranded (WorkTitans/AS209847) within roughly a month of seizure. The RAMP forum is the lone durable exception, dark past 150 days versus a typical 60-to-90-day gap, suggesting that forum-layer disruption imposes more lasting cost than stealer-infrastructure seizure when developers remain at large. <span class="chip inference">ANALYST INFERENCE</span>, medium confidence.</p>
+<h2 class="doc-h2" id="s8">SECTION 8 - VULNERABILITY EXPLOITATION MATRIX</h2>
+<p class="doc-p">CVEs with confirmed exploitation in ransomware or malware campaigns during June, cross-referenced against CISA KEV. Note: all cisa.gov fetches returned empty bodies (Section 13); KEV facts are corroborated via Rapid7, The Hacker News, and BleepingComputer.</p>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Method / Actor</th><th>Scale</th><th>KEV / Date</th></tr><tr><td>CVE-2026-50751</td><td>Check Point VPN</td><td>9.3</td><td>IKEv1 auth bypass, then ELF payload; Qilin affiliate (medium/high conf.)</td><td>Several dozen orgs; spike early June</td><td>Yes; Jun 8-9</td></tr><tr><td>CVE-2026-33825 (BlueHammer)</td><td>MS Defender (Win LPE)</td><td>High</td><td>SAM DB access to SYSTEM; unnamed ransomware gangs</td><td>Not quantified</td><td>Yes; added Apr 22, ransomware-flagged Jun 30</td></tr><tr><td>CVE-2026-35273</td><td>Oracle PeopleSoft</td><td>Critical</td><td>Zero-day data theft (no encryption); ShinyHunters</td><td>300+ instances / 100+ orgs</td><td>Not confirmed in KEV</td></tr><tr><td>CVE-2026-20245</td><td>Cisco Catalyst SD-WAN Mgr</td><td>7.8</td><td>Command exec as root; not attributed</td><td>Not quantified</td><td>Yes; Jun 9</td></tr><tr><td>CVE-2026-11645</td><td>Google Chrome V8</td><td>8.8</td><td>OOB read/write RCE; not attributed</td><td>Not quantified</td><td>Yes; Jun 9</td></tr><tr><td>CVE-2026-7473</td><td>Arista EOS</td><td>6.9</td><td>Improper tunnel decapsulation; not attributed</td><td>7020/7280/7500R series</td><td>Yes; Jun 9</td></tr></table></div>
+<p class="doc-p">Only CVE-2026-50751 (Check Point / Qilin) and CVE-2026-33825 (BlueHammer) meet the strict criterion of confirmed exploitation in ransomware campaigns during June. CVE-2026-35273 is confirmed exploitation in a data-theft extortion campaign. The Cisco, Chrome, and Arista entries are confirmed actively exploited and KEV-listed but not tied to a named ransomware operator in retrieved sources. Notable lag: BlueHammer was KEV-listed April 22 but only flagged as ransomware-exploited June 30, an approximately 69-day gap between listing and confirmed ransomware use.</p>
+<h2 class="doc-h2" id="s9">SECTION 9 - SUPPLY CHAIN &amp; THIRD-PARTY COMPROMISE</h2>
+<h3 class="doc-h3">Klue to Salesforce OAuth Abuse (SaaS supply chain)</h3>
+<ul class="doc-list">
+<li>Attacker Icarus (active since April 28) compromised a disused-but-active legacy Klue integration credential around June 11 to 12, pivoted into Klue infrastructure, harvested customer OAuth tokens, and queried downstream Salesforce CRMs at scale (roughly 1,000 automated queries per 15-minute burst). Salesforce disabled the Klue Battlecards integration.</li>
+<li>Confirmed downstream victims: Huntress (3.4 GB leaked), Jamf, Recorded Future, Tanium, Gong, HackerOne, Snyk, LastPass, BeyondTrust, OneTrust, Sprout Social, Pendo, Insurity, and 8x8. ReliaQuest linked the TTPs to the 2025 Salesloft Drift / Gainsight OAuth-abuse playbook. Remediation: tokens and credentials revoked, integration disabled. <span class="chip confirmed">CONFIRMED</span> (The Hacker News).</li>
+</ul>
+<h3 class="doc-h3">Atomic Arch (Arch Linux AUR hijack, open-source supply chain)</h3>
+<ul class="doc-list">
+<li>From around June 11, attackers adopted 400-plus orphaned AUR packages, spoofed git commit metadata, and edited install scripts to deliver a Rust credential stealer (deps) with an optional eBPF rootkit and systemd persistence. Tracked by Sonatype as Sonatype-2026-003775 (CVSS 8.7); no CVE assigned; official Arch repos unaffected. Remediation: maintainers resetting commits and banning accounts. <span class="chip confirmed">CONFIRMED</span>.</li>
+</ul>
+<h3 class="doc-h3">Oracle PeopleSoft Zero-Day (third-party enterprise software)</h3>
+<ul class="doc-list">
+<li>ShinyHunters exploited CVE-2026-35273 for data theft across 300-plus instances and 100-plus organizations (education-heavy), with Nissan disclosing an employee-data breach June 29. Oracle issued emergency mitigations; Mandiant confirmed exploitation May 27 to June 9. <span class="chip confirmed">CONFIRMED</span> (BleepingComputer).</li>
+</ul>
+<h3 class="doc-h3">Trend Assessment</h3>
+<ul class="doc-list">
+<li>Supply chain as a percentage of total incidents: No reliable verified June figure available. Search-surfaced figures (297 supply-chain attacks in 2025, up 93 percent) could not be retrieved from source and are excluded. What is verifiable is a qualitative acceleration of the SaaS-vendor-as-vector pattern, with ReliaQuest and Obsidian explicitly linking June's Klue compromise to the 2025 Salesloft Drift wave. Obsidian (verified quote): compromising one vendor means access to hundreds of enterprise environments at once. <span class="chip credible">CREDIBLE REPORTING</span>.</li>
+</ul>
+<h2 class="doc-h2" id="s10">SECTION 10 - ECOSYSTEM CONTROL NODE ANALYSIS</h2>
+<h3 class="doc-h3">Top Control Nodes Table</h3>
+<div class="tbl-wrap"><table class="doc-table"><tr><th>Rank</th><th>Node</th><th>Type</th><th>Est. Ecosystem Reach</th><th>SPOF?</th><th>Disruption Difficulty</th></tr><tr><td>1</td><td>Stablecoin cashout (USDT)</td><td>Crypto Laundry</td><td>95% of illicit inflows to sanctioned entities transit stablecoins; $93B sanctioned flows 2025 (est., med conf.)</td><td>Partial (Tether chokepoint)</td><td>Extreme</td></tr><tr><td>2</td><td>Qilin RaaS</td><td>RaaS Platform</td><td>~21% of Q1 2026 victims; dominant 6th month (est., high conf.)</td><td>Partial</td><td>High</td></tr><tr><td>3</td><td>Infostealer-to-IAB pipeline</td><td>IAB Market</td><td>54% of ransomware victims had creds in stealer markets pre-attack; 51.7M packages 2025</td><td>No</td><td>Extreme</td></tr><tr><td>4</td><td>DarkForums + RAMP</td><td>Forum / IAB Market</td><td>81% of observed IAB threads H2 2025 (est., med conf.)</td><td>Partial</td><td>High</td></tr><tr><td>5</td><td>LummaC2 / StealC MaaS</td><td>Stealer Service</td><td>Leading 2026 distribution; drives credential-to-IAB pipeline (est., med conf.)</td><td>Partial</td><td>High</td></tr><tr><td>6</td><td>The Gentlemen RaaS</td><td>RaaS Platform</td><td>~15% of 2026 YTD victims; operator identity now public</td><td>Partial</td><td>Medium-Low</td></tr><tr><td>7</td><td>First VPN / anonymization layer</td><td>BPH / Other</td><td>Serviced 25+ ransomware groups (FBI Riptide target)</td><td>Yes (per FBI framing)</td><td>Medium</td></tr></table></div>
+<h3 class="doc-h3">Cascade Failure Analysis</h3>
+<p class="doc-p">Stablecoin cashout (USDT): If removed, the payment-collection chain for the majority of Russian and CIS ransomware operations breaks, because roughly 95 percent of illicit inflows to sanctioned entities transit stablecoins and alternatives remain immature at the required scale. Realistic reconstitution timeline: long (12-plus months) if the pressure targets the issuer rather than individual wallets. Enforcement mechanism: regulatory action against Tether and correspondent-banking access, not wallet-by-wallet sanctions.</p>
+<p class="doc-p">Infostealer-to-IAB pipeline: If removed, ransomware affiliates lose the fresh corporate-credential feed behind at least 54 percent of victims. But the node is decentralized across hundreds of Telegram channels and MaaS families and reconstitutes within weeks, as Lumma demonstrated. Enforcement mechanism: sustained, repeated coordinated takedowns on the Operation Endgame model rather than a single strike.</p>
+<p class="doc-p">Qilin RaaS: If removed, roughly one fifth of monthly victim volume is displaced, but affiliates migrate to competing platforms within weeks and the operator identity is not public. Enforcement mechanism: none currently effective, as no jurisdiction with enforcement authority has acted against a Russia-nexus operator.</p>
+<h3 class="doc-h3">Structural Vulnerability Summary</h3>
+<p class="doc-p">The single most critical structural weakness is the stablecoin cashout chokepoint. Every otherwise-decentralized layer of the ecosystem (RaaS platforms, IAB markets, stealer services, bulletproof hosting) shares one hard dependency: converting extorted funds into usable value, and roughly 95 percent of that flow moves through USDT. Unlike forums or stealer infrastructure, which reconstitute in weeks, a credible regulatory action against the dominant stablecoin issuer has no near-term substitute at scale. The ecosystem is most brittle at the point where crypto meets the regulated financial system, and least brittle at the RaaS and IAB layers, which are built for rapid rebranding and migration.</p>
+<h2 class="doc-h2" id="s11">SECTION 11 - STRATEGIC LEVERAGE ASSESSMENT</h2>
+<h3 class="doc-h3">Financial Pressure</h3>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Dominant stablecoin issuer (Tether/USDT) and correspondent-banking access.</span></p><p><span class="lk">CONDITION</span> <span>Roughly 95 percent of illicit inflows to sanctioned entities transit stablecoins; $93B in sanctioned flows in 2025.</span></p><p><span class="lk">THRESHOLD</span> <span><strong>THRESHOLD MET</strong>. Sanctioned-entity stablecoin dependence is already documented above the actionable line.</span></p><p><span class="lk">ACTION</span> <span>Designate specific issuer-adjacent intermediaries and correspondent accounts servicing sanctioned Russian and Iranian flows, replicating the June 2 Iranian-exchange model against the cashout layer.</span></p><p><span class="lk">WINDOW</span> <span>Open now; narrows as alternative laundering rails (A7A5 and non-custodial chains) mature over the next 2 to 4 quarters.</span></p><p><span class="lk">PRIORITY</span> <span class="crit">Critical.</span></p></div>
+<h3 class="doc-h3">Infrastructure Pressure</h3>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Stark / PQ Hosting successor THE.Hosting under WorkTitans B.V. (AS209847).</span></p><p><span class="lk">CONDITION</span> <span>Reported June rebrand and ASN migration (AS44477 to AS209847) within roughly a month of the May Dutch seizure indicates active reconstitution.</span></p><p><span class="lk">THRESHOLD</span> <span>Confirm the AS209847/WorkTitans linkage (currently CREDIBLE, primary source blocked); linkage confirmation is the trigger.</span></p><p><span class="lk">ACTION</span> <span>Sanction WorkTitans B.V. and de-peer AS209847 through upstream providers, applying the Dutch sanctions-law theory established against Stark.</span></p><p><span class="lk">WINDOW</span> <span>30 to 60 days before the successor network re-establishes stable peering and customer migration completes.</span></p><p><span class="lk">PRIORITY</span> <span>High.</span></p></div>
+<h3 class="doc-h3">Infrastructure Pressure (Stealer Reconstitution)</h3>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>Lumma / StealC reconstituted hosting following the June Operation Endgame seizure.</span></p><p><span class="lk">CONDITION</span> <span>Lumma fully reconstituted after its 2025 takedown; StealC and Amadey developers remain at large post-June seizure.</span></p><p><span class="lk">THRESHOLD</span> <span>First confirmed StealC/Amadey C2 re-emergence on new infrastructure post-June 24.</span></p><p><span class="lk">ACTION</span> <span>Pre-stage a second Endgame-model strike on successor C2, coordinated with hosting-provider de-peering, rather than treating the June action as terminal.</span></p><p><span class="lk">WINDOW</span> <span>The 3-to-6-month reconstitution window observed in prior stealer takedowns.</span></p><p><span class="lk">PRIORITY</span> <span>High.</span></p></div>
+<h3 class="doc-h3">Jurisdictional Pressure</h3>
+<div class="doc-note lever"><p><span class="lk">TARGET</span> <span>The Gentlemen operator Alexander Andreevich Yapaev (Izhevsk, Russia).</span></p><p><span class="lk">CONDITION</span> <span>Operator identity and affiliate TOX IDs publicly exposed; group at number-two YTD position and Increasing.</span></p><p><span class="lk">THRESHOLD</span> <span><strong>THRESHOLD MET</strong>. Identity exposure is the trigger and it has occurred.</span></p><p><span class="lk">ACTION</span> <span>Issue indictment and Interpol Red Notice, seize identified affiliate infrastructure, and pursue third-country arrest opportunities while the operator's operational security is degraded.</span></p><p><span class="lk">WINDOW</span> <span>60 to 90 days before the operator hardens OPSEC and rebrands, per the Embargo-to-ArmCorp-to-Gentlemen precedent.</span></p><p><span class="lk">PRIORITY</span> <span>High.</span></p></div>
+<h3 class="doc-h3">Coming Month Focus (Top 3)</h3>
+<ul class="doc-list">
+<li>Pre-stage a second Operation Endgame strike on StealC/Amadey/Lumma successor infrastructure. Expected outcome: convert a one-time seizure into sustained denial, preventing the weeks-scale reconstitution seen after the 2025 Lumma action.</li>
+<li>Confirm and act on the WorkTitans/AS209847 linkage. Expected outcome: sanction and de-peer the Stark successor before customer migration completes, denying 25-plus ransomware-adjacent tenants stable hosting.</li>
+<li>Indict and Red-Notice The Gentlemen operator while identity exposure is fresh. Expected outcome: force OPSEC hardening and rebranding costs on the number-two RaaS operator, degrading affiliate confidence during the exposure window.</li>
+</ul>
+<h2 class="doc-h2" id="s12">SECTION 12 - UNCONFIRMED SIGNALS &amp; HORIZON INDICATORS</h2>
+<ul class="doc-list">
+<li>[<span class="chip credible">UNCONFIRMED REPORTING</span>] Stark/PQ Hosting rebranded to THE.Hosting under WorkTitans B.V. with migration to AS209847. Primary source (BankInfoSecurity) was gated. Confirm via: independent ASN/WHOIS attribution linking AS209847 to WorkTitans and to prior Stark tenants.</li>
+<li>[<span class="chip credible">UNCONFIRMED REPORTING</span>] Roughly $1 billion in Iranian crypto recovered (attributed to Treasury Secretary Bessent). Confirm via: a primary Treasury press release with the figure.</li>
+<li>[<span class="chip credible">UNCONFIRMED REPORTING</span>] LummaC2 leads 2026 stealer distribution (AhnLab trend data). Confirm via: a fully retrievable AhnLab or Trend Micro quarterly with 2026 market-share percentages.</li>
+<li>[<span class="chip credible">UNCONFIRMED REPORTING</span>] INTERPOL Operation First Light 2026 with 276 arrests and $701 million seized. This appears to fall earlier in 2026, not within June; excluded from Section 7. Confirm via: an INTERPOL primary release with dates.</li>
+<li>[<span class="chip inference">ANALYST INFERENCE</span>] The June leak-site volume uptick (+12 percent provisional) may reflect deferred publication from May rather than a genuine rise in compromises. Refute via: finalized June sector and time-to-publish data showing whether victim intake or publication cadence drove the increase.</li>
+<li>[<span class="chip inference">ANALYST INFERENCE</span>] Early-warning for July: expect StealC/Amadey C2 re-emergence within 30 to 60 days (per prior stealer reconstitution timelines) and continued SaaS OAuth-abuse compromises following the Klue and 2025 Salesloft Drift pattern. Confirm via: new C2 telemetry and additional Salesforce/OAuth downstream disclosures.</li>
+</ul>
+<h2 class="doc-h2" id="s13">SECTION 13 - ANALYTIC CAVEATS &amp; COLLECTION GAPS</h2>
+<h3 class="doc-h3">Sources Blocked During Collection</h3>
+<ul class="doc-list">
+<li>cisa.gov (KEV catalog and June 9/23/25 alert pages): all fetches returned empty bodies (bot/CDN blocking). KEV facts corroborated via Rapid7, The Hacker News, BleepingComputer.</li>
+<li>europol.europa.eu/media-press/newsroom (and the AudiA6 press page): JavaScript single-page app; body did not render. Corroborated via The Hacker News and Infosecurity Magazine.</li>
+<li>ofac.treasury.gov/recent-actions: not in provenance set; could not be fetched. Press-release numbers corroborated via Chainalysis.</li>
+<li>bankinfosecurity.com (Lumma resurgence; sanctioned-host DNS-hijacking): registration/JS wall; only headline and meta retrievable. The Stark/WorkTitans/AS209847 detail therefore remains unverified.</li>
+<li>therecord.media (StealC/Amadey/SocGholish takedown article): fetch returned empty body.</li>
+<li>microsoft.com/en-us/security/blog (June 24 StealC/Amadey post): response exceeded tool token limit; figures corroborated via verified secondary sources.</li>
+<li>hipaajournal.com (elevenfold data-only extortion increase): empty body. The 22 percent / 11x Arctic Wolf figure is therefore <span class="chip credible">CREDIBLE REPORTING</span>, not verified.</li>
+<li>theregister.com (Nova/Eriell primary): not in provenance set. Corroborated via Ciphers Security.</li>
+<li>sharkstriker.com (June breaches, 701 figure): fetched, but the 701 figure was not present in the body; BreachSense 722 used instead.</li>
+<li>deepstrike.io (supply-chain statistics): exceeded fetch size limit; trend percentages excluded.</li>
+</ul>
+<h3 class="doc-h3">Data Unavailable or Unreliable This Cycle</h3>
+<ul class="doc-list">
+<li>No finalized June-2026 monthly analytical report was published as of July 1; the 722 total is a live, still-accruing tracker count and the +12 percent MoM is a provisional computation.</li>
+<li>June-specific sector, geography, and ransom-volume breakdowns are unavailable; May 2026 finalized data is used as the baseline throughout Section 2.</li>
+<li>Time-to-publish (compromise-to-publication) remains an unresolved collection gap, limiting the leak-site composite interpretation.</li>
+<li>IAB market metrics derive from Rapid7 H2 2025 (published March 2026), not fresh June telemetry; presented as the best-available, explicitly dated baseline.</li>
+</ul>
+<h3 class="doc-h3">Analytic Notes and Biases</h3>
+<ul class="doc-list">
+<li>Securelist/Kaspersky is a Russian-origin vendor; its figures are weighted accordingly.</li>
+<li>Leak-site victim counts inflate reality (they include unverified claims and exclude victims who pay quietly) and can also deflate it (groups that never publish). The 722 count is a lower bound on activity, not a census.</li>
+<li>Competing explanation for the June volume uptick: deferred May publication versus genuine growth in compromises; unresolved pending finalized data. Competing explanation for lengthening takedown cycles: durable enforcement cost versus voluntary operator dormancy to evade heat.</li>
+</ul>
+<h3 class="doc-h3">Sections Omitted</h3>
+<ul class="doc-list">
+<li>No sections were omitted. Every standing section carried sufficient data to be worth publishing, with explicit no-reliable-data notations where June-specific figures were unavailable.</li>
+</ul>
+<h2 class="doc-h2" id="s14">SOURCES</h2>
+<h3 class="doc-h3">Ransomware Tracking Platforms</h3>
+<ul class="doc-list">
+<li>ransomware.live - 2026 statistics</li>
+<li>ransomware.live - all-time and new-groups</li>
+<li>BreachSense - May 2026 ransomware report</li>
+<li>BreachSense - June 2026 breaches index</li>
+<li>Check Point Research - State of Ransomware Q1 2026</li>
+<li>Securelist (Kaspersky) - State of Ransomware 2026</li>
+</ul>
+<h3 class="doc-h3">Government &amp; Law Enforcement</h3>
+<ul class="doc-list">
+<li>BeInCrypto - FBI Operation Riptide</li>
+<li>The Hacker News - Europol disrupts AudiA6</li>
+<li>Infosecurity Magazine - Operation Endgame StealC/Amadey</li>
+<li>Security Affairs - Operation Endgame StealC/Amadey</li>
+</ul>
+<h3 class="doc-h3">Vendor Threat Intelligence</h3>
+<ul class="doc-list">
+<li>Rapid7 - IAB shift to high-value targets (H2 2025)</li>
+<li>Rapid7 - Check Point VPN zero-day CVE-2026-50751</li>
+<li>Cisco Talos - IR Trends Q1 2026</li>
+<li>Constella - infostealer-to-breach pipeline</li>
+</ul>
+<h3 class="doc-h3">Cybersecurity News</h3>
+<ul class="doc-list">
+<li>The Hacker News - The Gentlemen ransomware profile</li>
+<li>The Hacker News - INC ransomware profile</li>
+<li>The Hacker News - UNC3753 vishing/physical extortion</li>
+<li>The Hacker News - Amadey and StealC takedown</li>
+<li>The Hacker News - ClickFix API-driven payloads</li>
+<li>The Hacker News - CISA adds Cisco/Chrome/Arista flaws</li>
+<li>The Hacker News - Klue/Salesforce OAuth supply chain</li>
+<li>The Hacker News - Atomic Arch AUR supply chain</li>
+<li>The Hacker News - FortiBleed FortiGate campaign</li>
+<li>BleepingComputer - Tata Electronics / World Leaks</li>
+<li>BleepingComputer - BlueHammer now exploited by ransomware</li>
+<li>BleepingComputer - Nissan / Oracle PeopleSoft zero-day</li>
+<li>The Record - ransomware takedowns and proliferation</li>
+<li>Ciphers Security - Nova/Eriell CIS-rule enforcement</li>
+</ul>
+<h3 class="doc-h3">Financial Intelligence</h3>
+<ul class="doc-list">
+<li>Chainalysis - OFAC sanctions Iranian crypto exchanges</li>
+<li>Chainalysis - OFAC sanctions ISIS financial facilitators</li>
+</ul>
+<h3 class="doc-h3">Infrastructure Intelligence</h3>
+<ul class="doc-list">
+<li>Security Affairs - coordinated BPH sanctions (Nov 2025, context)</li>
+</ul>
+  </div>
+ </main>
+</body>
+</html>

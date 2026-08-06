@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reconstitution Interval: How Fast the Ecosystem Heals</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --chip-red-bg: #3b1f1f; --chip-red-border: #7f1d1d;
+  --chip-amber-bg: #2d1b00; --chip-amber-border: #78350f;
+  --chip-green-bg: #0d4429; --chip-green-border: #238636;
+  --chip-blue-bg: #172b4d; --chip-blue-border: #1f6feb;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; font-size: 14px; }
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.site-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--bg-secondary); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; z-index: 100; gap: 16px; }
+.site-header .logo { font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+.site-header .divider { color: var(--border); }
+.site-header .profile-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.site-header .node-type-tag { font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; letter-spacing: 0.04em; }
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+.status-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; border: 1px solid; }
+.badge-live { background: var(--chip-blue-bg); color: var(--accent-blue); border-color: var(--chip-blue-border); }
+.sidebar { position: fixed; top: var(--header-height); left: 0; bottom: 0; width: var(--sidebar-width); background: var(--bg-secondary); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90; }
+.sidebar-section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px; }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a { display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.15s; }
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+.main-content { margin-left: var(--sidebar-width); margin-top: var(--header-height); padding: 32px 40px 80px; max-width: 1120px; }
+.section { margin-bottom: 48px; }
+.section-header { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 16px; }
+.section-num { font-size: 12px; color: var(--text-muted); font-weight: 700; }
+.section-title { font-size: 18px; font-weight: 600; }
+.section-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+.stat-card .num { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.stat-card .sub { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 12px; border: 1px solid; white-space: nowrap; }
+.chip-red { background: var(--chip-red-bg); color: var(--accent-red); border-color: var(--chip-red-border); }
+.chip-amber { background: var(--chip-amber-bg); color: var(--accent-orange); border-color: var(--chip-amber-border); }
+.chip-green { background: var(--chip-green-bg); color: var(--accent-green); border-color: var(--chip-green-border); }
+.chip-blue { background: var(--chip-blue-bg); color: var(--accent-blue); border-color: var(--chip-blue-border); }
+.chip-gray { background: var(--bg-tertiary); color: var(--text-secondary); border-color: var(--border); }
+.chart-wrap { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 16px; overflow-x: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); align-items: center; }
+.legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.filter-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px; }
+.fchip { font-size: 12px; padding: 3px 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.15s; }
+.fchip:hover { color: var(--text-primary); border-color: var(--text-muted); }
+.fchip.on { background: rgba(88,166,255,0.12); color: var(--accent-blue); border-color: var(--accent-blue); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.dim { color: var(--text-secondary); }
+.mut { color: var(--text-muted); }
+.note-block { font-size: 12px; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent-blue); padding: 10px 14px; margin: 12px 0; }
+.warn-block { font-size: 12px; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent-orange); padding: 10px 14px; margin: 12px 0; }
+.ep-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; margin-bottom: 14px; }
+.ep-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.ep-id { font-size: 11px; font-weight: 700; color: var(--text-muted); font-family: ui-monospace, Menlo, monospace; }
+.ep-date { font-size: 12px; color: var(--text-secondary); font-family: ui-monospace, Menlo, monospace; }
+.ep-name { font-size: 15px; font-weight: 600; }
+.ep-sub { font-size: 12px; color: var(--text-secondary); margin: 6px 0; }
+.ep-tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0; }
+.ep-tbl th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 5px 8px; border-bottom: 1px solid var(--border); }
+.ep-tbl td { padding: 6px 8px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.ep-tbl td:first-child, .ep-tbl th:first-child { padding-left: 0; }
+.ep-tbl tr:last-child td { border-bottom: none; }
+.ep-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 10px; }
+.ep-comment { font-size: 12px; color: var(--text-primary); border-left: 3px solid var(--accent-purple); padding-left: 10px; margin-top: 8px; }
+.ep-noattr { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 8px; }
+.method-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); }
+.method-block h4 { font-size: 13px; color: var(--text-primary); margin-bottom: 6px; }
+.tbl-wrap { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg-tertiary); }
+table.data td { padding: 8px 12px; border-bottom: 1px solid var(--border-muted); vertical-align: top; }
+table.data tr:last-child td { border-bottom: none; }
+.footer-note { font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 24px; }
+#tip { position: fixed; display: none; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; padding: 8px 11px; font-size: 12px; color: var(--text-primary); max-width: 340px; z-index: 200; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.5); line-height: 1.45; }
+#tip .t-mut { color: var(--text-muted); font-size: 11px; }
+svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+@media (max-width: 900px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 24px 16px 60px; } .site-header .node-type-tag { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">Reconstitution Interval</span>
+  <span class="node-type-tag">Disruption Pillar</span>
+  <div class="header-badges">
+    <span class="status-badge badge-live" id="hdr-asof"></span>
+  </div>
+</header>
+
+<nav class="sidebar">
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#line"><span class="nav-num">01</span>The Line: Is It Working</a></li>
+    <li><a href="#lanes"><span class="nav-num">02</span>The Lanes: Where Pressure Lands</a></li>
+    <li><a href="#record"><span class="nav-num">03</span>The Record: Episodes</a></li>
+    <li><a href="#method"><span class="nav-num">04</span>Method</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Related</div>
+  <ul class="sidebar-nav">
+    <li><a href="scoreboard.html">Takedown Scoreboard</a></li>
+    <li><a href="tracker.html">Sanctions and Indictment Tracker</a></li>
+    <li><a href="/map">Ecosystem Map</a></li>
+    <li><a href="index.html">Ecosystem Hub</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Version</span><span class="value" id="meta-version"></span></div>
+    <div class="sidebar-meta-row"><span class="label">As of</span><span class="value" id="meta-asof"></span></div>
+    <div class="sidebar-meta-row"><span class="label">Episodes</span><span class="value" id="meta-eps"></span></div>
+    <div class="sidebar-meta-row"><span class="label">Clocks</span><span class="value" id="meta-clocks"></span></div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <section class="section" id="line">
+    <div class="section-header"><span class="section-num">01</span><span class="section-title">The Line: Is It Working</span></div>
+    <p class="section-sub">The ecosystem map shows where to push. This instrument measures whether pushes do anything: how long the ecosystem takes to heal after each public pressure episode. The unit is the ecosystem node, not the brand, so a customer base moving from one bulletproof hoster to another correctly reports as displacement, near zero. The honest signal is twofold: closed intervals (the node healed, measured in days) and censored intervals (no reconstitution observed yet, shown as lower bounds). The successes never close their clocks, so a median of closed intervals alone would be survivorship bias. Both are shown.</p>
+    <div class="stat-grid" id="kpis"></div>
+    <div class="chart-wrap"><div id="line-chart"></div></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--accent-red)"></span>Reconstituted in 14 days or less</span>
+      <span><span class="sw" style="background:var(--accent-orange)"></span>15 to 90 days</span>
+      <span><span class="sw" style="background:var(--accent-green)"></span>Over 90 days, or no reconstitution observed (arrow = interval still open, lower bound)</span>
+      <span><span class="sw" style="background:var(--accent-blue)"></span>Window open, under 90 days</span>
+    </div>
+    <div class="warn-block"><strong>Reading rule.</strong> The rolling median uses closed intervals only and is therefore a lower bound twice over: covert action precedes public announcement, and the operations that keep targets down never produce a closed interval at all. The green arrows are the success population. A falling or flat red-dominated median with a growing arrow population means the same thing everywhere it appears: fast displacement where personnel are untouched, durable degradation where they are not.</div>
+    <div id="stay-down"></div>
+  </section>
+
+  <section class="section" id="lanes">
+    <div class="section-header"><span class="section-num">02</span><span class="section-title">The Lanes: Where Pressure Lands</span></div>
+    <p class="section-sub">One lane per ecosystem node, time across the page. Each episode drops a bar in every lane it touched, running from public action date to migration evident. Simultaneity is shown, not averaged away: multiple lanes lighting up in the same week is thirty-plus entities acting at once, and this instrument declines to untangle credit. Repeated pressure on one node reads as repeated bars in one lane. Click any bar for the full episode record.</p>
+    <div class="filter-bar">
+      <span class="filter-label">Range</span>
+      <span class="fchip on" data-range="all">Full record (2021+)</span>
+      <span class="fchip" data-range="2025">2025 onward</span>
+    </div>
+    <div class="chart-wrap"><div id="lanes-chart"></div></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--accent-red)"></span>Healed fast (14 days or less; diamond = zero: never interrupted or evasion pre-positioned)</span>
+      <span><span class="sw" style="background:var(--accent-orange)"></span>Healed in 15 to 90 days</span>
+      <span><span class="sw" style="background:var(--accent-green)"></span>Slow or no reconstitution (arrow = still down)</span>
+      <span><span class="sw" style="background:var(--accent-blue)"></span>Assessment window open</span>
+      <span><span class="sw" style="background:var(--text-muted);border-radius:50%"></span>Marker: court, sweep, attribution, or state action (no clock)</span>
+    </div>
+  </section>
+
+  <section class="section" id="record">
+    <div class="section-header"><span class="section-num">03</span><span class="section-title">The Record: Episodes</span></div>
+    <p class="section-sub">Per-episode detail, newest first: constituent actions with sources, both dates where observed (replacement live, migration evident: the gap between them is trust damage), co-occurring actions inside a 14-day window, confidence labels, and an explicit non-attribution note. An episode is a coordinated push evidenced by same-window cross-referencing announcements and shared targets, never mere calendar proximity.</p>
+    <div class="filter-bar">
+      <span class="filter-label">Show</span>
+      <span class="fchip on" data-ef="all">All</span>
+      <span class="fchip" data-ef="pressure">Pressure</span>
+      <span class="fchip" data-ef="censored">Still down</span>
+      <span class="fchip" data-ef="open">Window open</span>
+      <span class="fchip" data-ef="marker">Markers</span>
+    </div>
+    <div id="ep-list"></div>
+  </section>
+
+  <section class="section" id="method">
+    <div class="section-header"><span class="section-num">04</span><span class="section-title">Method</span></div>
+
+    <div class="method-block">
+      <h4>What is measured</h4>
+      The reconstitution interval: how long the ecosystem takes to heal after public pressure. This is a property of the system, not a grade on any operation. It requires no interagency coordination to compute and assigns no credit. Lengthening intervals mean the ecosystem is degrading; persistently short intervals mean displacement only. Moving a customer base between providers is not degradation, and the node-level unit makes that impossible to miscount as a win.
+    </div>
+
+    <div class="method-block">
+      <h4>Rules</h4>
+      1. The unit is the episode-node pair, not the episode and not the brand. A multi-node package runs one clock per lane touched, and substitution inside a node reports as near-zero recovery.<br>
+      2. The clock starts at the public action date (press release). Covert action precedes announcement, so every published interval is a lower bound; classified detail can only lengthen it.<br>
+      3. The clock stops when customers have visibly moved to a replacement, not when a replacement merely exists.<br>
+      4. Two dates are recorded where observable: replacement live, and migration evident. The gap between them is trust damage, measured.<br>
+      5. No attribution. Every episode record lists co-occurring public actions inside a 14-day window and explicitly declines to assign cause.<br>
+      6. Episodes are constructed from coordination evidence: same-window announcements that cross-reference each other or share targets. Calendar proximity alone never merges actions.<br>
+      7. Court-process events (pleas, sentencings, extraditions), interception sweeps, attribution strikes, and actions against state entities carry no clock: there is nothing to reconstitute. They enter the record as markers and personnel-exposure context.<br>
+      8. Censoring: an interval with no observed reconstitution stays open and is reported as a lower bound with an as-of age. Open intervals are excluded from the rolling median and shown separately; episodes under 90 days old sit in an assessment window and are excluded from both.
+    </div>
+
+    <div class="method-block">
+      <h4>Evidence standard: the clock only moves on artifacts</h4>
+      Every date must come from something a skeptic can pull up independently. Government press releases for actions. Machine-recorded, timestamped artifacts for replacements and migration. Assessed absorption without a dated artifact leaves the clock open, with the assessment confined to commentary. Analyst judgment never touches the clock. Minimum acceptable migration evidence by node type:
+      <table class="data" style="margin-top:8px">
+        <thead><tr><th>Node type</th><th>Replacement live</th><th>Migration evident</th></tr></thead>
+        <tbody>
+          <tr><td>Hosting / VPN / proxy</td><td class="dim">BGP or ASN announcement, new prefixes routing</td><td class="dim">Customer infrastructure observed on the new prefixes (passive DNS, scan data, threat-intel telemetry)</td></tr>
+          <tr><td>Malware / MaaS</td><td class="dim">New C2 domains or panels live</td><td class="dim">Campaign telemetry: detections of new builds at scale</td></tr>
+          <tr><td>Forums / markets</td><td class="dim">Mirror or successor site reachable</td><td class="dim">Posting volume and vendor activity resuming (not mere reachability)</td></tr>
+          <tr><td>RaaS brands</td><td class="dim">Leak site or panel live</td><td class="dim">Victim posts resuming on the new infrastructure (ransomware.live feed)</td></tr>
+          <tr><td>Financial rails</td><td class="dim">Successor venue or contract live</td><td class="dim">On-chain flow migration (TRM, Chainalysis, Global Ledger reporting with dates)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="method-block">
+      <h4>Published series only</h4>
+      This series uses only citable public dates. Because covert action precedes announcement, the public clock starts late and published intervals are a floor. The conservative version of the argument already holds; classified detail can only strengthen it. Episodes sourced from the map monthly record that still lack an attached primary release are flagged in the record and carry no closed clock until one is attached.
+    </div>
+
+    <div class="method-block">
+      <h4>Provenance</h4>
+      Constituent operations and recovery observations: <span class="mono">data/scoreboard.json</span> (Takedown Scoreboard v1.1) and the ecosystem map monthly record (<span class="mono">data/ecosystem-map-data.js</span>). This page renders <span class="mono">data/reconstitution-data.js</span>. The scoreboard grades operations; this instrument times the system. Different questions, different units: an operation can score well while its lane heals instantly, and a mediocre score can sit beside a lane that never healed.
+    </div>
+
+    <div class="footer-note">
+      Part of the Disruption Pillar. Companion pages: <a href="scoreboard.html">Takedown Scoreboard</a> (operation grades), <a href="tracker.html">Sanctions and Indictment Tracker</a> (action-level log), <a href="/map">Ecosystem Map</a> (structure). No causal credit is assigned to any agency or action anywhere on this page.
+    </div>
+  </section>
+
+</main>
+
+<div id="tip"></div>
+
+<script src="data/reconstitution-data.js"></script>
+<script>
+/* Local-preview fallback. The canonical dataset is data/reconstitution-data.js and is what
+   the deployed site serves. Some local setups cannot load file:// subresources, so a copy is
+   embedded here. RULE: any dataset change must edit BOTH the external file and this block. */
+if (!window.RECONSTITUTION) window.RECONSTITUTION = {
+  meta: {
+    title: "Reconstitution Interval", version: "1.0", asOf: "2026-08-02", maturityDays: 90,
+    clockClasses: {
+      closed: "Migration evident: a dated, citable artifact shows customers moved to a replacement (or that service was never interrupted, interval 0)",
+      censored: "No reconstitution observed as of the as-of date; interval is open and shown as a lower bound",
+      open: "Under 90 days since action; assessment window still open",
+      none: "No clock: court-process, attribution, state-entity, or interception events have nothing to reconstitute"
+    }
+  },
+  lanes: [
+    { id: "bph",      label: "Bulletproof Hosting",        group: "Infrastructure" },
+    { id: "vpn",      label: "VPN / Proxy Infrastructure", group: "Infrastructure" },
+    { id: "crypters", label: "Crypters / Evasion",         group: "Infrastructure" },
+    { id: "callers",  label: "Social Engineering / PhaaS", group: "Infrastructure" },
+    { id: "stealers", label: "Infostealers",               group: "Malware supply" },
+    { id: "loaders",  label: "Loaders / Botnets",          group: "Malware supply" },
+    { id: "forums",   label: "Underground Forums",         group: "Community" },
+    { id: "datamkt",  label: "Data Markets",               group: "Community" },
+    { id: "raas",     label: "RaaS Brands",                group: "Operations" },
+    { id: "affiliate",label: "Affiliates",                 group: "Operations" },
+    { id: "negot",    label: "Negotiation / IR Interface", group: "Operations" },
+    { id: "ruexch",   label: "RU-facing Exchanges",        group: "Financial" },
+    { id: "exchl",    label: "Exchange Laundering Venues", group: "Financial" },
+    { id: "cex",      label: "Global Exchanges / Issuers", group: "Financial" },
+    { id: "a7a5",     label: "A7A5 Stablecoin Rail",       group: "Financial" },
+    { id: "mixers",   label: "Mixers / Laundering",        group: "Financial" },
+    { id: "mules",    label: "Mule Networks",              group: "Financial" },
+    { id: "gru",      label: "State Layer",                group: "State" }
+  ],
+  episodes: [
+  { id: "E01", date: "2021-09-21", datePrecision: "day", name: "Suex designation", type: "pressure", scoreboardRefs: [1],
+    actions: [ { date: "2021-09-21", desc: "OFAC designates Suex OTC (first exchange designation)", authority: "OFAC", source: "https://home.treasury.gov/news/press-releases/jy0364" } ],
+    clocks: [ { lane: "ruexch", target: "Suex", class: "censored",
+      evidence: "No successor service; illicit OTC flow assessed consolidated into Garantex, but no dated migration artifact is in the record, so the clock stays open",
+      confidence: "Confirmed (event); absorption Assessed" } ],
+    commentary: "Service never reconstituted under any brand. Node-level demand absorption by an incumbent (Garantex) is assessed but unsourced to a dated artifact." },
+  { id: "E02", date: "2021-11-08", datePrecision: "day", name: "Chatex designation", type: "pressure", scoreboardRefs: [2],
+    actions: [ { date: "2021-11-08", desc: "OFAC designates Chatex", authority: "OFAC", source: "https://home.treasury.gov/news/press-releases/jy0471" } ],
+    clocks: [ { lane: "ruexch", target: "Chatex", class: "censored", evidence: "No successor service observed", confidence: "Confirmed" } ],
+    commentary: "Defunct with no successor; demand assessed absorbed inside the node." },
+  { id: "E03", date: "2022-04-05", datePrecision: "day", name: "Hydra Market takedown", type: "pressure", scoreboardRefs: [3],
+    actions: [ { date: "2022-04-05", desc: "BKA seizes Hydra servers (Germany); OFAC designates Hydra same day", authority: "BKA + OFAC", source: "https://home.treasury.gov/news/press-releases/jy0701" } ],
+    clocks: [ { lane: "datamkt", target: "Hydra", class: "closed", migrationDays: 90, approx: true,
+      evidence: "Vendor ecosystem fragmented to successor markets (OMG, Mega, Blacksprut) within months of the seizure", confidence: "Credible" } ],
+    commentary: "Brand kill, node displacement: vendors migrated rather than exiting. Interval approximate; the source gives 'within months'." },
+  { id: "E04", date: "2022-04-05", datePrecision: "day", name: "Garantex designation (2022)", type: "pressure", scoreboardRefs: [4],
+    actions: [ { date: "2022-04-05", desc: "OFAC designates Garantex (same-day package with Hydra)", authority: "OFAC", source: "https://home.treasury.gov/news/press-releases/jy0701" } ],
+    clocks: [ { lane: "ruexch", target: "Garantex", class: "closed", migrationDays: 0,
+      evidence: "Service never interrupted; volume roughly doubled post-designation and the exchange operated three more years", confidence: "Confirmed" } ],
+    commentary: "Canonical designation-only failure. Interval 0: no service interruption to recover from." },
+  { id: "E05", date: "2023-01-26", datePrecision: "day", name: "Hive infrastructure takedown", type: "pressure", scoreboardRefs: [5],
+    actions: [ { date: "2023-01-26", desc: "FBI/DOJ seize Hive infrastructure after 7 months of covert access", authority: "FBI + DOJ + Europol", source: "https://www.justice.gov/opa/pr/us-department-justice-disrupts-hive-ransomware-variant" } ],
+    clocks: [ { lane: "raas", target: "Hive", class: "closed", replacementDays: 270, migrationDays: 270, approx: true,
+      evidence: "Rebrand as Hunters International observed late 2023, roughly 9 months after seizure", confidence: "Credible" } ],
+    commentary: "Brand dead 3.5 years; lineage wound down Jul 2025. The 9-month rebrand interval is among the longest closed RaaS intervals on record." },
+  { id: "E06", date: "2023-08-29", datePrecision: "day", name: "Operation Duck Hunt (Qakbot)", type: "pressure", scoreboardRefs: [6],
+    actions: [ { date: "2023-08-29", desc: "FBI-led international takedown of the Qakbot botnet", authority: "FBI + DOJ + Europol", source: "https://www.justice.gov/opa/pr/qakbot-malware-disrupted-international-cyber-takedown" } ],
+    clocks: [ { lane: "loaders", target: "Qakbot", class: "closed", migrationDays: 90, approx: true,
+      evidence: "Operator activity resumed ~3 months later (Dec 2023 spam-bomb pivot); original botnet never rebuilt", confidence: "Confirmed" } ],
+    commentary: "Operators reconstituted activity, not the botnet: pivot rather than rebuild." },
+  { id: "E07", date: "2023-12-19", datePrecision: "day", name: "ALPHV/BlackCat site seizure", type: "pressure", scoreboardRefs: [7],
+    actions: [ { date: "2023-12-19", desc: "FBI seizes ALPHV leak site; decryptor released", authority: "FBI + DOJ", source: "https://www.justice.gov/opa/pr/justice-department-disrupts-prolific-alphvblackcat-ransomware-variant" } ],
+    clocks: [ { lane: "raas", target: "ALPHV", class: "closed", replacementDays: 0, migrationDays: 0,
+      evidence: "Site unseized within hours; group continued operating immediately", confidence: "Confirmed" } ],
+    commentary: "The seizure itself produced a near-zero interval. Brand death came ~10 weeks later by exit scam (Mar 2024), an internal-trust collapse, with worst-case affiliate dispersal to RansomHub and Qilin." },
+  { id: "E08", date: "2024-02-20", datePrecision: "day", name: "Operation Cronos (LockBit)", type: "pressure", scoreboardRefs: [8],
+    actions: [ { date: "2024-02-20", desc: "Multi-phase takedown: infrastructure, arrests, sanctions, indictments; Khoroshev unmasked May 2024", authority: "NCA + FBI + Europol + 10 countries", source: "https://www.nationalcrimeagency.gov.uk/news/lockbit-leader-unmasked-and-sanctioned" } ],
+    clocks: [ { lane: "raas", target: "LockBit", class: "closed", replacementDays: 5, migrationDays: 345, approx: true,
+      evidence: "Leak site relaunched in 5 days but largely cosmetic (~80% of post-takedown posts illegitimate, Trend Micro); real capability rebuild only at LockBit 4.0, ~11.5 months", confidence: "Confirmed" } ],
+    commentary: "The flagship trust-damage gap: replacement live in 5 days, migration evident only at ~345 days. The 340-day gap is measurable trust destruction." },
+  { id: "E09", date: "2024-05-27", datePrecision: "day", name: "Operation Endgame phase 1", type: "pressure", scoreboardRefs: [9],
+    actions: [ { date: "2024-05-27", desc: "Largest-ever botnet operation: IcedID, Pikabot, Bumblebee, SystemBC, Smokeloader", authority: "Europol + Eurojust + partners", source: "https://www.europol.europa.eu/media-press/newsroom/news/largest-ever-operation-against-botnets-hits-dropper-malware-ecosystem" } ],
+    clocks: [
+      { lane: "loaders", target: "IcedID / Pikabot", class: "censored", evidence: "No rebuild observed for either family since action", confidence: "Confirmed" },
+      { lane: "loaders", target: "Bumblebee / SystemBC / Smokeloader", class: "closed", migrationDays: 270, approx: true,
+        evidence: "Families returned and were re-targeted during 2025; no precise return date in the record", confidence: "Assessed" }
+    ],
+    commentary: "Mixed outcome inside one lane: two families dead, three reconstituted. Split clocks preserve the split." },
+  { id: "E10", date: "2024-09-26", datePrecision: "day", name: "Cryptex / PM2BTC / UAPS action", type: "pressure", scoreboardRefs: [10],
+    actions: [ { date: "2024-09-26", desc: "Coordinated US action + 96 arrests in Russia (targets harmed Russian interests)", authority: "OFAC + DOJ + USSS + FinCEN", source: "https://home.treasury.gov/news/press-releases/jy2616" } ],
+    clocks: [ { lane: "ruexch", target: "Cryptex / PM2BTC / UAPS", class: "censored",
+      evidence: "No successor of comparable scale identified in 22 months", confidence: "Confirmed" } ],
+    commentary: "Strongest financial-infrastructure outcome on the board; the exception that proves the safe-harbor rule (Russia prosecuted because Russian interests were harmed)." },
+  { id: "E11", date: "2024-10-25", datePrecision: "day", name: "REvil domestic prosecutions (Russia)", type: "court", scoreboardRefs: [11],
+    actions: [ { date: "2024-10-25", desc: "Russian court verdicts, two waves; time-served releases followed", authority: "Russia (domestic)", source: "https://therecord.media/revil-hackers-sentenced-russia" } ],
+    clocks: [ { lane: "raas", target: "REvil", class: "none", evidence: "Group defunct since Jan 2022 FSB raids; nothing to reconstitute", confidence: "Confirmed" } ],
+    commentary: "Court-process event, no clock. Deterrent effect assessed minimal; confirms the selective safe-harbor model." },
+  { id: "E12", date: "2025-02-10", datePrecision: "day", name: "Operation Phobos Aetor (+ Ptitsyn track)", type: "pressure", scoreboardRefs: [12],
+    actions: [ { date: "2025-02-10", desc: "8Base infrastructure seized; Phuket arrests; Ptitsyn extradited and later pleads guilty", authority: "DOJ + Europol + Thai police + partners", source: "https://www.justice.gov/opa/pr/phobos-ransomware-affiliates-arrested-coordinated-international-disruption" } ],
+    clocks: [ { lane: "raas", target: "Phobos / 8Base", class: "censored",
+      evidence: "8Base leak site never returned; no reconstitution in 17+ months with admin and affiliates in custody", confidence: "Confirmed" } ],
+    commentary: "Most complete disruption on the board: admin + affiliates + infrastructure. The censored interval here is the success signature: personnel exposure prevents the clock from ever stopping." },
+  { id: "E13", date: "2025-02-11", datePrecision: "day", name: "Zservers designation + Dutch seizure", type: "pressure", scoreboardRefs: [13],
+    actions: [ { date: "2025-02-11", desc: "Trilateral sanctions + Dutch seizure of 127 servers (Amsterdam)", authority: "OFAC + UK OFSI + AU DFAT + Dutch Police", source: "https://therecord.media/dutch-police-take-down-127-servers-sanctioned-host" } ],
+    clocks: [ { lane: "bph", target: "Zservers / XHost", class: "censored",
+      evidence: "No confirmed successor in 17+ months; demand assessed absorbed by other BPH providers, but no dated migration artifact in the record", confidence: "Confirmed (no-successor Credible)" } ],
+    commentary: "Closest thing to a BPH kill; physical seizure was decisive. Absorption by the node is assessed but unartifacted, so the clock stays open rather than reporting displacement." },
+  { id: "E14", date: "2025-02-20", datePrecision: "day", name: "Black Basta chat leak", type: "trust", scoreboardRefs: [14],
+    actions: [ { date: "2025-02-20", desc: "Internal chat corpus leaked; no law-enforcement action; Jan 2026 follow-on actions", authority: "None (internal collapse)", source: "https://www.bleepingcomputer.com/news/security/black-basta-ransomware-gang-s-internal-chat-logs-leak-online/" } ],
+    clocks: [ { lane: "raas", target: "Black Basta", class: "censored",
+      evidence: "Brand never recovered; last leak-site victim Jan 2025", confidence: "Confirmed (dispersal Credible)" } ],
+    commentary: "Trust-destruction episode with zero enforcement action, retained as a control case: internal collapse produced a longer interval than most takedowns." },
+  { id: "E15", date: "2025-03-06", datePrecision: "day", name: "Garantex takedown", type: "pressure", scoreboardRefs: [15],
+    actions: [ { date: "2025-03-06", desc: "Domain/server seizure + indictments + Tether freeze ($23-28M); Besciokov arrested in India", authority: "USSS + DOJ + BKA + Finland + Dutch FIOD + Europol + Tether", source: "https://www.chainalysis.com/blog/russian-exchange-garantex-dismantled/" } ],
+    clocks: [ { lane: "ruexch", target: "Garantex", class: "closed", replacementDays: 13, migrationDays: 3,
+      evidence: "Absorption flows to Rapira observed from day 3 (TRM); funded successor Grinex live in under 13 days with customer balances restored via A7A5 burn/remint (Global Ledger)", confidence: "Confirmed" } ],
+    commentary: "Fastest well-documented node reconstitution on record. Migration artifact (day 3) precedes the dedicated replacement (day 13): absorption by an incumbent venue, then a purpose-built successor." },
+  { id: "E16", date: "2025-04-01", datePrecision: "month", name: "Aeza pressure sequence", type: "pressure", scoreboardRefs: [16],
+    actions: [
+      { date: "2025-04-01", desc: "Russian arrests of Aeza leadership (BlackSprut hosting case)", authority: "Russia (domestic)", source: "https://home.treasury.gov/news/press-releases/sb0185" },
+      { date: "2025-07-01", desc: "OFAC designates Aeza Group", authority: "OFAC", source: "https://home.treasury.gov/news/press-releases/sb0185" },
+      { date: "2025-11-19", desc: "Evasion shells designated (Hypercore, Smart Digital Ideas, Datavice)", authority: "OFAC + NCA", source: "https://home.treasury.gov/news/press-releases/sb0319" }
+    ],
+    clocks: [ { lane: "bph", target: "Aeza", class: "closed", clockDate: "2025-07-01", migrationDays: 21, approx: true,
+      evidence: "IP space shifted to Hypercore (UK, AS211522) ~3 weeks after the OFAC designation (Silent Push)", confidence: "Confirmed" } ],
+    commentary: "Clock anchored on the OFAC designation, the action that produced the observable shift. Leadership decapitated domestically yet the network persisted via shell rotation: personnel exposure in a non-cooperative jurisdiction did not lengthen the interval." },
+  { id: "E17", date: "2025-05-09", datePrecision: "day", name: "eXch seizure", type: "pressure", scoreboardRefs: [17],
+    actions: [ { date: "2025-05-09", desc: "German seizure of the eXch mixer front end", authority: "BKA + Dutch FIOD", source: "https://www.bleepingcomputer.com/news/security/police-seizes-exch-cryptocurrency-exchange-used-by-ransomware-gangs/" } ],
+    clocks: [ { lane: "mixers", target: "eXch", class: "closed", migrationDays: 3, approx: true,
+      evidence: "API-level activity resumed ~3 days after front-end shutdown (TRM)", confidence: "Confirmed" } ],
+    commentary: "Zombie state: the visible service died, the laundering function did not." },
+  { id: "E18", date: "2025-05-20", datePrecision: "day", name: "Stark Industries EU designation", type: "pressure", scoreboardRefs: [18],
+    actions: [ { date: "2025-05-20", desc: "EU designates Stark Industries Solutions", authority: "EU Council", source: "https://www.consilium.europa.eu/en/press/press-releases/" } ],
+    clocks: [ { lane: "bph", target: "Stark Industries", class: "closed", migrationDays: 0,
+      evidence: "Evasion pre-positioned after the designation leaked ~12 days early; no service interruption", confidence: "Confirmed" } ],
+    commentary: "Interval 0 by pre-positioning: the designation process itself leaked the timing. Compare E32 (the later physical seizure)." },
+  { id: "E19", date: "2025-05-21", datePrecision: "day", name: "LummaC2 takedown", type: "pressure", scoreboardRefs: [19],
+    actions: [ { date: "2025-05-21", desc: "~2,300 domain seizures", authority: "DOJ + FBI + Microsoft DCU + Europol + JC3", source: "https://www.justice.gov/opa/pr/justice-department-seizes-domains-behind-major-information-stealing-malware-operation" } ],
+    clocks: [ { lane: "stealers", target: "LummaC2", class: "closed", replacementDays: 1, migrationDays: 30, approx: true,
+      evidence: "3 replacement domains live within a day; new campaigns within weeks (Jun-Jul 2025); near pre-takedown volume by late summer 2025", confidence: "Confirmed (volume recovery Credible)" } ],
+    commentary: "No-custody takedown, full reconstitution: by Mar 2026 Lumma assessed fully reconstituted, and by Jul 2026 assessed to lead 2026 distribution. Operators were personally designated Jul 2026 (E39) with no observed effect on operations to date." },
+  { id: "E20", date: "2025-05-22", datePrecision: "day", name: "Operation Endgame 2.0", type: "pressure", scoreboardRefs: [20],
+    actions: [ { date: "2025-05-22", desc: "DanaBot takedown with full attribution; 16 named", authority: "DOJ + FBI + Europol + partners", source: "https://www.justice.gov/opa/pr/16-defendants-charged-connection-danabot-malware-scheme" } ],
+    clocks: [ { lane: "loaders", target: "DanaBot", class: "censored",
+      evidence: "No resurgence in 14+ months; indictment naming with developers still free", confidence: "Confirmed" } ],
+    commentary: "Best malware outcome achieved without arrests: full attribution alone suppressed the rebuild." },
+  { id: "E21", date: "2025-07-10", datePrecision: "day", name: "UK retail attack arrests", type: "court", scoreboardRefs: [21],
+    actions: [ { date: "2025-07-10", desc: "NCA arrests DragonForce deployers (UK retail attacks)", authority: "NCA + CPS", source: "https://www.nationalcrimeagency.gov.uk/news/" } ],
+    clocks: [ { lane: "affiliate", target: "DragonForce deployers", class: "none",
+      evidence: "Personnel action against Western affiliates; no service to reconstitute", confidence: "Confirmed" } ],
+    commentary: "Demonstrates jurisdictional leverage over the Western affiliate layer; marker only." },
+  { id: "E22", date: "2025-07-22", datePrecision: "day", name: "XSS.is seizure + admin arrest", type: "pressure", scoreboardRefs: [22],
+    actions: [ { date: "2025-07-22", desc: "Forum seized; administrator arrested in Ukraine", authority: "France (BL2C) + SBU + Europol", source: "https://www.europol.europa.eu/media-press/newsroom/news" } ],
+    clocks: [ { lane: "forums", target: "XSS.is", class: "censored", replacementDays: 1,
+      evidence: "Tor mirror live in ~1 day under unknown administration, but honeypot suspicion collapsed engagement; no artifact shows the user base returned",
+      confidence: "Confirmed (engagement collapse Credible)" } ],
+    commentary: "Inverse of the LockBit pattern: replacement immediate, migration never evidenced. The open clock with a live replacement IS the trust-damage measurement." },
+  { id: "E23", date: "2025-07-24", datePrecision: "day", name: "Operation Checkmate (BlackSuit)", type: "pressure", scoreboardRefs: [23],
+    actions: [ { date: "2025-07-24", desc: "BlackSuit infrastructure seized", authority: "DOJ + HSI + partners", source: "https://www.justice.gov/opa/pr/" } ],
+    clocks: [ { lane: "raas", target: "BlackSuit", class: "closed", replacementDays: 0, migrationDays: 0, approx: true,
+      evidence: "Successor Chaos pre-positioned since ~Feb 2025; rebrand pre-dated the takedown", confidence: "Confirmed (Chaos attribution Credible)" } ],
+    commentary: "Interval 0 by pre-positioning. Successor materially smaller; Iranian MuddyWater ran false-flag Chaos operations early 2026; Chaos still active Jul 2026." },
+  { id: "E24", date: "2025-08-14", datePrecision: "day", name: "A7 / A7A5 sanctions campaign", type: "pressure", scoreboardRefs: [24],
+    actions: [
+      { date: "2025-08-14", desc: "First A7A5 designations (5-package campaign, Aug 2025 to May 2026)", authority: "UK OFSI + OFAC + EU Council", source: "https://www.gov.uk/government/news/" },
+      { date: "2026-04-15", datePrecision: "month", desc: "EU 20th package: Meer operator TengriCoin designated; full RU/BY crypto-platform ban", authority: "EU Council", source: "https://www.consilium.europa.eu/en/press/press-releases/" },
+      { date: "2026-05-26", desc: "UK A7 network package: 18 designations under Regulation 17A", authority: "UK OFSI", source: "https://www.gov.uk/government/news/" }
+    ],
+    clocks: [ { lane: "a7a5", target: "A7A5 token", class: "closed", migrationDays: 1,
+      evidence: "~80% of A7A5 supply burned and reminted to non-designated wallets 1 day after the Aug 2025 designations", confidence: "Confirmed" } ],
+    commentary: "1-day interval on the rail itself; the campaign's real effect is slower venue compression (Grinex gone, trading concentrated on Meer.kg), tracked in E27 and E30." },
+  { id: "E25", date: "2025-11-13", datePrecision: "day", name: "Operation Endgame 3.0", type: "pressure", scoreboardRefs: [25],
+    actions: [ { date: "2025-11-13", desc: "Rhadamanthys, VenomRAT, Elysium infrastructure dismantled", authority: "Europol + partners", source: "https://www.europol.europa.eu/media-press/newsroom/news" } ],
+    clocks: [ { lane: "stealers", target: "Rhadamanthys", class: "censored",
+      evidence: "Reduced to residual trickle with no rebuild in 8+ months; customer rotation to Vidar reported but without a dated artifact, so the clock stays open",
+      confidence: "Confirmed (rotation Credible)" } ],
+    commentary: "One of the stronger malware kills. Node-level demand rotated to Vidar per industry reporting; without a dated migration artifact the published clock does not stop." },
+  { id: "E26", date: "2025-11-19", datePrecision: "day", name: "Media Land designations", type: "pressure", scoreboardRefs: [26],
+    actions: [ { date: "2025-11-19", desc: "Trilateral sanctions incl. pre-emptive designation of evasion shells (Volosovik, Zatolokin, Pankova; Media Land LLC + shells)", authority: "OFAC + UK OFSI + AU DFAT", source: "https://home.treasury.gov/news/press-releases/sb0319" } ],
+    clocks: [ { lane: "bph", target: "Media Land", class: "closed", migrationDays: 0,
+      evidence: "No service interruption observed; upstream peers held through the designation window (map monthly record, Jul 2026: peers hold through sanctions, indictment, and EU designation)", confidence: "Credible" } ],
+    commentary: "Sanctions-only, no seizure, no arrests; several designated shells were incorporated Jul 2025, pre-built evasion. Escalated Jul 2026 by indictment + $10M reward (E39). Interval 0: nothing was interrupted." },
+  { id: "E27", date: "2026-01-28", datePrecision: "day", name: "RAMP forum seizure", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-01-28", desc: "FBI seizes the RAMP forum", authority: "FBI", source: null, sourceNote: "Map monthly record; primary seizure notice to be attached" } ],
+    clocks: [ { lane: "forums", target: "RAMP", class: "censored", replacementDays: 70,
+      evidence: "T1erOne emerged as a successor candidate ~Apr 2026 but no migration artifact followed; RAMP dark past 184 days; administrator publicly declined reconstitution (Jul 2026)",
+      confidence: "Confirmed (successor emergence Credible)" } ],
+    commentary: "The anomaly of 2026: forum-layer reconstitution historically runs 60-90 days, and the prior benchmark (XSS mirror) was ~1 day. An admin publicly declining to rebuild is a new behavior class." },
+  { id: "E28", date: "2026-03-03", datePrecision: "day", name: "Operation Leak (LeakBase)", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-03-03", desc: "LeakBase dismantled (Mar 3-4)", authority: "FBI + Europol", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "datamkt", target: "LeakBase", class: "censored",
+      evidence: "Not reconstituted at ~90 days (Jun 2026 observation); nothing observed since", confidence: "Confirmed" } ],
+    commentary: "Second data-point in the durable forum/market-layer non-reconstitution pattern alongside RAMP." },
+  { id: "E29", date: "2026-03-26", datePrecision: "day", name: "Xinbi marketplace designation", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-03-26", desc: "UK sanctions the Xinbi marketplace ($19.9B in transactions)", authority: "UK OFSI", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "cex", target: "Xinbi", class: "open",
+      evidence: "No reconstitution observation recorded in the corpus either way", confidence: "Confirmed (event)" } ],
+    commentary: "Retained for lane completeness; assessment window has produced no recorded observation." },
+  { id: "E30", date: "2026-04-15", datePrecision: "day", name: "Grinex drain + suspension", type: "unattributed", scoreboardRefs: [27],
+    actions: [ { date: "2026-04-15", desc: "Unattributed wallet drain (~$13.7-15M) and suspension; Chainalysis flags possible insider exit scam or false flag", authority: "Unattributed", source: "https://www.chainalysis.com/blog/sanctioned-grinex-exchange-suspends-operations/" } ],
+    clocks: [ { lane: "ruexch", target: "Grinex", class: "closed", migrationDays: 1, approx: true,
+      evidence: "A7A5 trading concentrated on Meer.kg immediately (Chainalysis)", confidence: "Confirmed event; attribution unresolved" } ],
+    commentary: "Included with an unattributed flag: whatever the cause, the node's healing behavior is the measurement. Third consecutive near-instant reconstitution in the RU-exchange lane." },
+  { id: "E31", date: "2026-05-15", datePrecision: "month", name: "Operation Saffron (First VPN dismantle)", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-05-15", desc: "First VPN dismantled: 33 servers in 27 countries; 506 users identified", authority: "Europol + partners", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "vpn", target: "First VPN", class: "open",
+      evidence: "No reconstitution observation in the record; OFAC designated the service and its administrator Jul 13 (E39); FBI Operation Riptide named it a target Jun 9-10",
+      confidence: "Confirmed (event)" } ],
+    commentary: "Repeated pressure on one target across three months: dismantle (May), campaign naming (Jun), designation (Jul). The lane view shows the stacking." },
+  { id: "E32", date: "2026-05-22", datePrecision: "day", name: "Stark network server seizure (NL)", type: "pressure", scoreboardRefs: [28],
+    actions: [ { date: "2026-05-22", desc: "Dutch FIOD seizes ~800 servers (Dronten, Schiphol-Rijk); 2 arrests incl. a company director", authority: "Dutch FIOD", source: "https://www.greynoise.io/blog/stark-industries-shell-game" } ],
+    clocks: [ { lane: "bph", target: "Stark lineage (THE.Hosting)", class: "closed", migrationDays: 0,
+      evidence: "Attack traffic on AS209847 continued at normal daily rates through the raid (GreyNoise)", confidence: "Confirmed (traffic continuity Credible)" } ],
+    commentary: "First kinetic action against the network after the sanctions failure (E18). Interval 0 on traffic continuity; successor signal (WorkTitans B.V., ASN migration) under watch. Too recent for full assessment." },
+  { id: "E33", date: "2026-06-10", datePrecision: "day", name: "AudiA6 takedown", type: "pressure", scoreboardRefs: [29],
+    actions: [ { date: "2026-06-10", desc: "AudiA6 laundering service + Dark2Web forum dismantled: EUR 336M laundered, 2 admins arrested, 6,000+ KYC mule accounts exposed", authority: "USSS + Europol + partners", source: "https://www.europol.europa.eu/media-press/newsroom/news" } ],
+    clocks: [
+      { lane: "mixers", target: "AudiA6", class: "open", evidence: "No successor reported at 7+ weeks post-action", confidence: "Confirmed" },
+      { lane: "mules", target: "AudiA6 mule network", class: "open", evidence: "6,000+ KYC accounts exposed; rebuild not observed", confidence: "Confirmed" }
+    ],
+    commentary: "Provisional kill: arrests plus mule-infrastructure seizure make rebuild hard. Window still open." },
+  { id: "E34", date: "2026-06-24", datePrecision: "day", name: "Operation Endgame 2026 phase", type: "pressure", scoreboardRefs: [30],
+    actions: [ { date: "2026-06-24", desc: "StealC, Amadey, SocGholish infrastructure dismantled (loader front end hit Jun 15-24)", authority: "Europol + partners", source: "https://www.europol.europa.eu/media-press/newsroom/news" } ],
+    clocks: [
+      { lane: "stealers", target: "StealC", class: "open", evidence: "No resurgence reported as of 2026-07-24 (1 month post-action)", confidence: "Confirmed" },
+      { lane: "loaders", target: "Amadey / SocGholish", class: "open", evidence: "No resurgence reported as of 2026-07-24", confidence: "Confirmed" }
+    ],
+    commentary: "Fourth Endgame phase; window open." },
+  { id: "E35", date: "2026-07-02", datePrecision: "day", name: "NetNut proxy disruption", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-07-02", desc: "NetNut residential proxy network disrupted (Jul 2-3): 2M devices cut off", authority: "Not recorded", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "vpn", target: "NetNut", class: "open", evidence: "No reconstitution observation yet", confidence: "Confirmed (event)" } ],
+    commentary: "Window open." },
+  { id: "E36", date: "2026-07-08", datePrecision: "day", name: "Vardanyan guilty plea (Ryuk)", type: "court", scoreboardRefs: [31],
+    actions: [ { date: "2026-07-08", desc: "Ryuk deployer pleads guilty; custody via Ukraine extradition channel", authority: "DOJ", source: "https://www.justice.gov/opa/pr/" } ],
+    clocks: [ { lane: "raas", target: "Ryuk lineage", class: "none", evidence: "Lineage defunct since 2020-2022; nothing to reconstitute", confidence: "Confirmed" } ],
+    commentary: "Court-process marker." },
+  { id: "E37", date: "2026-07-09", datePrecision: "day", name: "INTERPOL First Light 2026", type: "sweep", scoreboardRefs: [],
+    actions: [ { date: "2026-07-09", desc: "$293M intercepted; 31,014 bank accounts blocked", authority: "INTERPOL + members", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "mules", target: "Mule accounts (global)", class: "none",
+      evidence: "Interception sweep; account-level attrition has no single service to reconstitute", confidence: "Confirmed (event)" } ],
+    commentary: "Sweep marker: pressure on the mule lane without a reconstitution clock." },
+  { id: "E38", date: "2026-07-10", datePrecision: "day", name: "Martino sentencing (negotiator compromise)", type: "court", scoreboardRefs: [],
+    actions: [ { date: "2026-07-10", desc: "Negotiation-side insider sentenced to 70 months", authority: "DOJ", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "negot", target: "Insider-compromise vector", class: "none", evidence: "Court-process event", confidence: "Confirmed (event)" } ],
+    commentary: "Proves the negotiator-side compromise vector; marker only." },
+  { id: "E39", date: "2026-07-13", datePrecision: "day", name: "Joint US-EU-UK enabler-layer package", type: "pressure", scoreboardRefs: [32, 33, 34],
+    actions: [
+      { date: "2026-07-13", desc: "EU-UK joint sanctions: Lumma operators (Voronin, Gordienko, Zhurkin) personally designated; Kovalev designated and publicly named as Stern; GRU Unit 29155 individuals + LLC Impuls; EU designates Media Land LLC and ML.Cloud; UK 24 names, EU 9+4 (largest EU cyber package)", authority: "EU Council + UK OFSI", source: "https://www.consilium.europa.eu/en/press/press-releases/2026/07/13/russian-cyber-attacks-and-destabilising-activities-council-sanctions-nine-individuals-and-four-entities/" },
+      { date: "2026-07-13", desc: "OFAC designates First VPN Service (1VPNS) + administrator Rashevskyi; first-ever crypter-vendor designation (Silayev)", authority: "OFAC + UK OFSI", source: "https://home.treasury.gov/news/press-releases/sb0559" },
+      { date: "2026-07-14", desc: "N.D. Ohio indictment unsealed (Volosovik, Zatolokin, Pankova; Media Land LLC; ML.Cloud LLC) + Rewards for Justice up to $10M with explicit state-nexus ask", authority: "DOJ + FBI + State RFJ", source: "https://www.justice.gov/opa/pr/three-russian-nationals-and-two-companies-indicted-international-cybercrimes-resulting-more" }
+    ],
+    clocks: [
+      { lane: "bph", target: "Media Land", class: "open",
+        evidence: "No service interruption observed to date; upstream transit peers holding (map monthly record). Watch case for finding 10 of the scoreboard", confidence: "Credible" },
+      { lane: "vpn", target: "First VPN (1VPNS)", class: "open",
+        evidence: "Designation follows the May dismantle (E31); no post-designation observation yet", confidence: "Confirmed (event)" },
+      { lane: "crypters", target: "Crypter vendor (Silayev)", class: "open",
+        evidence: "First designation in this lane; no baseline exists", confidence: "Confirmed (event)" },
+      { lane: "stealers", target: "Lumma operators", class: "open",
+        evidence: "Service already fully reconstituted from the 2025 takedown; designation targets the operators, not infrastructure. Lumma assessed to lead 2026 distribution as of Jul 2026", confidence: "Confirmed" },
+      { lane: "raas", target: "Stern attribution (Kovalev)", class: "none",
+        evidence: "Attribution strike at the command layer: first public moniker-to-name attribution by a government. Nothing to reconstitute; effect channel is trust and mobility, not infrastructure", confidence: "Confirmed" },
+      { lane: "gru", target: "GRU Unit 29155 / LLC Impuls", class: "none",
+        evidence: "State entities do not reconstitute; marker", confidence: "Confirmed" }
+    ],
+    commentary: "One episode, six lanes, four announcements across two days, cross-referencing each other and sharing targets: the model case for coordination-evidenced episode construction. Every clock open; the Media Land lane is the announced test of whether indictment + bounty outperforms the sanctions-only baseline (E26, interval 0)." },
+  { id: "E40", date: "2026-07-20", datePrecision: "day", name: "Operation Olympus Blade (Kratos PhaaS)", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-07-20", desc: "Kratos/Sneaky2FA phishing-as-a-service taken down; developer arrested", authority: "Not fully recorded", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "callers", target: "Kratos / Sneaky2FA", class: "open",
+      evidence: "Developer in custody; per the personnel-exposure pattern (scoreboard finding 8), a long or unending interval is expected", confidence: "Confirmed (event)" } ],
+    commentary: "Window open; custody component present." },
+  { id: "E41", date: "2026-07-15", datePrecision: "month", name: "Tether/CBI issuer freeze", type: "pressure", scoreboardRefs: [],
+    actions: [ { date: "2026-07-15", desc: "Tether freezes 131M USDT; issuer-level designate-then-freeze proven at nine-figure scale", authority: "Tether (private) + designating authorities", source: null, sourceNote: "Map monthly record; primary release to be attached" } ],
+    clocks: [ { lane: "cex", target: "Frozen USDT balances", class: "none",
+      evidence: "Frozen funds are terminal; no reconstitution semantics", confidence: "Confirmed (event)" } ],
+    commentary: "Financial-terminal marker: the designate-then-freeze sequence, not a takedown." }
+  ]
+};
+</script>
+<script>
+(function(){
+  const R = window.RECONSTITUTION;
+  if (!R) { document.getElementById("kpis").innerHTML = "<p class='dim'>Data file not found: data/reconstitution-data.js</p>"; return; }
+  const asOf = new Date(R.meta.asOf + "T00:00:00Z");
+  const DAY = 86400000;
+  const days = (a,b) => Math.round((b-a)/DAY);
+  const d = s => new Date(s + "T00:00:00Z");
+  const fmt = s => s;
+  const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  // ---- flatten clocks ----
+  const clocks = [];
+  R.episodes.forEach(ep => ep.clocks.forEach(c => {
+    const cd = c.clockDate || ep.date;
+    const age = days(d(cd), asOf);
+    clocks.push({ ep, c, date: cd, age,
+      lane: c.lane, cls: c.class,
+      mig: (typeof c.migrationDays === "number") ? c.migrationDays : null });
+  }));
+  const closed = clocks.filter(k => k.cls === "closed");
+  const censored = clocks.filter(k => k.cls === "censored");
+  const openC = clocks.filter(k => k.cls === "open");
+
+  const bucket = k => {
+    if (k.cls === "closed") return k.mig <= 14 ? "fast" : (k.mig <= 90 ? "mid" : "slow");
+    if (k.cls === "censored") return "down";
+    if (k.cls === "open") return "open";
+    return "marker";
+  };
+  const COL = { fast: "#f85149", mid: "#d29922", slow: "#3fb950", down: "#3fb950", open: "#58a6ff", marker: "#6e7681" };
+
+  // ---- header / meta ----
+  document.getElementById("hdr-asof").textContent = "As of " + R.meta.asOf;
+  document.getElementById("meta-version").textContent = "v" + R.meta.version;
+  document.getElementById("meta-asof").textContent = R.meta.asOf;
+  document.getElementById("meta-eps").textContent = R.episodes.length;
+  document.getElementById("meta-clocks").textContent = clocks.length;
+
+  // ---- KPIs ----
+  const median = a => { if(!a.length) return null; a=[...a].sort((x,y)=>x-y); const m=a.length>>1; return a.length%2?a[m]:(a[m-1]+a[m])/2; };
+  const med12 = median(closed.filter(k => days(d(k.date), asOf) <= 730).map(k => k.mig));
+  const medAll = median(closed.map(k => k.mig));
+  const down90 = censored.filter(k => k.age >= 90);
+  const longestOpen = censored.filter(k => k.age <= 365).reduce((a,k) => k.age > (a?a.age:-1) ? k : a, null);
+  const fastShare = Math.round(100 * closed.filter(k => k.mig <= 14).length / closed.length);
+  document.getElementById("kpis").innerHTML = [
+    { n: medAll + " days", l: "Median closed interval", s: closed.length + " closed clocks, all years. Lower bound by construction." },
+    { n: down90.length, l: "Nodes still down at 90+ days", s: "No reconstitution observed. These are the clocks that never stop." },
+    { n: longestOpen ? longestOpen.age + "+ days" : "n/a", l: "Longest open interval, trailing year", s: longestOpen ? esc(longestOpen.c.target) + ", dark since " + longestOpen.date + ". Forum-layer baseline was 60-90 days." : "" },
+    { n: fastShare + "%", l: "Closed clocks healed in 14 days or less", s: "The displacement population: fast healing tracks untouched personnel." }
+  ].map(x => `<div class="stat-card"><div class="num">${x.n}</div><div class="lbl">${x.l}</div><div class="sub">${x.s}</div></div>`).join("");
+
+  // ---- scales ----
+  const t0all = d("2021-08-01"), t0recent = d("2025-01-01"), t1 = asOf;
+  const yv = v => Math.log10(v + 1); // days -> log position
+  const YMAX = yv(800);
+
+  // ---- Layer 1: the line ----
+  function drawLine() {
+    const W = 1020, H = 340, L = 52, Rm = 16, T = 14, B = 34;
+    const iw = W - L - Rm, ih = H - T - B;
+    const x = t => L + iw * ((t - t0all) / (t1 - t0all));
+    const y = v => T + ih * (1 - yv(v) / YMAX);
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:760px">`;
+    // y gridlines
+    [0,3,14,30,90,180,365,730].forEach(v => {
+      s += `<line x1="${L}" y1="${y(v)}" x2="${W-Rm}" y2="${y(v)}" stroke="#21262d" stroke-width="1"/>`;
+      s += `<text x="${L-8}" y="${y(v)+4}" fill="#6e7681" font-size="10" text-anchor="end">${v}d</text>`;
+    });
+    // x year ticks
+    for (let yr = 2022; yr <= 2026; yr++) {
+      const t = d(yr + "-01-01");
+      s += `<line x1="${x(t)}" y1="${T}" x2="${x(t)}" y2="${H-B}" stroke="#21262d" stroke-width="1"/>`;
+      s += `<text x="${x(t)+4}" y="${H-B+16}" fill="#8b949e" font-size="11">${yr}</text>`;
+    }
+    // rolling median (trailing 5 closed clocks by date)
+    const seq = [...closed].sort((a,b) => d(a.date) - d(b.date));
+    let pts = [];
+    seq.forEach((k,i) => {
+      const win = seq.slice(Math.max(0, i-4), i+1).map(q => q.mig);
+      pts.push([x(d(k.date)), y(median(win))]);
+    });
+    if (pts.length > 1) {
+      let path = "M" + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L");
+      s += `<path d="${path}" fill="none" stroke="#bc8cff" stroke-width="2" stroke-dasharray="1,0" opacity="0.85"/>`;
+      s += `<text x="${pts[pts.length-1][0]-4}" y="${pts[pts.length-1][1]-8}" fill="#bc8cff" font-size="10" text-anchor="end">rolling median (closed only)</text>`;
+    }
+    // closed dots
+    closed.forEach(k => {
+      s += `<circle cx="${x(d(k.date))}" cy="${y(k.mig)}" r="5" fill="${COL[bucket(k)]}" stroke="#0d1117" stroke-width="1.2" class="pt" data-ck="${clocks.indexOf(k)}" style="cursor:pointer"/>`;
+    });
+    // censored arrows at current age
+    censored.forEach(k => {
+      const cx = x(d(k.date)), cy = y(Math.min(k.age, 750));
+      s += `<g class="pt" data-ck="${clocks.indexOf(k)}" style="cursor:pointer">`;
+      s += `<line x1="${cx}" y1="${y(Math.min(k.age, 3))}" x2="${cx}" y2="${cy}" stroke="#3fb950" stroke-width="1.6" opacity="0.55" stroke-dasharray="3,3"/>`;
+      s += `<path d="M${cx-5},${cy+7} L${cx},${cy-2} L${cx+5},${cy+7} Z" fill="#3fb950" stroke="#0d1117" stroke-width="1"/>`;
+      s += `</g>`;
+    });
+    // open squares at current age
+    openC.forEach(k => {
+      const cx = x(d(k.date)), cy = y(Math.min(k.age, 750));
+      s += `<rect x="${cx-4}" y="${cy-4}" width="8" height="8" fill="#58a6ff" stroke="#0d1117" stroke-width="1" class="pt" data-ck="${clocks.indexOf(k)}" style="cursor:pointer"/>`;
+    });
+    s += `</svg>`;
+    document.getElementById("line-chart").innerHTML = s;
+  }
+  drawLine();
+
+  // ---- stayed-down cohort strip ----
+  function drawStay() {
+    const rows = [];
+    for (let yr = 2021; yr <= 2026; yr++) {
+      const mature = clocks.filter(k => (k.cls === "closed" || k.cls === "censored") && d(k.date).getUTCFullYear() === yr && k.age >= 90);
+      if (!mature.length) continue;
+      const stayed = mature.filter(k => k.cls === "censored" || k.mig > 90).length;
+      rows.push({ yr, n: mature.length, stayed, pct: Math.round(100 * stayed / mature.length) });
+    }
+    let h = `<div class="ep-label" style="margin-top:18px">Share of matured clocks with no reconstitution inside 90 days, by action year</div>`;
+    h += rows.map(r => `
+      <div style="display:flex;align-items:center;gap:10px;margin-top:6px;font-size:12px">
+        <span style="width:40px;color:var(--text-secondary)">${r.yr}</span>
+        <span style="width:52px;text-align:right;font-weight:700">${r.pct}%</span>
+        <span style="flex:1;max-width:420px;background:var(--bg-tertiary);border-radius:4px;height:12px;overflow:hidden;display:inline-block">
+          <span style="display:block;height:100%;width:${r.pct}%;background:var(--accent-green);border-radius:4px"></span>
+        </span>
+        <span class="mut">${r.stayed} of ${r.n} matured clocks</span>
+      </div>`).join("");
+    h += `<p class="section-sub" style="margin-top:10px">Matured = 90 or more days since action, with an observation either way. Open windows and marker events excluded. Small annual samples: read the direction, not the decimals.</p>`;
+    document.getElementById("stay-down").innerHTML = h;
+  }
+  drawStay();
+
+  // ---- Layer 2: lanes ----
+  let rangeStart = t0all;
+  function drawLanes() {
+    const laneList = R.lanes.filter(l => clocks.some(k => k.lane === l.id));
+    const W = 1020, L = 190, Rm = 20, T = 26, rowH = 26, B = 30;
+    const groups = [];
+    laneList.forEach(l => { if (!groups.length || groups[groups.length-1] !== l.group) groups.push(l.group); });
+    const H = T + laneList.length * rowH + groups.length * 16 + B;
+    const x = t => L + (W - L - Rm) * ((t - rangeStart) / (t1 - rangeStart));
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:760px">`;
+    // year gridlines
+    for (let yr = 2022; yr <= 2026; yr++) {
+      const t = d(yr + "-01-01"); if (t < rangeStart) continue;
+      s += `<line x1="${x(t)}" y1="${T-8}" x2="${x(t)}" y2="${H-B}" stroke="#21262d" stroke-width="1"/>`;
+      s += `<text x="${x(t)+4}" y="${T-12}" fill="#8b949e" font-size="11">${yr}</text>`;
+    }
+    if (rangeStart > t0all) {
+      ["2025","2026"].forEach(yy => {
+        ["04","07","10"].forEach(mm => {
+          const t = d(yy + "-" + mm + "-01"); if (t < rangeStart || t > t1) return;
+          s += `<line x1="${x(t)}" y1="${T}" x2="${x(t)}" y2="${H-B}" stroke="#1a1f26" stroke-width="1"/>`;
+        });
+      });
+    }
+    let yPos = T; let lastGroup = null;
+    laneList.forEach(l => {
+      if (l.group !== lastGroup) {
+        yPos += 16; lastGroup = l.group;
+        s += `<text x="4" y="${yPos - 4}" fill="#6e7681" font-size="9" font-weight="700" letter-spacing="1">${l.group.toUpperCase()}</text>`;
+      }
+      const cy = yPos + rowH / 2;
+      s += `<line x1="${L}" y1="${cy}" x2="${W-Rm}" y2="${cy}" stroke="#1c2128" stroke-width="1"/>`;
+      s += `<text x="${L-8}" y="${cy+4}" fill="#8b949e" font-size="11" text-anchor="end">${esc(l.label)}</text>`;
+      clocks.filter(k => k.lane === l.id && d(k.date) >= rangeStart).forEach(k => {
+        const x0 = x(d(k.date)); const idx = clocks.indexOf(k);
+        const common = `class="pt" data-ck="${idx}" style="cursor:pointer"`;
+        if (k.cls === "none") {
+          s += `<circle cx="${x0}" cy="${cy}" r="4.5" fill="#6e7681" stroke="#0d1117" stroke-width="1" ${common}/>`;
+        } else if (k.cls === "closed" && k.mig === 0) {
+          s += `<path d="M${x0},${cy-6} L${x0+6},${cy} L${x0},${cy+6} L${x0-6},${cy} Z" fill="${COL.fast}" stroke="#0d1117" stroke-width="1" ${common}/>`;
+        } else if (k.cls === "closed") {
+          const x1p = Math.min(x(new Date(d(k.date).getTime() + k.mig * DAY)), W - Rm);
+          const w = Math.max(x1p - x0, 3);
+          s += `<rect x="${x0}" y="${cy-6}" width="${w}" height="12" rx="2" fill="${COL[bucket(k)]}" opacity="0.9" ${common}/>`;
+        } else {
+          const x1p = x(t1); const col = k.cls === "censored" ? COL.down : COL.open;
+          s += `<g ${common}><rect x="${x0}" y="${cy-5}" width="${Math.max(x1p-x0,3)}" height="10" rx="2" fill="${col}" opacity="${k.cls==='censored'?0.55:0.35}"/>`;
+          s += `<path d="M${x1p},${cy-6} L${x1p+7},${cy} L${x1p},${cy+6}" fill="none" stroke="${col}" stroke-width="2"/></g>`;
+        }
+      });
+      yPos += rowH;
+    });
+    s += `</svg>`;
+    document.getElementById("lanes-chart").innerHTML = s;
+  }
+  drawLanes();
+  document.querySelectorAll("[data-range]").forEach(el => el.addEventListener("click", () => {
+    document.querySelectorAll("[data-range]").forEach(e2 => e2.classList.remove("on"));
+    el.classList.add("on");
+    rangeStart = el.dataset.range === "2025" ? t0recent : t0all;
+    drawLanes();
+  }));
+
+  // ---- tooltip + click-through ----
+  const tip = document.getElementById("tip");
+  function clockTip(k) {
+    const lane = R.lanes.find(l => l.id === k.lane);
+    let stat;
+    if (k.cls === "closed") stat = k.mig === 0 ? "Interval 0: never interrupted or pre-positioned" : "Migration evident at " + k.mig + " days" + (k.c.approx ? " (approx)" : "");
+    else if (k.cls === "censored") stat = "No reconstitution observed: " + k.age + "+ days and counting";
+    else if (k.cls === "open") stat = "Assessment window open: " + k.age + " days since action";
+    else stat = "Marker: no clock";
+    return `<strong>${esc(k.ep.name)}</strong><br><span class="t-mut">${k.date} &middot; ${esc(lane ? lane.label : k.lane)} &middot; ${esc(k.c.target || "")}</span><br>${esc(stat)}<br><span class="t-mut">${esc(k.c.confidence)} &middot; click for the full record</span>`;
+  }
+  document.body.addEventListener("mousemove", e => {
+    const p = e.target.closest(".pt");
+    if (!p) { tip.style.display = "none"; return; }
+    tip.innerHTML = clockTip(clocks[+p.dataset.ck]);
+    tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 360) + "px";
+    tip.style.top = (e.clientY + 14) + "px";
+  });
+  document.body.addEventListener("click", e => {
+    const p = e.target.closest(".pt");
+    if (!p) return;
+    const k = clocks[+p.dataset.ck];
+    const el = document.getElementById("ep-" + k.ep.id);
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "start" }); el.style.outline = "2px solid var(--accent-blue)"; setTimeout(() => el.style.outline = "", 2200); }
+  });
+
+  // ---- Layer 3: the record ----
+  const typeChip = t => ({ pressure: ["chip-blue","Pressure"], court: ["chip-gray","Court process"], trust: ["chip-amber","Trust event"], sweep: ["chip-gray","Sweep"], unattributed: ["chip-amber","Unattributed"] }[t] || ["chip-gray", t]);
+  function clockRow(ep, c) {
+    const cd = c.clockDate || ep.date;
+    const age = days(d(cd), asOf);
+    const lane = R.lanes.find(l => l.id === c.lane);
+    let interval;
+    if (c.class === "closed") interval = (c.migrationDays === 0 ? "0 days (no interruption / pre-positioned)" : c.migrationDays + " days" + (c.approx ? " (approx)" : ""));
+    else if (c.class === "censored") interval = age + "+ days, no reconstitution observed";
+    else if (c.class === "open") interval = "window open (" + age + " days)";
+    else interval = "no clock";
+    const repl = (typeof c.replacementDays === "number") ? c.replacementDays + " days" : "not observed";
+    return `<tr><td>${esc(lane ? lane.label : c.lane)}</td><td>${esc(c.target || "")}</td><td class="mono">${esc(repl)}</td><td class="mono">${esc(interval)}</td><td>${esc(c.evidence)}</td><td>${esc(c.confidence)}</td></tr>`;
+  }
+  function coOccurring(ep) {
+    const t = d(ep.date);
+    return R.episodes.filter(e2 => e2.id !== ep.id && Math.abs(days(d(e2.date), t)) <= 14)
+      .map(e2 => `${e2.date} ${esc(e2.name)}`);
+  }
+  function epCard(ep) {
+    const [tc, tl] = typeChip(ep.type);
+    const lanes = [...new Set(ep.clocks.map(c => c.lane))].map(id => { const l = R.lanes.find(x => x.id === id); return `<span class="chip chip-gray">${esc(l ? l.label : id)}</span>`; }).join(" ");
+    const co = coOccurring(ep);
+    const acts = ep.actions.map(a => `<tr><td class="mono" style="white-space:nowrap">${esc(a.date)}</td><td>${esc(a.desc)}</td><td>${esc(a.authority)}</td><td>${a.source ? `<a href="${esc(a.source)}" target="_blank" rel="noopener">source</a>` : `<span class="mut" title="${esc(a.sourceNote || "")}">pending</span>`}</td></tr>`).join("");
+    return `<div class="ep-card" id="ep-${ep.id}" data-type="${ep.type}" data-classes="${ep.clocks.map(c=>c.class).join(" ")}">
+      <div class="ep-head"><span class="ep-id">${ep.id}</span><span class="ep-date">${ep.date}${ep.datePrecision === "month" ? " (month precision)" : ""}</span><span class="ep-name">${esc(ep.name)}</span><span class="chip ${tc}">${tl}</span>${ep.scoreboardRefs.length ? `<a class="mut" style="font-size:11px" href="scoreboard.html#operations">scoreboard #${ep.scoreboardRefs.join(", #")}</a>` : ""}</div>
+      <div>${lanes}</div>
+      <div class="ep-label">Constituent actions</div>
+      <table class="ep-tbl"><thead><tr><th>Date</th><th>Action</th><th>Authority</th><th>Src</th></tr></thead><tbody>${acts}</tbody></table>
+      <div class="ep-label">Clocks</div>
+      <table class="ep-tbl"><thead><tr><th>Lane</th><th>Target</th><th>Replacement live</th><th>Migration evident</th><th>Evidence</th><th>Confidence</th></tr></thead><tbody>${ep.clocks.map(c => clockRow(ep, c)).join("")}</tbody></table>
+      ${co.length ? `<div class="ep-label">Co-occurring public actions (14-day window)</div><div class="ep-sub">${co.join(" &middot; ")}</div>` : ""}
+      <div class="ep-comment">${esc(ep.commentary)}</div>
+      <div class="ep-noattr">Multiple entities act on this ecosystem, most without coordinating. This record lists co-occurring public actions and assigns no causal credit to any single action or agency.</div>
+    </div>`;
+  }
+  function renderEps(filter) {
+    const list = [...R.episodes].sort((a,b) => d(b.date) - d(a.date)).filter(ep => {
+      if (filter === "all") return true;
+      if (filter === "pressure") return ep.type === "pressure" || ep.type === "unattributed" || ep.type === "trust";
+      if (filter === "censored") return ep.clocks.some(c => c.class === "censored");
+      if (filter === "open") return ep.clocks.some(c => c.class === "open");
+      if (filter === "marker") return ep.clocks.every(c => c.class === "none");
+      return true;
+    });
+    document.getElementById("ep-list").innerHTML = list.map(epCard).join("");
+  }
+  renderEps("all");
+  document.querySelectorAll("[data-ef]").forEach(el => el.addEventListener("click", () => {
+    document.querySelectorAll("[data-ef]").forEach(e2 => e2.classList.remove("on"));
+    el.classList.add("on");
+    renderEps(el.dataset.ef);
+  }));
+})();
+</script>
+</body>
+</html>
