@@ -35,6 +35,7 @@
       ['zeus', 'Zeus / GameOver Zeus']
     ]},
     { id: 'exchanges', label: 'Cryptocurrency Exchanges', folder: 'exchanges', items: [
+      ['001k', '001k'],
       ['abcex', 'ABCeX'],
       ['audia6', 'AudiA6 / Dark2Web'],
       ['bitpapa', 'Bitpapa'],

@@ -42,6 +42,7 @@
   .card.laundering{border-top:3px solid var(--launder)}
   .card.hosting{border-top:3px solid var(--host)}
   .card.facilitation{border-top:3px solid var(--facil)}
+  .card.malwaredev{border-top:3px solid #d29922}
   .chead{display:flex;gap:12px;padding:14px 14px 10px}
   .photo{width:78px;height:96px;flex:none;border-radius:6px;background:var(--panel2);border:1px solid var(--line);object-fit:cover;object-position:center top}
   .ph-fallback{width:78px;height:96px;flex:none;border-radius:6px;background:linear-gradient(135deg,#222a38,#161b22);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--muted)}
@@ -109,7 +110,7 @@
 
 <header>
   <h1>Ransomware Most Wanted - Actor Profiles</h1>
-  <div class="sub">Officially wanted, indicted, or sanctioned ransomware principals and the supporting ecosystem selected for tracking. The first section covers operators, group leadership, and deployment affiliates (direct actors); the remaining sections cover function-specific support roles (access, laundering, hosting, facilitation). Photographs are drawn from official wanted pages where available and auto-load from the source; sanctions-only designations frequently carry no official photo. Confidence labels reflect the strength of public-source attribution. Not for operational use; verify against primary sources before action.</div>
+  <div class="sub">Officially wanted, indicted, or sanctioned ransomware principals and the supporting ecosystem selected for tracking. The first section covers operators, group leadership, and deployment affiliates (direct actors); the remaining sections cover function-specific support roles (access, malware development and evasion, laundering, hosting, facilitation). Photographs are drawn from official wanted pages where available and auto-load from the source; sanctions-only designations frequently carry no official photo. Confidence labels reflect the strength of public-source attribution. Not for operational use; verify against primary sources before action.</div>
 </header>
 
 <div class="controls">
@@ -123,7 +124,7 @@
 <main id="main"></main>
 
 <footer>
-  Compiled for analytical / briefing use. Sources: FBI Cyber's Most Wanted, U.S. Secret Service, U.S. State Dept Rewards for Justice, U.S. Treasury OFAC, UK NCA, Australia DFAT, EU Most Wanted (Operation Endgame / BKA), INTERPOL, U.S. DOJ indictments. Photographs remain the property of the issuing authorities and are shown for identification purposes. To add a missing photo, drop a file named <code>photos/&lt;slug&gt;.jpg</code> beside this page (slug shown on each card).
+  Compiled for analytical / briefing use. Sources: FBI Cyber's Most Wanted, U.S. Secret Service, U.S. State Dept Rewards for Justice, U.S. Treasury OFAC, UK NCA, UK FCDO / OFSI cyber sanctions, Australia DFAT, EU Most Wanted (Operation Endgame / BKA), EU Council cyber sanctions, INTERPOL, U.S. DOJ indictments. Photographs remain the property of the issuing authorities and are shown for identification purposes. To add a missing photo, drop a file named <code>photos/&lt;slug&gt;.jpg</code> beside this page (slug shown on each card).
 </footer>
 
 <script>
@@ -132,6 +133,8 @@ const CAT = {
       desc:"Direct actors: group leaders, developers, and deployment affiliates who built or ran ransomware operations (includes Conti/Trickbot leadership)."},
   access:{label:"Initial Access, Loaders & Botnets", short:"Initial Access", cls:"access", badge:"enab",
       desc:"Operators of droppers, loaders, botnets, exploit kits, and credential theft (Trickbot, Qakbot, DanaBot, Angler) that provide ransomware initial access. Includes the Operation Endgame cohort."},
+  malwaredev:{label:"Malware Development & Evasion Services", short:"Malware Dev / Evasion", cls:"malwaredev", badge:"enab",
+      desc:"Developers and vendors of the malicious tooling the ecosystem runs on: infostealer authors, cryptor sellers, and evasion services sold to ransomware operators and affiliates."},
   laundering:{label:"Money Laundering & Financial Infrastructure", short:"Laundering", cls:"laundering", badge:"launder",
       desc:"Operators of exchanges, mixers, and payment services that move and clean ransomware proceeds."},
   hosting:{label:"Bulletproof Hosting Infrastructure", short:"Bulletproof Hosting", cls:"hosting", badge:"host",
@@ -206,7 +209,7 @@ const D = [
   family:"No public familial information.",
   bio:"Indicted Sept 2022 for a ransomware-style extortion campaign against U.S. critical-infrastructure providers, local governments, and businesses. A shared $10M RFJ offer covers him and two co-defendants.",
   src:[["FBI",FBI("mansour-ahmadi")]]},
- {slug:"kovalev-vitalii",cat:"op",name:"Vitalii Nikolaevich Kovalev",alias:'"Stern", "Ben", "Bentley", "Bergen", "Alex Konor"',group:"Conti (alleged leader 'Stern'); Trickbot",origin:"Russia",sources:"EU Most Wanted (Endgame), USSS",reward:"-",sanctions:"-",status:"At large",conf:"High",photo:null,
+ {slug:"kovalev-vitalii",cat:"op",name:"Vitalii Nikolaevich Kovalev",alias:'"Stern", "Ben", "Bentley", "Bergen", "Alex Konor"',group:"Conti (alleged leader 'Stern'); Trickbot",origin:"Russia",sources:"EU Most Wanted (Endgame), USSS, EU Council",reward:"-",sanctions:"OFAC / UK (Feb 2023); EU (Jul 2026)",status:"At large (Russia); EU-designated Jul 2026 as 'Stern'",conf:"High",photo:null,
   family:"No public familial information.",
   bio:"Aged about 36. Named in Operation Endgame as the alleged leader of the Conti ransomware group under the moniker 'Stern' and an early Trickbot figure. Press reporting (El Pais, 2025) describes him running the operation like a company, with offices and staff bonuses. Appears on both the EU Most Wanted list and the USSS Most Wanted list.",
   src:[["BKA",BKA("KVN")]],
@@ -256,6 +259,23 @@ const D = [
   bio:"Charged alongside Kadariya in the Angler Exploit Kit malvertising conspiracy that seeded malware and ransomware infections.",
   src:[["USSS","https://www.secretservice.gov/investigations/mostwanted/tarasov"]]},
 
+ // ---- MALWARE DEVELOPMENT & EVASION ----
+ {slug:"voronin-maksim",cat:"malwaredev",name:"Maksim Evgeniyevich Voronin",alias:"-",group:"LummaC2 (developer / distributor / seller)",origin:"Russia",sources:"EU Council, UK FCDO",reward:"-",sanctions:"EU + UK (Jul 2026)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Designated 13 July 2026 by the EU Council and UK FCDO as a developer, distributor and seller of the LummaC2 infostealer, the credential-theft engine feeding much of the 2026 access market. Named among the Russia-based principals in the 13 July tri-lateral package; remains at large.",
+  src:[["EU Council","https://www.consilium.europa.eu/en/press/press-releases/2026/07/13/russian-cyber-attacks-and-destabilising-act"],["UK FCDO","https://www.gov.uk/government/news/uk-and-eu-strike-russian-cyber-networks-with-new-sanctions"]]},
+ {slug:"gordienko-maksim",cat:"malwaredev",name:"Maksim Aleksandrovich Gordienko",alias:"-",group:"LummaC2 (developer / distributor / seller)",origin:"Russia",sources:"EU Council, UK FCDO",reward:"-",sanctions:"EU + UK (Jul 2026)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Designated 13 July 2026 by the EU Council and UK FCDO alongside Voronin as a LummaC2 developer, distributor and seller. Part of the enabler-tier wave that shifted Western targeting from ransomware operators to the tooling and services beneath them.",
+  src:[["EU Council","https://www.consilium.europa.eu/en/press/press-releases/2026/07/13/russian-cyber-attacks-and-destabilising-act"],["UK FCDO","https://www.gov.uk/government/news/uk-and-eu-strike-russian-cyber-networks-with-new-sanctions"]]},
+ {slug:"zhurkin-marat",cat:"malwaredev",name:"Marat Shaigovich Zhurkin",alias:"-",group:"Lumma Stealer (linked; UK-only designee)",origin:"Russia",sources:"UK FCDO",reward:"-",sanctions:"UK (Jul 2026)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Designated 13 July 2026 by the UK FCDO in connection with the Lumma Stealer operation. A UK-only designee, not named in the parallel EU or US actions, which is why a source register limited to OFAC, NCA and EU Most Wanted would not have surfaced him.",
+  src:[["UK FCDO","https://www.gov.uk/government/news/uk-and-eu-strike-russian-cyber-networks-with-new-sanctions"]]},
+ {slug:"silayev-yevgeniy",cat:"malwaredev",name:"Yevgeniy Vladimirovich Silayev",alias:'"Yegeniy" (Treasury spelling)',group:"Cryptor / evasion vendor to ransomware operators",origin:"Belarus",sources:"OFAC",reward:"-",sanctions:"OFAC (Jul 2026)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Belarusian national designated by OFAC on 13 July 2026 as a seller of cryptor (evasion) services to ransomware operators, the first US enforcement action against a crypter operator. Not on Russian or Belarusian domestic wanted lists as of July 2026.",
+  src:[["U.S. Treasury","https://home.treasury.gov/news/press-releases/sb0559"]]},
  // ---- MONEY LAUNDERING ----
  {slug:"ivanov",cat:"laundering",name:"Sergey Sergeevich Ivanov",alias:'"Taleon"',group:"UAPS / PM2BTC / PinPays / Cryptex",origin:"Russia",sources:"USSS, DOJ, OFAC, RFJ",reward:"$10M (RFJ)",sanctions:"OFAC (Sept 2024)",status:"At large",conf:"High",photo:null,
   family:"No public familial information.",
@@ -267,6 +287,10 @@ const D = [
   src:[["FBI",FBI("minh-quoc-nguyen")]]},
 
  // ---- BULLETPROOF HOSTING ----
+ {slug:"rashevskyi-dmytro",cat:"hosting",name:"Dmytro Rashevskyi",alias:'"Maksim Sorin", "Roman Chabanenko"',group:"First VPN Service (1VPNS) administrator",origin:"Ukraine",sources:"OFAC",reward:"-",sanctions:"OFAC (Jul 2026)",status:"At large",conf:"High",photo:null,
+  family:"No public familial information.",
+  bio:"Ukrainian national designated by OFAC on 13 July 2026 as administrator of First VPN Service (1VPNS), an anonymization service used by ransomware operators including Anubis, Qilin and Sinobi. TRM traced operator payments into 1VPNS that underpinned the designation. Unlike the Russia-based principals in the same package, he sits in a cooperating jurisdiction, which makes a criminal referral realistic.",
+  src:[["U.S. Treasury","https://home.treasury.gov/news/press-releases/sb0559"]]},
  {slug:"mishin",cat:"hosting",name:"Alexander Igorevich Mishin",alias:"-",group:"Zservers / XHost (LockBit hosting)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Feb 2025)",status:"At large",conf:"High",photo:null,
   family:"No public familial information.",
   bio:"Co-administrator of Zservers/XHost bulletproof hosting; advertised the service and directed LockBit cryptocurrency transactions. Sanctioned tri-laterally Feb 2025; Dutch police seized 127 servers.",
@@ -275,7 +299,7 @@ const D = [
   family:"No public familial information.",
   bio:"Zservers administrator implicated in changing a hacker's IP address on demand to keep a ransomware operation online despite an abuse complaint.",
   src:[["Treasury","https://home.treasury.gov/news/press-releases"]]},
- {slug:"volosovik",cat:"hosting",name:"Aleksandr Volosovik",alias:'"Yalishanda"',group:"Media Land (LockBit, Black Basta, Play, BlackSuit, Evil Corp)",origin:"Russia",sources:"OFAC, NCA, AU",reward:"-",sanctions:"OFAC / UK / AU (Nov 2025)",status:"At large",conf:"High",photo:null,
+ {slug:"volosovik",cat:"hosting",name:"Aleksandr Volosovik",alias:'"Yalishanda"',group:"Media Land (LockBit, Black Basta, Play, BlackSuit, Evil Corp)",origin:"Russia",sources:"OFAC, NCA, AU, EU, DOJ, RFJ",reward:"$10M (RFJ)",sanctions:"OFAC / UK / AU (Nov 2025); EU (Jul 2026)",status:"Indicted (N.D. Ohio, unsealed 14 Jul 2026); at large",conf:"High",photo:null,
   family:"No public familial information.",
   bio:"General director of Media Land bulletproof hosting, advertised on criminal forums as 'Yalishanda'. Provided servers and troubleshooting to multiple ransomware and DDoS crews.",
   src:[["Treasury","https://home.treasury.gov/news/press-releases/sb0185"]]},
