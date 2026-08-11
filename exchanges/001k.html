@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>001k / 001k.bot / 001k.exchange (SATOSHI NAKAMOTO CORP; CryptoBarrel UAB): Cryptocurrency Exchange Analytical Profile</title>
+<style>
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent-red: #f85149;
+  --accent-orange: #d29922;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-purple: #bc8cff;
+  --accent-yellow: #e3b341;
+  --badge-confirmed-bg: #0d4429;
+  --badge-confirmed-text: #3fb950;
+  --badge-confirmed-border: #238636;
+  --badge-credible-bg: #172b4d;
+  --badge-credible-text: #58a6ff;
+  --badge-credible-border: #1f6feb;
+  --badge-inference-bg: #2d1b69;
+  --badge-inference-text: #bc8cff;
+  --badge-inference-border: #6e40c9;
+  --badge-single-bg: #3b1f1f;
+  --badge-single-text: #f85149;
+  --badge-single-border: #b91c1c;
+  --status-disrupted-bg: #3b1f1f;
+  --status-disrupted-text: #f85149;
+  --status-sanctioned-bg: #2d1b00;
+  --status-sanctioned-text: #d29922;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; z-index: 100;
+  gap: 16px;
+}
+.site-header .logo {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.site-header .divider { color: var(--border); }
+.site-header .profile-title {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+.site-header .node-type-tag {
+  font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.header-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+
+/* STATUS BADGES */
+.status-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid;
+}
+.status-disrupted { background: var(--status-disrupted-bg); color: var(--status-disrupted-text); border-color: #7f1d1d; }
+.status-sanctioned { background: var(--status-sanctioned-bg); color: var(--status-sanctioned-text); border-color: #78350f; }
+.status-active     { background: #0d2b1a; color: #3fb950; border-color: #1a4731; }
+.status-defunct    { background: #1a1a2e; color: #94a3b8; border-color: #334155; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: var(--header-height); left: 0; bottom: 0;
+  width: var(--sidebar-width); background: var(--bg-secondary);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; z-index: 90;
+}
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 16px 4px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li a {
+  display: block; padding: 6px 16px; font-size: 12px; color: var(--text-secondary);
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
+.sidebar-nav li a:hover { color: var(--text-primary); background: var(--bg-tertiary); text-decoration: none; }
+.sidebar-nav li a.active { color: var(--accent-blue); border-left-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.sidebar-nav li .nav-num { color: var(--text-muted); margin-right: 6px; font-size: 10px; }
+.sidebar-divider { height: 1px; background: var(--border-muted); margin: 8px 16px; }
+.sidebar-meta { padding: 12px 16px; }
+.sidebar-meta-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+.sidebar-meta-row .label { color: var(--text-muted); }
+.sidebar-meta-row .value { color: var(--text-secondary); font-weight: 600; }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--header-height);
+  padding: 32px 40px 80px;
+  max-width: 960px;
+}
+
+/* HERO MODULE */
+.hero-module {
+  background: linear-gradient(135deg, #08160d 0%, #12121c 100%);
+  border: 1px solid #1a4731; border-radius: 8px;
+  padding: 24px; margin-bottom: 32px;
+}
+.hero-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-green); margin-bottom: 12px;
+}
+.hero-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.operator-cards { display: flex; gap: 16px; flex-wrap: wrap; }
+.operator-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 16px; flex: 1; min-width: 240px;
+}
+.operator-card .op-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.operator-card .op-alias { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.operator-card .op-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+.operator-card .op-row .k { color: var(--text-muted); }
+.operator-card .op-row .v { color: var(--text-secondary); font-weight: 600; text-align: right; max-width: 62%; }
+.op-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-top: 8px; letter-spacing: 0.06em;
+}
+.op-tag-indicted { background: #3b1f1f; color: #f85149; border: 1px solid #7f1d1d; }
+.op-tag-sanctioned { background: #2d1b00; color: #d29922; border: 1px solid #78350f; }
+.op-tag-atlarge { background: #1a1a2e; color: #94a3b8; border: 1px solid #334155; }
+.op-tag-custody { background: #0d2b1a; color: #3fb950; border: 1px solid #1a4731; }
+.op-tag-gap { background: #2d2400; color: #e3b341; border: 1px solid #6b5600; }
+
+/* SECTION HEADERS */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;
+}
+.section-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.section-anchor { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+h3 {
+  font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px;
+}
+h4 {
+  font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px;
+}
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+/* CONFIDENCE BADGES */
+.badge {
+  display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; border: 1px solid;
+  vertical-align: middle; margin: 0 2px; white-space: nowrap;
+}
+.badge-confirmed    { background: var(--badge-confirmed-bg); color: var(--badge-confirmed-text); border-color: var(--badge-confirmed-border); }
+.badge-credible     { background: var(--badge-credible-bg); color: var(--badge-credible-text); border-color: var(--badge-credible-border); }
+.badge-inference    { background: var(--badge-inference-bg); color: var(--badge-inference-text); border-color: var(--badge-inference-border); }
+.badge-single       { background: var(--badge-single-bg); color: var(--badge-single-text); border-color: var(--badge-single-border); }
+.badge-internal     { background: #15294a; color: #79c0ff; border-color: #1f6feb; }
+
+/* KPI / ATTRIBUTE TABLES */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+}
+.kpi-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.kpi-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.kpi-sub   { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+.attr-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+.attr-table tr { border-bottom: 1px solid var(--border-muted); }
+.attr-table tr:last-child { border-bottom: none; }
+.attr-table td { padding: 7px 10px; }
+.attr-table td:first-child { color: var(--text-muted); width: 200px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.attr-table td:last-child  { color: var(--text-primary); }
+.attr-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CONTENT TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--text-muted); text-transform: uppercase;
+  font-size: 10px; letter-spacing: 0.08em; padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-muted); vertical-align: top; color: var(--text-secondary); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+}
+.callout-red    { border-color: var(--accent-red); background: rgba(248,81,73,0.06); }
+.callout-orange { border-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+.callout-blue   { border-color: var(--accent-blue); background: rgba(88,166,255,0.06); }
+.callout-purple { border-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+.callout-green  { border-color: var(--accent-green); background: rgba(63,185,80,0.06); }
+.callout .callout-label {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.callout-red    .callout-label { color: var(--accent-red); }
+.callout-orange .callout-label { color: var(--accent-orange); }
+.callout-blue   .callout-label { color: var(--accent-blue); }
+.callout-purple .callout-label { color: var(--accent-purple); }
+.callout-green  .callout-label { color: var(--accent-green); }
+
+/* TIMELINE */
+.timeline { margin: 16px 0; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 14px; }
+.timeline-marker { display: flex; flex-direction: column; align-items: center; min-width: 14px; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-primary); flex-shrink: 0; margin-top: 4px; }
+.timeline-dot.red    { background: var(--accent-red); }
+.timeline-dot.orange { background: var(--accent-orange); }
+.timeline-dot.green  { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 1px; background: var(--border); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 4px; }
+.timeline-date { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--text-secondary); }
+
+/* CITATION */
+.cite { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+/* WALLET ADDRESSES */
+.wallet-addr { font-family: "SF Mono", "Fira Code", monospace; font-size: 11px; color: var(--accent-purple); word-break: break-all; }
+
+/* GAP FLAGS */
+.gap-flag { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.gap-flag::before { content: "\25C6 GAP: "; color: var(--accent-yellow); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
+
+/* GALLERY */
+.gallery-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.gallery-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.gallery-item img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--bg-tertiary); }
+.gallery-caption { padding: 8px 10px; }
+.gallery-caption .cap-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.gallery-caption .cap-source { font-size: 10px; color: var(--text-muted); }
+.img-source { font-size: 10px; color: var(--text-muted); }
+
+/* SOURCES */
+.sources-list { list-style: none; counter-reset: source-counter; }
+.sources-list li { counter-increment: source-counter; display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+.sources-list li::before { content: "[" counter(source-counter) "]"; color: var(--text-muted); font-weight: 700; min-width: 32px; font-size: 11px; }
+
+/* TIER LABELS */
+.tier-confirmed   { color: var(--badge-confirmed-text); font-weight: 700; }
+.tier-credible    { color: var(--badge-credible-text); font-weight: 700; }
+.tier-inference   { color: var(--badge-inference-text); font-weight: 700; }
+.tier-active      { color: var(--accent-red); font-weight: 700; }
+.tier-structural  { color: var(--accent-orange); font-weight: 700; }
+.tier-incidental  { color: var(--text-muted); font-weight: 700; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 20px 16px 60px; }
+}
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="logo">RansomwareEDP</span>
+  <span class="divider">|</span>
+  <span class="profile-title">001k / 001k.bot / 001k.exchange</span>
+  <span class="node-type-tag">Cryptocurrency Exchange</span>
+  <div class="header-badges">
+    <span class="status-badge status-active">Active</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="node-library"></div>
+  <div class="sidebar-section-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-num">01</span>Overview</a></li>
+    <li><a href="#lineage"><span class="nav-num">02</span>Lineage &amp; Heritage</a></li>
+    <li><a href="#operations"><span class="nav-num">03</span>Service Model</a></li>
+    <li><a href="#technical"><span class="nav-num">04</span>Technical Infrastructure</a></li>
+    <li><a href="#financial"><span class="nav-num">05</span>Financial Intelligence</a></li>
+    <li><a href="#clientele"><span class="nav-num">06</span>Client Profile</a></li>
+    <li><a href="#nexus"><span class="nav-num">07</span>State Nexus</a></li>
+    <li><a href="#disruption"><span class="nav-num">08</span>LE &amp; Regulatory Response</a></li>
+    <li><a href="#connected"><span class="nav-num">09</span>Connected Entities</a></li>
+    <li><a href="#status"><span class="nav-num">10</span>Trajectory</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="#recent-reporting">Recent Reporting</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-meta">
+    <div class="sidebar-meta-row"><span class="label">Profile updated</span><span class="value">June 2026</span></div>
+    <div class="sidebar-meta-row"><span class="label">Status</span><span class="value" style="color:var(--accent-green)">Active; unsanctioned</span></div>
+    <div class="sidebar-meta-row"><span class="label">Risk rating</span><span class="value" style="color:var(--accent-red)">High (AML Network)</span></div>
+    <div class="sidebar-meta-row"><span class="label">OFAC / UK / EU</span><span class="value">None</span></div>
+    <div class="sidebar-meta-row"><span class="label">State nexus tier</span><span class="value">None</span></div>
+    <div class="sidebar-meta-row"><span class="label">Operator of record</span><span class="value">Panama shell (self-attested)</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-content">
+
+<!-- HERO MODULE : ACTIVE, UNSANCTIONED, THIN AND SHIFTING OPERATOR ATTRIBUTION -->
+<div class="hero-module">
+  <div class="hero-label">&#9888; Active and Unsanctioned, High-Risk : Operator Attribution Module</div>
+  <div class="hero-title">001k is an active, unsanctioned crypto-to-cash exchange with no OFAC, EU, UK or FinCEN designation as of June 2026, yet it received more than $14.8 billion in cryptocurrency since August 2022 (Chainalysis data provided to ICIJ) and runs a physical cash-courier network in 300-plus cities. Operator attribution is deliberately thin and shifting: the named operator of record moved from a Lithuanian company (CryptoBarrel UAB) to a pseudonymous Panama shell (SATOSHI NAKAMOTO CORP.) in the months after ICIJ's November 2025 exposure. No individual associated with 001k is sanctioned or indicted by any Western authority. The only named principals below are sourced to corporate registries and to single-source NGO and foreign-case reporting, and are labeled accordingly.</div>
+  <div class="operator-cards">
+
+    <div class="operator-card">
+      <div class="op-name">Serhii Hutsu (Gutsu)</div>
+      <div class="op-alias">Alleged 001k.exchange founder / representative</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Assessed Ukrainian</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">Reported subject of international search via the Kyrgyz "Four Dragons" case (841,000 USDT theft, Feb 2024)</span></div>
+      <div class="op-row"><span class="k">Western action</span><span class="v">No OFAC / EU / UK designation; no Western indictment</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CREDIBLE (NGO / foreign-case single source)</span></div>
+      <span class="op-tag op-tag-atlarge">Not Sanctioned</span>
+      <span class="op-tag op-tag-gap">Single Source</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">Anatolii Molchanov</div>
+      <div class="op-alias">Director / sole shareholder, CryptoBarrel UAB (prior operator of record)</div>
+      <div class="op-row"><span class="k">Nationality</span><span class="v">Foreign national (non-Lithuanian) per registry</span></div>
+      <div class="op-row"><span class="k">Entity</span><span class="v">CryptoBarrel UAB, Co. 306696279, Vilnius (reg. 5 Mar 2024)</span></div>
+      <div class="op-row"><span class="k">Legal status</span><span class="v">No indictment; not sanctioned</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CONFIRMED (LT registry); link to 001k CREDIBLE</span></div>
+      <span class="op-tag op-tag-custody">Registry Confirmed</span>
+      <span class="op-tag op-tag-gap">001k Link via T&amp;C</span>
+    </div>
+
+    <div class="operator-card">
+      <div class="op-name">SATOSHI NAKAMOTO CORP.</div>
+      <div class="op-alias">Current operator of record (pseudonymous corporate name)</div>
+      <div class="op-row"><span class="k">Jurisdiction</span><span class="v">Panama, Co. 155773571, Global Bank Tower, 50th St</span></div>
+      <div class="op-row"><span class="k">Source</span><span class="v">001k Terms &amp; Conditions (24 Apr 2026); self-attested only</span></div>
+      <div class="op-row"><span class="k">Corroboration</span><span class="v">No independent Panama-registry confirmation found</span></div>
+      <div class="op-row"><span class="k">Confidence</span><span class="v">CREDIBLE (self-attested); registry UNVERIFIED</span></div>
+      <span class="op-tag op-tag-gap">Self-Attested</span>
+      <span class="op-tag op-tag-atlarge">Pseudonymous</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- SECTION 01 : OVERVIEW -->
+<!-- ============================================== -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Executive Summary and Exchange Overview</h2>
+  </div>
+
+  <!-- KPI METRICS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Crypto Received</div>
+      <div class="kpi-value">&gt;$14.8B</div>
+      <div class="kpi-sub">By 001k-linked wallets since Aug 2022, primarily USDT (Chainalysis data provided to ICIJ)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">001k &rarr; WhiteBIT</div>
+      <div class="kpi-value">&gt;$1.1B</div>
+      <div class="kpi-sub">Onward flow to WhiteBIT customer accounts (ICIJ / Arkham tracing)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">001k &rarr; Major CEXs</div>
+      <div class="kpi-value">&gt;$467M</div>
+      <div class="kpi-sub">Binance &gt;$400M, OKX ~$54M, Kraken ~$13M (ICIJ / Arkham)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cash Courier Network</div>
+      <div class="kpi-value">300+ cities</div>
+      <div class="kpi-sub">60+ countries; incl. New York, Miami, LA, Toronto, Montreal, Dubai (self-described)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">OFAC / UK / EU</div>
+      <div class="kpi-value">None</div>
+      <div class="kpi-sub">No sanctions or formal designation in any jurisdiction as of June 2026</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Operator of Record</div>
+      <div class="kpi-value">Panama shell</div>
+      <div class="kpi-sub">SATOSHI NAKAMOTO CORP. (self-attested); shifted from CryptoBarrel UAB (Lithuania) post-ICIJ</div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Overall Assessment</div>
+    001k (001k.bot / 001k.exchange) is a Ukraine-based, Telegram-native crypto-to-fiat exchange and physical cash-courier network that has operated since at least 2018 and, per Chainalysis data provided to ICIJ, received more than $14.8 billion in cryptocurrency since August 2022, overwhelmingly USDT. The defining analytical finding is a wide gap between a polished compliance narrative (mandatory KYC, sanctions screening, even a paid AML wallet-screening add-on) and observed behavior: in ICIJ's November 2025 "Coin Laundry" investigation a Toronto Star reporter completed a 2,000 USDT cash payout authenticated only by the serial number of a $5 banknote, with no identity document requested, and journalists in Quebec were offered cash deliveries up to roughly $1 million with no ID. The second finding is jurisdictional flight: the named operator of record shifted from a small, recently created Lithuanian company (CryptoBarrel UAB, two-employee, confirmed in Lithuanian registries) to a pseudonymous Panama shell (SATOSHI NAKAMOTO CORP.) in the T&amp;C between earlier reporting and an April 2026 update, conspicuously timed after the ICIJ exposure. Despite high-volume flows, dense multi-jurisdictional scrutiny, and a "High Risk" rating from the AML Network watchdog, 001k carries no OFAC, EU, UK, or FinCEN designation and is not the subject of any public DOJ action. It was the catalyst for Canada's March 2026 FINTRAC revocation sweep but, being unregistered, was not itself a named subject of that enforcement. State nexus is assessed at NONE. Corrections to the source draft are folded into the relevant sections: the $14.8 billion figure is ICIJ citing Chainalysis (not a standalone Chainalysis publication); the $2.7 billion figure is an NGO estimate for the broader WhiteBIT scheme, not a 001k-specific number; the claim that the EU AML authority AMLA was "set to probe" the findings is not accurate (AMLA publicly stated it does not conduct such investigations); and the operator email on the June 2026 launch was support@001k.bot, not pr@001k.exchange.
+  </div>
+
+  <!-- ATTRIBUTE TABLE -->
+  <div class="attr-table-wrap">
+    <table class="attr-table">
+      <tr><td>Service type</td><td>Telegram-native crypto-to-fiat swap bot (@OO1kBOT) plus a web dashboard launched June 2026, layered over a physical cash-courier network offering in-person cash payouts and card/IBAN/e-wallet off-ramps <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Operator of record (current)</td><td>SATOSHI NAKAMOTO CORP. (Panama), Company No. 155773571, Global Bank Tower, 18th Floor, Suite 1801, 50th Street, Panama City; governing law Panama, per the 24 Apr 2026 Terms &amp; Conditions <span class="badge badge-credible">Credible</span> (self-attested in T&amp;C; no Panama-registry corroboration found) <span class="cite">[20]</span></td></tr>
+      <tr><td>Prior operator of record</td><td>CryptoBarrel UAB (Lithuania), reg. 306696279, registered 5 Mar 2024, Krivi&#371; g. 5, Vilnius; ~1 insured employee; 2025 revenue EUR 266,320, net profit EUR 84,894; director/sole shareholder Anatolii Molchanov (foreign national) <span class="badge badge-confirmed">Confirmed</span> (registry) <span class="cite">[23][24][25]</span></td></tr>
+      <tr><td>Aliases / branding</td><td>001k; 001k.bot (@OO1kBOT); 001k.exchange; app.001k.bot (web dashboard); 001k.Trade (@trade001k, ~92.4k subscribers, "Alpha Academy"). Logo styles the name "OO1K" (two letter Os) while the domain uses "001k" (two zeros), a deliberate naming ambiguity <span class="badge badge-confirmed">Confirmed</span></td></tr>
+      <tr><td>Entity registration jurisdiction</td><td>Panama (current, self-attested); formerly Lithuania (CryptoBarrel UAB, registry-confirmed). State explicitly: the move to a Panama shell removes the entity from an EU VASP/AMLD regime to a jurisdiction with no equivalent CASP licensing <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Infrastructure hosting jurisdiction</td><td>Cloudflare DNS/proxy fronts both domains; 001k.bot registered via NameCheap (created 18 Apr 2024, WHOIS privacy via Withheld for Privacy, Iceland); 001k.exchange via NameSilo (created 22 Oct 2019, PrivacyGuardian). Physical hosting country masked <span class="badge badge-confirmed">Confirmed</span> (registrar/Cloudflare) <span class="badge badge-inference">Analyst Inference</span> (physical host) <span class="cite">[31]</span></td></tr>
+      <tr><td>Assessed operator location</td><td>Ukraine (Kyiv). The June 2026 launch press release carries a Kyiv dateline; BestChange lists "Country: Ukraine"; the alleged founder is assessed Ukrainian <span class="badge badge-credible">Credible</span> <span class="cite">[6][14]</span></td></tr>
+      <tr><td>Operational period</td><td>001k.exchange domain registered Oct 2019 (predates the rest of the corporate timeline); cash service self-dated to "the beginning of 2018"; Telegram bot active by 2022; web dashboard launched 22 Jun 2026 <span class="badge badge-credible">Credible</span></td></tr>
+      <tr><td>Volume (received)</td><td>&gt;$14.8B in crypto received by 001k-linked wallets since Aug 2022, primarily USDT, per Chainalysis data provided to ICIJ; figure widely republished but not independently re-derived by a second vendor <span class="badge badge-confirmed">Confirmed</span> (figure) <span class="badge badge-single">Single Source</span> (underlying vendor) <span class="cite">[1][4][5]</span></td></tr>
+      <tr><td>Geographic footprint</td><td>Cash drops advertised in 300+ cities across 60+ countries, including New York, Miami, Los Angeles, Toronto, Montreal and Dubai; card payouts to Ukrainian, Russian and Chinese bank cards; "rearrangements between cities" <span class="badge badge-confirmed">Confirmed</span> (per self-description and ICIJ) <span class="cite">[1][11]</span></td></tr>
+      <tr><td>OFAC designation</td><td>None as of June 2026 <span class="badge badge-confirmed">Confirmed</span> (negative evidence) <span class="cite">[28]</span></td></tr>
+      <tr><td>UK / EU / FinCEN designation</td><td>None. 001k was not in the UK 26 May 2026 crypto package (which named Garantex, Grinex, Bitpapa, Rapira, EXMO and others); no EU listing; no FinCEN advisory or Section 311 action <span class="badge badge-confirmed">Confirmed</span> (negative evidence) <span class="cite">[29]</span></td></tr>
+      <tr><td>State nexus tier</td><td>NONE. No documented state direction, protection, or control by Ukraine or any state; principal counterparty WhiteBIT was declared "undesirable" by Russia, which argues against a Russian nexus</td></tr>
+      <tr><td>Status</td><td>Active, unsanctioned, and expanding (web dashboard launched June 2026); rated "High Risk" by AML Network <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[5][6]</span></td></tr>
+      <tr><td>Blockchain analytics coverage</td><td>Chainalysis (the $14.8B total, data provided to ICIJ); Arkham Intelligence (ICIJ's onward-flow tracing); Crystal Intelligence (CIO Nick Smart quoted on the record). No standalone TRM Labs, Elliptic or Chainalysis report names 001k <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[1][4]</span></td></tr>
+    </table>
+  </div>
+
+  <!-- IMAGE GALLERY -->
+  <div class="gallery-label">Exchange Presence and Enforcement Evidence</div>
+  <div class="gallery-grid">
+
+    <div class="gallery-item">
+      <img src="https://media.icij.org/uploads/2025/11/ICIJ_cash-exchange_FINAL-1109x624.gif"
+           alt="ICIJ Coin Laundry investigation lead illustration: crypto-to-cash exchange storefront"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">ICIJ "Coin Laundry" Investigation</div>
+        <div class="cap-source"><span class="img-source">ICIJ, 2025. Lead artwork for the Coin Laundry investigation that documented 001k's &gt;$14.8B in receipts and no-ID cash payouts.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://crystalintelligence.com/rohirov/2025/11/crypto-to-cash-networks-icij-aml-evasion-exposed.jpg"
+           alt="Crystal Intelligence article header on the ICIJ crypto-to-cash exposure"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">Crystal Intelligence: Networks Exposed</div>
+        <div class="cap-source"><span class="img-source">Crystal Intelligence, 2025. Coverage in which Crystal CIO Nick Smart is quoted on 001k-type cash-desk volumes.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://amlnetwork.org/wp-content/uploads/001k.webp"
+           alt="AML Network watchdog database entry for 001k"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">AML Network: 001k "High Risk"</div>
+        <div class="cap-source"><span class="img-source">AML Network, 2025. Watchdog-database profile rating 001k "High Risk" and detailing the no-KYC cash-courier typology.</span></div>
+      </div>
+    </div>
+
+    <div class="gallery-item">
+      <img src="https://amlnetwork.org/wp-content/uploads/001k-1024x573.webp"
+           alt="AML Network 001k case summary card"
+           onerror="this.style.background='#1c2128';this.style.height='160px';this.alt='[Image unavailable]'">
+      <div class="gallery-caption">
+        <div class="cap-title">001k Case Summary Card</div>
+        <div class="cap-source"><span class="img-source">AML Network, 2025. Case-summary graphic listing onward flows to Binance, OKX, Kraken and WhiteBIT.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 02 : LINEAGE -->
+<!-- ============================================== -->
+<section class="section" id="lineage">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Lineage and Organizational Heritage</h2>
+  </div>
+
+  <h3>Jurisdictional Flight, Not Predecessor / Successor</h3>
+
+  <div class="callout callout-orange">
+    <div class="callout-label">Key Finding</div>
+    001k has no conventional exchange predecessor or successor. Its "lineage" is a chain of operator-of-record substitutions designed to keep the same product behind progressively more enforcement-resistant corporate shells. The 001k.exchange domain dates to October 2019, predating the Telegram bot domain 001k.bot (created April 2024) and the Lithuanian operating company CryptoBarrel UAB (registered March 2024), which indicates the brand was running before the formal corporate wrappers existed. The decisive move is the shift of the named operator from CryptoBarrel UAB (Lithuania, an EU VASP-eligible jurisdiction) to SATOSHI NAKAMOTO CORP. (Panama, no equivalent CASP regime), reflected in the April 2026 Terms &amp; Conditions and conspicuously timed in the months after ICIJ's November 2025 exposure. <span class="badge badge-confirmed">Confirmed</span> (registries; WHOIS; T&amp;C) <span class="cite">[12][13][20][31]</span>
+  </div>
+
+  <h4>Evidentiary Pillars</h4>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Pillar</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Domain timeline predates corporate wrappers</strong></td>
+          <td>WHOIS: 001k.exchange created 22 Oct 2019 (NameSilo); 001k.bot created 18 Apr 2024 (NameCheap). CryptoBarrel UAB registered 5 Mar 2024. The service existed years before the Lithuanian company that later claimed to operate it.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">WHOIS; Lithuanian registry</span></td>
+        </tr>
+        <tr>
+          <td><strong>Operator-of-record substitution</strong></td>
+          <td>Earlier public reporting cited CryptoBarrel UAB (Lithuania) as the licensed operator. By the 24 Apr 2026 T&amp;C the named operator is SATOSHI NAKAMOTO CORP. (Panama). The substitution moves governing law and dispute resolution to Panama.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">T&amp;C (telegra.ph); registry records</span></td>
+        </tr>
+        <tr>
+          <td><strong>Timing relative to ICIJ exposure</strong></td>
+          <td>The shell substitution falls in the months immediately after the November 2025 ICIJ investigation. Causation is not documented, but the sequence is a classic post-exposure jurisdictional hardening pattern.</td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Sequence-based inference</span></td>
+        </tr>
+        <tr>
+          <td><strong>Pseudonymous corporate naming</strong></td>
+          <td>The Panama entity is named after Bitcoin's pseudonymous creator and uses a registered-agent address (Global Bank Tower) shared by thousands of offshore companies. This mirrors the brand's "OO1K" visual obfuscation.</td>
+          <td><span class="tier-credible">CREDIBLE</span><br><span style="font-size:11px;color:var(--text-muted)">T&amp;C; address is a known agent tower</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operator Profiles</h3>
+  <p><span class="badge badge-credible">Credible</span> <span class="badge badge-single">Single Source</span> <strong>Serhii Hutsu (also Gutsu):</strong> named in NGO reporting (Non-Stop Ukraine) as the founder or representative of 001k.exchange and reported to be the subject of an international search arising from the Kyrgyz "Four Dragons" case (an 841,000 USDT theft, February 2024). Assessed Ukrainian. He is not sanctioned or indicted by any Western authority. The attribution rests on advocacy-NGO and foreign-case material; no Ukrainian court record or NABU press release directly naming Hutsu in connection with 001k was located. <span class="cite">[10][11]</span></p>
+
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>Anatolii Molchanov:</strong> listed in Lithuanian registries (Scoris, sourcing the Centre of Registers) as director and sole shareholder of CryptoBarrel UAB, the prior operator of record. A foreign national. CryptoBarrel reported roughly one insured employee, 2025 revenue of EUR 266,320 and net profit of EUR 84,894. No indictment, no sanction. The company's link to 001k rests on 001k's own documentation; the registry itself does not name "001k." <span class="badge badge-credible">Credible</span> (001k link) <span class="cite">[23][24][25]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> <strong>"Golda Nova":</strong> the sole named contact on the June 2026 web-dashboard launch press release (Chainwire, Kyiv dateline). Likely a press or pseudonymous role rather than an attributable principal. The launch contact email was support@001k.bot (the source draft's "pr@001k.exchange" was not found). <span class="cite">[6]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> <strong>SATOSHI NAKAMOTO CORP.:</strong> the current corporate operator of record is itself a pseudonym at the entity level. Treat it as a liability shield, not an attribution: there is no identified natural person behind the Panama company in open sources, and no independent Panama-registry confirmation of the company number cited in the T&amp;C. <span class="badge badge-single">Single Source</span> (self-attested) <span class="cite">[20]</span></p>
+
+  <h3>Disputed Assessments</h3>
+  <p><span class="badge badge-single">Single Source</span> <strong>The $2.7 billion figure:</strong> a Non-Stop Ukraine NGO report ("How WhiteBIT and 001k.Exchange help oligarchs launder...") states "we have USD 2.7 billion laundered through WhiteBIT." This is the NGO's estimate for the broader WhiteBIT-linked scheme overall, with 001k named as one of several conduits. It is not a 001k-specific or 001k-to-WhiteBIT figure and should not be presented as one. AML Network flags the same caveat. <span class="cite">[5][10][12]</span></p>
+
+  <p><span class="badge badge-credible">Credible</span> <strong>The "AMLA set to probe" claim:</strong> AML Intelligence initially reported the EU AML authority AMLA looked "set to probe" the Coin Laundry findings, but AMLA publicly clarified on 24 November 2025 that it does not conduct criminal investigations and is not investigating. A member of the European Parliament separately called for a probe. The draft's framing should be corrected to "an MEP called for a probe; AMLA stated it does not investigate." <span class="cite">[7][8]</span></p>
+
+  <p><span class="badge badge-confirmed">Confirmed</span> <strong>The FINTRAC framing:</strong> 001k was not a named subject of Canada's March 2026 FINTRAC revocations because it was never FINTRAC-registered. ICIJ states it is illegal for 001k to do business with Canadians precisely because it is unregistered. 001k was the catalyst (via the undercover test), not a target, of that enforcement. <span class="cite">[3]</span></p>
+
+  <div class="gap-flag">No natural person is reliably attributable as the controlling beneficial owner of 001k. The strongest named lead (Hutsu) is single-source NGO/foreign-case material; the corporate operator is a Panama pseudonym. This is the profile's primary attribution gap.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 03 : SERVICE MODEL -->
+<!-- ============================================== -->
+<section class="section" id="operations">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Service Model and Business Operations</h2>
+  </div>
+
+  <h3>Exchange Mechanics and Product Set</h3>
+  <p><span class="badge badge-credible">Credible</span> 001k runs a bifurcated model. The first layer is an on-chain swap service via the Telegram bot (@OO1kBOT) and, since June 2026, a web dashboard (app.001k.bot): instant crypto-to-fiat swaps across 14-plus cryptocurrencies and multiple fiat currencies (USD, EUR, AED, UAH), limit orders, off-chain internal transfers, a custodial wallet, a three-level referral program, and API access for third-party integrations. The second layer is a physical cash-courier service: in-person cash payouts in 300-plus cities across 60-plus countries, plus card, IBAN and e-wallet off-ramps. A manager-led premium tier is self-described for transactions of $50,000 and up. This architecture (anonymous stablecoin inflow, centralized swap/layering, physical cash exit) is the classic integration-layering structure that AML practitioners flag. <span class="cite">[5][9][18]</span></p>
+
+  <h3>Stated KYC/AML Posture vs Observed Behavior</h3>
+  <div class="callout callout-red">
+    <div class="callout-label">Stated Policy vs Observed Behavior (Schema Rule)</div>
+    <strong>Stated policy (from the exchange's own materials):</strong> the AML &amp; KYC Policy (published on Telegraph, last updated May 2026) asserts mandatory full KYC including biometric verification, government ID, proof of address and beneficial-ownership collection for legal entities; third-party identity verification; blockchain-analytics screening; ongoing sanctions screening against OFAC, EU and UN lists; and an explicit exclusion list (Iran, North Korea, Syria, Cuba, the occupied Ukrainian oblasts, Russia, Belarus and others). It even sells an on-demand AML wallet-screening add-on, marketing itself as a compliance-tool provider. The policy also prohibits "alternative settlement mechanisms... payment agents, compensation schemes, offsetting arrangements, netting," language that reads as an attempt to legally disclaim the very cash-courier and "rearrangement" services that define the product. <span class="badge badge-credible">Credible</span> (the exchange's own claims) <span class="cite">[21][24]</span><br><br>
+    <strong>Observed behavior (sourced to investigative testing and analytics, not the exchange's claims):</strong> ICIJ's undercover test converted 2,000 USDT to cash in Toronto with no identity document, authenticated only by a photographed $5-banknote serial number; CBC reports roughly US$1,900 was paid out. Quebec journalists were offered cash deliveries up to about $1 million with no ID. AML Network and Crystal-cited analysis describe more than $14.8 billion in inflows with "little or no KYC enforcement." The gap between a sophisticated stated policy and a no-ID cash network is the primary analytical finding and indicates structural KYC/AML failure by design rather than lapse. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[1][3][5][9]</span>
+  </div>
+  <div class="gap-flag">No law-enforcement charging document setting out 001k's specific KYC thresholds, Travel Rule handling, or monitoring gaps exists; the strongest primary evidence is ICIJ's undercover transaction, not a regulator's evidentiary file.</div>
+
+  <h3>Fiat Rails (Schema Rule: Must Be Addressed)</h3>
+  <p><span class="badge badge-inference">Analyst Inference</span> 001k advertises card payouts to Ukrainian, Russian and Chinese bank cards, IBAN transfers, and e-wallet rails (PayPal, Wise, Revolut), alongside physical cash. No specific bank or payment-processor relationship is documented in open sources; no named correspondent, acquirer, or processor appears in the reviewed reporting. The absence is itself a finding: a network advertising card disbursement to three countries' banking systems and e-wallets necessarily touches regulated payment rails, but the counterparties are undisclosed, consistent with deliberate opacity and reliance on money-mule card networks rather than a single banking relationship. The cash-courier leg is designed precisely to avoid named fiat-rail dependencies. <span class="cite">[11][18]</span></p>
+
+  <h3>Licensing and Regulatory Standing</h3>
+  <p><span class="badge badge-credible">Credible</span> Through CryptoBarrel UAB, 001k could point to a Lithuanian corporate registration to imply EU/FCIS alignment, but the Lithuanian company is a small, recently created entity, not a substantive licensed VASP operation, and the registry does not tie it to 001k. With the operator of record now a Panama shell, there is no VASP/CASP licensing regime equivalent to the EU's MiCA framework, no Financial Intelligence Unit reporting obligation comparable to Lithuania's FCIS, and no Western authorization. Treat all compliance and licensing claims as marketing absent a primary regulator record. 001k holds no FINTRAC registration in Canada despite operating cash payouts there. <span class="cite">[1][13][20]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 04 : TECHNICAL -->
+<!-- ============================================== -->
+<section class="section" id="technical">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Technical Infrastructure and Platform Footprint</h2>
+  </div>
+
+  <h3>Domain Portfolio and Registration History</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Domain</th><th>WHOIS / role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>001k.exchange</strong></td><td>Created 22 Oct 2019 (NameSilo; privacy via PrivacyGuardian; Cloudflare DNS). Longest-standing property; the exchange/cash-courier front end. Predates the bot and the corporate wrappers.</td></tr>
+        <tr><td><strong>001k.bot</strong></td><td>Created 18 Apr 2024 (NameCheap; privacy via Withheld for Privacy, Iceland; Cloudflare DNS). Telegram bot front end (@OO1kBOT).</td></tr>
+        <tr><td><strong>app.001k.bot</strong></td><td>Subdomain of 001k.bot (no separate WHOIS record); the web dashboard launched 22 Jun 2026.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><span class="badge badge-confirmed">Confirmed</span> Both domains sit behind Cloudflare, masking origin hosting, and both use registrar-level WHOIS privacy. The infrastructure is built for low attribution and easy redeployment: a Telegram bot interface (no app-store dependency for the core product), Cloudflare fronting, and privacy-shielded registrations across two registrars. <span class="cite">[31]</span></p>
+
+  <h3>Apps, API and the BoxExchanger Payout Rail</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> Beyond the consumer bot and web dashboard, 001k exposes an API that other exchangers integrate against. The white-label exchanger-script vendor BoxExchanger publishes a dedicated "001k bot payouts" module: an operator activates an API key through @OO1kBOT (granting Balance and Withdrawal permissions, with 2FA and IP whitelisting) and uses 001k to disburse funds to its own customers. This independently corroborates, from a non-ICIJ technical source, that 001k functions as wholesale payout infrastructure for third-party money-service businesses and exchangers, not merely a retail cash desk. <span class="cite">[26]</span></p>
+
+  <h3>The Compliance-Tool Paradox</h3>
+  <p><span class="badge badge-credible">Credible</span> 001k markets an on-demand AML wallet-screening add-on, sold on a subscription or token basis, positioning itself as a compliance-tooling provider at the same time it operates a no-ID cash network. This dual posture is itself an infrastructure observation: the platform packages a veneer of compliance capability as a product feature while the core cash leg is built to avoid the controls that screening would imply. <span class="cite">[12]</span></p>
+
+  <h3>Resilience and Adaptability</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> 001k's infrastructure is resilient by construction. The primary interface is a Telegram bot, which is hard to take down through app-store or hosting action; Cloudflare fronting and privacy-shielded, multi-registrar domains complicate attribution and seizure; and the corporate layer can be swapped (Lithuania to Panama) without touching the technical stack. Rather than contracting after the ICIJ exposure, 001k expanded, launching a full web dashboard in June 2026. <span class="cite">[6][20][31]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 05 : FINANCIAL INTELLIGENCE -->
+<!-- ============================================== -->
+<section class="section" id="financial">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Financial Intelligence and On-Chain Analysis</h2>
+  </div>
+
+  <h3>Volume (Cite Source and Methodology; Do Not Average)</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Volume Sourcing (Schema Rule)</div>
+    <strong>Chainalysis, via ICIJ (Nov 2025):</strong> more than $14.8 billion in cryptocurrency received by 001k-linked wallets since August 2022, primarily USDT. ICIJ states verbatim that this is "data Chainalysis provided to ICIJ." It is not a standalone Chainalysis publication, and no second vendor (TRM, Elliptic) has independently re-derived it.<br>
+    <strong>ICIJ / Arkham Intelligence tracing (Nov 2025):</strong> onward flows from 001k to exchange customer accounts of more than $400 million at Binance, more than $54 million at OKX, more than $13 million at Kraken, and more than $1.1 billion at WhiteBIT. These are ICIJ's own wallet-level analysis using Arkham, not separately vendor-attributed.<br>
+    <strong>NGO (Non-Stop Ukraine, Feb 2025):</strong> about $2.7 billion. Correction: this is the NGO's estimate for the broader WhiteBIT-linked scheme overall, with 001k named as one conduit. It is not a 001k-specific figure and is not combined with the figures above.<br>
+    <strong>BestChange (self-declared):</strong> a self-reported, unaudited "reserve" figure, listed around $30.9 million at review (the source draft's $51.4 million appears to be a stale snapshot). It reflects claimed liquid reserves, not total flow.<br>
+    Figures from different sources are presented separately and never averaged. <span class="cite">[1][4][5][10][14]</span>
+  </div>
+
+  <h3>Three-Phase On-Chain Flow (001k as Node)</h3>
+  <h4>Phase 1: Receipt</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> 001k receives high-volume stablecoin inflows (primarily USDT) into a network of receiving wallets. ICIJ characterizes the pattern as consistent with a cash-out service: incoming stablecoins, rapid onward movement, and no conventional customer profiling. Funds enter from anonymous or lightly screened wallets and from other exchangers using 001k as a payout rail. <span class="cite">[1][5]</span></p>
+
+  <h4>Phase 2: Layering</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> Inflows move rapidly onward to customer accounts at major centralized exchanges (Binance, OKX, Kraken, WhiteBIT), where they co-mingle with general exchange liquidity, and through 001k's internal/off-chain transfer and custodial-wallet features. The use of multiple exchanges and accounts to obscure origin is the documented layering mechanism. Settlement is USDT-heavy, consistent with the broader cash-desk ecosystem. <span class="badge badge-credible">Credible</span> (mechanism) <span class="cite">[1][5]</span></p>
+
+  <h4>Phase 3: Extraction</h4>
+  <p><span class="badge badge-confirmed">Confirmed</span> The defining extraction leg is physical cash, delivered by courier in 300-plus cities, plus card/IBAN/e-wallet off-ramps. The no-ID cash handoff (authenticated by a banknote serial number) is the point at which value leaves the traceable on-chain environment, which is what makes the network a "money-laundering nightmare" in investigators' words. <span class="cite">[1][3]</span></p>
+
+  <h3>Sanctions and Risk-Rating Summary</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Authority / source</th><th>Action / status</th><th>Date / status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>OFAC (U.S.)</strong></td><td>No designation of 001k, SATOSHI NAKAMOTO CORP., CryptoBarrel UAB, or any named individual; no designated wallets</td><td>Not designated (June 2026)</td></tr>
+        <tr><td><strong>UK (FCDO / OFSI)</strong></td><td>Not in the 26 May 2026 crypto package (Garantex, Grinex, Bitpapa, Rapira, EXMO and others); no listing</td><td>Not designated (June 2026)</td></tr>
+        <tr><td><strong>EU</strong></td><td>No entity-specific listing located; not tied to the proposed 21st-package crypto list in any source</td><td>Not designated (June 2026)</td></tr>
+        <tr><td><strong>FinCEN / DOJ</strong></td><td>No advisory, Section 311 action, indictment or criminal complaint naming 001k located</td><td>None (negative evidence)</td></tr>
+        <tr><td><strong>AML Network (watchdog)</strong></td><td>Rated "High Risk"; profiled as a no-KYC crypto-to-cash laundering conduit</td><td>Active listing (2025, updated Dec 2025)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 06 : CLIENT PROFILE -->
+<!-- ============================================== -->
+<section class="section" id="clientele">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Client Profile and Criminal Use</h2>
+  </div>
+
+  <h3>Crimeware Verticals by Evidence Tier</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Actor / use type</th><th>Evidence</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>No-KYC cash-out for unspecified illicit proceeds</strong></td>
+          <td>ICIJ undercover test (no-ID cash payout); &gt;$14.8B inflow with "little or no KYC"; investigators describe funds routinely flowing from scams, sanctioned entities and high-risk services into unlabeled wallets and out as cash.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Wholesale payout rail for other exchangers / MSBs</strong></td>
+          <td>BoxExchanger publishes a dedicated 001k payout-API module, confirming third-party MSBs disburse customer funds through 001k.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Foreign theft / fraud proceeds</strong></td>
+          <td>The Kyrgyz "Four Dragons" case (841,000 USDT theft, Feb 2024) is reported to tie an 001k principal (Hutsu) to laundering of stolen funds; NGO/foreign-case sourced.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+        <tr>
+          <td><strong>Oligarch / sanctions-evasion capital (via WhiteBIT ecosystem)</strong></td>
+          <td>NGO reporting places 001k as one conduit within a broader WhiteBIT-linked scheme alleged to move oligarch and politically linked capital; PEP involvement alleged, not adjudicated.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ransomware / extortion proceeds</strong></td>
+          <td>A no-ID, high-volume cash-out network is a natural off-ramp for extortion proceeds, but no 001k-specific ransomware-actor attribution has been published by any analytics vendor.</td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Geographic Patterns</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> The cash-courier footprint concentrates in North American metros (New York, Miami, Los Angeles, Toronto, Montreal), Dubai, and card payouts into Ukrainian, Russian and Chinese banking systems. The operating base is assessed as Ukraine. Active or referenced scrutiny spans Canada, Austria, Ukraine, the UAE and Uzbekistan, though most of the Austria/UAE/Uzbekistan threads center on WhiteBIT, with 001k named as an affiliated conduit. <span class="cite">[1][5][11]</span></p>
+
+  <h3>High-Profile Flows</h3>
+  <p><span class="badge badge-credible">Credible</span> The quantitative anchors are counterparty-level, not actor-level: &gt;$1.1B to WhiteBIT and &gt;$467M combined to Binance/OKX/Kraken (ICIJ/Arkham). The only named criminal case tying a specific theft to 001k is the Kyrgyz "Four Dragons" matter (841,000 USDT), which is single-source. No analytics vendor has published an 001k-specific, named-actor flow with an attributed dollar figure; this is a documented intelligence gap (Section 10). <span class="cite">[1][11]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 07 : STATE NEXUS -->
+<!-- ============================================== -->
+<section class="section" id="nexus">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">State Nexus Assessment</h2>
+  </div>
+
+  <h3>Jurisdictional Separation (Schema Rule: Three Jurisdictions)</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction type</th><th>Assessment</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Entity registration</strong></td>
+          <td>Panama (SATOSHI NAKAMOTO CORP., self-attested in the T&amp;C, no registry corroboration found); formerly Lithuania (CryptoBarrel UAB, registry-confirmed).</td>
+          <td><span class="tier-credible">CREDIBLE</span> (Panama, self-attested) / <span class="tier-confirmed">CONFIRMED</span> (Lithuania, prior)</td>
+        </tr>
+        <tr>
+          <td><strong>2. Infrastructure hosting</strong></td>
+          <td>Cloudflare DNS/proxy on both domains; registrars NameSilo (001k.exchange, 2019) and NameCheap (001k.bot, 2024); physical hosting country masked.</td>
+          <td><span class="tier-confirmed">CONFIRMED</span> (Cloudflare/registrar) / <span class="tier-inference">UNKNOWN</span> (physical host)</td>
+        </tr>
+        <tr>
+          <td><strong>3. Assessed operator location</strong></td>
+          <td>Ukraine (Kyiv): Kyiv press dateline, BestChange "Country: Ukraine," assessed-Ukrainian principal.</td>
+          <td><span class="tier-credible">CREDIBLE</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>State Nexus Tier: NONE</h3>
+  <div class="callout callout-blue">
+    <div class="callout-label">Assessment</div>
+    <strong>Why NONE:</strong> there is no documented state ownership, tasking, coordination, or protection of 001k by Ukraine or any other state. 001k presents as a privately operated, profit-driven cash-out network, not a state instrument. Its principal counterparty, WhiteBIT, was declared an "undesirable organization" by Russia in January 2026 for supporting Ukraine's military, which weighs strongly against any Russian state nexus for the 001k/WhiteBIT cluster.<br><br>
+    <strong>What would be expected if a higher tier existed, and is absent:</strong> no evidence of intelligence-service tasking, no documented protection from prosecution, no state-linked ownership, and no pattern of selective enforcement immunity tied to state direction. On the contrary, the ecosystem faces NGO-reported NABU and SBI/DBR interest in Ukraine and an international search around a 001k principal, which is inconsistent with active state protection.<br><br>
+    <strong>Caveat (low confidence):</strong> 001k continues to operate openly from an assessed Ukrainian base despite high-profile ICIJ exposure, which could be read as passive tolerance or simply weak/slow domestic enforcement during wartime. This is logged as a low-confidence signal, not a basis to escalate to TOLERATED SAFE HARBOR, because there is no evidence the state is aware-and-deliberately-refraining as opposed to under-resourced. <span class="badge badge-inference">Analyst Inference</span> <span class="cite">[10][11][13]</span>
+  </div>
+
+  <h3>Negative Evidence (Expected if Higher Nexus Existed)</h3>
+  <p>If 001k were under TOLERATED SAFE HARBOR, PROBABLE COOPERATION, or DIRECT CONTROL, one would expect documented state coordination, demonstrable protection from enforcement, or ownership ties to state organs. None are present. The available record points the other way: investigative and NGO reporting describes criminal-justice interest in the wider ecosystem, and the jurisdictional flight to a Panama shell is the behavior of an operator hardening against enforcement, not one relying on state cover. The assessment holds at NONE, with the open-operation-despite-exposure caveat flagged as the key uncertainty. <span class="badge badge-inference">Analyst Inference</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 08 : LE & REGULATORY RESPONSE -->
+<!-- ============================================== -->
+<section class="section" id="disruption">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="exchanges/001k.html" defer></script>
+
+  </div>
+
+  <h3>Investigative Exposure (Primary "Action" to Date)</h3>
+  <div class="callout callout-orange">
+    <div class="callout-label">ICIJ "Coin Laundry" : November 2025</div>
+    The most significant public-source event concerning 001k is investigative, not regulatory. ICIJ's "Coin Laundry" project (lead reporter Spencer Woodman; investigator Richard Sanders; 100-plus journalists across roughly 37 to 38 media partners) documented 001k's &gt;$14.8B in receipts and ran the undercover Toronto test (2,000 USDT to cash, no ID, $5-banknote-serial authentication). 001k did not respond to ICIJ's requests for comment. As of June 2026 there is no formal sanction, indictment, or seizure against 001k in any jurisdiction. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[1][2][3]</span>
+  </div>
+
+  <h3>Multi-Jurisdictional Picture</h3>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Jurisdiction</th><th>Action / status</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Canada</strong></td><td>ICIJ undercover transaction assessed by experts as a probable AML violation (Nov 2025); FINTRAC revoked ~three dozen crypto-MSB registrations (Mar 2026) in a sweep catalyzed by the ICIJ/Toronto Star reporting. 001k was not on the revoked list (it was never FINTRAC-registered) and was the trigger, not a named subject.</td><td><span class="tier-confirmed">CONFIRMED</span></td></tr>
+        <tr><td><strong>Ukraine</strong></td><td>NGO reporting cites NABU and SBI/DBR interest in the WhiteBIT/001k ecosystem and criminal proceedings for money laundering; no court record or NABU release directly naming 001k was located.</td><td><span class="tier-credible">CREDIBLE</span> <span class="badge badge-single">Single Source</span></td></tr>
+        <tr><td><strong>Kyrgyzstan</strong></td><td>The "Four Dragons" case (841,000 USDT theft, Feb 2024) is the documented matter that directly names an 001k principal (Hutsu) and an international search.</td><td><span class="tier-credible">CREDIBLE</span> <span class="badge badge-single">Single Source</span></td></tr>
+        <tr><td><strong>Austria / UAE / Uzbekistan</strong></td><td>Referenced as involved jurisdictions in AML Network's case profile; the underlying probes center on WhiteBIT, with 001k named as an affiliated conduit rather than the primary subject.</td><td><span class="tier-inference">ANALYST INFERENCE</span></td></tr>
+        <tr><td><strong>United States</strong></td><td>No federal action. US metros (New York, Miami, Los Angeles) appear as cash-payout locations. No DOJ, OFAC, or FinCEN action located.</td><td><span class="tier-confirmed">CONFIRMED</span> (negative evidence)</td></tr>
+        <tr><td><strong>EU (AMLA)</strong></td><td>Correction: AMLA publicly stated (24 Nov 2025) it does not conduct such investigations; an MEP called for a probe. There is no AMLA investigation of 001k.</td><td><span class="tier-confirmed">CONFIRMED</span> (correction)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Timeline</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">2018 / Oct 2019</div><div class="timeline-text">Cash service self-dated to "the beginning of 2018"; 001k.exchange domain registered Oct 2019. <span class="badge badge-credible">Credible</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Aug 2022</div><div class="timeline-text">Start of the window over which Chainalysis (via ICIJ) counts &gt;$14.8B received by 001k-linked wallets. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[1]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Mar 2024</div><div class="timeline-text">CryptoBarrel UAB registered in Vilnius (5 Mar); 001k.bot domain created (18 Apr). Corporate wrappers formed years after the brand. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[13][31]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">Feb 2025</div><div class="timeline-text">Non-Stop Ukraine NGO publishes the WhiteBIT/001k laundering exposé (the source of the $2.7B WhiteBIT-overall estimate). <span class="badge badge-credible">Credible</span> <span class="cite">[10]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot red"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">17 Nov 2025</div><div class="timeline-text">ICIJ publishes "Coin Laundry"; 001k named; undercover Toronto cash test; 001k does not respond. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[1][2]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">24 Nov 2025</div><div class="timeline-text">AMLA clarifies it does not conduct such investigations (correcting "set to probe" reporting). <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[8]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot orange"></div><div class="timeline-line"></div></div>
+      <div class="timeline-content"><div class="timeline-date">24 Apr 2026</div><div class="timeline-text">001k Terms &amp; Conditions name SATOSHI NAKAMOTO CORP. (Panama) as operator of record, replacing CryptoBarrel UAB. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[20]</span></div></div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-marker"><div class="timeline-dot green"></div></div>
+      <div class="timeline-content"><div class="timeline-date">22 Jun 2026</div><div class="timeline-text">001k launches a full web dashboard (Chainwire, Kyiv dateline; contact support@001k.bot), expanding rather than retreating after exposure. <span class="badge badge-confirmed">Confirmed</span> <span class="cite">[6]</span></div></div>
+    </div>
+  </div>
+
+  <h3>Post-Disruption / Post-Exposure Reconstitution Assessment (Schema Rule)</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Reconstitution: No Disruption to Reconstitute From; Pre-emptive Hardening Instead</div>
+    <strong>There has been no takedown, seizure, or sanction to reconstitute from.</strong> 001k's analog to reconstitution is pre-emptive hardening after investigative (not regulatory) exposure: (1) jurisdictional flight, moving the operator of record from Lithuania to a Panama pseudonymous shell; and (2) product expansion, launching a web dashboard in June 2026. The technical stack (Telegram bot, Cloudflare, privacy-shielded multi-registrar domains) was already built for continuity, so the operator can swap corporate layers without service interruption.<br><br>
+    <strong>Outlook:</strong> absent a formal designation or coordinated takedown, the most likely trajectory is continued operation and incremental hardening (further entity substitutions, new domains/mirrors, additional payout rails). The decisive lever would be an OFAC/EU/UK designation plus seizure or sanctioning of receiving-wallet clusters and pressure on the downstream CEX off-ramps (Binance, OKX, Kraken, WhiteBIT). <span class="badge badge-credible">Credible</span> <span class="cite">[6][20]</span>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 09 : CONNECTED ENTITIES -->
+<!-- ============================================== -->
+<section class="section" id="connected">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Connected Entities and Ecosystem Relationships</h2>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-label">Two-Tier Model (Applied to Every Entry)</div>
+    <strong>Tier 1, Transaction confidence:</strong> how confident that funds transited 001k (CONFIRMED / CREDIBLE / ANALYST INFERENCE), backed by on-chain evidence where available.<br>
+    <strong>Tier 2, Facilitation assessment:</strong> an analytical characterization of the role: Active facilitation, Structural enablement, or Incidental processing. The two tiers are independent and never collapsed.<br>
+    <strong>Vendor note:</strong> nearly all 001k on-chain figures originate in a single investigation (ICIJ, using Arkham for onward flows and Chainalysis for the total). They are flagged <span class="badge badge-single">Single Source</span> accordingly; no second analytics vendor has independently published 001k-specific bilateral figures.
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Entity</th><th>Tier 1: Transaction confidence</th><th>Tier 2: Facilitation</th><th>Vendor coverage</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>WhiteBIT</strong><br><span style="font-size:11px;color:var(--text-muted)">Ukraine-based exchange; Russia-"undesirable" Jan 2026</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">&gt;$1.1B from 001k to WhiteBIT customer accounts (ICIJ / Arkham). <span class="badge badge-single">Single Source</span> on the figure. (The $2.7B is WhiteBIT-overall, NGO, not 001k-specific.)</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">WhiteBIT recharacterized the flows as crypto-only use of its infrastructure and denied fiat involvement; it did not deny the flows. Knowing active facilitation is not established at the operator level.</span></td>
+          <td>Corroborating: ICIJ (Arkham); NGO Non-Stop (broader scheme); CoinDesk et al. on the Russia-"undesirable" status. WhiteBIT disputes the characterization. No second analytics vendor on the bilateral figure.</td>
+        </tr>
+        <tr>
+          <td><strong>Binance</strong><br><span style="font-size:11px;color:var(--text-muted)">Global exchange (downstream)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">&gt;$400M from 001k to Binance customer accounts (ICIJ / Arkham). <span class="badge badge-single">Single Source</span>.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Receiving venue for onward flows; no evidence of a knowing relationship with 001k. Binance gave a generic compliance statement.</span></td>
+          <td>Corroborating: ICIJ (Arkham); AML Network restates. Binance did not address 001k specifically.</td>
+        </tr>
+        <tr>
+          <td><strong>OKX</strong><br><span style="font-size:11px;color:var(--text-muted)">Global exchange (downstream)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">~$54M from 001k to OKX customer accounts (ICIJ / Arkham). <span class="badge badge-single">Single Source</span>.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Downstream recipient; no documented knowing relationship. OKX did not comment on the 001k transactions.</span></td>
+          <td>Corroborating: ICIJ (Arkham); AML Network restates. No second vendor.</td>
+        </tr>
+        <tr>
+          <td><strong>Kraken</strong><br><span style="font-size:11px;color:var(--text-muted)">Global exchange (downstream)</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">~$13M from 001k to Kraken customer accounts (ICIJ / Arkham). <span class="badge badge-single">Single Source</span>. (Do not merge with ICIJ's separate $2.1M Kraken figure for an Armenian cash desk.)</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Downstream recipient; no documented knowing relationship. Kraken did not respond on 001k specifically.</span></td>
+          <td>Corroborating: ICIJ (Arkham); AML Network restates. No second vendor.</td>
+        </tr>
+        <tr>
+          <td><strong>BoxExchanger</strong><br><span style="font-size:11px;color:var(--text-muted)">White-label exchanger-script vendor</span></td>
+          <td><span class="tier-confirmed">CONFIRMED</span><br><span style="font-size:11px;color:var(--text-muted)">Publishes a dedicated 001k payout-API integration module; not a fund-flow figure but a documented technical relationship. <span class="badge badge-single">Single Source</span> (vendor manual).</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">001k functions as wholesale payout infrastructure that third-party MSBs plug into, predictably extending its no-KYC cash-out capacity across other operators.</span></td>
+          <td>Corroborating: BoxExchanger documentation (independent, non-ICIJ technical source).</td>
+        </tr>
+        <tr>
+          <td><strong>Exchange Team / Crystal-Trade / 24BestEx</strong><br><span style="font-size:11px;color:var(--text-muted)">Other exchangers named alongside 001k</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">NGO names these as part of the same fund-splitting network; no on-chain quantification. <span class="badge badge-single">Single Source</span> (NGO).</span></td>
+          <td><span class="tier-structural">Structural enablement</span><br><span style="font-size:11px;color:var(--text-muted)">If accurate, a cluster of interoperating exchangers amplifies layering/cash-out capacity; characterization is provisional pending on-chain corroboration.</span></td>
+          <td>Corroborating: NGO Non-Stop only. No analytics-vendor corroboration; not yet published by TRM/Chainalysis/Elliptic.</td>
+        </tr>
+        <tr>
+          <td><strong>60Sek</strong><br><span style="font-size:11px;color:var(--text-muted)">Cash-courier peer in the same ICIJ ecosystem</span></td>
+          <td><span class="tier-inference">ANALYST INFERENCE</span><br><span style="font-size:11px;color:var(--text-muted)">Named by ICIJ/Chainalysis as a cash-desk peer (linked to the Russian financial system), but no direct 001k-to-60Sek fund flow is documented.</span></td>
+          <td><span class="tier-incidental">Incidental processing</span><br><span style="font-size:11px;color:var(--text-muted)">Ecosystem peer, not a confirmed 001k counterparty; included for completeness, not as an established relationship.</span></td>
+          <td>Corroborating (as peer): ICIJ, Chainalysis. No 001k-specific flow published.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SECTION 10 : TRAJECTORY -->
+<!-- ============================================== -->
+<section class="section" id="status">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Trajectory Assessment</h2>
+  </div>
+
+  <h3>Market Position and Volume Trends</h3>
+  <p><span class="badge badge-confirmed">Confirmed</span> By received-volume, 001k is among the largest crypto-to-cash conduits documented in open source: &gt;$14.8B since August 2022 places it well above the per-jurisdiction cash-desk figures ICIJ cites elsewhere (for example, ~$2.5B through Hong Kong desks in 2023). It is an established, high-liquidity node with a real if concentrated retail base (BestChange shows 263 reviews and a small number of resolved disputes) and a wholesale payout business serving other exchangers. <span class="cite">[1][14][26]</span></p>
+
+  <h3>Disruption Impact</h3>
+  <div class="callout callout-purple">
+    <div class="callout-label">Structural Assessment</div>
+    To date there has been no disruptive action: no sanction, indictment, seizure, or takedown. The only pressure is reputational (ICIJ exposure) and indirect (the Canadian FINTRAC sweep that 001k catalyzed but escaped, by being unregistered). The structural weaknesses a future action could target: (1) the downstream off-ramps, since more than $1.5 billion of traceable onward flow lands at four identifiable exchanges (WhiteBIT, Binance, OKX, Kraken) that can screen and freeze; (2) the receiving-wallet clusters, which are the seizure/designation surface; and (3) the operator-of-record shells, which are swappable but still create paper trails (Lithuania, Panama). The countervailing resilience: a Telegram-first, Cloudflare-fronted stack and a pseudonymous Panama wrapper make the entity itself hard to reach without multilateral action.
+  </div>
+
+  <h3>Reconstitution / Continuity Status</h3>
+  <p>Brand: <strong>Active, unsanctioned, and expanding.</strong> A full web dashboard launched June 2026, after the exposure. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Hardening: <strong>Pre-emptive.</strong> Operator of record moved Lithuania to Panama (pseudonymous shell) in the months after ICIJ, with no service interruption. <span class="badge badge-confirmed">Confirmed</span></p>
+  <p>Future risk: <strong>Persistence and incremental hardening</strong> absent a formal designation or coordinated takedown; further entity substitutions and new payout rails are the most likely adaptations. <span class="badge badge-credible">Credible</span></p>
+
+  <h3>Intelligence Gaps</h3>
+  <div class="gap-flag">Identity of the controlling beneficial owner. The strongest named lead (Hutsu) is single-source NGO/foreign-case material; the corporate operator is a Panama pseudonym. Highest-priority gap.</div>
+  <div class="gap-flag">Independent corroboration of the $14.8B total and the onward-flow breakdown by a second analytics vendor (currently all trace to ICIJ via Chainalysis + Arkham).</div>
+  <div class="gap-flag">001k-specific, named-criminal-actor flows with attributed dollar amounts (only counterparty-level figures and one foreign theft case exist).</div>
+  <div class="gap-flag">Named bank or payment-processor relationships behind the card/IBAN/e-wallet off-ramps (none documented).</div>
+  <div class="gap-flag">Independent (non-T&amp;C) confirmation that SATOSHI NAKAMOTO CORP. exists in the Panama registry as stated, and the natural persons behind it.</div>
+  <div class="gap-flag">Whether the receiving-wallet clusters and any 001k addresses will become a target of OFAC/EU/UK designation or downstream-exchange freezes.</div>
+</section>
+
+<!-- ============================================== -->
+<!-- RECENT REPORTING -->
+<!-- ============================================== -->
+<section class="section" id="recent-reporting">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Recent Reporting</h2>
+  </div>
+  <p><span class="cite">[22 Jun 2026]</span> 001k launches a full web dashboard (app.001k.bot), distributed via Chainwire with a Kyiv dateline and a 0% USDT-to-USDC swap promo aimed at MiCA-affected EU users; contact support@001k.bot. The platform is expanding, not retreating, after the ICIJ exposure. <span class="cite">[6]</span></p>
+  <p><span class="cite">[24 Apr 2026]</span> Updated Terms &amp; Conditions name SATOSHI NAKAMOTO CORP. (Panama) as operator of record and set Panamanian governing law, replacing the Lithuanian CryptoBarrel UAB. <span class="cite">[20]</span></p>
+  <p><span class="cite">[Mar 2026]</span> Canada's FINTRAC revokes ~three dozen crypto-MSB registrations in a sweep catalyzed by the ICIJ/Toronto Star reporting; 001k, being unregistered, was the trigger rather than a named subject. <span class="cite">[3]</span></p>
+  <p><span class="cite">[24 Nov 2025]</span> AMLA clarifies it does not conduct such investigations, correcting "set to probe" reporting; an MEP separately called for a probe. <span class="cite">[8]</span></p>
+  <p><span class="cite">[17 Nov 2025]</span> ICIJ publishes "Coin Laundry," naming 001k (&gt;$14.8B received) and detailing the undercover Toronto cash test (no ID; $5-banknote serial). 001k did not respond. Crystal Intelligence's CIO is quoted on the record. <span class="cite">[1][2][4]</span></p>
+  <p><span class="cite">[Feb 2025]</span> Non-Stop Ukraine NGO publishes the WhiteBIT/001k laundering exposé, the source of the $2.7B WhiteBIT-overall estimate and of the Hutsu attribution. <span class="cite">[10][11]</span></p>
+</section>
+
+<!-- ============================================== -->
+<!-- SOURCES -->
+<!-- ============================================== -->
+<section class="section" id="sources">
+  <div class="section-header">
+    <span class="section-num"></span>
+    <h2 class="section-title">Sources</h2>
+  </div>
+  <ol class="sources-list">
+    <li><a href="https://www.icij.org/investigations/coin-laundry/crypto-cash-desk-currency-exchange-money-laundering/" target="_blank">ICIJ: From Dubai to Toronto, inside the crypto-to-cash storefronts (001k &gt;$14.8B received since Aug 2022 per Chainalysis data provided to ICIJ; onward flows &gt;$400M Binance, ~$54M OKX, ~$13M Kraken, &gt;$1.1B WhiteBIT via Arkham; undercover Toronto cash test) : 17 Nov 2025</a></li>
+    <li><a href="https://www.icij.org/investigations/coin-laundry/undercover-crypto-transactions-shady-multimillion-dollar-schemes-and-more-coin-laundry-stories-from-icijs-partners/" target="_blank">ICIJ: Undercover crypto transactions, shady multimillion-dollar schemes and more Coin Laundry stories from ICIJ's partners</a></li>
+    <li><a href="https://www.icij.org/investigations/coin-laundry/canada-revokes-dozens-of-crypto-firms-registrations/" target="_blank">ICIJ: Canada revokes dozens of crypto firms' registrations (FINTRAC sweep, Mar 2026; 001k unregistered and not a named subject)</a></li>
+    <li><a href="https://crystalintelligence.com/news/crypto-to-cash-networks-exposed-icij-reveals-billions-bypassing-aml/" target="_blank">Crystal Intelligence: Crypto-to-cash networks exposed (restates ICIJ $14.8B; Crystal CIO Nick Smart quoted on record) : 19 Nov 2025</a></li>
+    <li><a href="https://amlnetwork.org/watchdog-database/cryptocurrency-laundering/001k/" target="_blank">AML Network: 001k watchdog-database entry ("High Risk"; onward-flow breakdown; $2.7B is WhiteBIT-overall, not 001k; multi-jurisdiction scrutiny)</a></li>
+    <li><a href="https://markets.businessinsider.com/news/currencies/from-telegram-bot-to-full-fledged-platform-001k-bot-launches-web-dashboard-1036264955" target="_blank">Business Insider / Chainwire: From Telegram Bot to Full-Fledged Platform: 001k.bot Launches Web Dashboard (Kyiv dateline; contact "Golda Nova") : 22 Jun 2026</a></li>
+    <li><a href="https://www.amlintelligence.com/2025/11/insight-coin-laundry-expose-here-are-the-main-findings/" target="_blank">AML Intelligence: "Coin Laundry" expose, main findings</a></li>
+    <li><a href="https://www.amlintelligence.com/" target="_blank">AML Intelligence: AMLA clarification that it does not conduct such investigations (correcting "set to probe") : 24 Nov 2025</a></li>
+    <li><a href="https://www.cbc.ca/news/business/crypto-to-cash-canada-9.6979928" target="_blank">CBC: Crypto-to-cash in Canada (undercover test; ~US$1,900 cash received)</a></li>
+    <li><a href="https://go-ns.org.ua/en/article/how-whitebit-and-001k-exchange-help-oligarchs-launder-millions-of-dollars/" target="_blank">Non-Stop Ukraine (NGO): How WhiteBIT and 001k.Exchange help oligarchs launder millions ($2.7B WhiteBIT-overall estimate)</a></li>
+    <li><a href="https://go-ns.org.ua/en/article/detention-of-whitebit-owner-nosov-and-international-search-for-001k-exchange-founder-hutsu/" target="_blank">Non-Stop Ukraine (NGO): International search for 001k founder Hutsu; WhiteBIT owner Nosov</a></li>
+    <li><a href="https://telegra.ph/Terms--Conditions-04-24-4" target="_blank">001k Terms &amp; Conditions (Telegraph, 24 Apr 2026): SATOSHI NAKAMOTO CORP., Panama, Co. 155773571; AML wallet-screening add-on</a></li>
+    <li><a href="https://www.lursoft.lv/en/companies/lt/company/cryptobarrel-uab/306696279" target="_blank">Lursoft: CryptoBarrel, UAB (Lithuanian company record, reg. 306696279)</a></li>
+    <li><a href="https://www.bestchange.com/001k-exchanger.html" target="_blank">BestChange: 001K exchanger (self-declared reserve; "Country: Ukraine"; ~4y9m listed; 263 reviews)</a></li>
+    <li><a href="https://revieweek.com/review/001k-exchange/" target="_blank">Revieweek: 001k.exchange (no office or owner data recorded)</a></li>
+    <li><a href="https://www.liga.net/crypto/exchangers/001k-exchange" target="_blank">Liga.net: 001K.EXCHANGE exchanger overview (Ukrainian company; offline cash points)</a></li>
+    <li><a href="https://www.cryptopolitan.com/001k-exchange-review/" target="_blank">Cryptopolitan: 001k.exchange review (cash payouts; card/IBAN/PayPal/Wise/Revolut; $50k+ manager-led tier)</a></li>
+    <li><a href="https://telegra.ph/AML-KYC-Policy-04-24" target="_blank">001k AML &amp; KYC Policy (Telegraph): stated mandatory KYC, sanctions screening, exclusion list</a></li>
+    <li><a href="https://telegra.ph/LE-Requests-Policy-04-24" target="_blank">001k Law Enforcement Requests Policy (Telegraph)</a></li>
+    <li><a href="https://www.scoris.lt/en/imone/306696279" target="_blank">Scoris: CryptoBarrel, UAB company info (director/sole shareholder Anatolii Molchanov; ~1 employee; 2025 revenue EUR 266,320; net profit EUR 84,894)</a></li>
+    <li><a href="https://manual.boxexchanger.net/obmen/merchant-i-api/001k-bot/vyplaty-001k-bot" target="_blank">BoxExchanger: 001k bot payouts module (API integration confirming 001k as a third-party payout rail)</a></li>
+    <li><a href="https://ofac.treasury.gov/sanctions-list-search-tool" target="_blank">OFAC Sanctions List Search Tool (negative evidence: no 001k, SATOSHI NAKAMOTO CORP., CryptoBarrel UAB, or named-individual designation as of June 2026)</a></li>
+    <li><a href="https://www.gov.uk/government/publications/list-of-russia-sanctions-designations-26-may-2026" target="_blank">UK Government: List of Russia sanctions designations, 26 May 2026 (negative evidence: 001k not included)</a></li>
+    <li><a href="https://www.coindesk.com/policy/2026/01/26/crypto-exchange-whitebit-flagged-by-russia-as-undesirable-over-support-for-ukraine-military" target="_blank">CoinDesk: Russia flags WhiteBIT as "undesirable" over support for Ukraine's military : 26 Jan 2026</a></li>
+    <li><a href="https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions.html" target="_blank">FATF: High-risk and monitored jurisdictions, June 2026 plenary (Ukraine, Panama, Lithuania: none grey- or black-listed)</a></li>
+    <li><a href="https://coinlaunch.space/influencers/001k-trade/" target="_blank">CoinLaunch: 001k.Trade (@trade001k) channel statistics (~92.4k subscribers; "Alpha Academy")</a></li>
+  </ol>
+
+  <p style="margin-top:24px;font-size:11px;color:var(--text-muted);">Profile produced using open-source intelligence. Confidence labels applied per schema: CONFIRMED (multiple independent sources), CREDIBLE (single strong source or multiple weaker sources), ANALYST INFERENCE (logical extrapolation from confirmed facts). Volume figures cited with source and methodology and never averaged (Chainalysis-via-ICIJ &gt;$14.8B received; ICIJ/Arkham onward flows &gt;$400M Binance, ~$54M OKX, ~$13M Kraken, &gt;$1.1B WhiteBIT; NGO $2.7B is WhiteBIT-overall, not 001k). Two-tier connected-entity model applied throughout Section 09 (Tier 1 transaction confidence plus Tier 2 facilitation assessment). Three jurisdictions documented separately per schema (registration Panama/formerly Lithuania; hosting Cloudflare with physical host unknown; assessed operator location Ukraine). Key corrections vs source draft: (1) the $14.8B is ICIJ citing Chainalysis, not a standalone Chainalysis report, and no second vendor has re-derived it; (2) the $2.7B is an NGO estimate for the broader WhiteBIT scheme, not a 001k-specific figure; (3) AMLA stated it does not investigate (the "set to probe" framing is inaccurate; an MEP called for a probe); (4) 001k was the catalyst for, not a named subject of, the FINTRAC revocations, because it was never registered; (5) the June 2026 launch contact was support@001k.bot, not pr@001k.exchange; (6) the live BestChange reserve is ~$30.9M, not $51.4M; (7) CryptoBarrel UAB shows ~1 insured employee. Status: Active; unsanctioned (no OFAC/UK/EU/FinCEN designation); rated High Risk by AML Network; assessed state nexus NONE.</p>
+</section>
+
+</main>
+
+<script>
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) link.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+<script src="../assets/node-library.js?v=4"></script>
+
+</body>
+</html>
