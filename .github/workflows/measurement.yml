@@ -1,0 +1,57 @@
+name: Measurement collector
+
+# Builds the measurement series the KPI framework reads: victims by month,
+# group, country and sector. Separate from "Refresh intelligence data", which
+# exists to fill the 13 group pages and throws everything else away.
+#
+# Scheduled at 06:00 UTC so it never collides with the group feed, which runs
+# at 00:00, 08:00 and 16:00. The data source rate limits clients that ask too
+# fast, so the two jobs deliberately stay out of each other's way.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'      # daily, 06:00 UTC
+  workflow_dispatch:          # and on demand from the Actions tab
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Re-pulls the current AND previous month every run. That is what makes
+      # it self-healing: a job that fails for six weeks is repaired by the next
+      # successful run, with nobody having to notice or intervene.
+      - name: Collect victim measurement series
+        run: python3 scripts/collect_measurement.py
+
+      # Two free keyless sources, two requests. Measures how long after
+      # disclosure a vulnerability is confirmed exploited.
+      - name: Collect exploitation lag series
+        if: always()
+        run: python3 scripts/collect_exploits.py
+
+      - name: Show health reports
+        if: always()
+        run: |
+          cat data/measurement/HEALTH-victims.txt  || echo "No victims health report."
+          echo
+          cat data/measurement/HEALTH-exploits.txt || echo "No exploits health report."
+
+      - name: Commit the series
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/measurement/
+          git diff --staged --quiet \
+            || git commit -m "Measurement: victim series $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push
