@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DireWolf | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-extortion { background: #6c3483; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr {
+  background: var(--navy);
+}
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* PHASE LIST */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FEED CARDS */
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px; padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+
+/* SCROLL */
+html { scroll-behavior: smooth; }
+
+/* DARK MODE TOGGLE */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .metric-label { color: #8b949e; }
+[data-theme="dark"] .metric-note { color: #6b7280; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* LIVE DATA ELEMENTS */
+.topbar-live {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400); letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative; display: inline-block;
+  width: 7px; height: 7px; flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent; border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+.victim-strip { margin: 20px 40px 0; background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.victim-strip-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-bottom: 1px solid var(--gray-200); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.victim-strip-sub { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-400); font-size: 10px; margin-left: 4px; }
+.victim-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-date { color: var(--gray-400); }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="node-library"></div>
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#defensive">Defensive Mapping</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#targeting">Victim Profile</a>
+    <a href="#enforcement">LE Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &bull; Last updated August 2026</div>
+    <div class="hero-title">DireWolf</div>
+    <div class="hero-subtitle">Closed Crew &nbsp;&bull;&nbsp; Golang Encryptor &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; Asia-Pacific Origin Footprint</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Active Threat</span>
+      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-extortion">Double Extortion</span>
+      <span class="badge badge-raas">Closed Crew</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">May 2025</div>
+        <div class="kpi-sub">DLS debut 26 May 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">DLS Victims Claimed</div>
+        <div class="kpi-value">100</div>
+        <div class="kpi-sub">ransomware.live, 21 Aug 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Countries Affected</div>
+        <div class="kpi-value">32</div>
+        <div class="kpi-sub">ransomware.live, 21 Aug 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Demand</div>
+        <div class="kpi-value">~$500K</div>
+        <div class="kpi-sub">Single victim, Trustwave 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Exfil Volume</div>
+        <div class="kpi-value">~265 GB</div>
+        <div class="kpi-sub">Average per intrusion</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">No arrests, no sanctions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Decryptor Available</div>
+        <div class="kpi-value">No</div>
+        <div class="kpi-sub">No More Ransom: none listed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lineage</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">Assessed independent origin</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Victims (Live)</div>
+        <div class="kpi-value" id="kpi-victim-count">--</div>
+        <div class="kpi-sub">via ransomware.live</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>DireWolf (also styled "Dire Wolf") is a financially motivated, human-operated ransomware operation that first surfaced in May 2025, publishing its inaugural six victims to a Tor data leak site on 26 May 2025. Trustwave SpiderLabs produced the first binary analysis in June 2025, and the Cyber Security Agency of Singapore issued Alert AL-2025-082 on 18 August 2025, which remains the only government product naming the group. [1][2][3]</p>
+
+      <p>The group is assessed as a closed crew rather than a ransomware-as-a-service platform: an estimated three to seven operators, no observed affiliate program, victim-specific encryptor builds with hardcoded negotiation room IDs, and a single centralised Tor and Tox infrastructure. Its leak site carries a blunt statement of motive, "We only seek money. No morals, no political stance," and a claimed location of "Based in New York, NY" that every vendor reviewing it assesses as misdirection. [1][4][5]</p>
+
+      <p>As of 21 August 2026 the leak site carries 100 cumulative posts across 32 countries. The more analytically important figure is the shape of that activity rather than its total: after a January 2026 cluster, the site went quiet for five months, posted four victims on 12 June 2026, went quiet again for two months, then published 25 victims between 10 and 19 August 2026. DireWolf is a burst-and-dormancy operator, not a steady-tempo one, and open reporting that describes it as maintaining "sustained, undiminished" output does not survive contact with the posting record. [7][8]</p>
+
+      <div class="callout callout-alert">
+        <strong>Analyst Assessment:</strong> DireWolf is one of the few well-documented ransomware operations with no credible lineage to a predecessor group, no named operators, no attributed CVE, no on-chain link to another crew, and no law enforcement action of any kind after fifteen months. That combination is the profile's central finding. The group is technically competent but financially unsophisticated: TRM Labs and Halcyon both describe a cash-out path with limited obfuscation and a "potentially recoverable" structure. The leverage point here is financial, not technical, and it is currently unexploited.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Primary designation</td><td>DireWolf / Dire Wolf</td></tr>
+            <tr><td>Alternate names</td><td>None. No rebrand or alias identified across any tracked source.</td></tr>
+            <tr><td>CrowdStrike tracking</td><td>No group-specific designation identified in open reporting</td></tr>
+            <tr><td>Microsoft tracking</td><td>No group-specific designation identified in open reporting</td></tr>
+            <tr><td>Mandiant / Google tracking</td><td>No UNC or FIN designation identified in open reporting</td></tr>
+            <tr><td>Secureworks tracking</td><td>No GOLD designation identified in open reporting</td></tr>
+            <tr><td>Palo Alto Unit 42 tracking</td><td>Not present on the Unit 42 tracked threat actor group index</td></tr>
+            <tr><td>Halcyon tracking</td><td>"Dire Wolf", threat level 7.1, category Closed Group</td></tr>
+            <tr><td>Broadcom / Symantec</td><td>Protection bulletin published under "Dire Wolf Ransomware"</td></tr>
+            <tr><td>Operational model</td><td>Closed crew, estimated 3 to 7 operators; no confirmed affiliate program</td></tr>
+            <tr><td>Extortion mechanic</td><td>Double extortion: encryption plus exfiltration and threatened leak-site publication</td></tr>
+            <tr><td>Malware family</td><td>Custom Golang encryptor, UPX packed; Curve25519 plus ChaCha20</td></tr>
+            <tr><td>File extension / ransom note</td><td><span class="mono">.direwolf</span> / <span class="mono">HowToRecoveryFiles.txt</span></td></tr>
+            <tr><td>DLS infrastructure</td><td>Tor onion <span class="mono">direwolfcdkv5whaz2spehizdg22jsuf5aeje4asmetpbt6ri4jnd4qd.onion</span></td></tr>
+            <tr><td>Negotiation channel</td><td>Tox messenger, published qTox ID; victim-specific Tor negotiation portal</td></tr>
+            <tr><td>Claimed location</td><td>"Based in New York, NY" (assessed misdirection by Trustwave, SOCRadar, Halcyon)</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Unresolved. Eastern European or Russian-speaking origin is CREDIBLE at best, single vendor.</td></tr>
+            <tr><td>LE disruption status</td><td>None confirmed as of 21 August 2026</td></tr>
+            <tr><td>Primary sectors targeted</td><td>Professional services, manufacturing, healthcare, technology</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://www.levelblue.com/hs-fs/hubfs/Imported_Blog_Media/Figure%2013_%20Victims%20published%20on%20Dire%20Wolf%20Data%20Leak%20Site.jpg"
+               alt="DireWolf data leak site victim listing, June 2025"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Victim Listing (June 2025)</strong>
+            The Tor leak site as captured during Trustwave SpiderLabs' first analysis, showing fifteen listed victims including five whose exfiltrated files were scheduled for release at the end of June. The site publishes sample data and a file inventory first, then allows roughly thirty days before a full dump. The staged-release structure is the group's core pressure mechanism.
+            <span class="img-source">Source: Trustwave SpiderLabs / LevelBlue, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://www.levelblue.com/hs-fs/hubfs/Imported_Blog_Media/Figure%2014_%20About%20Us%20Note%20on%20Dire%20Wolf%20Data%20Leak%20Site.jpg"
+               alt="DireWolf leak site About Us statement of motive"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: "About Us" Statement of Motive</strong>
+            The group's About page declares a purely financial motive and explicitly disclaims any political stance. This is branding, not evidence: the statement is analytically useful mainly because it is consistent across fifteen months without revision, which fits the closed-crew assessment of a small team maintaining one voice rather than a rotating affiliate base.
+            <span class="img-source">Source: Trustwave SpiderLabs / LevelBlue, 2025</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://www.levelblue.com/hs-fs/hubfs/Imported_Blog_Media/Figure%2015_%20gTox%20ID%20and%20Alleged%20Location%20Visible%20on%20Dire%20Wolf%20Data%20Leak%20Site.jpg"
+               alt="DireWolf leak site showing qTox ID and claimed New York location"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Tox ID and the "New York" Claim</strong>
+            The contact block publishes a full qTox ID alongside a claimed location of New York. Trustwave states the claimed location "is not credible"; SOCRadar and Halcyon reach the same conclusion independently. Halcyon adds that linguistic patterns in the site text suggest possible Eastern European or Russian-speaking authorship, which is the only jurisdiction signal in open reporting.
+            <span class="img-source">Source: Trustwave SpiderLabs / LevelBlue, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://image.ahnlab.com/atip/content/image/20250901/TvhqBwuyFBrY4PY2zyxtB0uUfPuFGpa3OAoSWHMx.png"
+               alt="DireWolf HowToRecoveryFiles.txt ransom note"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Ransom Note: HowToRecoveryFiles.txt</strong>
+            The note is dropped into every encrypted directory and carries a hardcoded room ID and username matching the victim organisation's own name, plus a gofile.io link to a sample of exfiltrated data. AhnLab notes the hardcoded organisational detail proves the breach preceded the encryptor build, confirming per-victim compilation rather than a generic payload.
+            <span class="img-source">Source: AhnLab ASEC, 2025</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://image.ahnlab.com/atip/content/image/20250829/ylVFzKdiV2W9XAoNtLjI4mnQoa4HtRa0AEBFR1CK.png"
+               alt="DireWolf darknet victim board, August 2025"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS: Victim Board (August 2025)</strong>
+            AhnLab's capture of the victim board three months after launch, at sixteen listed organisations. Comparing this against the 100 posts recorded in August 2026 gives the growth curve, though the intervening record is heavily clustered rather than continuous (see Section 10).
+            <span class="img-source">Source: AhnLab ASEC, 2025</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessment: Independent Origin</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>Unusually for a 2025-era ransomware operation, DireWolf has no established lineage to any predecessor group. Halcyon states the position directly: "No identified affiliations or connections to existing ransomware groups. Represents entirely new threat actor with independent infrastructure, custom Golang codebase, and separate financial operations." No code overlap, shared infrastructure, shared affiliate, or personnel link has been published by any vendor reviewed. [4]</p>
+        <p>The assessment rests on three independent evidentiary strands rather than on absence of evidence alone.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 01</div>
+            <div class="pillar-title">On-chain separation</div>
+            <div class="pillar-body">Halcyon reports blockchain analysis found "minimal on-chain connections through common non-custodial exchanges without shared wallets or financial links to established groups," and explicitly contrasts DireWolf against Frag (shared two-address cluster with Akira) and Kairos (shared cash-out addresses with SafePay, INC, Lynx and Qilin). TRM Labs' own profile of DireWolf describes a standalone laundering pattern and makes no cross-group linkage. [4][6]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 02</div>
+            <div class="pillar-title">Unique code markers</div>
+            <div class="pillar-body">The mutex <span class="mono">Global\direwolfAppMutex</span> and completion marker <span class="mono">C:\runfinish.exe</span> do not match known group signatures. The Curve25519 plus ChaCha20 per-file key exchange, the eight-goroutines-per-CPU worker pool, and the 75-service / 59-process kill lists were all observed as a coherent, finished implementation in the first sample analysed, with no version iteration since. [1][2][4]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 03</div>
+            <div class="pillar-title">Independent infrastructure</div>
+            <div class="pillar-body">A single Tor onion, a single published qTox ID, and per-victim negotiation rooms hosted on that same infrastructure. No shared hosting, no reused leak-site template, and no traditional command-and-control infrastructure documented by any analyst. [1][4][5]</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Counter-signal</div>
+            <div class="pillar-title">Maturity without a track record</div>
+            <div class="pillar-body">Halcyon notes that day-one technical sophistication, zero reported bugs or failed encryptions, and polished infrastructure at launch "suggest formation by experienced operators rather than novices, possibly former affiliates from disrupted groups." This supports operator-level experience carried over from elsewhere, but it is not evidence of an organisational successor relationship and should not be read as one. [4]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The BlackCat / ALPHV Overlap Claim</div>
+        <div class="conf conf-inference">Analyst Inference, single source, contradicted</div>
+        <p>Security Arsenal, a US managed-security provider, published in August 2026 that "some overlap in TTPs with former BlackCat/ALPHV affiliates is suspected but unconfirmed." The claim is flagged as unconfirmed by the source itself, cites no blockchain, code, or personnel corroboration, and rests on TTP similarity alone, which for commodity behaviours such as shadow-copy deletion and PsExec lateral movement carries near-zero discriminating value.</p>
+        <div class="callout callout-warning">
+          <strong>Weighting:</strong> Halcyon's independently published assessment directly contradicts this claim. Where a multi-vendor-corroborated "no connection" assessment conflicts with a single unconfirmed TTP-similarity claim from a commercial MSP blog, the independent-origin assessment carries substantially more weight. The BlackCat claim is recorded here for completeness and is not treated as a lineage finding.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designation Disambiguation</div>
+        <div class="callout callout-info">
+          <strong>Coverage gap, not a designation gap:</strong> No CrowdStrike, Microsoft, Mandiant, Secureworks, or Unit 42 group-specific tracking name for DireWolf was identified in open reporting. The group is absent from the Unit 42 tracked threat actor index. This means there is no SPIDER, TEMPEST, UNC, or GOLD designation to disambiguate, and no parent-organisation designation that could be conflated with a group-specific one. The absence is itself a finding: after fifteen months and 100 claimed victims, DireWolf sits below the visibility threshold that triggers a distinct actor codename at the five largest attribution vendors, which limits cross-vendor triangulation on every other question in this profile.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONAL MODEL -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Structure: Closed Crew</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Halcyon assesses DireWolf as a "Closed Group operating as tight core team without affiliate recruitment or RaaS infrastructure," estimating three to seven operators comprising one to two developers, two to three network operators, and one to two negotiators. SOCRadar reaches the same conclusion independently, citing per-victim customised builds, personalised ransom notes with unique logins, and a private Tor negotiation panel. Proven Data describes "controlled, operator-driven execution rather than automated spread." [4][5][9]</p>
+        <p>The structural markers cited across these three sources are consistent: unified technical characteristics across all samples, centralised rather than distributed infrastructure, and no observed recruitment advertising on criminal forums.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Competing "Semi-Closed RaaS" Characterisation</div>
+        <div class="conf conf-inference">Analyst Inference, single source, no evidence cited</div>
+        <p>Security Arsenal characterises DireWolf in August 2026 as a "closed/semi-private group with affiliate recruitment observed on Russian-language forums; functions effectively as RaaS with a curated affiliate base rather than open enrollment." No forum, thread, handle, date, or screenshot is cited in support. The claim appears in an attribute table within an article whose stated source is "ransomware.live dark web leak site monitoring," that is, leak-site scraping rather than forum collection.</p>
+        <div class="callout callout-warning">
+          <strong>Handling:</strong> This claim is retained because a genuine closed-to-RaaS transition would be operationally significant and would explain the August 2026 volume spike. It is not treated as established. The evidentiary basis is a single commercial MSP blog with no cited collection, published fourteen months after the last independent structural assessment. If corroborated, it would also be the first Russian-language-ecosystem evidence for this group, which is why it matters disproportionately to Section 09.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Negotiation and Extortion Mechanics</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <ul class="content-list">
+          <li><strong>Pre-encryption reconnaissance:</strong> days to weeks between initial breach and detonation, evidenced by per-victim encryptor compilation with the target organisation's name hardcoded into the ransom note.</li>
+          <li><strong>Exfiltration:</strong> approximately 265 GB average per intrusion, with proof samples uploaded to gofile.io before the encryptor runs.</li>
+          <li><strong>Contact:</strong> Tox messenger using a published qTox ID, plus a victim-specific Tor negotiation room with a hardcoded room ID, username and password embedded in the note.</li>
+          <li><strong>Timeline:</strong> a short confidentiality window of a few days, then roughly thirty days before the complete data set is published.</li>
+          <li><strong>Publication:</strong> sample data and a file inventory posted first as proof, full dump on deadline expiry.</li>
+        </ul>
+        <p>No triple-extortion behaviour (DDoS, direct customer or regulator notification) has been documented for DireWolf by any source reviewed. [1][2][4][5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Ransom Demand Data</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Figure</th><th>Basis</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Approximately $500,000</td><td>Trustwave SpiderLabs, observed in one victim's ransom note, June 2025. Repeated by CSA, Halcyon and HivePro, all citing Trustwave.</td><td>Confirmed for that single case; not a demonstrated average</td></tr>
+              <tr><td>$500,000 to $3.5M</td><td>Security Arsenal, August 2026, no methodology stated</td><td>Credible, single source</td></tr>
+              <tr><td>$500,000 to $5M for healthcare and fintech victims</td><td>Security Arsenal, August 2026, no methodology stated</td><td>Analyst inference, single source</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Intelligence gap:</strong> There is exactly one directly observed DireWolf ransom figure in open reporting, and it is a single note from June 2025. No negotiation transcript, no opening-demand-versus-settlement pair, no payment rate, and no revenue estimate exists for this group. The widely repeated "$500,000 range" is one data point that has been laundered through repetition into an apparent norm. Any escalation narrative built on the $3.5M or $5M ceilings rests entirely on one uncorroborated commercial blog.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Affiliate Economics</div>
+        <p>No revenue-split percentage, affiliate vetting requirement, or payout structure has been published for DireWolf by any source. If the closed-crew assessment is correct, no split exists. If the semi-closed RaaS characterisation is correct, the terms are unknown. This is an unresolved gap, not a settled parameter. <span class="conf conf-confirmed">Confirmed (negative finding)</span></p>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access: The Central Intelligence Gap</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <p>Halcyon states the position plainly: "Unknown initial access vectors represent critical intelligence gap." Trustwave's June 2025 analysis concluded that "no initial access, reconnaissance or lateral movement techniques used by Dire Wolf are known at this point." SOCRadar lists spear-phishing, exposed RDP or VPN, weak credentials, and possible third-party or managed service provider compromise as likely, but explicitly notes "no confirmed cases have been published." [1][4][5]</p>
+        <p>Halcyon's exploits table records: <em>No CVEs Documented. Searches of CISA Known Exploited Vulnerabilities catalog and NIST National Vulnerability Database contain no associations.</em> Halcyon offers three candidate explanations for that absence: zero-day use, purely credential-based access, or operational security sufficient to prevent intelligence collection. [4]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The CVE-2026-50751 Attribution</div>
+        <div class="conf conf-inference">Analyst Inference, single source, misattributed elsewhere</div>
+        <p>Security Arsenal names CVE-2026-50751 (Check Point Security Gateway improper authentication in IKEv1) as DireWolf's "priority one" edge vector, alongside CVE-2026-20131 (Cisco Secure FMC), CVE-2023-21529 (Microsoft Exchange), CVE-2024-1708 (ConnectWise ScreenConnect) and CVE-2026-48027 (Nx Console). Three findings materially change how that list should be read.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Check</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>Does CVE-2026-50751 exist?</td><td><strong>Yes, verified.</strong> Check Point published the advisory 8 June 2026. CWE-287 improper authentication, CVSS 9.3, affecting Remote Access VPN, Mobile Access and Spark Firewall where deprecated IKEv1 is enabled. Added to the CISA Known Exploited Vulnerabilities catalog with an 11 June 2026 remediation deadline. A companion flaw, CVE-2026-50752 (CVSS 7.4), affects the same code path.</td></tr>
+              <tr><td>Is it linked to ransomware?</td><td><strong>Yes, but not to DireWolf.</strong> Rapid7's exploitation reporting attributes at least one observed incident to a <em>Qilin</em> ransomware affiliate. No vendor has published DireWolf exploitation of this CVE.</td></tr>
+              <tr><td>What is the basis for the DireWolf linkage?</td><td><strong>KEV correlation, not telemetry.</strong> Security Arsenal presents the list under the heading "Probable Initial Access Vectors (CISA KEV correlation)" and states the entries "map cleanly to DIREWOLF's known access profile." This is the vendor reasoning from the KEV catalogue toward a group whose access profile is, by every other vendor's account, unknown.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-alert">
+          <strong>Analyst judgement:</strong> The CVE is real, critical, KEV-listed and worth patching on its own merits. The DireWolf attribution is not evidence. Treating this list as DireWolf's access profile would create a false sense that the central intelligence gap has closed, when it has not. Collection requirement: incident-response telemetry from a confirmed DireWolf intrusion establishing the entry vector.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryptor Implementation</div>
+        <div class="conf conf-confirmed">Confirmed (Trustwave, AhnLab, Halcyon and CSA independently)</div>
+        <div class="metric-grid">
+          <div class="metric-card"><div class="metric-label">Language</div><div class="metric-val">Golang</div><div class="metric-note">UPX packed</div></div>
+          <div class="metric-card"><div class="metric-label">Key exchange</div><div class="metric-val">Curve25519</div><div class="metric-note">Per-file random private key</div></div>
+          <div class="metric-card"><div class="metric-label">Cipher</div><div class="metric-val">ChaCha20</div><div class="metric-note">Key and nonce via SHA-256</div></div>
+          <div class="metric-card"><div class="metric-label">Worker pool</div><div class="metric-val">8x CPU</div><div class="metric-note">Goroutines per logical core</div></div>
+          <div class="metric-card highlight"><div class="metric-label">Known weakness</div><div class="metric-val">None</div><div class="metric-note">No decryption path without operator key</div></div>
+        </div>
+        <ul class="content-list">
+          <li><strong>Partial encryption:</strong> files under 1 MB are fully encrypted; files above 1 MB have only the first 1 MB encrypted. AhnLab assesses this delivers protection comparable to full encryption while sharply increasing throughput across large enterprise data sets.</li>
+          <li><strong>Command-line control:</strong> no configuration file. <span class="mono">-d</span> targets a specific path, <span class="mono">-h</span> prints help. With no argument, all local and network drives except CD-ROM are traversed.</li>
+          <li><strong>Exclusions:</strong> Windows, Program Files, AppData, $Recycle.Bin, System Volume Information; <span class="mono">bootmgr</span>, <span class="mono">ntldr</span>, <span class="mono">NTUSER.DAT</span>; extensions <span class="mono">.exe .dll .sys .drv .bin .tmp .iso .img</span> and <span class="mono">.direwolf</span>. These preserve a bootable system so the ransom note can be read and payment made.</li>
+          <li><strong>Single-run guard:</strong> mutex <span class="mono">Global\direwolfAppMutex</span> plus marker file <span class="mono">C:\runfinish.exe</span>. If either exists the binary self-deletes and exits.</li>
+        </ul>
+        <p>AhnLab's conclusion is that this design "effectively blocks all known decryption methods, leaving victims with no means of recovery other than negotiating with the threat actor." [1][2][4]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Anti-Forensics and Anti-Recovery</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The event-log suppression routine is the most operationally distinctive behaviour in the sample and the highest-value detection opportunity. Rather than clearing logs once, the malware runs an infinite loop: a WMI query retrieves the eventlog service PID, <span class="mono">taskkill /f /pid</span> terminates it, the loop waits, then repeats. Even if the service restarts it is killed again, so logging stays down for the duration of the intrusion. [1][2]</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Stage</th><th>Behaviour</th></tr></thead>
+            <tbody>
+              <tr><td>Log suppression</td><td>WMI query for eventlog PID, repeated taskkill loop; <span class="mono">wevtutil cl</span> against Application, System, Security and Setup</td></tr>
+              <tr><td>Service termination</td><td>75 hardcoded services stopped via ControlService, then <span class="mono">sc config start= disabled</span>. List includes Sophos, Symantec, Veeam, BackupExec, Qihoo 360, MSSQL, Exchange, VMware and Commvault components</td></tr>
+              <tr><td>Process termination</td><td>59 hardcoded processes via <span class="mono">taskkill /F /IM</span> in a continuous loop, covering database engines, Office applications, mail clients and security agents</td></tr>
+              <tr><td>Backup destruction</td><td><span class="mono">vssadmin delete shadows /all /quiet</span>, <span class="mono">wmic shadowcopy delete</span>, <span class="mono">wbadmin</span> stop / disable / delete backup and catalog, <span class="mono">bcdedit</span> recoveryenabled No and bootstatuspolicy ignoreallfailures</td></tr>
+              <tr><td>Post-encryption</td><td>Marker file written, <span class="mono">shutdown -r -f -t 10</span> forced reboot, then asynchronous self-deletion via <span class="mono">cmd /C timeout /T 3 &amp; del /f /q</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>AhnLab notes the self-deletion routine executes regardless of whether the reboot succeeds, which makes post-incident sample recovery difficult and is a deliberate obstruction of forensic collection. [2]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Platform Coverage</div>
+        <div class="conf conf-confirmed">Confirmed: Windows only</div>
+        <p>Golang gives theoretical cross-platform portability, but Trustwave, AhnLab and Halcyon all report Windows-only variants in the wild. Halcyon states explicitly: "only Windows variants observed with no Linux or ESXi versions." Security Arsenal's August 2026 assertion of "evidence of ESXi/Linux variants in some intrusions" is contradicted by all three technical analyses and cites no sample, hash, or incident. It is not accepted here. [1][2][4]</p>
+        <div class="callout callout-info">
+          <strong>Why this matters:</strong> The absence of an ESXi encryptor is a meaningful capability ceiling. Groups that scale into large enterprise environments almost invariably build a hypervisor variant, because encrypting a handful of ESXi hosts is faster and more damaging than encrypting thousands of Windows guests. An ESXi build appearing in the wild would be the clearest single indicator that DireWolf is investing in scale, and is a priority collection tripwire.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Targeting Behaviour</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <p>No source reviewed, including the binary-level analyses by Trustwave and AhnLab and the technical breakdowns by Halcyon and CSA, documents a Russian keyboard-layout check, a CIS locale exclusion, or any geographic kill switch in the DireWolf encryptor. The exclusion logic that is present is functional (system paths and file types needed to keep the host bootable), not geographic.</p>
+        <p>This is analytically significant. The keyboard or locale kill switch is the single most consistent fingerprint of Russian-speaking ransomware operations, and comparable checks are documented for peer groups: TRM records Sarcoma deliberately avoiding Uzbekistan, and Conti-lineage families including Akira carry explicit CIS exclusions. Its absence in an otherwise mature Golang implementation weighs against, without disproving, placement in the traditional Russian-speaking cybercrime ecosystem. The finding is a documented absence in published analysis rather than a confirmed absence in the binary, and would be strengthened by a dedicated reverse-engineering statement. [1][2][4][6]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Indicators of Compromise</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>SHA-256 (packed, data345.exe)</td><td class="mono">8fdee53152ec985ffeeeda3d7a85852eb5c9902d2d480449421b4939b1904aad</td></tr>
+              <tr><td>SHA-256 (unpacked)</td><td class="mono">27d90611f005db3a25a4211cf8f69fb46097c6c374905d7207b30e87d296e1b3</td></tr>
+              <tr><td>MD5 (packed / unpacked)</td><td class="mono">a71dbf2e20c04da134f8be86ca93a619 / aa62b3905be9b49551a07bc16eaad2ff</td></tr>
+              <tr><td>Additional MD5 (AhnLab)</td><td class="mono">333fd9dd9d84b58c4eef84a8d07670dd, 44da29144b151062bce633e9ce62de85, bc6912c853be5907438b4978f6c49e43</td></tr>
+              <tr><td>Tor leak site</td><td class="mono">direwolfcdkv5whaz2spehizdg22jsuf5aeje4asmetpbt6ri4jnd4qd.onion</td></tr>
+              <tr><td>qTox ID</td><td class="mono">B344BECDC01A1282F69CB82979F40439E15E1FD1EF1FE9748EE467F5869E2148E6F1E55959E2</td></tr>
+              <tr><td>Mutex / marker file</td><td class="mono">Global\direwolfAppMutex &nbsp;/&nbsp; C:\runfinish.exe</td></tr>
+              <tr><td>Exfiltration host</td><td class="mono">gofile.io</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Hashes are corroborated across Trustwave, CSA AL-2025-082 and Halcyon; the three additional MD5 values are AhnLab-specific. [1][2][3][4]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: DEFENSIVE MAPPING -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+
+      <p>DireWolf's detection profile is unusual: the initial-access half of the kill chain is undocumented, while the impact half is exhaustively documented down to individual command lines. Defenders therefore cannot build a reliable early-warning tripwire from published DireWolf intelligence, but they can build a very high-fidelity late-stage one. The practical consequence is that detection engineering for this group should focus on the pre-detonation window, and prevention should focus on recovery capability that survives the encryptor.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&amp;CK Techniques: Priority Set</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>Tactic</th><th>DireWolf usage</th><th>Defender action</th></tr></thead>
+            <tbody>
+              <tr><td>T1070.001 Clear Windows Event Logs</td><td>Defense Evasion</td><td>Infinite loop: WMI query for eventlog PID, then taskkill; plus wevtutil cl on four logs</td><td><strong>Highest-value detection.</strong> Alert on any termination of the eventlog service, and on repeated WMI win32_service queries filtering on name='eventlog'. Forward logs off-host so suppression is itself visible as a gap</td></tr>
+              <tr><td>T1490 Inhibit System Recovery</td><td>Impact</td><td>vssadmin, wmic shadowcopy, wbadmin catalog and backup deletion, bcdedit recovery disable</td><td>Alert on any of these command lines; treat co-occurrence with T1489 in the same hour as near-certain pre-detonation</td></tr>
+              <tr><td>T1489 Service Stop</td><td>Impact</td><td>75 hardcoded services stopped then set to disabled via sc config</td><td>Alert on bulk service stops, and specifically on sc config start= disabled applied to backup or EDR services</td></tr>
+              <tr><td>T1562.001 Impair Defenses: Disable or Modify Tools</td><td>Defense Evasion</td><td>Sophos, Symantec, Veeam, BackupExec, Qihoo 360 agents targeted by name</td><td>Enable EDR tamper protection; alert on agent service stop from a non-management parent process</td></tr>
+              <tr><td>T1567 Exfiltration Over Web Service</td><td>Exfiltration</td><td>Approximately 265 GB staged and proof samples uploaded to gofile.io</td><td>Block or alert on gofile.io and comparable anonymous file hosts at the proxy; baseline outbound volume per server</td></tr>
+              <tr><td>T1486 Data Encrypted for Impact</td><td>Impact</td><td>Curve25519 plus ChaCha20, partial encryption above 1 MB, 8x CPU goroutine pool</td><td>Canary files plus mass-rename velocity detection; the 8x worker pool produces a distinctive disk-queue spike</td></tr>
+              <tr><td>T1027 Obfuscated Files or Information</td><td>Defense Evasion</td><td>UPX packing of the Golang binary</td><td>Flag UPX-packed unsigned executables written to non-standard paths</td></tr>
+              <tr><td>T1543 Create or Modify System Process</td><td>Persistence</td><td>Mutex check only; no registry persistence. Runs once then self-deletes</td><td>Do not rely on persistence-based hunting for this family; there is none to find</td></tr>
+              <tr><td>T1529 System Shutdown/Reboot</td><td>Impact</td><td>shutdown -r -f -t 10 immediately post-encryption</td><td>Alert on forced reboot with a short timer issued by a non-administrative or unsigned process</td></tr>
+              <tr><td>T1070.004 Indicator Removal: File Deletion</td><td>Defense Evasion</td><td>Asynchronous self-deletion regardless of reboot outcome</td><td>Capture the binary before reboot; enable EDR file-quarantine-on-execute for unsigned binaries</td></tr>
+              <tr><td>T1078 Valid Accounts</td><td>Initial Access</td><td>Suspected, unconfirmed. No vector has been evidenced by any vendor</td><td>Enforce MFA on all VPN, RDP and administrative access; monitor VPN authentication anomalies</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked Advisories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory</th><th>Issuer</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>AL-2025-082, Ongoing Dire Wolf Ransomware Campaign</td><td>Cyber Security Agency of Singapore</td><td>18 Aug 2025</td><td>Only government product naming the group. IOC hashes plus backup and containment guidance. Advisory only, no enforcement component</td></tr>
+              <tr><td>Dire Wolf Ransomware protection bulletin</td><td>Broadcom / Symantec</td><td>2025</td><td>Vendor coverage bulletin; referenced by CSA</td></tr>
+              <tr><td>CISA KEV: CVE-2026-50751</td><td>CISA</td><td>8 Jun 2026, remediation due 11 Jun 2026</td><td>Listed for confirmed ransomware use. Attributed exploitation is to a Qilin affiliate, <em>not</em> DireWolf. Patch on its own merits, not as DireWolf mitigation</td></tr>
+              <tr><td>#StopRansomware advisory</td><td>CISA / FBI</td><td>None</td><td>No joint advisory naming DireWolf exists</td></tr>
+              <tr><td>Free decryptor</td><td>No More Ransom</td><td>None</td><td>No DireWolf decryptor is listed. Dr.Web offers a commercial decryption service to its own customers; this is not a free public decryptor</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout callout-success">
+        <strong>Top Defensive Priorities</strong>
+        <ul class="content-list" style="margin-top:8px;">
+          <li><strong>Immutable or offline backups.</strong> DireWolf's playbook is shadow-copy-first and backup-service-first. Every recovery mechanism it destroys is one that lives on the production network. Object-lock or air-gapped copies defeat the entire anti-recovery routine.</li>
+          <li><strong>Alert on eventlog service termination.</strong> The repeated WMI-plus-taskkill loop against the eventlog service is close to a signature. Legitimate administration does not kill the event log service in a loop.</li>
+          <li><strong>Off-host log forwarding.</strong> Because the malware suppresses local logging before it does anything destructive, a sudden stop in log flow from a host is itself the alert.</li>
+          <li><strong>Block anonymous file hosts.</strong> gofile.io is the confirmed proof-of-exfiltration channel and is a low-cost egress block.</li>
+          <li><strong>MFA on all remote access.</strong> With the entry vector unknown, credential-based access must be assumed and closed by default.</li>
+          <li><strong>Capture the sample before reboot.</strong> The forced reboot plus self-deletion is specifically designed to deny responders the binary. EDR quarantine-on-execute preserves it.</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Leverage note:</strong> The financial layer is the softest surface on this group. TRM Labs and Halcyon independently describe a laundering path with limited obfuscation and a "potentially recoverable cash-out strategy," running through no-KYC non-custodial exchanges. Unlike the technical layer, which is well engineered, and the attribution layer, which is empty, the payment path is documented, traceable and unactioned. Exchange-level pressure is the available lever.
+      </div>
+    </section>
+
+    <!-- SECTION 06: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>Bitcoin is the primary demanded asset. Halcyon records "Bitcoin primary cryptocurrency with deposits to non-custodial exchanges requiring no KYC." Security Arsenal additionally references Monero acceptance in 2026; this is single-source and unverified. No documentation exists of the wallet-address structure (single address per victim versus a rotating pool), which limits any assessment of clustering opportunities. [4][10]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Laundering</div>
+        <div class="conf conf-credible">Credible (TRM Labs, primary)</div>
+        <p>TRM Labs profiled DireWolf in its October 2025 report "Nine Emerging Groups Shaping the Ransomware Landscape." The assessment is short and specific: "Dire Wolf typically launders victim proceeds downstream, making multiple deposits into a non-custodial exchange," reflecting "a desire to quickly convert or swap assets without undergoing strict KYC procedures, allowing the group to maintain anonymity while moving funds across chains or into privacy-enhancing assets." [6]</p>
+        <div class="phase-list">
+          <div class="phase-item">
+            <div class="phase-num">1</div>
+            <div class="phase-body">
+              <div class="phase-title">Victim payment received in Bitcoin</div>
+              <div class="phase-desc">Paid to operator-controlled addresses following Tox or Tor-portal negotiation. No intermediary payment processor documented.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">2</div>
+            <div class="phase-body">
+              <div class="phase-title">Downstream multiple deposits into a non-custodial exchange</div>
+              <div class="phase-desc">TRM's distinguishing observation. DireWolf splits proceeds into multiple deposits rather than the single-funnel pattern TRM documents for Arkana Security, or the peel-chain-into-mixer pattern it documents for AiLock and APTLock.</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">3</div>
+            <div class="phase-body">
+              <div class="phase-title">Cross-chain swap or conversion to privacy assets</div>
+              <div class="phase-desc">TRM assesses intent to swap across chains or into privacy-enhancing assets. The specific destination assets and chains are not published for DireWolf.</div>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <strong>Comparative placement (TRM's own framing):</strong> DireWolf's laundering is assessed as unsophisticated relative to its technical capability. Halcyon's summary of the blockchain picture is that it shows "limited obfuscation with potentially recoverable cash-out strategy," and that the "straightforward approach making multiple deposits reflects quick conversion priority but creates increased traceability." A group that engineered a clean Curve25519 implementation is cashing out through no-KYC venues with minimal layering.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Absence of Cross-Group Financial Linkage</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>This is the strongest single piece of evidence for independent origin and deserves separate treatment. In the same TRM report, Frag is assessed as possibly "an extension of the Akira ransomware group," sharing a two-address wallet cluster plus the same bridge and payment service; Kairos is documented sharing a global VASP cash-out address with SafePay, INC, Lynx and Qilin. DireWolf appears in that same comparative analysis with no such linkage recorded. Halcyon states it directly: "minimal on-chain connections through common non-custodial exchanges without shared wallets or financial links to established groups." [4][6]</p>
+        <p>The distinction matters: sharing a common non-custodial exchange is a coincidence of venue, whereas sharing a wallet cluster or a payment service is a relationship. DireWolf has the former and not the latter.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions and Seizure Status</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action</th><th>Status as of 21 August 2026</th></tr></thead>
+            <tbody>
+              <tr><td>OFAC designation of DireWolf wallets or operators</td><td>None</td></tr>
+              <tr><td>Wallet freezing or seizure</td><td>None published by TRM Labs, Chainalysis or Elliptic</td></tr>
+              <tr><td>Chainalysis DireWolf-specific publication</td><td>None identified</td></tr>
+              <tr><td>Elliptic DireWolf-specific publication</td><td>None identified</td></tr>
+              <tr><td>Named exchange used for cash-out</td><td>Not published. TRM describes the venue type but does not name the exchange</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Intelligence gaps:</strong> (1) No independent corroboration of TRM's laundering assessment exists; secondary sources restating it are derivative, not corroborating. (2) The receiving exchange is unnamed in public reporting, which blocks any exchange-level pressure recommendation from being made specific. (3) No before-and-after comparison of cash-out methodology across the group's lifespan has been published, so no adaptation signal is measurable. (4) No revenue estimate exists at any confidence level.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07: VICTIM PROFILE -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Count: Source Reconciliation</div>
+        <div class="conf conf-credible">Credible, trackers disagree</div>
+        <p>Public trackers do not agree on DireWolf's victim total, and the differences are large enough to matter. All figures below are reported as published rather than reconciled into a single number.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Figure</th><th>Countries</th><th>Source</th><th>As of</th></tr></thead>
+            <tbody>
+              <tr><td><strong>100 posts</strong></td><td>32</td><td>ransomware.live group page [7]</td><td>21 Aug 2026 (last seen 19 Aug 2026)</td></tr>
+              <tr><td><strong>100 posts</strong></td><td>not stated</td><td>RansomLook [8]</td><td>21 Aug 2026 (last post 19 Aug 2026, 03:45)</td></tr>
+              <tr><td>92</td><td>31</td><td>Proven Data live leak-site block [9]</td><td>17 Aug 2026</td></tr>
+              <tr><td>75</td><td>30</td><td>Proven Data, earlier snapshot [9]</td><td>10 Aug 2026</td></tr>
+              <tr><td>41+</td><td>13+</td><td>Halcyon [4]</td><td>13 Nov 2025</td></tr>
+              <tr><td>16</td><td>11</td><td>Trustwave SpiderLabs [1]</td><td>24 Jun 2025</td></tr>
+              <tr><td>6</td><td>not stated</td><td>DLS debut [2]</td><td>26 May 2025</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The 92-versus-100 gap is a genuine tracker lag of roughly two days and eight posts, not a contradiction. The 75 figure is the same Proven Data widget one week earlier, and its accompanying note of "0 in the last 30 days" is the single most useful data point in the table: it dates the start of the August surge precisely to 10 August 2026.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Distribution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>ransomware.live, 21 Aug 2026 (count)</th><th>Proven Data, 17 Aug 2026 (share)</th></tr></thead>
+            <tbody>
+              <tr><td>Professional Services</td><td>17</td><td>18%</td></tr>
+              <tr><td>Manufacturing</td><td>16</td><td>17%</td></tr>
+              <tr><td>Healthcare</td><td>15</td><td>14%</td></tr>
+              <tr><td>Technology</td><td>15</td><td>not published</td></tr>
+              <tr><td>Financial Services</td><td>9</td><td>not published</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The 2025 picture was different: Trustwave, CSA and Halcyon all reported manufacturing and technology as the dominant pair, with legal, financial and healthcare secondary. Healthcare's rise to third place, and the professional-services displacement of manufacturing at the top, are 2026 developments. Healthcare victims in the August 2026 wave include a hospital operator (Quironsalud, Spain), a medical device firm (AliveCor, US) and a healthcare staffing company (Health Carousel, Philippines). No hospital or critical-infrastructure exclusion policy has ever been stated or observed for this group. [1][3][4][7][9]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution and the 2026 Shift</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Concentration</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Jun 2025</td><td>16 victims across 11 nations; US and Thailand highest, then Taiwan</td><td>Trustwave [1]</td></tr>
+              <tr><td>Sep 2025</td><td>Singapore largest share, then Taiwan and the United Kingdom; also Thailand, US, Australia, Brazil, Canada</td><td>SOCRadar [5]</td></tr>
+              <tr><td>Nov 2025</td><td>Approximately 60% Asia-Pacific; Singapore, Taiwan and Thailand highest density</td><td>Halcyon [4]</td></tr>
+              <tr><td>Aug 2026</td><td>United States 17, Malaysia 10, Thailand 8, Brazil 7, United Kingdom 6, across 32 countries</td><td>ransomware.live [7]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Two changes are visible over fifteen months. The United States has moved decisively into first place, and Malaysia has entered at second, a country that appears in none of the 2025 assessments. Asia-Pacific remains heavily represented but the operation is no longer regionally concentrated in the way Halcyon described in late 2025. <span class="conf conf-credible">Credible</span></p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Country</th><th>DLS post date</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Arizona State University</strong></td><td>Education</td><td>USA</td><td>17 Aug 2026</td></tr>
+              <tr><td><strong>TOTVS</strong></td><td>Enterprise software (ERP)</td><td>Brazil</td><td>15 Aug 2026</td></tr>
+              <tr><td><strong>DXS International</strong></td><td>Healthcare software</td><td>UK</td><td>15 Aug 2026</td></tr>
+              <tr><td><strong>Quironsalud</strong></td><td>Healthcare (hospital operator)</td><td>Spain</td><td>10 Aug 2026</td></tr>
+              <tr><td><strong>AliveCor, Inc.</strong></td><td>Healthcare (medical devices)</td><td>USA</td><td>10 Aug 2026</td></tr>
+              <tr><td><strong>Statista GmbH</strong></td><td>Professional services</td><td>Germany</td><td>10 Aug 2026</td></tr>
+              <tr><td><strong>Health Carousel</strong></td><td>Healthcare staffing</td><td>Philippines</td><td>10 Aug 2026</td></tr>
+              <tr><td><strong>Nueva Pescanova Group</strong></td><td>Manufacturing (seafood)</td><td>Spain</td><td>12 Jun 2026</td></tr>
+              <tr><td><strong>Jewelex</strong></td><td>Manufacturing</td><td>India</td><td>12 Jun 2026</td></tr>
+              <tr><td><strong>Lifesum</strong></td><td>Technology</td><td>Sweden</td><td>19 Aug 2026</td></tr>
+              <tr><td><strong>Wine Works Australia</strong></td><td>Manufacturing</td><td>Australia</td><td>Aug 2025 (22 GB claimed)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>All post dates are leak-site claim dates, not confirmed breach dates. A leak-site listing is an unverified allegation by the group until the victim or a third party confirms it. Where independent confirmation exists it is noted: AliveCor's listing was independently captured with breach timestamp 10 Aug 2026 18:26 UTC, and DXS International's UK healthcare-software listing was independently reported on 16 Aug 2026. [7][8][21][22]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Victim Size and Selection</div>
+        <p>Every source that addresses targeting describes it as deliberate rather than opportunistic: per-victim encryptor compilation, tailored ransom notes, dedicated negotiation rooms, and reconnaissance measured in days to weeks. That is inconsistent with indiscriminate SMB spraying and consistent with revenue-scaled selection. The August 2026 cohort blends mid-market firms with large enterprises (Statista, Quironsalud, Health Carousel, Arizona State University, TOTVS), which is a broader revenue spread than the 2025 cohort. <span class="conf conf-credible">Credible</span></p>
+      </div>
+    </section>
+
+    <!-- SECTION 08: LAW ENFORCEMENT -->
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div id="enforcement-module"></div>
+      <script src="../scripts/enforcement-module.js" data-page="groups/direwolf.html" defer></script>
+
+      <div class="subsection">
+        <div class="subsection-title">Enforcement Actions: Current Status</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Action type</th><th>Status as of 21 August 2026</th></tr></thead>
+            <tbody>
+              <tr><td>Arrests of DireWolf operators</td><td>None publicly confirmed</td></tr>
+              <tr><td>Criminal indictments</td><td>None publicly confirmed</td></tr>
+              <tr><td>OFAC or equivalent sanctions</td><td>None</td></tr>
+              <tr><td>Infrastructure seizure or DLS takedown</td><td>None. The onion remains reachable, though intermittently</td></tr>
+              <tr><td>Named individuals attributed by any government</td><td>None</td></tr>
+              <tr><td>CISA or FBI #StopRansomware advisory</td><td>None</td></tr>
+              <tr><td>Europol, NCA or allied takedown operation</td><td>None</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Singapore CSA Alert AL-2025-082</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>The Cyber Security Agency of Singapore published "Ongoing Dire Wolf Ransomware Campaign" on 18 August 2025. It remains the only government product naming this group anywhere in the world. Halcyon confirms it as the "only government-level threat assessment to date." [3][4]</p>
+        <ul class="content-list">
+          <li>Describes double extortion, anti-forensics and the multi-stage attack chain</li>
+          <li>Publishes both packed and unpacked data345.exe hashes as IOCs</li>
+          <li>Directs administrators to monitor for those IOCs and to maintain tested backups</li>
+          <li>Cites Broadcom, Trustwave SpiderLabs and an AlienVault OTX pulse as its references</li>
+          <li>Contains no enforcement, attribution, or victim-solicitation component</li>
+        </ul>
+        <p>Singapore's issuance is explained by victimology rather than jurisdiction: SOCRadar assessed Singapore as the single largest victim country as of September 2025, and Halcyon put approximately 60% of victims in Asia-Pacific. The alert is a defensive response to a national exposure concentration, not the product of an investigation. [4][5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessment: Why No Action</div>
+        <div class="conf conf-inference">Analyst Inference</div>
+        <p>Fifteen months, 100 claimed victims across 32 countries, zero enforcement actions. Compared against peer groups disrupted within similar windows (LockBit via Operation Cronos, 8Base via Operation Phobos Aetor, Royal and BlackSuit via Operation Checkmate), the absence is conspicuous and has several candidate explanations, none of which can be confirmed from open sources.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hypothesis</th><th>Supporting evidence</th><th>Counter-evidence</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Below the threshold of attention</strong></td><td>No large-vendor tracking designation; no CISA advisory; no Western critical-infrastructure incident of political salience; victim concentration initially in Asia-Pacific rather than the US or EU</td><td>100 victims and a US-first 2026 distribution should now clear most thresholds</td></tr>
+              <tr><td><strong>Small, disciplined footprint</strong></td><td>3 to 7 operators, no affiliate program, no forum advertising, self-deleting binary, no persistence artefacts, no C2 infrastructure to seize</td><td>Cash-out is described by two vendors as traceable and "potentially recoverable", which is normally an actionable entry point</td></tr>
+              <tr><td><strong>Ongoing covert investigation</strong></td><td>The traceable financial path plus a fixed onion and a static Tox ID are exactly the persistent identifiers investigations build on</td><td>No indicator either way; unfalsifiable from open sources</td></tr>
+              <tr><td><strong>Permissive jurisdiction</strong></td><td>Would fit the general pattern for Russian-speaking operations</td><td>Jurisdiction is genuinely unresolved for this group; there is no confirmed CIS placement to invoke a safe-harbour explanation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-alert">
+          <strong>Structural finding:</strong> DireWolf is a test case for whether an operation can reach three figures of victims while remaining beneath the attribution and enforcement threshold purely by staying small, staying off forums, avoiding a rebrand, and avoiding politically salient targets. Fifteen months of open-source silence suggests the answer is currently yes. The measurable indicator to watch is whether the August 2026 US-weighted surge and the first education-sector victim (Arizona State University) change that.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdictional Assessment: Unresolved</div>
+        <div class="conf conf-credible">Credible at best, single vendor</div>
+        <p>DireWolf's jurisdiction is genuinely open. The evidentiary position is thinner than for almost any comparably active group.</p>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Signal 01</div>
+            <div class="pillar-title">The New York claim is false</div>
+            <div class="pillar-body">The leak site states "Based in New York, NY." Trustwave describes the claimed location as "not credible"; SOCRadar calls it "unverified and likely misdirection"; Halcyon calls it misdirection. Three independent vendors reject it. That establishes deliberate deception about location but says nothing about the true one. <strong>CONFIRMED as a false claim.</strong></div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Signal 02</div>
+            <div class="pillar-title">Linguistic assessment</div>
+            <div class="pillar-body">Halcyon states that "linguistic patterns suggest possible Eastern European or Russian-speaking origins." SOCRadar notes the site and notes are written in English that is "generally fluent with occasional non-native phrasing," without naming a language family. This is the only positive jurisdiction signal in open reporting and it is one vendor's judgement, unsupported by published examples. <strong>CREDIBLE, single source.</strong></div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Signal 03</div>
+            <div class="pillar-title">Russian-language forum recruitment</div>
+            <div class="pillar-body">Security Arsenal's August 2026 assertion of affiliate recruitment on Russian-language forums, if corroborated, would place the group in the Russian-speaking ecosystem. No forum, thread, handle or date is cited, and the article's stated collection source is leak-site monitoring. <strong>ANALYST INFERENCE, uncorroborated.</strong></div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Counter-signal</div>
+            <div class="pillar-title">No CIS exclusion in the binary</div>
+            <div class="pillar-body">No keyboard-layout check, locale check, or CIS geographic exclusion is documented in any published analysis of the encryptor, including two binary-level teardowns. This is the standard fingerprint of Russian-speaking operations and it is absent. It weighs against, without disproving, the Russian-ecosystem placement suggested by Signals 02 and 03. <strong>CONFIRMED absence in published analysis.</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Services Nexus</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <p>No confirmed or vendor-assessed connection to the FSB, SVR, GRU, or any other state intelligence service exists for DireWolf. No government advisory alleges state sponsorship. No vendor has proposed a state-nexus hypothesis. TRM Labs, which in the same October 2025 report assessed APTLock as reportedly linked to a Russian state-sponsored group, made no such suggestion regarding DireWolf and placed it in the purely financially motivated tier. [6]</p>
+        <p>The distinction from Conti-lineage groups is stark. For Akira, three independent evidentiary pillars support Russian-speaking, Russia-based attribution: blockchain flows to Conti-linked wallets, Russian-language forum communication, and a hardcoded Russian keyboard kill switch. DireWolf has none of the three. Its on-chain profile is unlinked, its forum presence is unevidenced, and its binary carries no locale check.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals</div>
+        <div class="conf conf-confirmed">Confirmed (negative finding)</div>
+        <p>No indictment, government advisory, or credible vendor report has publicly named any individual as a DireWolf operator, developer, negotiator, or affiliate. There is no handle, no alias, no forum persona, and no OPSEC failure in the public record. This is the deepest attribution gap in the profile, and it is what makes the group's persistence structurally interesting rather than merely unremarkable.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Explicit Conclusion</div>
+        <div class="callout callout-warning">
+          <strong>Assessed analytic line:</strong> DireWolf is a financially motivated criminal operation of unresolved jurisdiction. Its own claimed location (New York) is confirmed false. A Russian-speaking or Eastern European origin is the leading hypothesis but rests on one vendor's linguistic judgement plus one uncorroborated forum claim, and is partially undercut by the documented absence of the CIS exclusion logic that almost every Russian-speaking family carries. No state nexus of any kind is confirmed, alleged, or hypothesised by any vendor. Jurisdiction should be treated as an open collection requirement rather than a settled attribute, and this profile deliberately declines to place the group in the Russia/CIS ecosystem on the evidence currently available.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operational Tempo: Burst and Dormancy, Not Steady Growth</div>
+        <div class="conf conf-confirmed">Confirmed</div>
+        <p>This is the profile's most significant correction to prevailing open reporting. Cumulative victim totals rising from 6 to 100 look like steady expansion. The post-date record shows something quite different.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Window</th><th>Posts</th><th>Character</th></tr></thead>
+            <tbody>
+              <tr><td>May to Jun 2025</td><td>6, then 16</td><td>Launch burst</td></tr>
+              <tr><td>Jul to Nov 2025</td><td>to 41+</td><td>Sustained, roughly 7 per month (Halcyon)</td></tr>
+              <tr><td>4 to 13 Jan 2026</td><td>12</td><td>Cluster</td></tr>
+              <tr><td>14 Jan to 11 Jun 2026</td><td><strong>0</strong></td><td><strong>Five-month dormancy</strong></td></tr>
+              <tr><td>12 Jun 2026</td><td>4</td><td>Single-day burst</td></tr>
+              <tr><td>13 Jun to 9 Aug 2026</td><td><strong>0</strong></td><td><strong>Two-month dormancy</strong></td></tr>
+              <tr><td>10 to 19 Aug 2026</td><td><strong>25</strong></td><td><strong>Surge: five batch drops in ten days</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Total 2026 output is 41 posts, of which 25 fall inside a ten-day window. Proven Data's 10 August 2026 snapshot independently confirms the pattern by recording "0 in the last 30 days" on that date, immediately before the surge began. [7][8][9]</p>
+        <div class="callout callout-alert">
+          <strong>Analytic implication:</strong> Descriptions of DireWolf as maintaining "sustained, undiminished operational tempo" through 2026 are not supported by the posting record. The group went dark for seven of the first seven and a half months of 2026. Batch drops of this shape usually indicate one of three things: a negotiation deadline wall hitting a cohort simultaneously, a deliberate credibility-reassertion event after a quiet period, or a payout dispute triggering mass publication. All three imply intrusions accumulated silently during the dormant windows, which means dwell time and unposted victim counts are both being systematically understated by leak-site-derived metrics.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure Stability</div>
+        <div class="conf conf-credible">Credible</div>
+        <p>RansomLook records approximately 53% average uptime for the DireWolf onion over the trailing 30 days and flags a degraded parser state; ransomware.live recorded the site as unreachable at 20 Aug 2026 16:03 UTC. Intermittent availability of this degree is not characteristic of a well-resourced operation running redundant mirrors, and is consistent with the small-crew assessment. It is not evidence of law enforcement pressure, of which there is none. [7][8]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability Evolution</div>
+        <div class="conf conf-confirmed">Confirmed: none observed</div>
+        <p>Halcyon's finding is direct: "The group maintains consistent technical approaches with no tactical evolution since emergence. Unlike many ransomware families releasing multiple versions, refined processes from day one with zero reported technical failures suggest immediate maturity." Fifteen months on, there is still no second encryptor version, no ESXi or Linux build, no observed change in the encryption scheme, and no change in the extortion timeline. [4]</p>
+        <p>The operational-model question is the only live evolution hypothesis: a shift from closed crew toward curated affiliates would explain the August 2026 volume without any change in tooling. It remains single-sourced and unverified (Section 03).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Trajectory Indicators</div>
+        <ul class="content-list">
+          <li><strong>Volume, rising but discontinuous.</strong> 100 posts cumulative, with 2026 output concentrated into three short bursts separated by two multi-month silences.</li>
+          <li><strong>Geography, globalising.</strong> The 60% Asia-Pacific concentration of late 2025 has broadened; the US is now first and Malaysia has entered at second.</li>
+          <li><strong>Sector, shifting toward regulated data.</strong> Healthcare has moved into the top three, with a hospital operator, a medical device maker and a healthcare staffing firm all posted in a single August 2026 batch. No sector moratorium exists.</li>
+          <li><strong>Tooling, static.</strong> No version iteration, no hypervisor variant, no new capability in fifteen months. An ESXi build would be the clearest scale-investment tripwire.</li>
+          <li><strong>Brand, stable.</strong> No rebrand, no alias, no exit-scam signal, no internal leak, no affiliate dispute in public reporting. A single consistent identity since May 2025.</li>
+          <li><strong>Disruption, absent.</strong> No degradation attributable to law enforcement. Infrastructure instability is self-inflicted or resourcing-related, not imposed.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <div class="conf conf-confirmed">Confirmed: no cluster membership</div>
+        <p>Applying two-tier confidence: there is no anchor relationship to assess, and therefore no extension claims either. No shared infrastructure, shared affiliate, shared laundering path, or code reuse links DireWolf to Conti, REvil, LockBit, Black Basta, Akira, Hive, ALPHV, or any other named family. DireWolf does not appear on published lineage or cluster diagrams. The single BlackCat/ALPHV TTP-overlap suggestion is addressed and discounted in Section 02.</p>
+        <div class="callout callout-info">
+          <strong>Vendor publication status:</strong> Neither Mandiant nor Recorded Future has published a formal assessment of DireWolf or of any cluster relationship involving it. Neither has CrowdStrike, Microsoft, Secureworks, or Unit 42. The independent-origin finding rests on Halcyon and TRM Labs, corroborated by the absence of contrary evidence in Trustwave, AhnLab, SOCRadar and CSA reporting. That is a reasonable evidentiary base but it is not the multi-vendor consensus that a comparable finding for a Conti-lineage group would carry.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps and Collection Requirements</div>
+        <div class="callout callout-warning">
+          <strong>Priority collection requirements, in order of analytic value:</strong>
+          <ul class="content-list" style="margin-top:8px;">
+            <li><strong>Initial access vector.</strong> Incident-response telemetry from a confirmed DireWolf intrusion establishing entry. This is the single largest gap and every defensive recommendation upstream of the encryptor is currently guesswork.</li>
+            <li><strong>Named receiving exchange.</strong> TRM describes the venue type but not the venue. Without the name, no exchange-level pressure recommendation can be made specific, which leaves the group's softest surface untouched.</li>
+            <li><strong>Jurisdiction.</strong> One vendor's linguistic judgement is the entire positive evidence base. Forum collection, infrastructure registration data, or operator-side OPSEC failure would resolve it.</li>
+            <li><strong>Independent on-chain corroboration.</strong> Chainalysis or Elliptic publication would move the laundering assessment from single-origin to corroborated.</li>
+            <li><strong>Binary-level statement on CIS exclusion.</strong> The absence is currently inferred from silence across four analyses rather than asserted by a reverse engineer with sample access.</li>
+            <li><strong>Payment and settlement data.</strong> One observed ransom figure from June 2025 is the entire negotiation evidence base. No payment rate, no settlement ratio, no revenue estimate exists.</li>
+            <li><strong>Dwell-time measurement.</strong> The dormancy-then-batch posting pattern means leak-site dates are a poor proxy for intrusion dates, and the true compromise-to-publication interval is unmeasured.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent intelligence reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9654; Toggle Source List
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government and Regulatory</div>
+        <div class="source-item"><span class="source-num">[3]</span><span><a href="https://www.csa.gov.sg/alerts-and-advisories/alerts/al-2025-082/" target="_blank">Cyber Security Agency of Singapore: Alert AL-2025-082, "Ongoing Dire Wolf Ransomware Campaign", 18 August 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank">CISA Known Exploited Vulnerabilities Catalog (CVE-2026-50751 entry, added 8 June 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span><a href="https://www.nomoreransom.org/en/decryption-tools.html" target="_blank">No More Ransom Project: Decryption Tools index (no DireWolf decryptor listed)</a></span></div>
+
+        <div class="source-category">Primary Technical Analysis</div>
+        <div class="source-item"><span class="source-num">[1]</span><span><a href="https://www.levelblue.com/blogs/spiderlabs-blog/dire-wolf-strikes-new-ransomware-group-targeting-global-sectors" target="_blank">Trustwave SpiderLabs / LevelBlue: "Dire Wolf Strikes: New Ransomware Group Targeting Global Sectors", 24 June 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span><a href="https://asec.ahnlab.com/en/89944/" target="_blank">AhnLab ASEC: "Dire Wolf Ransomware: Threat Combining Data Encryption and Leak Extortion", 1 September 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span><a href="https://www.broadcom.com/support/security-center/protection-bulletin/dire-wolf-ransomware" target="_blank">Broadcom / Symantec: Dire Wolf Ransomware protection bulletin</a></span></div>
+
+        <div class="source-category">Vendor Threat Intelligence</div>
+        <div class="source-item"><span class="source-num">[4]</span><span><a href="https://www.halcyon.ai/threat-group/dire-wolf" target="_blank">Halcyon: Dire Wolf threat actor profile, updated 13 November 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span><a href="https://socradar.io/blog/dark-web-profile-dire-wolf-ransomware/" target="_blank">SOCRadar: "Dark Web Profile: Dire Wolf Ransomware", 19 September 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span><a href="https://www.trmlabs.com/resources/blog/nine-emerging-groups-shaping-the-ransomware-landscape" target="_blank">TRM Labs: "Nine Emerging Groups Shaping the Ransomware Landscape", 6 October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[18]</span><span><a href="https://www.darkreading.com/threat-intelligence/dire-wolf-ransomware-manufacturing-technology" target="_blank">Dark Reading: "Dire Wolf Ransomware Comes Out Snarling, Bites Verticals", 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span><a href="https://hivepro.com/threat-advisory/dire-wolf-ransomware-a-new-global-cyber-threat-emerges/" target="_blank">HivePro: Threat Advisory TA2025209, "Dire Wolf Ransomware: A New Global Cyber Threat Emerges", July 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[24]</span><span><a href="https://www.watchguard.com/wgrd-security-hub/ransomware-tracker/dire-wolf" target="_blank">WatchGuard Technologies: Dire Wolf ransomware tracker entry</a></span></div>
+
+        <div class="source-category">Leak-Site Trackers</div>
+        <div class="source-item"><span class="source-num">[7]</span><span><a href="https://www.ransomware.live/group/direwolf" target="_blank">ransomware.live: direwolf group page (100 posts, 32 countries; retrieved 21 August 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span><a href="https://www.ransomlook.io/group/direwolf" target="_blank">RansomLook: direwolf group page (100 posts all time, 25 last 30 days; retrieved 21 August 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span><a href="https://www.provendata.com/blog/dire-wolf-ransomware" target="_blank">Proven Data: "Dire Wolf Ransomware: Operating Model, Attack Chain, and Defensive Strategies", live leak-site data block as of 17 August 2026</a></span></div>
+
+        <div class="source-category">Vulnerability Reporting (CVE-2026-50751 context)</div>
+        <div class="source-item"><span class="source-num">[12]</span><span><a href="https://www.rapid7.com/blog/post/etr-critical-check-point-vpn-zero-day-exploited-in-the-wild-cve-2026-50751/" target="_blank">Rapid7: "Critical Check Point VPN Zero-Day Exploited in the Wild (CVE-2026-50751)" (attributes observed ransomware exploitation to a Qilin affiliate)</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span><a href="https://blog.checkpoint.com/security/check-point-releases-important-hotfix-for-vulnerabilities-in-deprecated-ikev1-vpn-protocol/" target="_blank">Check Point: hotfix advisory for IKEv1 VPN vulnerabilities (CVE-2026-50751, CVE-2026-50752), 8 June 2026</a></span></div>
+
+        <div class="source-category">Single-Source Commercial Reporting (low confidence, retained with caveats)</div>
+        <div class="source-item"><span class="source-num">[10]</span><span><a href="https://securityarsenal.com/blog/direwolf-ransomware-gang-10-victims-posted-in-24-hours-cross-sector-campaign-analysis-initial-access-cves-and-detection-rules" target="_blank">Security Arsenal: "DIREWOLF Ransomware Gang: 10 Victims Posted in 24 Hours", 10 August 2026. Stated collection source: ransomware.live leak-site monitoring. CVE list is presented as KEV correlation, not observed telemetry</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span><a href="https://securityarsenal.com/blog/direwolf-ransomware-gang-6-victims-posted-in-48-hours-healthcare-and-tech-targeting-analysis-with-detection-rules" target="_blank">Security Arsenal: "DIREWOLF Ransomware Gang: 6 Victims Posted in 48 Hours", 15 August 2026</a></span></div>
+
+        <div class="source-category">Victim and Incident Reporting</div>
+        <div class="source-item"><span class="source-num">[21]</span><span><a href="https://www.hookphish.com/blog/ransomware-group-direwolf-hits-alivecor-inc/" target="_blank">HookPhish: DireWolf listing of AliveCor, Inc., 10 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span><a href="https://www.dexpose.io/direwolf-strikes-dxs-international-in-ransomware-attack/" target="_blank">DeXpose: "DireWolf Strikes DXS International in Ransomware Attack", 16 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[23]</span><span><a href="https://gbhackers.com/dire-wolf-ransomware/" target="_blank">GBHackers: "Dire Wolf Ransomware Targets Windows, Wipes Logs and Backups", 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span><a href="https://www.csoonline.com/article/4042182/singapore-issues-critical-alert-on-dire-wolf-ransomware-targeting-global-tech-and-manufacturing-firms.html" target="_blank">CSO Online: "Singapore issues critical alert on Dire Wolf ransomware", August 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span><a href="https://www.pcrisk.com/removal-guides/33206-dire-wolf-ransomware" target="_blank">PCrisk: Dire Wolf ransomware removal guide (confirms no free decryption tool)</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- .content -->
+
+  <footer class="page-footer">
+    Ransomware EDP Threat Actor Library &bull; DireWolf Profile &bull; Last updated August 2026
+    <span class="reno-credit">Developed by Reno &bull; Compiled from open-source intelligence</span>
+  </footer>
+
+</main>
+</div><!-- .layout -->
+
+<script>
+// Dark mode toggle
+const toggle = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+toggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀ Light' : '☾ Dark';
+});
+if (saved === 'dark') toggle.textContent = '☀ Light';
+
+// Active section nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -65% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// LIVE DATA, victims + TI feed
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'direwolf.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-direwolf.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const sorted = [...victims]
+          .filter(v => v.attackdate || v.discovered || v.date)
+          .sort((a, b) => new Date(b.attackdate || b.discovered || b.date) - new Date(a.attackdate || a.discovered || a.date))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.attackdate || v.discovered || v.date;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.victim || v.post_title || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now' :
+                      diffH === 1 ? 'Intelligence data refreshed 1h ago' :
+                      diffH < 24 ? `Intelligence data refreshed ${diffH}h ago` :
+                      `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const refreshLabel = document.getElementById('topbar-refresh-label');
+        if (refreshLabel) refreshLabel.textContent = label;
+        const topbarLive = document.getElementById('topbar-live');
+        if (topbarLive) topbarLive.style.display = 'flex';
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+</script>
+<script src="groups-data.js"></script>
+<script src="nav.js"></script>
+<script src="../assets/node-library.js?v=5"></script>
+</body>
+</html>

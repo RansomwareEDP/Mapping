@@ -106,6 +106,13 @@ KEYWORDS = {
         "dragonforce ransomware",
         "dragonforce",
     ],
+    "direwolf": [
+        "direwolf ransomware",
+        "dire wolf ransomware",
+        "direwolf",
+        ".direwolf",
+        "howtorecoveryfiles",
+    ],
     "conti": [
         "conti ransomware",
         "conti group",

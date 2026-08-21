@@ -17,6 +17,7 @@
       ['clop', 'Cl0p'],
       ['conti', 'Conti'],
       ['darkside', 'DarkSide / BlackMatter'],
+      ['direwolf', 'DireWolf'],
       ['dragonforce', 'DragonForce'],
       ['dyre', 'Dyre / Dyreza'],
       ['lockbit', 'LockBit'],
