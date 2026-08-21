@@ -153,6 +153,10 @@ def collect_asn(asn, want_history):
 
 
 def main():
+    # Progress must appear as it happens. Without this a slow run looks like a
+    # hang, both in the terminal and in the GitHub Actions log.
+    sys.stdout.reconfigure(line_buffering=True)
+
     want_history = "--no-history" not in sys.argv
     now = datetime.now(timezone.utc)
     cfg = json.loads(CONFIG.read_text())
