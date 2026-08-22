@@ -4,7 +4,14 @@
 # replace the contents of map.html; do not create a new versioned page at the root.
 # Superseded map URLs 301 to /map. Only v2.6 is retained, at /archive/ransomware-ecosystem-v2.6.html;
 # versions v1.3 through v2.5 were retired 31 Jul 2026 (copies kept off-site in ransomware_project/_archive).
-/intel      /ransomware-live-intel.html            200
+/observatory /observatory.html                     200
+# Live Intel retired into the Observatory console, 22 Aug 2026. Its live feed is
+# now the console's Live Feed tab. NOTE the standing rule: Cloudflare serves an
+# existing file in preference to a _redirects rule, so ransomware-live-intel.html
+# had to be removed for these to fire. A copy is in ransomware_project/_to_delete.
+/intel      /observatory                           301
+/ransomware-live-intel.html  /observatory          301
+/ransomware-live-intel       /observatory          301
 /wanted     /most-wanted.html                      200
 /modules    /ransomware-edp-modules-v1.0.html      200
 /lenses     /ransomware-role-lenses-v0.1.html      200
