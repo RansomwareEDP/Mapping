@@ -65,6 +65,12 @@ COVERAGE_MAP = OUT / "node-coverage-map.json"
 # Every collector here runs daily, so a week is generous rather than tight.
 FRESH_DAYS = 7
 
+# Every verdict this register can issue, in reporting order. Defined once. The
+# summary and the detail sections both read this list, because when they were
+# two separate literals one of them lost PARTIAL and the counts stopped summing
+# to the number of nodes.
+VERDICTS = ("MEASURED", "PARTIAL", "STALE", "GAP", "NOT_MEASURABLE", "UNMAPPED")
+
 
 def read_map_nodes():
     """Node id, label and tier straight from the live map data."""
@@ -175,7 +181,7 @@ def main():
     (OUT / "node-coverage.json").write_text(json.dumps(payload, indent=1))
     write_health(payload, now)
 
-    for v in ("MEASURED", "PARTIAL", "STALE", "GAP", "NOT_MEASURABLE", "UNMAPPED"):
+    for v in VERDICTS:
         if tally.get(v):
             print(f"  {v:<16} {tally[v]:>2} of {len(map_nodes)}")
     print(f"\nWrote {OUT/'node-coverage.json'} and {OUT/'HEALTH-coverage.txt'}")
@@ -199,6 +205,13 @@ def write_health(payload, now):
         problems.append("node-coverage-map.json describes node(s) the map no longer has: "
                         + ", ".join(meta["entries_not_on_map"]) + ".")
 
+    counted = sum(tally.values())
+    if counted != meta["nodes_on_map"]:
+        problems.append(
+            f"The verdicts add up to {counted} but the map has {meta['nodes_on_map']} nodes. "
+            f"{abs(meta['nodes_on_map'] - counted)} node(s) are unaccounted for, which means a "
+            "verdict exists that this report does not list. Do not trust the counts above.")
+
     status = "STALE" if problems else "OK"
     lines = [
         "NODE COVERAGE - HEALTH REPORT", "",
@@ -208,7 +221,7 @@ def write_health(payload, now):
         f"Freshness window   {meta['freshness_window_days']} days", "",
         "Verdicts:",
     ]
-    for v in ("MEASURED", "STALE", "GAP", "NOT_MEASURABLE", "UNMAPPED"):
+    for v in VERDICTS:
         if tally.get(v):
             lines.append(f"   {v:<16} {tally[v]:>2} of {meta['nodes_on_map']}")
     lines.append("")
