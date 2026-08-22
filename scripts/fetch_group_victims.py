@@ -57,6 +57,7 @@ GROUPS = {
     "akira": "akira",
     "lockbit": "lockbit",
     "direwolf": "direwolf",
+    "medusa": "medusa",
     "dragonforce": "dragonforce",
     "conti": "conti",
     "clop": "clop",

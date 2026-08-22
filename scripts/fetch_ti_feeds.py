@@ -113,6 +113,14 @@ KEYWORDS = {
         ".direwolf",
         "howtorecoveryfiles",
     ],
+    "medusa": [
+        "medusa ransomware",
+        "spearwing",
+        "storm-1175",
+        "frozen spider",
+        "medusa blog",
+        "read_me_medusa",
+    ],
     "conti": [
         "conti ransomware",
         "conti group",
