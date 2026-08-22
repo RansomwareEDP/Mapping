@@ -138,24 +138,49 @@ def collect_tag(tag, key):
 
 
 def discover(key):
-    """List the tags MalwareBazaar is actually applying, so the seed list can
-    be replaced with reality instead of guesswork."""
+    """
+    List the tags MalwareBazaar is actually applying, so the seed list can be
+    replaced with reality instead of guesswork.
+
+    Writes a file as well as printing. Anything that only reaches a build log
+    has to be copied out by hand, which is a step that gets skipped.
+    """
     payload, err = api({"query": "get_recent", "selector": "100"}, key)
     if err or not payload or payload.get("query_status") != "ok":
-        print(f"DISCOVERY FAILED: {err or payload.get('query_status')}")
+        reason = err or payload.get("query_status") if payload else err
+        print(f"DISCOVERY FAILED: {reason}")
+        (OUT / "crypter-tags-discovered.json").write_text(json.dumps(
+            {"error": str(reason), "checked": datetime.now(timezone.utc)
+             .strftime("%Y-%m-%dT%H:%M:%SZ")}, indent=1))
         return 1
-    tags, types = Counter(), Counter()
-    for s in payload.get("data") or []:
-        for t in (s.get("tags") or []):
+
+    tags, types, sigs = Counter(), Counter(), Counter()
+    samples = payload.get("data") or []
+    for smp in samples:
+        for t in (smp.get("tags") or []):
             tags[t] += 1
-        ft = s.get("file_type")
-        if ft:
-            types[ft] += 1
-    print(f"Tags seen across the last 100 submissions ({len(tags)} distinct):\n")
+        if smp.get("file_type"):
+            types[smp["file_type"]] += 1
+        if smp.get("signature"):
+            sigs[smp["signature"]] += 1
+
+    (OUT / "crypter-tags-discovered.json").write_text(json.dumps({
+        "checked": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "note": ("Tags MalwareBazaar applied across its most recent submissions. This is a "
+                 "sample of current tagging, not the full vocabulary. Use it to replace "
+                 "guessed names in crypter-tags.json with ones actually in use."),
+        "samples_examined": len(samples),
+        "distinct_tags": len(tags),
+        "tags": dict(tags.most_common()),
+        "file_types": dict(types.most_common()),
+        "signatures": dict(sigs.most_common()),
+    }, indent=1))
+
+    print(f"Tags across the last {len(samples)} submissions ({len(tags)} distinct):\n")
     for t, n in tags.most_common(60):
         print(f"   {n:>4}  {t}")
     print(f"\nFile types: {dict(types.most_common(10))}")
-    print("\nMove any packer or crypter names above into data/measurement/crypter-tags.json")
+    print(f"\nWrote {OUT/'crypter-tags-discovered.json'}")
     return 0
 
 

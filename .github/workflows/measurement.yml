@@ -58,10 +58,10 @@ jobs:
           ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
         run: python3 scripts/collect_crypters.py
 
-      # Prints the tags MalwareBazaar is actually applying right now. The seed
-      # tag list is a guess; this is how it gets replaced with reality. Read it
-      # in the Actions log, then curate data/measurement/crypter-tags.json.
-      - name: List tags currently in use (for curation)
+      # Records the tags MalwareBazaar is actually applying right now, to a file
+      # as well as the log. The seed tag list is a guess; this is how it gets
+      # replaced with reality.
+      - name: Record tags currently in use (for curation)
         if: always()
         env:
           ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
