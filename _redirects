@@ -4,7 +4,13 @@
 # replace the contents of map.html; do not create a new versioned page at the root.
 # Superseded map URLs 301 to /map. Only v2.6 is retained, at /archive/ransomware-ecosystem-v2.6.html;
 # versions v1.3 through v2.5 were retired 31 Jul 2026 (copies kept off-site in ransomware_project/_archive).
-/observatory /observatory.html                     200
+# /observatory is NOT an alias, for the same reason /map is not. observatory.html
+# IS the page, and Cloudflare Pages serves it at /observatory natively because it
+# auto-redirects .html to extensionless. An explicit "/observatory
+# /observatory.html 200" rule was added on 22 Aug 2026 and created a redirect
+# loop: /observatory rewrote to /observatory.html, Pages bounced that back to
+# /observatory, forever, and the URL returned an empty response. Do not re-add it.
+#
 # Live Intel retired into the Observatory console, 22 Aug 2026. Its live feed is
 # now the console's Live Feed tab. NOTE the standing rule: Cloudflare serves an
 # existing file in preference to a _redirects rule, so ransomware-live-intel.html
