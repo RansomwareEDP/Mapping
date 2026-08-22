@@ -82,6 +82,14 @@ jobs:
           python3 scripts/check_sanctions.py --selftest
           python3 scripts/check_sanctions.py
 
+      # The third and last Permission Layer node. Needs the free Companies House
+      # REST API key from the repository secret; the key never reaches a file.
+      - name: Collect corporate formation agents
+        if: always()
+        env:
+          COMPANIES_HOUSE_KEY: ${{ secrets.COMPANIES_HOUSE_KEY }}
+        run: python3 scripts/collect_formation.py
+
       # Tests the scored operations against later leak-site posting. Runs after
       # the victim series it depends on.
       - name: Check scoreboard against observed activity
@@ -98,7 +106,7 @@ jobs:
       - name: Show health reports
         if: always()
         run: |
-          for f in victims exploits transit registry crypters threats sanctions scoreboard coverage; do
+          for f in victims exploits transit registry crypters threats formation sanctions scoreboard coverage; do
             echo "----- $f -----"
             cat "data/measurement/HEALTH-$f.txt" || echo "No $f health report."
             echo
