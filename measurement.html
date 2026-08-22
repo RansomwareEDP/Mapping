@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Measurement Register | The Observatory</title>
+<meta name="description" content="What is actually being measured about the ransomware ecosystem, node by node, and what is not.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/observatory.css?v=1">
+<link rel="icon" href="favicon.svg">
+<style>
+/* Page-specific only. Everything else comes from observatory.css. */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
+.page-head { padding: 64px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+.page-label { font-family: 'Space Mono', monospace; font-size: .7rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--dim-gray); margin-bottom: 14px; }
+.page-head h1 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 600; line-height: 1.1;
+  color: var(--white); letter-spacing: -.02em; }
+.page-head h1 em { font-style: normal; color: var(--accent); }
+.standfirst { margin-top: 16px; max-width: 68ch; color: var(--light-gray); font-size: 1.03rem; line-height: 1.62; }
+.built { margin-top: 14px; font-family: 'Space Mono', monospace; font-size: .74rem; color: var(--dim-gray); }
+
+h2.sec { font-size: .78rem; font-family: 'Space Mono', monospace; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--dim-gray); margin: 52px 0 18px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+h2.sec:first-of-type { margin-top: 0; }
+.note { color: var(--dim-gray); font-size: .87rem; line-height: 1.6; max-width: 74ch; margin-bottom: 20px; }
+
+.tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.tile { background: var(--dark-3); border: 1px solid var(--border); border-radius: 3px; padding: 18px 18px 16px; }
+.tile .n { font-size: 2.1rem; font-weight: 600; color: var(--white); line-height: 1; letter-spacing: -.02em; }
+.tile .k { font-family: 'Space Mono', monospace; font-size: .68rem; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--dim-gray); margin-top: 9px; }
+.tile .d { font-size: .82rem; color: var(--mid-gray); margin-top: 8px; line-height: 1.5; }
+.tile.ok { border-left: 2px solid var(--confirmed); }
+.tile.warn { border-left: 2px solid var(--credible); }
+.tile.bad { border-left: 2px solid var(--alarm); }
+
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th { text-align: left; font-family: 'Space Mono', monospace; font-size: .66rem; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--dim-gray); font-weight: 400;
+  padding: 0 12px 10px 0; border-bottom: 1px solid var(--border); }
+td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--light-gray); }
+td.name { color: var(--white); font-weight: 500; }
+td.why { color: var(--mid-gray); font-size: .84rem; line-height: 1.55; }
+.tier { font-family: 'Space Mono', monospace; font-size: .68rem; letter-spacing: .08em; color: var(--dim-gray); }
+.tier.CRITICAL { color: var(--alarm); }
+.tier.HIGH { color: var(--credible); }
+
+.pill { display: inline-block; font-family: 'Space Mono', monospace; font-size: .64rem;
+  letter-spacing: .1em; text-transform: uppercase; padding: 4px 9px; border-radius: 2px; white-space: nowrap; }
+.pill.MEASURED { background: var(--confirmed-bg); color: var(--confirmed); border: 1px solid rgba(63,185,80,.3); }
+.pill.PARTIAL { background: var(--credible-bg); color: var(--credible); border: 1px solid rgba(227,179,65,.3); }
+.pill.STALE { background: var(--ss-bg); color: var(--alarm); border: 1px solid rgba(248,81,73,.35); }
+.pill.GAP { background: var(--inference-bg); color: var(--accent); border: 1px solid rgba(222,107,47,.3); }
+.pill.NOT_MEASURABLE { background: rgba(255,255,255,.03); color: var(--dim-gray); border: 1px solid var(--border-strong); }
+.pill.UNMAPPED { background: rgba(188,140,255,.08); color: var(--state); border: 1px solid rgba(188,140,255,.3); }
+.pill.watched { background: rgba(255,255,255,.03); color: var(--dim-gray); border: 1px solid var(--border); margin-left: 6px; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.filters button { font-family: 'Space Mono', monospace; font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; padding: 7px 13px; background: transparent; color: var(--dim-gray);
+  border: 1px solid var(--border-strong); border-radius: 2px; cursor: pointer; transition: .15s; }
+.filters button:hover { color: var(--light-gray); border-color: var(--accent); }
+.filters button[aria-pressed="true"] { background: var(--accent); color: var(--dark); border-color: var(--accent); }
+
+details.raw { margin-top: 10px; }
+details.raw summary { cursor: pointer; font-family: 'Space Mono', monospace; font-size: .72rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--dim-gray); padding: 8px 0; }
+details.raw summary:hover { color: var(--accent); }
+details.raw pre { background: var(--dark-2); border: 1px solid var(--border); border-radius: 3px;
+  padding: 16px; overflow-x: auto; font-family: 'Space Mono', monospace; font-size: .76rem;
+  line-height: 1.6; color: var(--light-gray); white-space: pre; }
+
+.caveat { border-left: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent);
+  padding: 16px 20px; margin: 22px 0; font-size: .88rem; line-height: 1.62; color: var(--light-gray); max-width: 82ch; }
+.caveat strong { color: var(--white); font-weight: 600; }
+.loading { color: var(--dim-gray); font-family: 'Space Mono', monospace; font-size: .8rem; padding: 30px 0; }
+.err { color: var(--alarm); font-size: .88rem; line-height: 1.6; }
+@media (max-width: 720px) {
+  .wrap { padding: 0 16px 60px; }
+  th:nth-child(4), td:nth-child(4) { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-head">
+    <div class="page-label">The Observatory // Instrument</div>
+    <h1>What is actually <em>being measured</em></h1>
+    <p class="standfirst">
+      Every node on the ecosystem map, and whether anything is currently measuring it.
+      These verdicts are not written by hand. They are worked out each day from what the
+      collectors produced, so a node that stops being measured says so by itself.
+    </p>
+    <div class="built" id="built">Loading…</div>
+  </header>
+
+  <h2 class="sec">Coverage</h2>
+  <div class="tiles" id="verdictTiles"><div class="loading">Reading the register…</div></div>
+
+  <div class="caveat">
+    <strong>What this page cannot tell you.</strong> It reports whether a node is measured,
+    never whether the measurement is any good. A collector pointed at the wrong data still
+    reads MEASURED. That has already happened here once: a contaminated list of networks
+    produced confident numbers and a healthy status for a full day before the numbers were
+    noticed to be implausible. Plumbing checks cannot see meaning.
+  </div>
+
+  <h2 class="sec">Collectors</h2>
+  <p class="note">
+    Each runs daily and writes a health report in plain language. Green means it ran and
+    found nothing wrong. Anything else is worth reading.
+  </p>
+  <div class="tiles" id="collectorTiles"><div class="loading">Checking collectors…</div></div>
+
+  <h2 class="sec">Every node</h2>
+  <div class="filters" id="filters"></div>
+  <table>
+    <thead><tr><th>Node</th><th>Priority</th><th>Verdict</th><th>What is measured, or why not</th></tr></thead>
+    <tbody id="nodeRows"><tr><td colspan="4" class="loading">Loading nodes…</td></tr></tbody>
+  </table>
+
+  <h2 class="sec">Health reports in full</h2>
+  <p class="note">
+    The same files the collectors write, unedited. If one of these ever says anything other
+    than OK, it explains what to do about it.
+  </p>
+  <div id="healthFiles"><div class="loading">Fetching…</div></div>
+
+</div>
+
+<script>
+const BASE = 'data/measurement/';
+const HEALTH = [
+  ['victims',   'Victim stream',        'Leak-site claims by month, group, country and sector.'],
+  ['exploits',  'Exploitation lag',     'Days from disclosure to confirmed exploitation.'],
+  ['transit',   'Transit carriers',     'Who still carries traffic for tracked hosting providers.'],
+  ['registry',  'Registry sponsors',    'Who vouches for those networks at the registry.'],
+  ['crypters',  'Crypters and packers', 'Which obfuscation wrappers appear on samples.'],
+  ['sanctions', 'Sanctions drift',      'Whether the hand-kept tracker matches the OFAC list.'],
+  ['coverage',  'Node coverage',        'This page. Verdicts derived from the collectors above.'],
+];
+const ORDER = ['MEASURED','PARTIAL','STALE','GAP','NOT_MEASURABLE','UNMAPPED'];
+const LABEL = { MEASURED:'Measured', PARTIAL:'By hand', STALE:'Stale', GAP:'Gap',
+                NOT_MEASURABLE:'Not measurable', UNMAPPED:'Unmapped' };
+const BLURB = {
+  MEASURED:'A collector ran this week.',
+  PARTIAL:'A person keeps it current.',
+  STALE:'Was measured. Is not now.',
+  GAP:'Nothing covers it. Public sources could.',
+  NOT_MEASURABLE:'Public sources cannot produce it.',
+  UNMAPPED:'On the map, no verdict recorded.',
+};
+const el = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let NODES = {}, active = null;
+
+function statusClass(txt) {
+  const m = /STATUS:\s*(\w+)/.exec(txt || '');
+  const s = m ? m[1] : '';
+  return s === 'OK' ? 'ok' : (s === 'BROKEN' ? 'bad' : (s ? 'warn' : ''));
+}
+
+function renderNodes() {
+  const rows = Object.entries(NODES)
+    .filter(([, n]) => !active || n.verdict === active)
+    .sort((a, b) => ORDER.indexOf(a[1].verdict) - ORDER.indexOf(b[1].verdict)
+                 || a[1].label.localeCompare(b[1].label));
+  el('nodeRows').innerHTML = rows.length ? rows.map(([, n]) => {
+    const feeds = (n.feeds || []).filter(f => f.present)
+      .map(f => f.file.replace('.json','')).join(', ');
+    const why = n.reason || n.note || '';
+    const watched = (n.watched_by || []).length
+      ? '<span class="pill watched">watched</span>' : '';
+    return `<tr>
+      <td class="name">${esc(n.label)}</td>
+      <td><span class="tier ${esc(n.tier)}">${esc(n.tier)}</span></td>
+      <td><span class="pill ${esc(n.verdict)}">${esc(LABEL[n.verdict] || n.verdict)}</span>${watched}</td>
+      <td class="why">${esc(why)}${feeds ? `<br><span class="tier">${esc(feeds)}</span>` : ''}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="4" class="loading">No nodes with that verdict.</td></tr>';
+}
+
+async function boot() {
+  let cov;
+  try {
+    const r = await fetch(BASE + 'node-coverage.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    cov = await r.json();
+  } catch (e) {
+    el('verdictTiles').innerHTML =
+      `<div class="err">Could not load the register (${esc(e.message)}).
+       The collectors publish to <code>${BASE}</code>; if this persists the daily job may not be running.</div>`;
+    return;
+  }
+
+  NODES = cov.nodes;
+  const counts = cov.meta.counts || {};
+  const total = cov.meta.nodes_on_map;
+  el('built').textContent =
+    `Built ${cov.meta.built} · ${total} nodes · freshness window ${cov.meta.freshness_window_days} days`;
+
+  el('verdictTiles').innerHTML = ORDER.filter(v => counts[v]).map(v => `
+    <div class="tile ${v === 'MEASURED' ? 'ok' : (v === 'STALE' ? 'bad' : '')}">
+      <div class="n">${counts[v]}</div>
+      <div class="k">${esc(LABEL[v])} <span style="opacity:.55">of ${total}</span></div>
+      <div class="d">${esc(BLURB[v])}</div>
+    </div>`).join('');
+
+  el('filters').innerHTML =
+    `<button aria-pressed="true" data-v="">All ${total}</button>` +
+    ORDER.filter(v => counts[v]).map(v =>
+      `<button aria-pressed="false" data-v="${v}">${esc(LABEL[v])} ${counts[v]}</button>`).join('');
+  el('filters').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    active = b.dataset.v || null;
+    [...el('filters').children].forEach(x => x.setAttribute('aria-pressed', x === b));
+    renderNodes();
+  });
+  renderNodes();
+
+  const texts = await Promise.all(HEALTH.map(([k]) =>
+    fetch(`${BASE}HEALTH-${k}.txt`, { cache: 'no-store' })
+      .then(r => r.ok ? r.text() : null).catch(() => null)));
+
+  el('collectorTiles').innerHTML = HEALTH.map(([k, name, desc], i) => {
+    const t = texts[i];
+    const st = t ? (/STATUS:\s*(\w+)/.exec(t) || [,'?'])[1] : 'NO FILE';
+    return `<div class="tile ${t ? statusClass(t) : 'bad'}">
+      <div class="n" style="font-size:1.15rem">${esc(st)}</div>
+      <div class="k">${esc(name)}</div>
+      <div class="d">${esc(desc)}</div>
+    </div>`;
+  }).join('');
+
+  el('healthFiles').innerHTML = HEALTH.map(([k, name], i) => texts[i]
+    ? `<details class="raw"><summary>${esc(name)} — HEALTH-${esc(k)}.txt</summary><pre>${esc(texts[i])}</pre></details>`
+    : `<details class="raw"><summary>${esc(name)} — not published yet</summary><pre>This collector has not written a health report. It may not have run since it was added.</pre></details>`
+  ).join('');
+}
+boot();
+</script>
+</body>
+</html>
