@@ -1,0 +1,30 @@
+{
+ "_README": [
+  "Packer and crypter tags queried against MalwareBazaar.",
+  "DATA, not code. Add or remove tags here; the collector needs no changes.",
+  "",
+  "Seeded 22 Aug 2026 with commonly seen packer and protector names. This list",
+  "is a starting guess and is expected to be wrong in places. Run:",
+  "    python3 scripts/collect_crypters.py --discover",
+  "to list the tags MalwareBazaar is actually applying right now, then move the",
+  "real ones into 'tags' below and delete the ones that never return anything.",
+  "",
+  "commodity=true marks protectors sold legitimately and used by ordinary",
+  "software. They are collected but reported separately, because counting",
+  "Themida as criminal infrastructure would be wrong."
+ ],
+ "tags": [
+  {"tag": "UPX",           "commodity": true,  "note": "open-source packer, extremely common, mostly benign"},
+  {"tag": "Themida",       "commodity": true,  "note": "commercial protector"},
+  {"tag": "VMProtect",     "commodity": true,  "note": "commercial protector"},
+  {"tag": "Enigma",        "commodity": true,  "note": "commercial protector"},
+  {"tag": "ConfuserEx",    "commodity": false, "note": ".NET obfuscator, heavily used by commodity malware"},
+  {"tag": ".NET Reactor",  "commodity": true,  "note": "commercial .NET protector"},
+  {"tag": "SmartAssembly", "commodity": true,  "note": "commercial .NET protector"},
+  {"tag": "MPRESS",        "commodity": true,  "note": "free packer"},
+  {"tag": "AutoIt",        "commodity": false, "note": "script wrapper, common malware delivery shape"},
+  {"tag": "packed",        "commodity": false, "note": "generic marker, useful as a denominator"},
+  {"tag": "obfuscated",    "commodity": false, "note": "generic marker"},
+  {"tag": "crypted",       "commodity": false, "note": "generic marker"}
+ ]
+}

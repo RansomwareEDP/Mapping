@@ -40,12 +40,41 @@ jobs:
         if: always()
         run: python3 scripts/collect_exploits.py
 
+      # Permission Layer nodes. Both keyless, both rated critical or high on the
+      # ecosystem map, both previously measured by nothing.
+      - name: Collect upstream transit carriers
+        if: always()
+        run: python3 scripts/collect_transit.py
+
+      - name: Collect registry sponsors
+        if: always()
+        run: python3 scripts/collect_registry.py
+
+      # Needs a free abuse.ch Auth-Key, supplied by the repository secret. The
+      # key is passed in the environment and never written to any output file.
+      - name: Collect crypter and packer usage
+        if: always()
+        env:
+          ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
+        run: python3 scripts/collect_crypters.py
+
+      # Prints the tags MalwareBazaar is actually applying right now. The seed
+      # tag list is a guess; this is how it gets replaced with reality. Read it
+      # in the Actions log, then curate data/measurement/crypter-tags.json.
+      - name: List tags currently in use (for curation)
+        if: always()
+        env:
+          ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
+        run: python3 scripts/collect_crypters.py --discover || true
+
       - name: Show health reports
         if: always()
         run: |
-          cat data/measurement/HEALTH-victims.txt  || echo "No victims health report."
-          echo
-          cat data/measurement/HEALTH-exploits.txt || echo "No exploits health report."
+          for f in victims exploits transit registry crypters; do
+            echo "----- $f -----"
+            cat "data/measurement/HEALTH-$f.txt" || echo "No $f health report."
+            echo
+          done
 
       - name: Commit the series
         run: |
