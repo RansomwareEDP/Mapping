@@ -154,7 +154,24 @@ def discover(key):
              .strftime("%Y-%m-%dT%H:%M:%SZ")}, indent=1))
         return 1
 
+    # Accumulate across runs. One call sees at most 100 recent submissions, which
+    # is both tiny and skewed: the 22 Aug 2026 sample was 58 percent ELF/Mirai and
+    # showed none of the commercial protectors the collector was finding hundreds
+    # of. Merging each daily run builds a real vocabulary over weeks, for free.
+    prior_path = OUT / "crypter-tags-discovered.json"
     tags, types, sigs = Counter(), Counter(), Counter()
+    runs, prior_samples = 0, 0
+    if prior_path.exists():
+        try:
+            prior = json.loads(prior_path.read_text())
+            tags.update(prior.get("tags") or {})
+            types.update(prior.get("file_types") or {})
+            sigs.update(prior.get("signatures") or {})
+            runs = prior.get("runs_merged", 1)
+            prior_samples = prior.get("samples_examined", 0)
+        except (json.JSONDecodeError, ValueError):
+            pass
+
     samples = payload.get("data") or []
     for smp in samples:
         for t in (smp.get("tags") or []):
@@ -166,17 +183,22 @@ def discover(key):
 
     (OUT / "crypter-tags-discovered.json").write_text(json.dumps({
         "checked": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "note": ("Tags MalwareBazaar applied across its most recent submissions. This is a "
-                 "sample of current tagging, not the full vocabulary. Use it to replace "
-                 "guessed names in crypter-tags.json with ones actually in use."),
-        "samples_examined": len(samples),
+        "note": ("Tags MalwareBazaar applied, accumulated across every run of this step. "
+                 "Any single run sees at most 100 recent submissions and is heavily skewed "
+                 "by whatever was being submitted that hour, so counts here show which tag "
+                 "names EXIST, never how common a wrapper is. Use it to find names for "
+                 "crypter-tags.json; use the collector itself for volume."),
+        "runs_merged": runs + 1,
+        "samples_examined": prior_samples + len(samples),
+        "samples_this_run": len(samples),
         "distinct_tags": len(tags),
         "tags": dict(tags.most_common()),
         "file_types": dict(types.most_common()),
         "signatures": dict(sigs.most_common()),
     }, indent=1))
 
-    print(f"Tags across the last {len(samples)} submissions ({len(tags)} distinct):\n")
+    print(f"{len(samples)} new submissions this run; {prior_samples + len(samples)} total "
+          f"across {runs + 1} runs. {len(tags)} distinct tags seen:\n")
     for t, n in tags.most_common(60):
         print(f"   {n:>4}  {t}")
     print(f"\nFile types: {dict(types.most_common(10))}")
