@@ -189,8 +189,12 @@ def main():
     # Networks classified as carriers are deliberately NOT collected here: they
     # are other people's infrastructure and belong to a separate measurement.
     def targets_for(prov):
-        return ([(n["asn"], "measured") for n in prov.get("measured", [])] +
-                [(n["asn"], "review") for n in prov.get("review", [])])
+        # Carriers and excluded entries are deliberately not collected here:
+        # carriers are other people's infrastructure, and excluded entries are
+        # misattributions the profiles themselves correct.
+        return ([(n["asn"], "measured")  for n in prov.get("measured",  [])] +
+                [(n["asn"], "successor") for n in prov.get("successor", [])] +
+                [(n["asn"], "sibling")   for n in prov.get("sibling",   [])])
 
     total = sum(len(targets_for(p)) for p in providers.values())
     print(f"Tracking {total} networks across {len(providers)} providers"
@@ -207,6 +211,7 @@ def main():
             recs.append(r)
             time.sleep(PAUSE)
         confirmed = [r for r in recs if r["confidence"] == "measured"]
+        succ = [r for r in recs if r["confidence"] == "successor"]
         live = [r for r in recs if r.get("visible")]
         dark = [r for r in recs if not r.get("visible") and not r.get("error")]
         ups = sorted({u for r in recs for u in r.get("upstreams_now", [])})
@@ -216,7 +221,8 @@ def main():
             "profile": prov.get("profile"),
             "networks_tracked": len(recs),
             "networks_confirmed_owned": len(confirmed),
-            "networks_unconfirmed": len(recs) - len(confirmed),
+            "networks_successor": len(succ),
+            "networks_sibling": len(recs) - len(confirmed) - len(succ),
             "carriers_named_in_profile": [n["asn"] for n in prov.get("carriers_named", [])],
             "networks_visible": len(live),
             "networks_dark": len(dark),
@@ -243,9 +249,10 @@ def main():
                 "renumber and abandon AS numbers commercially. The monthly history counts all "
                 "observed neighbours, mixing transit with peering; only the current upstream "
                 "figure is a transit count. Never read the two as the same number. Finally, "
-                "only networks marked confidence=measured are registry-confirmed as belonging "
-                "to the provider; confidence=review means ownership is asserted by the profile "
-                "but not confirmed by the registry, usually because the WHOIS record is empty."
+                "confidence=measured means the provider's profile names it as their own network; "
+                "confidence=successor means infrastructure moved there after an enforcement action, "
+                "which is reconstitution rather than survival; confidence=sibling means the profile "
+                "records a link but does not establish ownership. Never total the three together."
             ),
             "distortion": "Medium",
         },

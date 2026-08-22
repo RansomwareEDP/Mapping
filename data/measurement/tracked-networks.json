@@ -1,21 +1,22 @@
 {
  "_README": [
   "Networks tracked for the Upstream Transit Carriers measurement.",
-  "This file is DATA, not code. Add or remove providers and AS numbers here;",
-  "the collector reads it and needs no changes.",
-  "Seeded on 21 Aug 2026 from the AS numbers named in bphs/*.html.",
-  "'designated' marks providers under a public sanctions or enforcement action.",
-  "REBUILT 21 Aug 2026 from registry holder evidence, not from page text.",
-  "The first seeding scraped every AS number in each profile, which swept in the",
-  "upstream carriers the profiles document. Registry holder names were used to",
-  "separate them. Every network now records why it is in its bucket.",
+  "This file is DATA, not code. The collector reads it and needs no changes.",
   "",
-  "measured  = holder name identifies it as the provider's own network.",
-  "review    = WHOIS is empty or the holder is ambiguous. NEEDS RENO'S CALL.",
-  "            De-registered ASNs land here and are often the interesting ones.",
-  "carrier   = a transit provider named in the profile. Measured separately,",
-  "            never as the provider's own asset.",
-  "excluded  = unrelated mention."
+  "REBUILT 22 Aug 2026 from the BPH profile pages themselves. An earlier version",
+  "scraped every AS number off each page, which swept in the upstream carriers the",
+  "profiles document, and a later one leaned on registry holder names, which cannot",
+  "see fronts, successors or de-registered assets. The profiles already state the",
+  "role of every network. Each entry below carries the sentence it came from.",
+  "",
+  "measured  = the provider's own network: primary, secondary, backbone or front.",
+  "successor = where infrastructure moved after an enforcement action. Measured",
+  "            separately because reconstitution is a different question from survival.",
+  "sibling   = related or adjacent, ownership NOT established by the profile.",
+  "carrier   = an upstream transit provider. Other people's infrastructure.",
+  "excluded  = the profile documents this as a misattribution or disclaims the link.",
+  "",
+  "To move a network between buckets, move its line. No code change needed."
  ],
  "providers": {
   "aeza": {
@@ -25,62 +26,53 @@
    "measured": [
     {
      "asn": 210644,
-     "holder": "AEZA-AS AEZA GROUP LLC",
-     "why": "holder name matches the provider"
+     "evidence": "AEZA-AS AEZA GROUP LLC, registry-confirmed"
     },
     {
      "asn": 216246,
-     "holder": "RU-AEZA-AS Aeza Group LLC",
-     "why": "holder name matches the provider"
+     "evidence": "RU-AEZA-AS Aeza Group LLC, registry-confirmed"
     }
    ],
-   "review": [
+   "successor": [
     {
-     "asn": 209224,
-     "holder": "LBBW-NETWORK-AS Landesbank Baden-Wuerttemberg",
-     "why": "holder does not match the provider; role unclear"
-    },
+     "asn": 211522,
+     "evidence": "'infrastructure migrated to Hypercore (AS211522) post-sanctions'"
+    }
+   ],
+   "sibling": [
     {
      "asn": 210352,
-     "holder": "YijiaXu Yijia Xu",
-     "why": "holder does not match the provider; role unclear"
+     "evidence": "'Researcher-identified sibling ASNs include AS210352 (Partner LLC)'"
     },
     {
      "asn": 211409,
-     "holder": "PrimeFilter FoxiBytes LTD",
-     "why": "holder does not match the provider; role unclear"
+     "evidence": "'Shelter LLC; TIN 5049025855; AS211409' ecosystem-linked, researcher-identified"
     },
     {
-     "asn": 211522,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "asn": 209224,
+     "evidence": "'sibling ASNs include ... AS209224 (CYBERHUB-AS)'. NOTE: registry now shows Landesbank Baden-Wuerttemberg. Attribution conflicts with current WHOIS."
     },
     {
      "asn": 216319,
-     "holder": "VIRMA_CONSULTING SD1-Telecom SRL",
-     "why": "holder does not match the provider; role unclear"
+     "evidence": "'sibling ASNs include ... AS216319 (CHROMIS IT LTD)'"
     }
    ],
    "carriers_named": [
     {
      "asn": 6939,
-     "holder": "HURRICANE - Hurricane Electric LLC",
-     "why": "transit carrier (Hurricane Electric)"
+     "evidence": "transit carrier (Hurricane Electric)"
     },
     {
      "asn": 8218,
-     "holder": "NEO-ASN Zayo Infrastructure France SA",
-     "why": "transit carrier (Zayo)"
+     "evidence": "transit carrier (Zayo)"
     },
     {
      "asn": 24940,
-     "holder": "HETZNER-AS Hetzner Online GmbH",
-     "why": "transit carrier (Hetzner)"
+     "evidence": "transit carrier (Hetzner)"
     },
     {
      "asn": 30823,
-     "holder": "AUROLOGIC aurologic GmbH",
-     "why": "transit carrier (aurologic)"
+     "evidence": "transit carrier (aurologic)"
     }
    ],
    "excluded": []
@@ -89,25 +81,23 @@
    "name": "Bearhost / Underground / Voodoo Servers",
    "profile": "bphs/bearhost.html",
    "designated": false,
-   "measured": [],
-   "review": [
-    {
-     "asn": 198953,
-     "holder": "proton66 Proton66 OOO",
-     "why": "holder does not match the provider; role unclear"
-    },
+   "measured": [
     {
      "asn": 200593,
-     "holder": "PROSPERO-AS PROSPERO OOO",
-     "why": "holder does not match the provider; role unclear"
+     "evidence": "'AS200593 PROSPERO ASN', named as a brand-cluster ASN"
+    },
+    {
+     "asn": 198953,
+     "evidence": "'AS198953 PROTON66 ASN', named as a brand-cluster ASN"
     }
    ],
+   "successor": [],
+   "sibling": [],
    "carriers_named": [],
    "excluded": [
     {
      "asn": 209030,
-     "holder": "KL-KDP AO Kaspersky Lab",
-     "why": "Kaspersky Lab, appears in an unrelated context"
+     "evidence": "Kaspersky Lab, appears in an unrelated context"
     }
    ]
   },
@@ -115,82 +105,70 @@
    "name": "DEDBROPRO",
    "profile": "bphs/dedbropro.html",
    "designated": false,
-   "measured": [],
-   "review": [
-    {
-     "asn": 44901,
-     "holder": "belcloud Belcloud LTD",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 47105,
-     "holder": "as-vd Vault Dweller OU",
-     "why": "holder does not match the provider; role unclear"
-    },
+   "measured": [
     {
      "asn": 203834,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "evidence": "'DEDBROPRO ... AS203834 (dedbropro-as) // Vault Dweller OU'"
     }
    ],
+   "successor": [],
+   "sibling": [],
    "carriers_named": [
     {
+     "asn": 44901,
+     "evidence": "'Upstream Transit AS44901 - Belcloud (Bulgaria)'"
+    },
+    {
      "asn": 174,
-     "holder": "COGENT-174 - Cogent Communications, LLC",
-     "why": "transit carrier (Cogent)"
+     "evidence": "transit carrier (Cogent)"
     },
     {
      "asn": 3216,
-     "holder": "SOVAM-AS PJSC \"Vimpelcom\"",
-     "why": "transit carrier (Vimpelcom)"
+     "evidence": "transit carrier (Vimpelcom)"
     },
     {
      "asn": 3257,
-     "holder": "GTT-BACKBONE GTT Communications Inc.",
-     "why": "transit carrier (GTT)"
+     "evidence": "transit carrier (GTT)"
     },
     {
      "asn": 3356,
-     "holder": "LEVEL3 - Level 3 Parent, LLC",
-     "why": "transit carrier (Level3)"
+     "evidence": "transit carrier (Level3)"
     },
     {
      "asn": 6762,
-     "holder": "SEABONE-NET TELECOM ITALIA SPARKLE S.p.A.",
-     "why": "transit carrier (Telecom Italia Sparkle)"
+     "evidence": "transit carrier (Telecom Italia Sparkle)"
     },
     {
      "asn": 6939,
-     "holder": "HURRICANE - Hurricane Electric LLC",
-     "why": "transit carrier (Hurricane Electric)"
+     "evidence": "transit carrier (Hurricane Electric)"
     },
     {
      "asn": 8359,
-     "holder": "MTS MTS PJSC",
-     "why": "transit carrier (MTS)"
+     "evidence": "transit carrier (MTS)"
     },
     {
      "asn": 12389,
-     "holder": "ROSTELECOM-AS PJSC Rostelecom",
-     "why": "transit carrier (Rostelecom)"
+     "evidence": "transit carrier (Rostelecom)"
     },
     {
      "asn": 12956,
-     "holder": "TELXIUS TELEFONICA GLOBAL SOLUTIONS SL",
-     "why": "transit carrier (Telxius/Telefonica)"
+     "evidence": "transit carrier (Telxius/Telefonica)"
     },
     {
      "asn": 20485,
-     "holder": "TRANSTELECOM Joint Stock Company TransTeleCom",
-     "why": "transit carrier (TransTeleCom)"
+     "evidence": "transit carrier (TransTeleCom)"
     },
     {
      "asn": 20764,
-     "holder": "RASCOM-AS CJSC RASCOM",
-     "why": "transit carrier (RASCOM)"
+     "evidence": "transit carrier (RASCOM)"
     }
    ],
-   "excluded": []
+   "excluded": [
+    {
+     "asn": 47105,
+     "evidence": "'Follow-on verification confirms that 195.82.146.0/24 is registered to AS203834 (Vault Dweller OU), not AS47105.' Documented misattribution."
+    }
+   ]
   },
   "medialand": {
    "name": "Media Land LLC / Yalishanda: BPH Analytical Profile v2.2",
@@ -199,65 +177,52 @@
    "measured": [
     {
      "asn": 206728,
-     "holder": "MEDIALAND-AS Media Land LLC",
-     "why": "holder name matches the provider"
-    },
-    {
-     "asn": 211805,
-     "holder": "MediaLandLLC-RU Media Land LLC",
-     "why": "holder name matches the provider"
-    }
-   ],
-   "review": [
-    {
-     "asn": 49531,
-     "holder": "NETCOM-R-AS \"NetCom-R\" LLC",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 51538,
-     "holder": "tekcom Lavrentyev Aleksandr Arkadievich",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 200593,
-     "holder": "PROSPERO-AS PROSPERO OOO",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 202799,
-     "holder": "SYSECT SYSECT D.O.O.",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 213877,
-     "holder": "U1DS-AS U1 DIGITAL SERVICES LTD",
-     "why": "holder does not match the provider; role unclear"
+     "evidence": "MEDIALAND-AS Media Land LLC, registry-confirmed"
     },
     {
      "asn": 215376,
-     "holder": "mlcloud ML Cloud Ltd",
-     "why": "holder does not match the provider; role unclear"
+     "evidence": "'Secondary ASN ... AS215376 is the ML.Cloud Netherlands ASN', per indictment"
+    }
+   ],
+   "successor": [],
+   "sibling": [
+    {
+     "asn": 213877,
+     "evidence": "'prefix 144.31.255.0/24 is announced by AS213877, U1 DIGITAL SERVICES LTD'"
     }
    ],
    "carriers_named": [
     {
+     "asn": 49531,
+     "evidence": "'Upstream Transit Chain ... AS49531 NetCom-R LLC ... IPv4 and IPv6 upstream peer'"
+    },
+    {
+     "asn": 202799,
+     "evidence": "'AS202799 SYSECT D.O.O. Montenegro IPv4 upstream peer; only non-Russian peer'"
+    },
+    {
+     "asn": 51538,
+     "evidence": "'AS51538 Lavrentyev Aleksandr Arkadievich ... IPv4 upstream peer'"
+    },
+    {
      "asn": 3216,
-     "holder": "SOVAM-AS PJSC \"Vimpelcom\"",
-     "why": "transit carrier (Vimpelcom)"
+     "evidence": "transit carrier (Vimpelcom)"
     },
     {
      "asn": 9049,
-     "holder": "ERTH-TRANSIT-AS JSC \"ER-Telecom Holding\"",
-     "why": "transit carrier (ER-Telecom)"
+     "evidence": "transit carrier (ER-Telecom)"
     },
     {
      "asn": 20632,
-     "holder": "PETERSTAR-AS PJSC MegaFon",
-     "why": "transit carrier (MegaFon)"
+     "evidence": "transit carrier (MegaFon)"
     }
    ],
-   "excluded": []
+   "excluded": [
+    {
+     "asn": 211805,
+     "evidence": "'v1 incorrectly listed AS211805 from IPinfo.' Corrected in the profile itself."
+    }
+   ]
   },
   "stark": {
    "name": "Stark Industries Solutions / THE.Hosting / WorkTitans",
@@ -265,23 +230,20 @@
    "designated": true,
    "measured": [
     {
-     "asn": 209847,
-     "holder": "THE WorkTitans B.V.",
-     "why": "holder name matches the provider"
-    }
-   ],
-   "review": [
-    {
-     "asn": 43624,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "asn": 44477,
+     "evidence": "'Primary ASNs AS44477 - STARK-INDUSTRIES / PQ Hosting Plus S.R.L. (de-registered)'"
     },
     {
-     "asn": 44477,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "asn": 43624,
+     "evidence": "'AS43624 - PQ Hosting, MD (de-registered; no prefixes routing)'"
+    },
+    {
+     "asn": 209847,
+     "evidence": "'AS209847 - THE WorkTitans B.V. (Active)', successor ASN, operational"
     }
    ],
+   "successor": [],
+   "sibling": [],
    "carriers_named": [],
    "excluded": []
   },
@@ -289,54 +251,47 @@
    "name": "VIRTUALINE",
    "profile": "bphs/virtualine.html",
    "designated": false,
-   "measured": [],
-   "review": [
+   "measured": [
     {
-     "asn": 202412,
-     "holder": "OMEGATECH-AS Omegatech LTD",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 205759,
-     "holder": "GHOSTYNETWORKS Ghosty Networks LLC",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 209800,
-     "holder": "ZEMAGG Philippe Simon Pflug trading as Niesmann-Pflug ZEMA GbR",
-     "why": "holder does not match the provider; role unclear"
-    },
-    {
-     "asn": 211736,
-     "holder": "FDN3 FOP Dmytro Nedilskyi",
-     "why": "holder does not match the provider; role unclear"
+     "asn": 214943,
+     "evidence": "'AS214943 Backbone ASN (Railnet)'"
     },
     {
      "asn": 214940,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "evidence": "'Virtualine Technologies (AS215789, AS214940) ... Core brand'"
     },
     {
-     "asn": 214943,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "asn": 202412,
+     "evidence": "'OMEGATECH (AS202412) actively hosting malware C2', named rotating front"
+    },
+    {
+     "asn": 209800,
+     "evidence": "'the fraudulently registered AS209800/metaspinner', named front"
+    }
+   ],
+   "successor": [],
+   "sibling": [
+    {
+     "asn": 205759,
+     "evidence": "'GHOSTYNETWORKS (AS205759) ... Sibling BPH network ... NOT confirmed Virtualine-owned'"
+    },
+    {
+     "asn": 211736,
+     "evidence": "'FDN3 (AS211736) cluster ... Inherited Virtualine prefix 88.210.63.0/24 (Jun 2025)'"
     }
    ],
    "carriers_named": [
     {
      "asn": 30823,
-     "holder": "AUROLOGIC aurologic GmbH",
-     "why": "transit carrier (aurologic)"
+     "evidence": "transit carrier (aurologic)"
     },
     {
      "asn": 51396,
-     "holder": "PFCLOUD Pfcloud UG (haftungsbeschrankt)",
-     "why": "transit carrier (pfcloud)"
+     "evidence": "transit carrier (pfcloud)"
     },
     {
      "asn": 215789,
-     "holder": "BLIK Polski Standard Platnosci SA",
-     "why": "transit carrier (Polski Standard Platnosci)"
+     "evidence": "transit carrier (Polski Standard Platnosci)"
     }
    ],
    "excluded": []
@@ -345,26 +300,26 @@
    "name": "ZServers / XHost",
    "profile": "bphs/zservers.html",
    "designated": true,
-   "measured": [],
-   "review": [
-    {
-     "asn": 50053,
-     "holder": "VDSKA-AS Anton Levin",
-     "why": "holder does not match the provider; role unclear"
-    },
+   "measured": [
     {
      "asn": 197414,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
-    },
+     "evidence": "'AS197414 ASN: De-registered', named Primary ASN throughout"
+    }
+   ],
+   "successor": [],
+   "sibling": [
     {
      "asn": 200730,
-     "holder": "(empty WHOIS)",
-     "why": "WHOIS empty: de-registered or never published. Confirm ownership."
+     "evidence": "'87.251.64.0/24 is announced by AS200730 ... Relationship to ZServers operators unconfirmed.'"
     }
    ],
    "carriers_named": [],
-   "excluded": []
+   "excluded": [
+    {
+     "asn": 50053,
+     "evidence": "'185.170.144.0/24 is announced by AS50053 ... No assessed connection to ZServers operators.'"
+    }
+   ]
   }
  }
 }
