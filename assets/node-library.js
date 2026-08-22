@@ -23,6 +23,7 @@
       ['lockbit', 'LockBit'],
       ['silentransom', 'Luna Moth / SRG'],
       ['lynx', 'Lynx / INC'],
+      ['medusa', 'Medusa'],
       ['nightspire', 'NightSpire'],
       ['payload', 'Payload'],
       ['qilin', 'Qilin'],

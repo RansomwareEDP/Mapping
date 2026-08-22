@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medusa | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-extortion { background: #6c3483; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr {
+  background: var(--navy);
+}
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* PHASE LIST */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FEED CARDS */
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px; padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+
+/* SCROLL */
+html { scroll-behavior: smooth; }
+
+/* DARK MODE TOGGLE */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .metric-label { color: #8b949e; }
+[data-theme="dark"] .metric-note { color: #6b7280; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* LIVE DATA ELEMENTS */
+.topbar-live {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400); letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative; display: inline-block;
+  width: 7px; height: 7px; flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent; border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+.victim-strip { margin: 20px 40px 0; background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.victim-strip-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-bottom: 1px solid var(--gray-200); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.victim-strip-sub { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-400); font-size: 10px; margin-left: 4px; }
+.victim-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-date { color: var(--gray-400); }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="node-library"></div>
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#defensive">Defensive Mapping</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#targeting">Victim Profile</a>
+    <a href="#enforcement">LE Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &bull; Last updated August 2026</div>
+    <div class="hero-title">Medusa</div>
+    <div class="hero-subtitle">Vetted RaaS &nbsp;&bull;&nbsp; Rapid N-Day Exploitation &nbsp;&bull;&nbsp; Triple Extortion &nbsp;&bull;&nbsp; Assessed Russian-Speaking Core</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Leak Site Dormant</span>
+      <span class="badge badge-raas">Vetted RaaS</span>
+      <span class="badge badge-extortion">Triple Extortion</span>
+      <span class="badge badge-raas">No LE Disruption</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">June 2021</div>
+        <div class="kpi-sub">DLS launched Feb 2023</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Victims</div>
+        <div class="kpi-value">500+</div>
+        <div class="kpi-sub">CISA/FBI/HHS, thru Apr 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">DLS Posts Tracked</div>
+        <div class="kpi-value">517</div>
+        <div class="kpi-sub">ransomware.live; 537 RansomLook</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Countries Affected</div>
+        <div class="kpi-value">50</div>
+        <div class="kpi-sub">US 262, UK 38, CA 35</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ransom Range</div>
+        <div class="kpi-value">$100K to $15M</div>
+        <div class="kpi-sub">Bitcoin; $10K per day extension</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Disruptions</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">Five years, zero actions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Decryptor Available</div>
+        <div class="kpi-value">No</div>
+        <div class="kpi-sub">No More Ransom: none listed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">On-Chain Analysis</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">No TRM, Chainalysis or Elliptic</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Last DLS Post</div>
+        <div class="kpi-value">Apr 2026</div>
+        <div class="kpi-sub">All .onion mirrors offline</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Victims (Live)</div>
+        <div class="kpi-value" id="kpi-victim-count">--</div>
+        <div class="kpi-sub">via ransomware.live</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>Medusa is a vetted, closed-recruitment ransomware-as-a-service operation that the FBI dates to June 2021 and that reached high-volume, name-and-shame scale in early 2023 with the launch of its Tor-hosted leak site, the Medusa Blog. As of the 18 August 2026 update to joint advisory AA25-071A, the FBI, CISA and HHS attribute more than 500 victims to Medusa developers and affiliates through April 2026, up from the 300-plus figure reported in the original March 2025 version.</p>
+
+      <p>The operation is characterised by two things above all: exceptional speed against newly disclosed vulnerabilities in internet-facing management software, and a complete absence of law enforcement consequence. In five years of operation Medusa has produced no arrests, no indictments, no sanctions, no named individuals and no infrastructure seizure. That record is the single most analytically significant feature of the group and is treated as a finding in its own right in Section 08.</p>
+
+      <div class="callout callout-alert">
+        <strong>Naming discipline, three separate collisions.</strong> Medusa is not MedusaLocker. It is not the Medusa Android banking trojan. And it is unrelated to the US Department of Justice's <em>Operation MEDUSA</em>, the May 2023 disruption of the FSB's Snake malware network, which is a codename collision only. The FBI states in AA25-071A that Medusa is "unrelated to the MedusaLocker variant and the Medusa mobile malware variant," and Symantec separately states that Spearwing "is not believed to have any link" to MedusaLocker. Conflation of these four things is the most common error in secondary reporting on this group.
+      </div>
+
+      <div class="conf-block confirmed">
+        <strong>CONFIRMED.</strong> Medusa is a distinct ransomware family and operation, separate from MedusaLocker. Two independent authorities state this on the record: the FBI in AA25-071A and Symantec's Threat Hunter Team.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Quick Reference</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attribute</th><th>Assessment</th></tr></thead>
+            <tbody>
+              <tr><td>Model</td><td>Ransomware-as-a-service, vetted and closed recruitment</td></tr>
+              <tr><td>Active since</td><td>June 2021 (FBI). Leak site and RaaS scale from February 2023</td></tr>
+              <tr><td>Extortion model</td><td>Double extortion baseline; CISA documents a triple-extortion pattern in which victims who pay are re-approached</td></tr>
+              <tr><td>Encryptor</td><td>Windows <span class="mono">gaze.exe</span>; Linux and ESXi <span class="mono">gaze.py</span></td></tr>
+              <tr><td>Extension / note</td><td><span class="mono">.MEDUSA</span> / <span class="mono">!!!READ_ME_MEDUSA!!!.txt</span></td></tr>
+              <tr><td>Encryption</td><td>AES-256 CBC via Windows CNG, key wrapped with an embedded RSA public key</td></tr>
+              <tr><td>Payment rail</td><td>Bitcoin primary; other cryptocurrencies possible per CISA</td></tr>
+              <tr><td>Assessed jurisdiction</td><td>Russian-speaking core operators (low to moderate confidence, behavioural evidence only)</td></tr>
+              <tr><td>Leak site status</td><td>All .onion mirrors down. No new victim posted since April 2026</td></tr>
+              <tr><td>Clear-web presence</td><td>osintcorp.net ("OSINT Without Borders"), still reachable at 100 percent uptime</td></tr>
+              <tr><td>Decryptor</td><td>None. No More Ransom lists no Medusa tool</td></tr>
+              <tr><td>Law enforcement action</td><td>None of any kind, 2021 to date</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Tracking Designations</div>
+        <p>Vendor naming for Medusa is inconsistent, and the inconsistency is not cosmetic. Two of the four designations below describe different organisational layers, and secondary reporting routinely treats them as synonyms.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>What it actually tracks</th></tr></thead>
+            <tbody>
+              <tr><td>Symantec / Broadcom</td><td>Spearwing</td><td>The core RaaS operator group, that is, the developers and operational infrastructure behind the Medusa family</td></tr>
+              <tr><td>CrowdStrike</td><td>FROZEN SPIDER (alias White Kali)</td><td>eCrime big-game-hunting adversary operating the Medusa RaaS; role-differentiated crew covering access, pentesting and media operations</td></tr>
+              <tr><td>Microsoft</td><td>Storm-1175</td><td>One affiliate that deployed Medusa. Microsoft has separately described this actor as China-based. Left Medusa for its own locker in August 2026</td></tr>
+              <tr><td>MITRE ATT&amp;CK</td><td>Medusa Group (G1051); malware Medusa Ransomware (S1244)</td><td>The group generically. Lists "Spearwing" and "Medusa Actors" as public aliases</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block credible">
+          <strong>ANALYST INFERENCE.</strong> Storm-1175 and Spearwing are not interchangeable. Microsoft's Storm designation describes an affiliate-level intrusion cluster; Symantec's Spearwing describes the operator. Sources that list Spearwing as an alias of Storm-1175 are not corroborated by the vendor that created the Spearwing designation, and this profile treats that equivalence as unverified. MITRE's G1051 entry, which folds Spearwing and Storm-1175 into one group page, compounds the confusion rather than resolving it.
+        </div>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2023/09/medusa-blog.png.webp" alt="Main page of the Medusa Blog data leak site" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Medusa Blog: Main Page</strong>
+            The group's Tor-hosted leak site. The header carries the Medusa logo alongside direct Telegram and Twitter links, an unusually overt clear-web posture for a Russian-speaking RaaS brand and the visible edge of the OSINT Without Borders publicity apparatus described in Section 03.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://socradar.io/wp-content/uploads/2023/09/medusa-victim-published-1024x585.png.webp" alt="Medusa Blog victim announcement page showing PUBLISHED status" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Victim Listing: Countdown and PUBLISHED State</strong>
+            Individual victim page for Ace Micromatic Group. A countdown timer runs at the top while data remains unleaked and flips to PUBLISHED on expiry. The same page carries the paid options described in Section 03: pay to decrypt, pay to delete, or pay $10,000 to buy one more day.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2023/09/medusa-ransomware-file-explorer-1024x660.png.webp" alt="Interactive file explorer panel of stolen victim data on the Medusa Blog" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Interactive Evidence Browser</strong>
+            Below each victim announcement, Medusa publishes sample screenshots and an interactive file-tree browser of the exfiltrated data. This raises the perceived credibility of the leak threat, which researchers assess Medusa has generally honoured against non-paying victims.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2023/09/medusa-telegram.png.webp" alt="Medusa information support Telegram channel showing leaked files" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>"Information Support" Telegram Channel</strong>
+            Medusa's public Telegram channel, branded "information support," distributes victim data outside Tor. CyberCX traced this channel's branding and profile image to the BreachForums persona t0mas and to the OSINT Without Borders domain estate.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://socradar.io/wp-content/uploads/2023/09/medusa-ransomware-ransom-note-1024x595.png.webp" alt="Medusa ransom note text file" onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Ransom Note</strong>
+            The <span class="mono">!!!READ_ME_MEDUSA!!!.txt</span> note, which sets a 48-hour response window and directs victims to a Tor live-chat portal or a Tox contact address. Note the deliberate mythological framing carried through the brand, matched by the <span class="mono">gaze.exe</span> payload name.
+            <span class="img-source">Source: ThreatLabz via SOCRadar, 2023</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <p>No source identifies a confirmed predecessor group from which Medusa descends, whether in code, personnel or infrastructure. MITRE records that Medusa began as a closed ransomware operation before evolving into a full RaaS by 2023. That is an internal structural change, not a lineage claim tied to another named brand. Medusa is therefore best treated as an independent-origin node rather than a descendant of the Conti or Hive trees that dominate the rest of the Russian-speaking ecosystem.</p>
+
+      <div class="callout callout-info">
+        <strong>Founding-date conflict, and how to reconcile it.</strong> The FBI dates Medusa to June 2021. Symantec dates Spearwing's activity to 2023. Ransomware.live records its first tracked victim on 11 January 2023. The most economical reconciliation, and the one this profile adopts, is that the encryptor and a low-volume closed operation existed from mid-2021, and that the RaaS model, affiliate recruitment and the Medusa Blog all arrived together in early 2023. Vendors dating the group to 2023 are dating the leak site, not the malware.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Basis and Confidence</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lineage question</th><th>Evidence basis</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Medusa unrelated to MedusaLocker</td><td>FBI statement in AA25-071A plus independent Symantec technical assessment</td><td><span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td>Closed operation 2021, RaaS from 2023</td><td>MITRE G1051 structural description; leak-site first-post date; FBI start date</td><td><span class="conf conf-credible">Credible</span></td></tr>
+              <tr><td>Russian-speaking core operators</td><td>Russian-language forum recruitment, Fenya criminal argot, Cyrillic in operational tooling, CIS target avoidance</td><td><span class="conf conf-credible">Credible</span> (low to moderate; assessed, not evidenced)</td></tr>
+              <tr><td>Storm-1175 was a Medusa affiliate</td><td>Microsoft Threat Intelligence direct telemetry, 2023 through April 2026</td><td><span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td>Storm-1175 equals Spearwing</td><td>Asserted by secondary breach-tracking outlets and folded together by MITRE; no vendor publishes matching technical evidence</td><td><span class="conf conf-inference">Analyst Inference</span> (assessed likely erroneous)</td></tr>
+              <tr><td>Confirmed predecessor group</td><td>None identified in any reviewed source</td><td><span class="conf conf-confirmed">Confirmed absence</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Forward Heritage: The Storm-1175 Departure</div>
+        <p>The best-documented lineage event in Medusa's history runs forwards, not backwards. Around 9 August 2026 Microsoft Threat Intelligence reported that Storm-1175, an affiliate it had tracked deploying Medusa since 2023, had begun deploying a previously undocumented locker called StormEncryptor. Microsoft stated that this "marks the threat actor's first activity observed by Microsoft Threat Intelligence since April 2026, and a shift away from Medusa ransomware."</p>
+        <p>StormEncryptor is a distinct C++ binary rather than a Medusa fork. It appends <span class="mono">.encrypted</span>, drops a note named <span class="mono">!!!README_FIRST!!!.txt</span> into every scanned directory, and gives victims three days to make contact. Its emergence tracks closely with exploitation of CVE-2026-18577 in N-able N-central, which suggests the affiliate carried its infrastructure-targeting logic intact across the brand change.</p>
+        <div class="conf-block credible">
+          <strong>CREDIBLE, single vendor.</strong> The Storm-1175 to StormEncryptor pivot rests entirely on Microsoft telemetry. BleepingComputer, The Hacker News, Security Affairs, SecurityWeek and SC Media all republished it, but republication is not corroboration. No second vendor has independently confirmed the actor continuity between the Medusa-affiliate phase and StormEncryptor.
+        </div>
+        <p>The analytical significance is that a long-tenured, technically sophisticated affiliate cluster left the Medusa structure entirely, taking with it accumulated tradecraft, victim-network access intelligence and a demonstrated zero-day pipeline, while shedding the revenue-sharing and negotiation-control constraints of the affiliate relationship. It is an affiliate defection, not a rebrand of Medusa itself, and the distinction should be preserved rigorously.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <p>Medusa runs a vetted, closed-recruitment RaaS. Affiliates are screened before being granted platform access, a departure from the open recruitment used by some competing brands, and are recruited through Russian-language cybercriminal forums where Medusa advertises alongside other RaaS operators. The group also buys access rather than relying solely on affiliate-driven intrusion: CISA documents payments to initial access brokers ranging from $100 to $1,000,000, and MITRE maps the behaviour to T1650, Acquire Access.</p>
+
+      <p>Per CISA, affiliates are "granted varying levels of trust based upon experience and profitability," and for less experienced affiliates the core developers retain control of ransom negotiations. That is a meaningful structural detail: negotiation control, not just tooling, is the developers' retained asset.</p>
+
+      <div class="conf-block inference">
+        <strong>DO NOT PUBLISH A REVENUE SPLIT.</strong> The frequently repeated figure of a roughly 60/40 affiliate-to-developer split for Medusa traces only to low-quality aggregator content and its downstream copies. CISA states no percentage. Symantec states no percentage. Halcyon refers only to "substantial ransom portions." The Medusa affiliate split is an open intelligence gap, and the widely circulated 60 percent figure should be treated as unsourced. Note that MedusaLocker's publicly documented 55 to 60 percent affiliate share belongs to a different and unrelated group and is very likely the origin of the contamination.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion Mechanics and Negotiation Playbook</div>
+        <ul class="content-list">
+          <li><strong>48-hour clock.</strong> Initial contact demands a victim response within 48 hours via a Tor-based live chat portal or the Tox encrypted messenger. Operators escalate to direct phone and email contact if the victim stays silent.</li>
+          <li><strong>Public countdown.</strong> The victim's leak-site page carries a visible countdown timer and a page-view counter, alongside the ransom amount and a direct link to a Bitcoin wallet.</li>
+          <li><strong>Paid delay.</strong> Victims can pay $10,000 in cryptocurrency to add a single day to the countdown. This is confirmed in the CISA advisory and is one of the more distinctive monetisation features of the brand.</li>
+          <li><strong>Three payment paths.</strong> Pay for a decryption key, pay for deletion of exfiltrated data without decryption, or pay to extend the timer.</li>
+          <li><strong>Credible follow-through.</strong> Medusa has generally published data on non-paying victims, which is what makes the threat operative rather than a bluff.</li>
+        </ul>
+        <div class="callout callout-warning">
+          <strong>Triple extortion.</strong> CISA's advisory documents a case in which a victim paid, and was then contacted by a separate Medusa actor claiming the negotiator had stolen the payment, with a further demand for half the original amount to deliver "the real decryptor." Payment therefore does not reliably terminate the extortion relationship. This should be a standing caveat in any Medusa incident-response guidance.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Publicity Apparatus: OSINT Without Borders</div>
+        <p>Medusa operates an unusually developed clear-web media function. CyberCX Cyber Intelligence assessed in March 2023, with high confidence, that the outlet branded "OSINT Without Borders" operates as the public relations function of the Medusa team, reporting on breaches and republishing stolen data.</p>
+        <div class="conf-block confirmed">
+          <strong>CONFIRMED by evidence chain, single researcher.</strong> CyberCX's assessment rests on four linked observations: the Medusa leak site's Telegram button points to a channel branded OSINT Without Borders; a Medusa ransom note obtained by CyberCX explicitly links back to that outlet; a BreachForums user, t0mas, posted a review of data belonging to a victim listed on the Medusa leak site and uses the same profile image as the channel, claiming ownership of it; and t0mas's forum profile claims ownership of the osintcorp domain plus matching Facebook and Twitter personas. Halcyon and Bitdefender echo the clear-web presence independently.
+        </div>
+        <p>The domain has since migrated from osintcorp.uk to osintcorp.net. As of August 2026 that domain is the only Medusa-associated asset still reachable, sitting at 100 percent uptime while every Tor mirror is down. That asymmetry is a collection opportunity and is treated as such in Section 10.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <p>Medusa affiliates weaponise newly disclosed vulnerabilities in internet-facing management software faster than almost any peer operation. CISA records exploitation within 24 hours of public disclosure, and Microsoft documents at least three cases in which Storm-1175 was exploiting a flaw before it was publicly disclosed at all.</p>
+
+      <div class="callout callout-info">
+        <strong>A genuine source conflict, stated rather than smoothed over.</strong> Microsoft attributes multiple zero-days to Storm-1175. CISA's August 2026 update states there is "no indication Medusa actors develop their own zero-day or N-day vulnerabilities." These are reconcilable if one distinguishes acquiring an exploit from developing one, and an individual affiliate from the operation as a whole. They should not be presented as a single account.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Exploited Vulnerabilities: Verified Against NVD</div>
+        <p>Every identifier below resolves and matches its claimed product. Attribution scope is stated per row, because the majority of this list comes from Microsoft's affiliate-level Storm-1175 reporting rather than from advisories about Medusa as a whole.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Attribution scope</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">CVE-2024-1709</td><td>ConnectWise ScreenConnect, authentication bypass</td><td>10.0</td><td>Named in CISA AA25-071A and by Microsoft. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2024-1708</td><td>ConnectWise ScreenConnect, path traversal</td><td>8.4</td><td>Microsoft. The CVE record's CISA-ADP container cites the Storm-1175 blog. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2023-48788</td><td>Fortinet FortiClient EMS, SQL injection</td><td>9.3</td><td>Named in CISA AA25-071A. Absent from Microsoft's Storm-1175 list. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2023-43208</td><td>NextGen Healthcare Mirth Connect, unauthenticated RCE</td><td>9.8</td><td>Microsoft attributed exploitation to Storm-1175 in May 2024. Not in the CISA advisory. <span class="conf conf-credible">Credible</span></td></tr>
+              <tr><td class="mono">CVE-2024-27198</td><td>JetBrains TeamCity, authentication bypass</td><td>9.8</td><td>Microsoft. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2024-27199</td><td>JetBrains TeamCity, path traversal</td><td>7.3</td><td>Microsoft. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2025-10035</td><td>Fortra GoAnywhere MFT, deserialization to command injection</td><td>10.0</td><td>Microsoft (exploited as a zero-day roughly a week before disclosure) and CISA's August 2026 update. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2026-23760</td><td>SmarterTools SmarterMail, authentication bypass to OS command execution</td><td>9.3</td><td>Microsoft. Exploited by Storm-1175 the week before public disclosure. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td class="mono">CVE-2026-1731</td><td>BeyondTrust</td><td>see NVD</td><td>Added in CISA's August 2026 update. <span class="conf conf-confirmed">Confirmed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-alert">
+          <strong>Exclusion, and why it matters.</strong> CVE-2026-18577 (N-able N-central authentication bypass, added to the CISA KEV catalogue on 3 August 2026) is frequently listed as a Medusa CVE. It should not be. Microsoft assesses that Storm-1175 likely used it, but the payload in that campaign was <em>StormEncryptor</em>, after the actor had already left Medusa. Listing it under Medusa imports a post-departure affiliate campaign into the wrong group's profile.
+        </div>
+        <p>Microsoft credits Storm-1175 with exploiting at least sixteen vulnerabilities since 2023. Beyond the table above, its documented set includes Ivanti Connect Secure (CVE-2023-46805, CVE-2024-21887), SimpleHelp (CVE-2024-57726 through 57728), PaperCut (CVE-2023-27350, CVE-2023-27351), CrushFTP (CVE-2025-31161), SAP NetWeaver (CVE-2025-31324, weaponised within one day), Microsoft Exchange (CVE-2023-21529) and a second SmarterMail flaw (CVE-2025-52691).</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryption Scheme</div>
+        <p>The most rigorous public analysis is SecurityScorecard's instruction-level reverse-engineering walkthrough. Medusa uses AES-256 in CBC mode through the Windows CNG/BCrypt interface, generating a fresh 32-byte key per file while reusing a single hardcoded 16-byte initialisation vector across all files. The AES key is wrapped with an RSA public key embedded in the binary, Base64-decoded and imported as an RSA CSP public key blob. Encrypted files carry a footer of ciphertext, the literal string MEDUSA, the file length, the RSA-encrypted AES key and a company identifier hash. The binary self-deletes on completion.</p>
+        <div class="conf-block credible">
+          <strong>Correction to commonly published claims.</strong> The figure "RSA-2048" appears throughout secondary reporting on Medusa but is not established by any public reverse-engineering source. SecurityScorecard's walkthrough does not state the modulus size. This profile writes the scheme as AES-256 plus RSA of unestablished key size. Reporting that describes Medusa as using ChaCha20 is incorrect.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Kill Chain Toolset</div>
+        <ul class="content-list">
+          <li><strong>Payload delivery.</strong> PDQ Deployer and PDQ Inventory push the encryptor <span class="mono">gaze.exe</span> across the estate. Symantec found the same deployment path in roughly two thirds of the Medusa intrusions it investigated. CISA also documents BigFix. Microsoft observed PDQ launching <span class="mono">RunFileCopy.cmd</span>.</li>
+          <li><strong>EDR destruction.</strong> Symantec states that "in almost all Medusa attacks, KillAV and associated vulnerable drivers are used." Documented bring-your-own-vulnerable-driver tooling includes the ABYSSWORKER driver (<span class="mono">smuol.sys</span>), POORTRY (<span class="mono">mbaer.sys</span>), the STONESTOP loader, a repackaged ThrottleStop driver, <span class="mono">wnbios.sys</span> against Defender, and EDRSandblast. CISA maps this to T1685. This is arguably Medusa's most operationally distinctive capability and is under-represented in most public profiles.</li>
+          <li><strong>Exfiltration.</strong> Rclone, frequently renamed (Symantec and Microsoft share the hash for a copy renamed <span class="mono">lsp.exe</span>), with Bandizip for staging. The August 2026 CISA update adds a notable refinement: Rclone planted inside folders already excluded from Microsoft Defender scanning, mapped to T1564.012.</li>
+          <li><strong>Backup targeting.</strong> Microsoft alone documents a script used to recover passwords from Veeam backup software, enabling deployment to further connected systems. Veeam services also appear throughout the encryptor's service-stop list. Attribute this specifically to Microsoft; neither CISA nor Symantec repeats it.</li>
+          <li><strong>Credential access and movement.</strong> Mimikatz, PsExec, Impacket, LSASS dumping, Advanced IP Scanner, SoftPerfect NetScan, RoboCopy.</li>
+          <li><strong>Command and control.</strong> Cloudflared tunnels (renamed <span class="mono">conhost.exe</span>), Ligolo, RevSocks, Fast Reverse Proxy.</li>
+          <li><strong>Living off remote management.</strong> AnyDesk, Atera, Level, N-able, DWAgent, MeshAgent, SimpleHelp, ScreenConnect, eHorus and Splashtop, which is what makes Medusa activity blend into legitimate IT administration.</li>
+          <li><strong>Batch scripting.</strong> <span class="mono">openrdp.bat</span>, <span class="mono">newuser.bat</span>, <span class="mono">removesophos.bat</span>, <span class="mono">duooff.bat</span>, <span class="mono">StopAllProcess.bat</span>. Anti-forensics via <span class="mono">vssadmin delete shadows</span> and <span class="mono">wevtutil cl</span>.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linux and ESXi Capability</div>
+        <div class="conf-block confirmed">
+          <strong>CONFIRMED, and newly documented.</strong> The August 2026 CISA update establishes a Linux and hypervisor capability that earlier profiles of this group treated as unconfirmed. Medusa actors do not use PDQ Deploy in Linux environments. They transfer the encryptor, <span class="mono">gaze.py</span>, over SFTP and execute it with <span class="mono">nohup python gaze.py &amp;</span>. They also abuse an ESXi host profile to change root passwords on Linux machines, mapped to the newly added technique T1675, ESXi Administration Command. Additional Linux tradecraft in the update includes a bash reverse shell over TCP 4444, GSocket, and a <span class="mono">file_save.php</span> webshell.
+        </div>
+        <p>Analysts should note that blog content claiming Medusa uses <span class="mono">esxcli</span> to power off virtual machines and encrypt VMDK files at rest is not supported by any primary source located during this review, and reads as machine-generated. Use the CISA formulation.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion: A Claim This Profile Removes</div>
+        <div class="conf-block inference">
+          <strong>NOT SUPPORTED.</strong> Many profiles of Medusa assert that the binary carries a CIS kill switch, checking keyboard layout or system locale and halting on a Russian or CIS match. No reverse-engineering report documents such a check in the Medusa encryptor. SecurityScorecard's function-by-function walkthrough covers startup, argument parsing, key setup and enumeration and describes no locale, GetKeyboardLayoutList or GetUserDefaultLangID call. Symantec's behavioural analysis shows none either. Given that the walkthrough is comprehensive, the absence is meaningful negative evidence rather than a gap. The Russian-nexus assessment in Section 09 rests on forum behaviour and targeting patterns, not on a technical kill switch.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 05: DEFENSIVE -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Priority ATT&amp;CK Techniques</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>ID</th><th>Medusa-specific expression</th></tr></thead>
+            <tbody>
+              <tr><td>Exploit Public-Facing Application</td><td class="mono">T1190</td><td>The dominant initial access vector. Managed file transfer, RMM and mail platforms, often inside 24 hours of disclosure</td></tr>
+              <tr><td>Acquire Access</td><td class="mono">T1650</td><td>IAB purchases documented by CISA at $100 to $1,000,000</td></tr>
+              <tr><td>Software Deployment Tools</td><td class="mono">T1072</td><td>PDQ Deployer and BigFix used to distribute <span class="mono">gaze.exe</span></td></tr>
+              <tr><td>Impair Defenses: Vulnerable Driver</td><td class="mono">T1685</td><td>ABYSSWORKER, POORTRY, STONESTOP, ThrottleStop, EDRSandblast. Present in almost all Medusa attacks per Symantec</td></tr>
+              <tr><td>Hide Artifacts: File/Path Exclusions</td><td class="mono">T1564.012</td><td>Rclone staged inside existing Defender exclusion paths (added August 2026)</td></tr>
+              <tr><td>Exfiltration to Cloud Storage</td><td class="mono">T1567.002</td><td>Rclone, frequently renamed</td></tr>
+              <tr><td>ESXi Administration Command</td><td class="mono">T1675</td><td>Host profile abused to reset root passwords on Linux hosts (added August 2026)</td></tr>
+              <tr><td>Inhibit System Recovery</td><td class="mono">T1490</td><td><span class="mono">vssadmin delete shadows</span>; backup infrastructure targeted before encryption</td></tr>
+              <tr><td>Indicator Removal: Clear Windows Event Logs</td><td class="mono">T1070.001</td><td><span class="mono">wevtutil cl</span></td></tr>
+              <tr><td>Remote Access Software</td><td class="mono">T1219</td><td>Ten-plus legitimate RMM agents used for persistence and blending</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Top Defensive Priorities</div>
+        <ul class="content-list">
+          <li><strong>Compress the patch window on internet-facing management software.</strong> Medusa's entire access model is built on the gap between disclosure and patching. GoAnywhere MFT, ScreenConnect, N-central, SmarterMail, TeamCity, FortiClient EMS, Mirth Connect, Ivanti and CrushFTP are the specific product families to prioritise. A 24-hour exploitation cadence means a 30-day patch SLA is not a defence.</li>
+          <li><strong>Audit Defender and EDR exclusion paths as an active threat surface.</strong> The August 2026 finding that Medusa stages tooling inside existing exclusions turns a hygiene item into a detection control.</li>
+          <li><strong>Enforce driver blocklisting and monitor for kernel-level EDR tampering.</strong> Given that vulnerable drivers appear in almost all Medusa intrusions, Microsoft's vulnerable driver blocklist and alerting on driver-load anomalies are load-bearing, not optional.</li>
+          <li><strong>Inventory and constrain RMM agents.</strong> Any RMM not on an approved list should generate an alert on install. This is the single highest-yield detection for Medusa post-compromise activity.</li>
+          <li><strong>Isolate and credential-separate backup infrastructure, including Veeam.</strong> Medusa targets backups before encryption specifically to remove the recovery option.</li>
+          <li><strong>Extend all of the above to Linux and ESXi.</strong> The Linux encryptor path is confirmed as of August 2026; Windows-only controls now leave a documented gap.</li>
+          <li><strong>Plan for payment not ending the incident.</strong> The documented triple-extortion pattern means recovery planning should not assume a paid ransom closes the matter.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked Advisories</div>
+        <ul class="content-list">
+          <li>Joint FBI, CISA and HHS advisory AA25-071A, #StopRansomware: Medusa Ransomware. Original 12 March 2025, substantially updated 18 August 2026. The update expands the affiliate model, IAB payment ranges, the exploited-vulnerability list and the Linux and ESXi tradecraft, and raises the victim count from 300-plus to 500-plus.</li>
+          <li>CISA Known Exploited Vulnerabilities catalogue: entries for CVE-2024-1709, CVE-2024-1708, CVE-2023-48788, CVE-2023-43208, CVE-2024-27198, CVE-2024-27199, CVE-2025-10035 and CVE-2026-23760.</li>
+          <li>No More Ransom decryption tools index: no Medusa decryptor listed, verified against the full 294-entry index.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 06: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <p>Medusa's financial profile is defined by an absence. For a RaaS operation with more than 500 confirmed victims across five years, the public record contains no wallet clustering, no laundering pathway, no identified cash-out point and no credible total-revenue estimate.</p>
+
+      <div class="conf-block confirmed">
+        <strong>CONFIRMED ABSENCE, and this is a finding.</strong> No Medusa-specific on-chain analysis has been published by TRM Labs, Chainalysis or Elliptic. Cyfirma tracks Medusa in its monthly ransomware reporting but publishes no wallet clustering. RansomLook's cryptocurrency module returns "no wallet found for this group." Chainalysis's 2026 Crypto Crime Report carries an ecosystem-wide ransomware total but no Medusa line item. Compare this to the depth of tracing available for LockBit, Conti or 8Base, where traced sums, exchange endpoints and named launderers are all on the record.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Element</th><th>Assessment</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Primary rail</td><td>Bitcoin. CISA: "Medusa actors generally request payment in Bitcoin but may demand payment in other cryptocurrencies." Wallet addresses are hyperlinked directly from victim leak-site pages</td><td><span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td>Monero</td><td>Referenced by Halcyon in the context of laundering (mixing through Monero and Zcash and dark-web exchangers), not as a victim payment option. No source shows Medusa quoting a Monero ransom</td><td><span class="conf conf-inference">Unverified as a payment rail</span></td></tr>
+              <tr><td>Ransom demand range</td><td>$100,000 to $15,000,000 depending on victim size and sector</td><td><span class="conf conf-credible">Credible</span></td></tr>
+              <tr><td>Countdown extension</td><td>$10,000 per additional day</td><td><span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td>IAB acquisition cost</td><td>$100 to $1,000,000 per access</td><td><span class="conf conf-confirmed">Confirmed</span></td></tr>
+              <tr><td>Affiliate revenue split</td><td>Not established. See the caution in Section 03</td><td><span class="conf conf-inference">Intelligence gap</span></td></tr>
+              <tr><td>Total revenue</td><td>No figure published. Halcyon's "$40 million-plus in 2024" refers to <em>demands</em>, not receipts, at an estimated 25 percent payment rate, and carries no stated on-chain methodology</td><td><span class="conf conf-inference">Unverified</span></td></tr>
+              <tr><td>Observed demand benchmark</td><td>Roughly $260,000 average across four US healthcare and non-profit victims listed between November 2025 and February 2026 (Symantec)</td><td><span class="conf conf-credible">Credible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions Exposure</div>
+        <p>No OFAC action names Medusa, Spearwing, Storm-1175, FROZEN SPIDER or any individual tied to the operation. Recent Treasury activity in this space has instead targeted shared ecosystem infrastructure: the November 2025 trilateral action against the Russia-based bulletproof hosting provider Media Land, whose disclosed ransomware clients were LockBit, BlackSuit and Play and did not include Medusa, and the July 2026 designation of a VPN service and a cryptor seller.</p>
+        <div class="conf-block credible">
+          <strong>ANALYST INFERENCE.</strong> Medusa's absence from every sanctions instrument despite its victim volume most likely reflects the same underlying condition as the on-chain gap: nobody has published the financial attribution work that a designation would normally rest on. Whether that reflects resourcing, prioritisation, or work held below the open-source line cannot be distinguished from available reporting.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 07: TARGETING -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card highlight">
+          <div class="metric-label">FBI-Confirmed Victims</div>
+          <div class="metric-val">500+</div>
+          <div class="metric-note">Through April 2026</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">DLS Posts (ransomware.live)</div>
+          <div class="metric-val">517</div>
+          <div class="metric-note">First post 11 Jan 2023</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">DLS Posts (RansomLook)</div>
+          <div class="metric-val">537</div>
+          <div class="metric-note">Highest tracked count</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Countries</div>
+          <div class="metric-val">50</div>
+          <div class="metric-note">US 262 &bull; UK 38 &bull; CA 35</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Two counts, two different things.</strong> The FBI's 500-plus figure counts victims identified through investigation. The tracker figures count leak-site posts. They are not the same population and their convergence near 500 to 540 is coincidental rather than confirmatory. Note also that ransomware.live's own descriptive text still says "over 300 victims," which is stale copy carried over from the March 2025 advisory.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector and Geography</div>
+        <p>The joint advisory names medical, education, legal, insurance, technology and manufacturing as the most affected sectors, with defence, government services and financial services also represented. Healthcare has drawn specific regulatory attention: HHS joined the August 2026 advisory update explicitly to warn hospitals, which is itself a signal about where the harm has concentrated. Halcyon assesses that the United States accounts for more than half of all Medusa attacks, consistent with the tracker geography above.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Date</th><th>Outcome</th></tr></thead>
+            <tbody>
+              <tr><td>Minneapolis Public Schools</td><td>February 2023</td><td>$1,000,000 demand refused. More than 100,000 records published, including sensitive student records. The case that established Medusa's willingness to follow through</td></tr>
+              <tr><td>University of Mississippi Medical Center</td><td>February 2026</td><td>$800,000 demand. Nine-day system outage; clinical operations reverted to paper. Reporting indicates the incident drew significant law enforcement attention</td></tr>
+              <tr><td>Ace Micromatic Group</td><td>2023</td><td>Data published after non-payment; the victim page reproduced in Section 01</td></tr>
+              <tr><td>International Civil Defence Organisation</td><td>2023</td><td>Public administration targeting in Europe</td></tr>
+              <tr><td>Sartrouville, France</td><td>2023</td><td>Municipal government</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">A State Actor as Customer: Lazarus Group</div>
+        <div class="conf-block credible">
+          <strong>CREDIBLE, single vendor, and smaller than commonly reported.</strong> Symantec and Carbon Black reported on 24 February 2026 that North Korea's Lazarus Group had used the Medusa encryptor. The evidence is tool co-presence: Lazarus-exclusive tooling, principally the Comebacker backdoor, alongside Blindingcan and a custom RP_Proxy, in intrusions where Medusa was deployed. This is tool-overlap attribution, not infrastructure or victim-based attribution.
+        </div>
+        <p>The scope is two incidents: one successful Medusa deployment against an unnamed Middle East target, and one failed attempt against a US healthcare organisation. Symantec explicitly could not attribute all four of the US healthcare and non-profit victims listed since November 2025 to DPRK activity, and could not resolve which Lazarus sub-group was responsible, noting that the tradecraft resembles Stonefly or Andariel while Comebacker also maps to Pompilus. No second vendor has corroborated the finding; the wide coverage across The Hacker News, The Record, The Register, Dark Reading and others is amplification of one Symantec post.</p>
+        <div class="callout callout-warning">
+          <strong>Figures to avoid.</strong> Claims that Lazarus conducted "366 incidents" using Medusa at an average of $260,000 conflate three separate numbers. The 366 figure is Symantec's count of Medusa leak-site claims overall. The $260,000 average covers four healthcare and non-profit victims, only one of which is attributed to Lazarus. The DPRK-attributed activity is two incidents.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ENFORCEMENT -->
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <div class="callout callout-alert">
+        <strong>The headline finding of this profile.</strong> Across five years and more than 500 confirmed victims, Medusa has generated no arrests, no indictments, no named individuals, no OFAC designations, no Europol or NCA action, no infrastructure seizure and no domain takedown. The count of law enforcement actions against this group, by any authority, in any jurisdiction, is zero.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">What Does Not Exist</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Instrument</th><th>Status</th><th>Comparison</th></tr></thead>
+            <tbody>
+              <tr><td>Named individuals</td><td>None</td><td>LockBit: Dmitry Khoroshev named, sanctioned and indicted May 2024</td></tr>
+              <tr><td>Indictments</td><td>None</td><td>Conti, REvil, Ryuk and Phobos all produced charging documents</td></tr>
+              <tr><td>Arrests</td><td>None</td><td>Phobos/8Base principals arrested in Operation Phobos Aetor, February 2025</td></tr>
+              <tr><td>OFAC designations</td><td>None</td><td>Multiple across the ecosystem in 2025 and 2026</td></tr>
+              <tr><td>Infrastructure seizure</td><td>None</td><td>LockBit (Operation Cronos), Royal/BlackSuit (Operation Checkmate)</td></tr>
+              <tr><td>Domain takedown</td><td>None. osintcorp.net remains live</td><td>Routine in comparable cases</td></tr>
+              <tr><td>Free decryptor</td><td>None</td><td>Akira, Phobos and others have had law-enforcement or vendor decryptors released</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">The Regulatory Response That Did Occur</div>
+        <p>Government engagement with Medusa has been entirely advisory rather than coercive. The March 2025 joint advisory and its August 2026 update are substantive documents, and the addition of HHS as a co-author in 2026 signals escalating concern about healthcare exposure. But an advisory imposes cost on defenders, not on the operation. Nothing in the public record has raised Medusa's cost of doing business.</p>
+        <div class="conf-block credible">
+          <strong>ANALYST INFERENCE, competing explanations.</strong> Three readings are consistent with the evidence and cannot be separated from open sources. First, an attribution gap: the absence of financial tracing (Section 06) means the evidentiary foundation for a designation or indictment may simply not exist. Second, prioritisation: Medusa lacks the political salience of Colonial Pipeline or the scale of LockBit, and enforcement attention has demonstrably followed salience. Third, operational security: the core operators may be genuinely harder to identify than their peers, with the leak-site persona work handled through the OSINT Without Borders layer while the developers stay dark. The first explanation is the most economical, since it also explains the on-chain gap, but confidence is low.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Assessed Jurisdiction</div>
+        <p>Medusa's core operators are assessed to be Russian-speaking, on behavioural and circumstantial grounds rather than direct evidence. The supporting indicators are: recruitment and victim-update posting on Russian-language cybercrime forums; use of Fenya, the Russian criminal argot, by affiliates seeking credibility on those forums; Cyrillic script in operational tooling; and systematic avoidance of targets in Russia and the CIS.</p>
+        <div class="conf-block credible">
+          <strong>CREDIBLE, low to moderate confidence.</strong> Cyjax, which developed the forum-behaviour case, explicitly qualifies it: "we cannot be certain that this is a Russian hacking operation." No leaked communications, named personnel, government statement or infrastructure geolocation supports the assessment. As set out in Section 04, the CIS-exclusion indicator here is a <em>targeting</em> pattern, not a technical kill switch, because no reverse-engineering source documents a locale check in the binary.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Services Nexus</div>
+        <p>No confirmed or officially assessed relationship exists between Medusa and the FSB, SVR or GRU. There is no documented safe-harbour arrangement, no non-prosecution understanding, and no intelligence-sharing relationship in the public record. Medusa's evidentiary position is markedly weaker than the comparison cases: Conti's leaked internal chats produced direct alignment indicators, and US government statements have addressed Russian safe harbour for LockBit explicitly. Nothing equivalent exists here.</p>
+        <p>CIS-target avoidance is a near-universal feature of Russian-speaking ransomware operations and functions as self-preservation rather than as evidence of coordination. Applied to Medusa it supports an assessment of Russian-speaking origin at low to moderate confidence and supports no state-nexus conclusion at all.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Three Geographies, Kept Separate</div>
+        <div class="callout callout-warning">
+          This profile contains three distinct geographic claims operating at three different organisational layers. Conflating them is the most likely analytical error a reader will make.
+          <ul class="content-list" style="margin-top:10px;">
+            <li><strong>Core operators, assessed Russian-speaking.</strong> Behavioural evidence, low to moderate confidence. This is the jurisdiction claim about Medusa itself.</li>
+            <li><strong>Storm-1175, described as China-based.</strong> An affiliate-level claim, and a fragile one. It originates in a single Microsoft Threat Intelligence social-media post from April 2024; every subsequent instance links back to that post. Microsoft's own detailed April 2026 blog on Storm-1175 does not repeat it, describing the actor only as a financially motivated cybercriminal threat actor. BleepingComputer hedges it as "believed to be." Microsoft has also held this actor at a temporary Storm designation for three years, which is itself a statement about attribution confidence. Microsoft consistently characterises Storm-1175 as financially motivated, never as state-sponsored: this is not a PRC state-nexus claim.</li>
+            <li><strong>Lazarus Group, DPRK state actor, as customer.</strong> A North Korean state-sponsored group using the Medusa encryptor in two incidents. This is a customer relationship running into Medusa, not a state relationship behind it, and it says nothing about the operators' jurisdiction.</li>
+          </ul>
+        </div>
+        <p>A China-based affiliate operating inside a Russian-speaking RaaS is unusual but not contradictory. Affiliate rosters are geographically mixed by design, and affiliate origin carries no implication for operator origin.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Summary Assessment</div>
+        <div class="conf-block credible">
+          No confirmed state nexus of any kind exists for Medusa's core operation. The Russian-speaking assessment rests on forum behaviour and targeting patterns, not on attribution evidence. A confirmed DPRK state-actor customer relationship exists at single-vendor confidence and is analytically distinct from the operator-jurisdiction question. The China descriptor attached to Storm-1175 is an affiliate-level claim from one vendor, unrepeated in that vendor's own long-form reporting, and should not be carried into statements about Medusa.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <p>Medusa is in the most uncertain phase of its five-year existence. The operation has not announced a shutdown, has not rebranded, and has not been disrupted. It has simply stopped posting.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">Dormancy Indicators</div>
+        <ul class="content-list">
+          <li><strong>No new leak-site victim since April 2026.</strong> Reported by The Record on 18 August 2026. This should be attributed to The Record's reporting and not to the CISA advisory, which does not contain the statement.</li>
+          <li><strong>Every Tor mirror offline.</strong> Both ransomware.live and RansomLook record all Medusa .onion addresses as down. Ransomware.live flagged the group inactive at roughly 188 days as of this build.</li>
+          <li><strong>Storm-1175 last observed on Medusa in April 2026</strong>, the same month the leak-site postings stop, before resurfacing in August 2026 with its own locker.</li>
+          <li><strong>osintcorp.net still up at 100 percent.</strong> The publicity layer outlived the extortion infrastructure, which is not the pattern of a deliberate wind-down.</li>
+        </ul>
+        <div class="conf-block credible">
+          <strong>CREDIBLE trend signal, not a confirmed collapse.</strong> Leak-site silence is a lagging and noisy indicator. Postings trail intrusions, and a negotiation-driven model can run privately for months without publishing. The convergence of four independent signals on the same April 2026 boundary is what raises this above noise.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Competing Explanations</div>
+        <div class="pillar-grid">
+          <div class="pillar-card credible">
+            <div class="pillar-num">Hypothesis A</div>
+            <div class="pillar-title">Affiliate attrition</div>
+            <div class="pillar-body">Storm-1175's departure removed a high-tempo affiliate that may have generated a substantial share of visible output. If Medusa's leak-site volume was concentrated in a small number of productive affiliates, one defection would produce exactly this signature. The timing alignment is the strongest evidence.</div>
+          </div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Hypothesis B</div>
+            <div class="pillar-title">Heat avoidance</div>
+            <div class="pillar-body">The University of Mississippi Medical Center attack drew significant law enforcement attention according to experts cited by The Record. A deliberate go-quiet following an incident that attracted federal focus on a US hospital is a recognised pattern. Note there is no evidence of an actual investigation reaching the group.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Hypothesis C</div>
+            <div class="pillar-title">Quiet reconstitution</div>
+            <div class="pillar-body">The brand is dark but the operators are unidentified, unsanctioned and unindicted. Nothing prevents reappearance under a new name. The surviving clear-web publicity asset would be the natural place for a relaunch to surface, which is why it is worth monitoring.</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Hypothesis D</div>
+            <div class="pillar-title">Collection artefact</div>
+            <div class="pillar-body">If the Tor mirrors are down for infrastructure reasons, trackers would record silence whether or not the operation continues. The FBI's investigation-based count runs only to April 2026, so it cannot arbitrate. Weakest of the four, but not excluded.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability Trajectory</div>
+        <p>Nothing in the record suggests technical decline. Medusa's Linux and ESXi capability was formally documented for the first time in August 2026, meaning the confirmed capability envelope was still widening as the brand went quiet. Storm-1175's post-departure behaviour points the same way: a custom C++ locker built and fielded quickly, with exploitation of a freshly disclosed N-central flaw inside roughly two weeks of disclosure. Departing affiliates from this ecosystem lose a brand, not a skill set.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Standing Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>No named individual anywhere in the operation, unlike every comparably prolific group.</li>
+          <li>No blockchain forensics from any named firm. This is the gap that most likely blocks enforcement action.</li>
+          <li>No established affiliate revenue split; the widely circulated 60/40 figure is unsourced.</li>
+          <li>No established RSA key size in the encryption scheme.</li>
+          <li>Whether the April 2026 silence reflects decline, deliberate dormancy, reconstitution or a collection artefact cannot be resolved from open sources.</li>
+          <li>Whether affiliate clusters beyond Storm-1175 exist under separate vendor designations. Darktrace references Medusa collaboration with big-game-hunting groups and IABs but supplies insufficient technical detail for confident inclusion.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Collection Priorities</div>
+        <ul class="content-list">
+          <li><strong>osintcorp.net.</strong> The only live Medusa-associated asset and the most likely surface for any relaunch or successor announcement. Monitor content, hosting, registration and the associated Telegram channel.</li>
+          <li><strong>Tor mirror status.</strong> A mirror returning would distinguish infrastructure failure from operational cessation.</li>
+          <li><strong>The t0mas persona and successor accounts</strong> on BreachForums and equivalent venues, given the documented linkage to Medusa's publicity function.</li>
+          <li><strong>New lockers appearing against the same product families</strong> (managed file transfer, RMM, mail servers) with a PDQ-style deployment pattern and a vulnerable-driver EDR killer. That combination is Medusa's operational signature and would survive a rebrand.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent intelligence reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9654; Toggle Source List
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government and Regulatory</div>
+        <div class="source-item"><span class="source-num">[1]</span><span><a href="https://www.ic3.gov/CSA/2026/260818.pdf" target="_blank">FBI, CISA and HHS: Joint Cybersecurity Advisory AA25-071A, "#StopRansomware: Medusa Ransomware", updated 18 August 2026 (29pp). Authoritative text for the 500-plus victim count, the affiliate model, IAB payment ranges, triple extortion, and the Linux and ESXi tradecraft</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span><a href="https://www.ic3.gov/CSA/2025/250312.pdf" target="_blank">FBI, CISA and MS-ISAC: Joint Cybersecurity Advisory AA25-071A, original version, 12 March 2025 (300-plus victims as of February 2025)</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa25-071a" target="_blank">CISA advisory landing page for AA25-071A. Note: this page has served cached March 2025 body text; cite the IC3 PDF for the updated content</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank">CISA Known Exploited Vulnerabilities Catalog (entries for CVE-2024-1709, CVE-2024-1708, CVE-2023-48788, CVE-2023-43208, CVE-2024-27198, CVE-2024-27199, CVE-2025-10035, CVE-2026-23760)</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span><a href="https://www.nomoreransom.org/en/decryption-tools.html" target="_blank">No More Ransom Project: Decryption Tools index. Full 294-entry index checked; no Medusa or MedusaLocker decryptor listed</a></span></div>
+
+        <div class="source-category">Primary Technical Analysis</div>
+        <div class="source-item"><span class="source-num">[6]</span><span><a href="https://securityscorecard.com/wp-content/uploads/2024/01/deep-dive-into-medusa-ransomware.pdf" target="_blank">SecurityScorecard (Vlad Pasca): "A Deep Dive into Medusa Ransomware". Instruction-level reverse engineering; authoritative for the AES-256 CBC plus RSA scheme, the hardcoded IV, the file footer structure, and the absence of any locale or keyboard check</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span><a href="https://www.security.com/threat-intelligence/medusa-ransomware-attacks" target="_blank">Symantec Threat Hunter Team: "Medusa Ransomware Activity Continues to Increase", 6 March 2025. Spearwing designation, PDQ deployment path, KillAV and vulnerable-driver usage, MedusaLocker separation, renamed Rclone IOCs</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span><a href="https://www.microsoft.com/en-us/security/blog/2026/04/06/storm-1175-focuses-gaze-on-vulnerable-web-facing-assets-in-high-tempo-medusa-ransomware-operations/" target="_blank">Microsoft Threat Intelligence: "Storm-1175 focuses gaze on vulnerable web-facing assets in high-tempo Medusa ransomware operations", 6 April 2026. Note: describes the actor only as financially motivated; contains no China reference</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span><a href="https://www.microsoft.com/en-us/security/blog/2025/10/06/investigating-active-exploitation-of-cve-2025-10035-goanywhere-managed-file-transfer-vulnerability/" target="_blank">Microsoft Threat Intelligence: "Investigating active exploitation of CVE-2025-10035, GoAnywhere MFT", October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span><a href="https://labs.watchtowr.com/attackers-with-decompilers-strike-again-smartertools-smartermail-wt-2026-0001-auth-bypass/" target="_blank">watchTowr Labs: SmarterTools SmarterMail authentication bypass, WT-2026-0001 (CVE-2026-23760)</a></span></div>
+
+        <div class="source-category">Vendor Threat Intelligence</div>
+        <div class="source-item"><span class="source-num">[11]</span><span><a href="https://attack.mitre.org/groups/G1051/" target="_blank">MITRE ATT&amp;CK: Medusa Group, G1051 (aliases Spearwing, Medusa Actors; closed operation evolving to RaaS by 2023)</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span><a href="https://attack.mitre.org/software/S1244/" target="_blank">MITRE ATT&amp;CK: Medusa Ransomware, S1244</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span><a href="https://www.crowdstrike.com/en-us/adversaries/frozen-spider/" target="_blank">CrowdStrike: FROZEN SPIDER adversary profile (alias White Kali). Role-differentiated crew structure covering access, pentesting and media operations</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span><a href="https://www.halcyon.ai/threat-group/medusa" target="_blank">Halcyon: Medusa threat group profile. Source of the $40 million-plus 2024 demand estimate at an assessed 25 percent payment rate, and of the US share of targeting</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span><a href="https://www.darktrace.com/blog/under-medusas-gaze-how-darktrace-uncovers-rmm-abuse-in-ransomware-campaigns" target="_blank">Darktrace: "Under Medusa's Gaze: How Darktrace Uncovers RMM Abuse in Ransomware Campaigns", 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span><a href="https://www.cyfirma.com/research/tracking-ransomware-apr-2026/" target="_blank">Cyfirma: Tracking Ransomware monthly series (Medusa tracked; no wallet clustering or laundering pathway published)</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span><a href="https://socradar.io/blog/dark-web-profile-medusa-ransomware-medusalocker/" target="_blank">SOCRadar: "Dark Web Profile: Medusa Ransomware (MedusaLocker)", September 2023, updated April 2026. Source of the leak-site, Telegram and victim-page imagery in Section 01. Caution: this article conflates Medusa with MedusaLocker throughout its text</a></span></div>
+
+        <div class="source-category">Attribution and Publicity Apparatus</div>
+        <div class="source-item"><span class="source-num">[18]</span><span><a href="https://cybercx.com.au/blog/holding-a-mirror-to-medusa/" target="_blank">CyberCX Cyber Intelligence: "Holding a mirror to Medusa", 7 March 2023. High-confidence assessment that OSINT Without Borders is Medusa's public relations function; the t0mas persona evidence chain</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span><a href="https://www.security.com/threat-intelligence/lazarus-medusa-ransomware" target="_blank">Symantec and Carbon Black Threat Hunter Team: Lazarus-linked activity using Medusa ransomware, 24 February 2026. Comebacker, Blindingcan and RP_Proxy tool overlap; two incidents; sub-group unresolved</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span><a href="https://x.com/MsftSecIntel/status/1781353321267069292" target="_blank">Microsoft Threat Intelligence, April 2024: the single social-media post that is the origin of every "China-based Storm-1175" claim in subsequent reporting</a></span></div>
+
+        <div class="source-category">Leak-Site Trackers</div>
+        <div class="source-item"><span class="source-num">[21]</span><span><a href="https://www.ransomware.live/group/medusa" target="_blank">ransomware.live: medusa group page. 517 posts, first tracked victim 11 January 2023, 50 countries (US 262, UK 38, CA 35), all .onion mirrors down; retrieved 21 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span><a href="https://www.ransomlook.io/group/medusa" target="_blank">RansomLook: medusa group page. 537 posts all time; all .onion mirrors down; osintcorp.net listed as an associated URL at 100 percent uptime; retrieved 21 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[23]</span><span><a href="https://www.ransomlook.io/crypto/medusa" target="_blank">RansomLook cryptocurrency module: "No wallet found for this group"</a></span></div>
+
+        <div class="source-category">Storm-1175 Departure and StormEncryptor</div>
+        <div class="source-item"><span class="source-num">[24]</span><span><a href="https://www.bleepingcomputer.com/news/security/new-stormencryptor-ransomware-used-by-former-medusa-affiliate/" target="_blank">BleepingComputer: "New StormEncryptor ransomware used by former Medusa affiliate", 10 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[25]</span><span><a href="https://thehackernews.com/2026/08/china-linked-hackers-deploy-new.html" target="_blank">The Hacker News: "China-Linked Hackers Deploy New StormEncryptor Ransomware, Likely via N-central Flaw", 10 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[26]</span><span><a href="https://securityaffairs.com/197119/malware/storm-1175-replaces-medusa-with-new-stormencryptor-ransomware.html" target="_blank">Security Affairs: "Storm-1175 Replaces Medusa With New StormEncryptor Ransomware", August 2026</a></span></div>
+
+        <div class="source-category">Incident and Victim Reporting</div>
+        <div class="source-item"><span class="source-num">[27]</span><span><a href="https://therecord.media/more-than-200-medusa-ransomware-victims-in-last-year-cisa" target="_blank">The Record (Jonathan Greig), 18 August 2026. Sole source for the statement that Medusa has added no new leak-site victims since April 2026, and for expert commentary that the University of Mississippi Medical Center attack drew significant law enforcement attention</a></span></div>
+        <div class="source-item"><span class="source-num">[28]</span><span><a href="https://www.bleepingcomputer.com/news/security/cisa-medusa-ransomware-hit-over-500-critical-infrastructure-orgs/" target="_blank">BleepingComputer: "CISA: Medusa ransomware hit over 500 critical infrastructure orgs", August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[29]</span><span><a href="https://www.darkreading.com/cyberattacks-data-breaches/spearwing-raas-cyber-threat-scene" target="_blank">Dark Reading: "'Spearwing' RaaS Group Ruffles Cyber-Threat Feathers", 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[30]</span><span><a href="https://www.cybersecuritydive.com/news/medusa-ransomware-malicious-driver-edr-killer/743181/" target="_blank">Cybersecurity Dive: "Medusa ransomware using malicious driver as EDR killer" (ABYSSWORKER / smuol.sys)</a></span></div>
+
+        <div class="source-category">Codename Disambiguation</div>
+        <div class="source-item"><span class="source-num">[31]</span><span><a href="https://www.justice.gov/usao-edny/pr/justice-department-announces-court-authorized-disruption-snake-malware-network" target="_blank">US Department of Justice: disruption of the Snake malware network, May 2023. This operation was codenamed MEDUSA and is entirely unrelated to the Medusa ransomware group. Included here specifically to prevent conflation</a></span></div>
+        <div class="source-item"><span class="source-num">[32]</span><span><a href="https://cveawg.mitre.org/api/cve/" target="_blank">MITRE CVE Services records, used to verify every CVE identifier cited in Section 04 against its claimed product, description and CVSS score</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- .content -->
+
+  <footer class="page-footer">
+    Ransomware EDP Threat Actor Library &bull; Medusa Profile &bull; Last updated August 2026
+    <span class="reno-credit">Developed by Reno &bull; Compiled from open-source intelligence</span>
+  </footer>
+
+</main>
+</div><!-- .layout -->
+<script>
+// Dark mode toggle
+const toggle = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+toggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀ Light' : '☾ Dark';
+});
+if (saved === 'dark') toggle.textContent = '☀ Light';
+
+// Active section nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -65% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// LIVE DATA, victims + TI feed
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'medusa.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-medusa.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const sorted = [...victims]
+          .filter(v => v.attackdate || v.discovered || v.date)
+          .sort((a, b) => new Date(b.attackdate || b.discovered || b.date) - new Date(a.attackdate || a.discovered || a.date))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.attackdate || v.discovered || v.date;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.victim || v.post_title || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now' :
+                      diffH === 1 ? 'Intelligence data refreshed 1h ago' :
+                      diffH < 24 ? `Intelligence data refreshed ${diffH}h ago` :
+                      `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const refreshLabel = document.getElementById('topbar-refresh-label');
+        if (refreshLabel) refreshLabel.textContent = label;
+        const topbarLive = document.getElementById('topbar-live');
+        if (topbarLive) topbarLive.style.display = 'flex';
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+</script>
+<script src="groups-data.js"></script>
+<script src="nav.js"></script>
+<script src="../assets/node-library.js?v=6"></script>
+</body>
+</html>

@@ -72,7 +72,7 @@ HISTORY_FROM = "2024-01-01"
 PAUSE = 1.0          # be a polite client; RIPEstat is a free public service
 
 
-def get(endpoint, params):
+def get_once(endpoint, params):
     url = f"{RIPESTAT}/{endpoint}/data.json?{params}"
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     try:
@@ -87,6 +87,25 @@ def get(endpoint, params):
             return json.loads(out.stdout)
         except json.JSONDecodeError:
             return None
+
+
+def get(endpoint, params):
+    """
+    Retry transient failures before believing them.
+
+    The first run of this collector reported five networks as unreadable. Every
+    one of them answered normally when asked again a moment later: the failures
+    were the public service briefly declining, not a fact about the networks.
+    A health report that cries wolf stops being read, so the retry lives here
+    rather than in the reporting.
+    """
+    for wait in (0, 5, 20):
+        if wait:
+            time.sleep(wait)
+        result = get_once(endpoint, params)
+        if result is not None and result.get("status") == "ok":
+            return result
+    return result
 
 
 def month_span(start, end):
@@ -162,19 +181,32 @@ def main():
     cfg = json.loads(CONFIG.read_text())
     providers = cfg["providers"]
 
-    total = sum(len(p["asns"]) for p in providers.values())
+    # Networks come in buckets of differing confidence. "measured" holds
+    # networks the registry confirms belong to the provider. "review" holds
+    # ones whose ownership is not established, usually because the WHOIS record
+    # is empty. Both are collected, and every result carries its bucket, so a
+    # confirmed asset is never silently averaged in with an unconfirmed one.
+    # Networks classified as carriers are deliberately NOT collected here: they
+    # are other people's infrastructure and belong to a separate measurement.
+    def targets_for(prov):
+        return ([(n["asn"], "measured") for n in prov.get("measured", [])] +
+                [(n["asn"], "review") for n in prov.get("review", [])])
+
+    total = sum(len(targets_for(p)) for p in providers.values())
     print(f"Tracking {total} networks across {len(providers)} providers"
           f"{' with history' if want_history else ''}\n")
 
     results, failures = {}, []
     for slug, prov in providers.items():
         recs = []
-        for asn in prov["asns"]:
+        for asn, bucket in targets_for(prov):
             r = collect_asn(asn, want_history)
+            r["confidence"] = bucket
             if r.get("error"):
                 failures.append(f"AS{asn}")
             recs.append(r)
             time.sleep(PAUSE)
+        confirmed = [r for r in recs if r["confidence"] == "measured"]
         live = [r for r in recs if r.get("visible")]
         dark = [r for r in recs if not r.get("visible") and not r.get("error")]
         ups = sorted({u for r in recs for u in r.get("upstreams_now", [])})
@@ -183,6 +215,9 @@ def main():
             "designated": prov.get("designated", False),
             "profile": prov.get("profile"),
             "networks_tracked": len(recs),
+            "networks_confirmed_owned": len(confirmed),
+            "networks_unconfirmed": len(recs) - len(confirmed),
+            "carriers_named_in_profile": [n["asn"] for n in prov.get("carriers_named", [])],
             "networks_visible": len(live),
             "networks_dark": len(dark),
             "distinct_upstreams_now": len(ups),
@@ -207,7 +242,10 @@ def main():
                 "A network going dark is disconnection, not proof of enforcement: providers "
                 "renumber and abandon AS numbers commercially. The monthly history counts all "
                 "observed neighbours, mixing transit with peering; only the current upstream "
-                "figure is a transit count. Never read the two as the same number."
+                "figure is a transit count. Never read the two as the same number. Finally, "
+                "only networks marked confidence=measured are registry-confirmed as belonging "
+                "to the provider; confidence=review means ownership is asserted by the profile "
+                "but not confirmed by the registry, usually because the WHOIS record is empty."
             ),
             "distortion": "Medium",
         },
