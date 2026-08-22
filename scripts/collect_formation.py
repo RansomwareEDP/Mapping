@@ -201,23 +201,51 @@ def main():
         time.sleep(PAUSE)
 
     live = [c for c in companies if not c.get("error")]
-    addresses, officers = Counter(), Counter()
-    addr_members, off_members = defaultdict(list), defaultdict(list)
+    # Count DISTINCT companies per address and per officer, not appearances.
+    # Counting appearances reported Marat Timurov at "2 companies" when he was
+    # at one, appointed in 2023, resigned in May 2025 and reappointed a month
+    # later. Two appointments, one company. The whole question here is whether
+    # a person or address spans SEVERAL entities, so appearances answer the
+    # wrong question and inflate exactly the signal being looked for.
+    addr_members, off_members = defaultdict(set), defaultdict(set)
     for c in live:
+        name = c.get("company_name") or c.get("number")
         a = c.get("registered_office")
         if a:
-            addresses[a] += 1
-            addr_members[a].append(c.get("company_name"))
+            addr_members[a].add(name)
         for o in c.get("officers", []):
             n = (o.get("name") or "").strip().upper()
             if n:
-                officers[n] += 1
-                off_members[n].append(c.get("company_name"))
+                off_members[n].add(name)
 
-    shared_addr = {a: {"count": n, "companies": addr_members[a]}
-                   for a, n in addresses.items() if n > 1}
-    shared_off = {o: {"count": n, "companies": off_members[o]}
-                  for o, n in officers.items() if n > 1}
+    shared_addr = {a: {"count": len(v), "companies": sorted(v)}
+                   for a, v in addr_members.items() if len(v) > 1}
+
+    # How many companies in total sit at a shared address. This is the
+    # difference between two shells quietly sharing a bespoke office and two
+    # shells both using a virtual office with tens of thousands of tenants.
+    # Without it the report says "shared address" and lets the reader supply
+    # their own meaning, which for an address like this one is usually wrong.
+    for a, d in shared_addr.items():
+        postcode = a.split(" ", 2)[:2]
+        res, err = api("/advanced-search/companies?size=1&location="
+                       + urllib.parse.quote(" ".join(postcode)), key)
+        time.sleep(PAUSE)
+        if err or not res:
+            d["companies_at_this_address"] = None
+            d["scale_note"] = "Could not be counted."
+        else:
+            hits = res.get("hits")
+            d["companies_at_this_address"] = hits
+            if hits and hits > 500:
+                d["scale_note"] = (f"About {hits:,} companies are registered at this address. "
+                                   "That is a mass-registration or virtual-office address, so "
+                                   "two tracked shells sharing it means very little on its own.")
+            elif hits:
+                d["scale_note"] = (f"About {hits:,} companies are registered at this address. "
+                                   "Small enough to be worth a look.")
+    shared_off = {o: {"count": len(v), "companies": sorted(v)}
+                  for o, v in off_members.items() if len(v) > 1}
 
     payload = {
         "meta": {
@@ -284,9 +312,11 @@ def write_health(payload, now, problems):
     if sa:
         lines.append("Registered offices used by more than one tracked company:")
         for a, d in sorted(sa.items(), key=lambda kv: -kv[1]["count"]):
-            lines.append(f"   {d['count']} companies   {a[:58]}")
+            lines.append(f"   {d['count']} tracked companies at   {a[:48]}")
             for n in d["companies"]:
-                lines.append(f"                 {str(n)[:54]}")
+                lines.append(f"        {str(n)[:56]}")
+            if d.get("scale_note"):
+                lines.append(f"        -> {d['scale_note'][:92]}")
         lines.append("")
     else:
         lines.append("No registered office is shared by more than one tracked company.")
