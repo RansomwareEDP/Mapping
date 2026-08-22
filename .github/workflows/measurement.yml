@@ -67,6 +67,13 @@ jobs:
           ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
         run: python3 scripts/collect_crypters.py --discover || true
 
+      # Joins tracked provider address space against live malware infrastructure.
+      # Answers whether a provider is being USED, which every other bulletproof
+      # hosting measurement here is blind to.
+      - name: Collect live threat infrastructure
+        if: always()
+        run: python3 scripts/collect_hosted_threats.py
+
       # Watches the hand-maintained enforcement tracker for drift against the
       # published OFAC list. Produces questions for a person, never corrections.
       - name: Check sanctions tracker for drift
@@ -85,7 +92,7 @@ jobs:
       - name: Show health reports
         if: always()
         run: |
-          for f in victims exploits transit registry crypters sanctions coverage; do
+          for f in victims exploits transit registry crypters threats sanctions coverage; do
             echo "----- $f -----"
             cat "data/measurement/HEALTH-$f.txt" || echo "No $f health report."
             echo

@@ -1,0 +1,2342 @@
+{
+ "meta": {
+  "sources": [
+   "ThreatFox (abuse.ch)",
+   "URLhaus (abuse.ch)",
+   "RIPEstat"
+  ],
+  "built": "2026-08-22T20:15:26Z",
+  "runs": 2,
+  "prefixes_checked": 657,
+  "networks_unreadable": [],
+  "indicators_examined": 21633,
+  "indicators_on_confirmed_networks": 443,
+  "indicators_on_adjacent_networks": 245,
+  "measures": "Whether tracked hosting providers are currently carrying live malware infrastructure.",
+  "why_this_can_mislead": "Absence is not innocence: zero means nothing was REPORTED on that network, and reporting is uneven and volunteer-driven. The source exports cover a recent rolling window, so one run is a snapshot rather than a series. Address space changes hands, so a prefix inside a tracked network today may not be tomorrow. And presence is not proof the provider knew: it is a reason to look at abuse response, which is what separates a bulletproof host from a careless one. Indicators on compromised machines are counted separately and must never be added to the rest, because a hacked server is a victim, not inventory. Hits on sibling and successor networks are also kept apart: those are networks a profile records as adjacent without establishing ownership, so counting them against a provider asserts an attribution the research did not make.",
+  "distortion": "Medium"
+ },
+ "ecosystem_botnet_c2_by_family": {
+  "Cobalt Strike": 1246,
+  "PureRAT": 455,
+  "AsyncRAT": 337,
+  "Unknown malware": 252,
+  "AdaptixC2": 247,
+  "Vidar": 128,
+  "Tofsee": 112,
+  "DCRat": 104,
+  "Sliver": 97,
+  "Evilginx": 81,
+  "Aisuru": 73,
+  "HypeAgent": 65,
+  "Havoc": 61,
+  "VShell": 58,
+  "Tsundere": 45,
+  "RansomHub": 36,
+  "Quasar RAT": 35,
+  "DeimosC2": 31,
+  "NetSupportManager RAT": 30,
+  "ValleyRAT": 28,
+  "Remus": 28,
+  "pupy": 25,
+  "Stealc": 21,
+  "Latrodectus": 19,
+  "DanaBot": 17,
+  "Eye Pyramid": 17,
+  "Chaos": 16,
+  "BianLian": 15,
+  "ClearFake": 14,
+  "Unknown RAT": 14,
+  "Mirai": 14,
+  "Brute Ratel C4": 10,
+  "PoshC2": 7,
+  "Hook": 7,
+  "Deimos": 7,
+  "vo1d": 6,
+  "GCleaner": 5,
+  "TELEPUZ": 4,
+  "Kimwolf": 3,
+  "Unknown Loader": 3
+ },
+ "indicator_types_on_tracked_space": {
+  "malware_distribution": 580,
+  "botnet_cc": 107,
+  "payload_delivery": 4
+ },
+ "malware_families_on_tracked_space": {
+  "elf, mirai, ua-wget": 155,
+  "c2-monitor-auto, dropped-by-amadey": 151,
+  "unknown": 30,
+  "ua-wget": 26,
+  "AsyncRAT": 24,
+  "ascii, powershell, ps1": 18,
+  "Tofsee": 16,
+  "54e64e, dropped-by-amadey": 14,
+  "censys, sh, ua-wget": 13,
+  "censys, elf, ua-wget": 13,
+  "PureRAT": 12,
+  "DCRat": 11,
+  "censys, elf, mirai, ua-wget": 11,
+  "9d2ca3, dropped-by-amadey": 9,
+  "AdaptixC2": 7,
+  "Stealc": 6,
+  "dropped-by-Phorpiex, phorpiex": 6,
+  "connectwise": 6,
+  "GCleaner": 5,
+  "Cobalt Strike": 5,
+  "54e64e, dropped-by-amadey, rustystealer": 5,
+  "54e64e, dropped-by-amadey, RemoteX": 5,
+  "Phorpiex": 4,
+  "Eye Pyramid": 4,
+  "c2-monitor-auto, dropped-by-amadey, rustystealer": 4,
+  "sh, ua-wget": 4,
+  "c2-monitor-auto, dropped-by-amadey, RemoteX": 4,
+  "Quasar RAT": 3,
+  "54e64e, dropped-by-amadey, Stealc": 3,
+  "c2-monitor-auto, dropped-by-amadey, OverlordRAT": 3,
+  "ascii, Formbook, powershell, ps1": 3,
+  "ascii, powershell, ps1, VIPKeylogger": 3,
+  "ascii, opendir, powershell, ps1": 3,
+  "dropped-by-Phorpiex": 3,
+  "Sliver": 2,
+  "PoshC2": 2,
+  "Amadey": 2,
+  "ascii, opendir, powershell, ps1, VIPKeylogger": 2,
+  "178-16-52-133, connectwise, exe, ua-wget": 2,
+  "CoinMiner, elf, iot": 2
+ },
+ "providers": {
+  "aeza": {
+   "name": "AEZA GROUP",
+   "designated": true,
+   "indicators_confirmed_own": 10,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {
+    "AS210644 (measured)": 9,
+    "AS216246 (measured)": 1
+   },
+   "malware_families": {
+    "AdaptixC2": 1,
+    "89-208-97-134, exe": 1,
+    "89-208-97-134, exe, OverlordRAT": 1,
+    "89-208-97-134, powershell": 1,
+    "45-152-198-90, elf, rekoobe": 1,
+    "79-137-194-83, exe": 1,
+    "176-124-207-93-9999, CoinMiner, sh": 1,
+    "176-124-207-93-9999, elf": 1,
+    "unknown": 1,
+    "DDoSAgent": 1
+   },
+   "indicators": [
+    {
+     "value": "138.124.113.131:4211",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-05-01",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://89.208.97.134/conhost.exe",
+     "malware": "89-208-97-134, exe",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-05",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://89.208.97.134/WindowsAudioGraph.exe",
+     "malware": "89-208-97-134, exe, OverlordRAT",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-05",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://89.208.97.134/index.ps1",
+     "malware": "89-208-97-134, powershell",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-05",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://45.152.198.90/lol",
+     "malware": "45-152-198-90, elf, rekoobe",
+     "threat_type": "malware_distribution",
+     "asn": 216246,
+     "confidence": "measured",
+     "first_seen": "2026-08-05",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://79.137.194.83/run.exe",
+     "malware": "79-137-194-83, exe",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-04",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://176.124.207.93:9999/x.sh",
+     "malware": "176-124-207-93-9999, CoinMiner, sh",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-04",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://176.124.207.93:9999/pearl-miner",
+     "malware": "176-124-207-93-9999, elf",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-04",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://147.45.69.128/mirai.x86_64",
+     "malware": "unknown",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-03",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://147.45.69.128/bot.linux_amd64",
+     "malware": "DDoSAgent",
+     "threat_type": "malware_distribution",
+     "asn": 210644,
+     "confidence": "measured",
+     "first_seen": "2026-08-03",
+     "source": "urlhaus"
+    }
+   ]
+  },
+  "bearhost": {
+   "name": "Bearhost / Underground / Voodoo Servers",
+   "designated": false,
+   "indicators_confirmed_own": 16,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {
+    "AS200593 (measured)": 10,
+    "AS198953 (measured)": 6
+   },
+   "malware_families": {
+    "AdaptixC2": 4,
+    "Stealc": 2,
+    "Sliver": 2,
+    "PoshC2": 2,
+    "Eye Pyramid": 2,
+    "37-77-150-120, connectwise, exe, ua-wget": 2,
+    "DCRat": 1,
+    "Tsundere": 1
+   },
+   "indicators": [
+    {
+     "value": "91.202.233.120:8848",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.202.233.163/",
+     "malware": "Stealc",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.202.233.151:8443",
+     "malware": "Sliver",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-08-09",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.202.233.151:31337",
+     "malware": "Sliver",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-08-09",
+     "source": "threatfox"
+    },
+    {
+     "value": "176.120.22.129:443",
+     "malware": "PoshC2",
+     "threat_type": "botnet_cc",
+     "asn": 198953,
+     "confidence": "measured",
+     "first_seen": "2026-07-09",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.202.233.134/4d95d68e3fc64f3bbbf5.php",
+     "malware": "Stealc",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-07-05",
+     "source": "threatfox"
+    },
+    {
+     "value": "193.24.123.25:80",
+     "malware": "Tsundere",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-06-30",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.215.85.212:45423",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-05-28",
+     "source": "threatfox"
+    },
+    {
+     "value": "193.24.123.160:45631",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-05-26",
+     "source": "threatfox"
+    },
+    {
+     "value": "37.77.150.174:4333",
+     "malware": "Eye Pyramid",
+     "threat_type": "botnet_cc",
+     "asn": 198953,
+     "confidence": "measured",
+     "first_seen": "2026-05-25",
+     "source": "threatfox"
+    },
+    {
+     "value": "37.77.150.174:4332",
+     "malware": "Eye Pyramid",
+     "threat_type": "botnet_cc",
+     "asn": 198953,
+     "confidence": "measured",
+     "first_seen": "2026-05-25",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.202.233.214:44123",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-05-19",
+     "source": "threatfox"
+    },
+    {
+     "value": "176.120.22.127:443",
+     "malware": "PoshC2",
+     "threat_type": "botnet_cc",
+     "asn": 198953,
+     "confidence": "measured",
+     "first_seen": "2026-05-19",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.202.233.153:43555",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-05-01",
+     "source": "threatfox"
+    },
+    {
+     "value": "https://37.77.150.120/Bin/ScreenConnect.ClientSetup.exe",
+     "malware": "37-77-150-120, connectwise, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 198953,
+     "confidence": "measured",
+     "first_seen": "2026-08-09",
+     "source": "urlhaus"
+    },
+    {
+     "value": "https://37.77.150.120/bin/support.client.exe",
+     "malware": "37-77-150-120, connectwise, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 198953,
+     "confidence": "measured",
+     "first_seen": "2026-08-09",
+     "source": "urlhaus"
+    }
+   ]
+  },
+  "dedbropro": {
+   "name": "DEDBROPRO",
+   "designated": false,
+   "indicators_confirmed_own": 0,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {},
+   "malware_families": {},
+   "indicators": []
+  },
+  "medialand": {
+   "name": "Media Land LLC / Yalishanda: BPH Analytical Profile v2.2",
+   "designated": true,
+   "indicators_confirmed_own": 0,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {},
+   "malware_families": {},
+   "indicators": []
+  },
+  "stark": {
+   "name": "Stark Industries Solutions / THE.Hosting / WorkTitans",
+   "designated": true,
+   "indicators_confirmed_own": 0,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {},
+   "malware_families": {},
+   "indicators": []
+  },
+  "virtualine": {
+   "name": "VIRTUALINE",
+   "designated": false,
+   "indicators_confirmed_own": 417,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 245,
+   "indicators_on_compromised_hosts": 3,
+   "by_network": {
+    "AS202412 (measured)": 414,
+    "AS205759 (sibling)": 245,
+    "AS214940 (measured)": 3
+   },
+   "malware_families": {
+    "c2-monitor-auto, dropped-by-amadey": 151,
+    "unknown": 29,
+    "ua-wget": 26,
+    "ascii, powershell, ps1": 18,
+    "54e64e, dropped-by-amadey": 14,
+    "AsyncRAT": 10,
+    "PureRAT": 9,
+    "9d2ca3, dropped-by-amadey": 9,
+    "DCRat": 6,
+    "dropped-by-Phorpiex, phorpiex": 6,
+    "connectwise": 6,
+    "GCleaner": 5,
+    "54e64e, dropped-by-amadey, rustystealer": 5,
+    "54e64e, dropped-by-amadey, RemoteX": 5,
+    "Stealc": 4,
+    "Phorpiex": 4,
+    "Cobalt Strike": 4,
+    "c2-monitor-auto, dropped-by-amadey, rustystealer": 4,
+    "c2-monitor-auto, dropped-by-amadey, RemoteX": 4,
+    "54e64e, dropped-by-amadey, Stealc": 3,
+    "c2-monitor-auto, dropped-by-amadey, OverlordRAT": 3,
+    "ascii, Formbook, powershell, ps1": 3,
+    "ascii, powershell, ps1, VIPKeylogger": 3,
+    "ascii, opendir, powershell, ps1": 3,
+    "dropped-by-Phorpiex": 3,
+    "Quasar RAT": 2,
+    "AdaptixC2": 2,
+    "Eye Pyramid": 2,
+    "Amadey": 2,
+    "ascii, opendir, powershell, ps1, VIPKeylogger": 2,
+    "178-16-52-133, connectwise, exe, ua-wget": 2,
+    "77-83-39-9, connectwise, exe, ua-wget": 2,
+    "91-92-243-232, connectwise, exe, ua-wget": 2,
+    "54e64e, dropped-by-amadey, PureLogsStealer": 2,
+    "178-16-55-154, connectwise, exe": 2,
+    "158-94-211-183, connectwise, exe": 2,
+    "9d2ca3, dropped-by-amadey, RemoteX": 2,
+    "9d2ca3, dropped-by-amadey, MaskGramStealer": 2,
+    "158-94-209-17, exe": 2,
+    "158-94-209-221, connectwise, exe": 2,
+    "158-94-211-110, connectwise, exe": 2,
+    "91-92-240-17, connectwise, exe": 2,
+    "178-16-55-95, connectwise, exe": 2,
+    "VShell": 1,
+    "Unknown malware": 1,
+    "Latrodectus": 1,
+    "c2-monitor-auto, dropped-by-amadey, RemusStealer": 1,
+    "c2-monitor-auto, dropped-by-amadey, Stealc": 1,
+    "phorpiex": 1,
+    "CoinMiner, dropped-by-Phorpiex": 1,
+    "77-83-39-66, exe, ua-wget": 1,
+    "54e64e, dropped-by-amadey, PureRAT": 1,
+    "c2-monitor-auto, CoinMiner, dropped-by-amadey": 1,
+    "178-16-54-38, connectwise, ua-wget": 1,
+    "c2-monitor-auto, dropped-by-amadey, PureLogsStealer": 1,
+    "54e64e, dropped-by-amadey, RemusStealer": 1,
+    "54e64e, dropped-by-amadey, LummaStealer": 1,
+    "130-12-180-141, connectwise, exe, ua-wget": 1,
+    "130-12-180-67, connectwise, exe, ua-wget": 1,
+    "130-12-180-66, connectwise, exe, ua-wget": 1,
+    "54e64e, donutloader, dropped-by-amadey": 1,
+    "powershell, ps1": 1,
+    "ascii, Formbook, opendir, powershell, ps1": 1,
+    "c2-monitor-auto, dropped-by-amadey, Vidar": 1,
+    "54e64e, dropped-by-amadey, Vidar": 1,
+    "ClickFix PowerShell ps1 ascii": 1,
+    "158-94-211-214, exe": 1,
+    "c2, d, dropped-by-GCleaner": 1,
+    "B, c2, dropped-by-GCleaner": 1,
+    "1, c2, dropped-by-GCleaner": 1,
+    "c2-monitor-auto, dropped-by-amadey, HijackLoader": 1,
+    "c2-monitor-auto, dropped-by-amadey, xworm": 1,
+    "54e64e, dropped-by-amadey, SalatStealer": 1,
+    "158-94-209-17, exe, GhostPulse": 1,
+    "158-94-209-17, java": 1,
+    "158-94-211-63-8080, elf": 1,
+    "91-92-243-254, connectwise, exe": 1,
+    "94-154-35-240, exe": 1,
+    "178-16-52-160, connectwise, exe": 1,
+    "178-16-52-160, exe": 1,
+    "9d2ca3, dropped-by-amadey, xworm": 1,
+    "ClickFix, geofenced, ua-powershell, USA": 1,
+    "CHE, ClickFix, exe, geofenced, ua-ps": 1,
+    "ascii, ClickFix, powershell, ps1": 1,
+    "dropped-by-Phorpiex, rustystealer": 1,
+    "PhantomStealer": 1,
+    "c2-monitor-auto, dropped-by-amadey, SalatStealer": 1
+   },
+   "indicators": [
+    {
+     "value": "178.16.52.120:8787",
+     "malware": "VShell",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.240.98:7707",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.160.4:4782",
+     "malware": "Quasar RAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-21",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.169:4782",
+     "malware": "Quasar RAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.243.36:56001",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://178.16.52.8/",
+     "malware": "Stealc",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.55.56:4782",
+     "malware": "Quasar RAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.30:7080",
+     "malware": "HypeAgent",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-19",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.243.36:56002",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.160.127:8088",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-17",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.100:8848",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://158.94.210.108/",
+     "malware": "Stealc",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://158.94.209.112/",
+     "malware": "Stealc",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.243.114:443",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.196:4444",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-14",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.136:3009",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.181:56001",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-13",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.181:56002",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-13",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.208.101:666",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://178.16.52.90/",
+     "malware": "Stealc",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.208.101:963",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.208.101:7707",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.208.101:777",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/success?substr=mixfive&s=three&sub=nn",
+     "malware": "GCleaner",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/info",
+     "malware": "GCleaner",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/update",
+     "malware": "GCleaner",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/service",
+     "malware": "GCleaner",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/ycl",
+     "malware": "GCleaner",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.243.36:56003",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-11",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.136:7707",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-11",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.160.127:8808",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-10",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.113:8848",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-10",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://178.16.54.109/bolodo",
+     "malware": "Phorpiex",
+     "threat_type": "payload_delivery",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-10",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://178.16.54.109/locopoco",
+     "malware": "Phorpiex",
+     "threat_type": "payload_delivery",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-08",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://178.16.54.109/molakc",
+     "malware": "Phorpiex",
+     "threat_type": "payload_delivery",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-08",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.196:7777",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-07",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.42:13834",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-06",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.222:443",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-05",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.68:443",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-04",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.68:7707",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-04",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.55.104:8848",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-04",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.160.127:6680",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-04",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.55.237:6443",
+     "malware": "Unknown malware",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-02",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.16:2202",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-30",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.65:443",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-29",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.65:1907",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-29",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.65:2828",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-29",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.210.70:443",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-29",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.76:6606",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-28",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.68:3009",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-28",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.210.161:2222",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-28",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.211.163:24443",
+     "malware": "Cobalt Strike",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-27",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.76:8808",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-27",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.76:7707",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-27",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.211.191:8848",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-24",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.54.132:1987",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-24",
+     "source": "threatfox"
+    },
+    {
+     "value": "43.228.157.252:6606",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-22",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.190:7707",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-18",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.211.163:14443",
+     "malware": "Cobalt Strike",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-18",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.190:6606",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-16",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.190:8808",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-14",
+     "source": "threatfox"
+    },
+    {
+     "value": "158.94.211.63:32333",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-14",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.53.193:9999",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-07-09",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:417",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-07-09",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:420",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-25",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:421",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-25",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:424",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-25",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:429",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-22",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:425",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-22",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:427",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-22",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.90:418",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-22",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.16:1011",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-09",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.243:55380",
+     "malware": "DCRat",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-06-06",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://178.16.54.109/sodola",
+     "malware": "Phorpiex",
+     "threat_type": "payload_delivery",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-06-03",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.54.48:443",
+     "malware": "Eye Pyramid",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-06-01",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.47:443",
+     "malware": "Eye Pyramid",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-06-01",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.160.44:1000",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-05-31",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.22:8396",
+     "malware": "AdaptixC2",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-05-01",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.242.236:80",
+     "malware": "Amadey",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-04-26",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/oPvjr94jfe/index.php",
+     "malware": "Amadey",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-04-26",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:420",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-04-15",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:429",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-04-13",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:424",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-04-01",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:418",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-03-31",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:427",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-03-26",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:421",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-03-23",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:417",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-03-21",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.19:425",
+     "malware": "Tofsee",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-03-18",
+     "source": "threatfox"
+    },
+    {
+     "value": "46.151.182.205:6606",
+     "malware": "AsyncRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-03-13",
+     "source": "threatfox"
+    },
+    {
+     "value": "64.89.161.183:443",
+     "malware": "Cobalt Strike",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-02-23",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.52.194:443",
+     "malware": "Cobalt Strike",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-02-08",
+     "source": "threatfox"
+    },
+    {
+     "value": "91.92.240.57:443",
+     "malware": "Latrodectus",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2025-10-23",
+     "source": "threatfox"
+    },
+    {
+     "value": "178.16.55.53:443",
+     "malware": "Cobalt Strike",
+     "threat_type": "botnet_cc",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2025-08-20",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_4ba1a9722212abed.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-22",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_21aeb275da3bb00b.exe",
+     "malware": "54e64e, dropped-by-amadey, Stealc",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-22",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_91273358c1525030.exe",
+     "malware": "9d2ca3, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-22",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_4ce19bfafe018ff9.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, OverlordRAT",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-22",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_a34690cc683b0c1a.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-22",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_43c5f47d5fbe115a.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-22",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_47648acbd9943ebf.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.54.109/spamget.exe",
+     "malware": "unknown",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_9a5c49da1d9d1767.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, RemusStealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_1319bd61568f04ed.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, Stealc",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_542ee73385a72661.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_3b3bcb0313f73fb0.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_3dd10d441773a7d5.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-21",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ea0fdcdde83b1f61.exe",
+     "malware": "54e64e, dropped-by-amadey, rustystealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DVB/eecrypted.ps1",
+     "malware": "ascii, opendir, powershell, ps1, VIPKeylogger",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DVB/ugcrypted.ps1",
+     "malware": "ascii, opendir, powershell, ps1, VIPKeylogger",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/PW/prcrypted.ps1",
+     "malware": "ascii, Formbook, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/PW/pr2crypted.ps1",
+     "malware": "ascii, powershell, ps1, VIPKeylogger",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/PW/EZcrypted.ps1",
+     "malware": "ascii, powershell, ps1, VIPKeylogger",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_46acc204d4e52963.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_e646a62aa048cacd.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_0d90bf33aa3e6c18.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_4799cc1c552dbe75.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_fedb1cae70e15500.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_5531355e31758cd9.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-20",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.52.133/Bin/ScreenConnect.ClientSetup.exe",
+     "malware": "178-16-52-133, connectwise, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.52.133/bin/support.client.exe",
+     "malware": "178-16-52-133, connectwise, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_b8afcc5c4d1ea78e.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ae0cbdb600ff92fa.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_6a286233562894b3.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, rustystealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.54.109/getit.exe",
+     "malware": "phorpiex",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_00bdcc9da8206c4c.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-19",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.55.240/nmm/a",
+     "malware": "dropped-by-Phorpiex, phorpiex",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.55.240/a",
+     "malware": "dropped-by-Phorpiex, phorpiex",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.55.240/nm/a",
+     "malware": "dropped-by-Phorpiex, phorpiex",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_5770984c4235c5b0.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_49f73ea936886e59.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_31ea8e1c01e0e0f4.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_5607a34d16e59914.cmd",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_1d2e34021664fd28.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_27fd3a19e4e1e1b6.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-18",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_952a4ed2428c675f.exe",
+     "malware": "9d2ca3, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_eead3d0c419daff9.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_9e042abf89f49e45.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_d91af7a531637b1f.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.54.109/etc.exe",
+     "malware": "CoinMiner, dropped-by-Phorpiex",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ebb368c7ee29bd5e.exe",
+     "malware": "9d2ca3, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://43.228.157.73/check3.sh",
+     "malware": "CoinMiner, elf, iot",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_31dd752749e9338c.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_babe547392332f73.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_40500e12ca54e02b.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_3cca71a2b980b74a.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ba5747ef480cf9f7.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_4b8d61b5a6f660b5.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-17",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ef0a1d0d3c396203.exe",
+     "malware": "9d2ca3, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://43.228.157.73/deploy.sh",
+     "malware": "CoinMiner, elf, iot",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_e1a3f1926532a1e0.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, rustystealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_9022b6350736111c.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_4144dfb259ed3b1b.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ff630ced898745f7.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_c4ed5358194cb9dd.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://77.83.39.9/bin/support.client.exe",
+     "malware": "77-83-39-9, connectwise, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 214940,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://77.83.39.9/Bin/ScreenConnect.ClientSetup.exe",
+     "malware": "77-83-39-9, connectwise, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 214940,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "https://77.83.39.66/Bin/ScreenConnect.ClientSetup.exe",
+     "malware": "77-83-39-66, exe, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 214940,
+     "confidence": "measured",
+     "first_seen": "2026-08-16",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_14cf0ee8101600e7.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_76fd7c41ddb193a5.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_f5ae52914bf7056f.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, rustystealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_48852a33f51921f1.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_776621fa56cb2ef8.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_cb2aa48501d6d3b6.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_64858a8342cb3c62.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_865135af23551105.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_f50d0ed2eef01870.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-15",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_8f2a9c058325ac38.exe",
+     "malware": "54e64e, dropped-by-amadey, rustystealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_59d28a25d618df87.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_2f5216405eb2fec9.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_7cba58e6cdbbfa7e.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_583f8856851a870c.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_529348465823b047.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-14",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_5483b5101365b3ed.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_5ff61cd0b7de191e.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_02013378a7416297.exe",
+     "malware": "9d2ca3, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_ae96d08e0e89cde9.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey, rustystealer",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/uzcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/EEcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/UDcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DV/aktcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://196.251.121.142/a3f8d2/kaizen.arm",
+     "malware": "mirai",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_888f9e1e66545fd5.exe",
+     "malware": "54e64e, dropped-by-amadey, PureRAT",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DV/ojkcrypted.ps1",
+     "malware": "ascii, Formbook, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_3fe5ed2d30d53a73.exe",
+     "malware": "c2-monitor-auto, CoinMiner, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_3636b8ab0c149e71.cmd",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_bd1adaff26b8305d.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_c6d8c2a5c91fb3df.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_3d10f3731e453661.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_19e674e25adc5a91.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.54.109/rvn.exe",
+     "malware": "dropped-by-Phorpiex, phorpiex",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-13",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_de67bd60facbd66c.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DV/aaacrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DV/ojcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/uucrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/EZcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DV/cryptede.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/Ecrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/DV/akcrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/ucrypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://178.16.53.176/OJAK/U1crypted.ps1",
+     "malware": "ascii, powershell, ps1",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-12",
+     "source": "urlhaus"
+    }
+   ]
+  },
+  "zservers": {
+   "name": "ZServers / XHost",
+   "designated": true,
+   "indicators_confirmed_own": 0,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {},
+   "malware_families": {},
+   "indicators": []
+  }
+ }
+}
