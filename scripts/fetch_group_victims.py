@@ -42,6 +42,9 @@ import sys
 import time
 import urllib.error
 import urllib.request
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+import _rlive
 from datetime import datetime, timezone
 
 BASE = "https://api.ransomware.live/v2"
@@ -88,33 +91,6 @@ def month_list(now, count):
     return out
 
 
-def fetch(year, month):
-    """Returns (records, error). error is None, 'ratelimit', or 'failed'."""
-    url = f"{BASE}/victims/{year}/{month}"
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": UA})
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            return json.loads(r.read()), None
-    except urllib.error.HTTPError as e:
-        return None, ("ratelimit" if e.code == 429 else "failed")
-    except Exception:
-        # Some macOS Python installs cannot verify certificates. curl can.
-        out = subprocess.run(
-            ["curl", "-s", "--max-time", "60", "-w", "\n%{http_code}",
-             "-H", f"User-Agent: {UA}", url],
-            capture_output=True, text=True,
-        )
-        body, _, code = out.stdout.rpartition("\n")
-        if code.strip() == "429":
-            return None, "ratelimit"
-        if out.returncode != 0 or not body.strip():
-            return None, "failed"
-        try:
-            return json.loads(body), None
-        except json.JSONDecodeError:
-            return None, "failed"
-
-
 def main():
     dry_run = "--dry-run" in sys.argv
     now = datetime.now(timezone.utc)
@@ -125,16 +101,10 @@ def main():
     for i, (y, m) in enumerate(month_list(now, MONTHS_BACK)):
         if i:
             time.sleep(2)                      # be a polite client
-        records, err = fetch(y, m)
-        # A short block is normal and passes. Wait it out rather than failing
-        # the run: an aborted run means the site goes stale, so we try hard
-        # before giving up.
-        for wait in (30, 60, 120):
-            if err != "ratelimit":
-                break
-            print(f"  {y}-{m:02d}  rate limited, waiting {wait}s")
-            time.sleep(wait)
-            records, err = fetch(y, m)
+        # Shared with the measurement collector so the retry policy cannot
+        # drift between them. See scripts/_rlive.py.
+        records, err = _rlive.fetch_month_with_retry(
+            y, m, UA, log=lambda msg: print(f"  {y}-{m:02d}{msg}"))
         if records is None or not isinstance(records, list):
             missing.append(f"{y}-{m:02d}")
             print(f"  {y}-{m:02d}  FAILED ({err})")
