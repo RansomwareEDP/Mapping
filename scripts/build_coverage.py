@@ -130,12 +130,28 @@ def main():
         hand = entry.get("hand_maintained", [])
         if hand:
             rec["hand_maintained"] = hand
+        # A watcher checks a hand-maintained file for drift. It does NOT measure
+        # the node, so it must never promote one to MEASURED. Attaching five
+        # watchers moved five nodes to MEASURED on 22 Aug 2026, which overstated
+        # coverage by counting supervision as measurement.
+        watched = entry.get("watched_by", [])
+        if watched:
+            rec["watched_by"] = [feed_state(f, now) for f in watched]
 
         if not feeds:
             if hand and entry.get("verdict_if_no_feed") != "NOT_MEASURABLE":
                 rec["verdict"] = "PARTIAL"
-                rec["reason"] = ("Covered by " + ", ".join(hand) +
-                                 ", which a person maintains. No collector keeps it current.")
+                if watched:
+                    fresh = [w for w in rec["watched_by"]
+                             if w["age_days"] is not None and w["age_days"] <= FRESH_DAYS]
+                    rec["reason"] = ("Covered by " + ", ".join(hand) + ", which a person "
+                                     "maintains. Watched for drift by " + ", ".join(watched) +
+                                     (", checked recently." if fresh else
+                                      ", but that check has not run recently."))
+                else:
+                    rec["reason"] = ("Covered by " + ", ".join(hand) +
+                                     ", which a person maintains. Nothing would announce it "
+                                     "going stale.")
             else:
                 rec["verdict"] = entry.get("verdict_if_no_feed", "GAP")
                 rec["reason"] = entry.get("reason", "")
@@ -236,11 +252,23 @@ def write_health(payload, now):
 
     partial = [v for v in nodes.values() if v["verdict"] == "PARTIAL"]
     if partial:
-        lines.append("Covered only by hand. Each of these goes stale the day its author")
-        lines.append("stops, and nothing would announce it:")
-        for v in sorted(partial, key=lambda x: x["label"]):
-            lines.append(f"   {v['tier']:<9} {v['label'][:32]:<33} "
-                         f"{', '.join(v.get('hand_maintained', []))[:44]}")
+        watched = [v for v in partial if v.get("watched_by")]
+        unwatched = [v for v in partial if not v.get("watched_by")]
+        lines.append("Maintained by hand. A person still does the work on all of these.")
+        lines.append("")
+        if unwatched:
+            lines.append("  UNWATCHED. These go stale the day their author stops, and")
+            lines.append("  nothing would announce it:")
+            for v in sorted(unwatched, key=lambda x: x["label"]):
+                lines.append(f"     {v['tier']:<9} {v['label'][:30]:<31} "
+                             f"{', '.join(v.get('hand_maintained', []))[:40]}")
+            lines.append("")
+        if watched:
+            lines.append("  WATCHED. Still hand-maintained, but a daily check would notice")
+            lines.append("  the source moving underneath them:")
+            for v in sorted(watched, key=lambda x: x["label"]):
+                lines.append(f"     {v['tier']:<9} {v['label'][:30]:<31} "
+                             f"{', '.join(w['file'].replace('.json','') for w in v['watched_by'])}")
         lines.append("")
 
     crit_gaps = [v for v in nodes.values()
