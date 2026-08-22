@@ -67,6 +67,14 @@ jobs:
           ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
         run: python3 scripts/collect_crypters.py --discover || true
 
+      # Watches the hand-maintained enforcement tracker for drift against the
+      # published OFAC list. Produces questions for a person, never corrections.
+      - name: Check sanctions tracker for drift
+        if: always()
+        run: |
+          python3 scripts/check_sanctions.py --selftest
+          python3 scripts/check_sanctions.py
+
       # Runs LAST, on purpose. It reads what the collectors above actually
       # produced and works out each map node's verdict from that, so a broken
       # collector degrades its nodes instead of leaving a stale claim standing.
@@ -77,7 +85,7 @@ jobs:
       - name: Show health reports
         if: always()
         run: |
-          for f in victims exploits transit registry crypters coverage; do
+          for f in victims exploits transit registry crypters sanctions coverage; do
             echo "----- $f -----"
             cat "data/measurement/HEALTH-$f.txt" || echo "No $f health report."
             echo
