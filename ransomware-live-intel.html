@@ -604,9 +604,12 @@ body {
 
 <script>
 const FREE_API    = 'https://api.ransomware.live/v2';
-const PRO_API     = 'https://api-pro.ransomware.live/v2';
-const API_KEY     = '696a6e71-2a23-4840-aa16-4b030ec716e1';
 const CORS_PROXY  = 'https://corsproxy.io/?';
+// The PRO endpoint and its API key were removed on 22 Aug 2026. A key placed in
+// a page is readable by anyone who views source, so it was public from the day
+// this page shipped. Nothing here needs one: the same-origin relay in
+// functions/rl-api serves the free API server-side, with a direct call and a
+// CORS proxy behind it as fallbacks.
 
 async function apiFetch(endpoint) {
   const attempts = [
@@ -614,12 +617,8 @@ async function apiFetch(endpoint) {
     { url: '/rl-api' + endpoint, headers: {} },
     // 1. Free API direct (public, CORS likely enabled, no key needed)
     { url: FREE_API + endpoint, headers: {} },
-    // 2. PRO API direct
-    { url: PRO_API + endpoint, headers: { 'X-Api-Key': API_KEY } },
-    // 3. Free API via proxy
+    // 2. Free API via proxy
     { url: CORS_PROXY + encodeURIComponent(FREE_API + endpoint), headers: {} },
-    // 4. PRO API via proxy
-    { url: CORS_PROXY + encodeURIComponent(PRO_API + endpoint), headers: { 'X-Api-Key': API_KEY } },
   ];
   let lastErr = '';
   for (const attempt of attempts) {

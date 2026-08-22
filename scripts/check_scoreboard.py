@@ -80,6 +80,30 @@ def months_around(date_str, months):
     return sorted(before), sorted(after)
 
 
+def months_until_silent(series, slugs, after_keys):
+    """
+    How many months after an operation before the brand stopped posting and
+    stayed stopped.
+
+    A six-month total cannot tell a three-month tail from a group still running.
+    ALPHV/BlackCat published 58 victims after its operation, which flagged as a
+    disagreement, but the shape was 22, 31, 5, 0, 0, 0: a brand winding down,
+    exactly as scored. Sums hide that. Sequences do not.
+
+    Returns None when the brand never reached a sustained zero in the window.
+    """
+    counts = []
+    for k in after_keys:
+        month = series.get(k)
+        if month is None:
+            return None, []
+        counts.append(sum(month["by_group"].get(s, 0) for s in slugs))
+    for i in range(len(counts)):
+        if all(c == 0 for c in counts[i:]):
+            return i, counts
+    return None, counts
+
+
 def count(series, slugs, keys):
     total, present = 0, 0
     for k in keys:
@@ -127,21 +151,32 @@ def main():
             b, bp = count(series, slugs, before_keys)
             a, ap = count(series, slugs, after_keys)
             sa, _ = count(series, succ, after_keys) if succ else (0, 0)
+            silent_after, monthly = months_until_silent(series, slugs, after_keys)
             rec.update(victims_before=b, victims_after=a, months_covered_after=ap,
-                       successor_victims_after=sa,
+                       successor_victims_after=sa, monthly_after=monthly,
+                       months_until_silent=silent_after,
                        change_pct=(round(100 * (a - b) / b) if b else None))
             claims_stopped = any(c in (op.get("outcome") or "").lower() for c in CLAIMS_STOPPED)
-            if claims_stopped and a > 0:
+            # Still posting at the end of the window is a disagreement. Winding
+            # down to a sustained zero is the claim being right with a tail, and
+            # the tail length is the useful number.
+            if claims_stopped and silent_after is None:
                 brand_dead = "brand dead" in (op.get("outcome") or "").lower()
                 rec["verdict"] = "WORTH CHECKING"
-                rec["reason"] = (f"Recorded as \"{op.get('outcome')}\", but {a} victims were "
-                                 f"published under this brand in the {ap} months after."
+                rec["reason"] = (f"Recorded as \"{op.get('outcome')}\", but this brand was still "
+                                 f"publishing at the end of the {ap}-month window "
+                                 f"({', '.join(str(c) for c in monthly)})."
                                  + (" Note the claim is specifically about the BRAND." if brand_dead else ""))
                 flags.append(rec)
+            elif claims_stopped and silent_after > 0:
+                rec["verdict"] = "CONSISTENT"
+                rec["reason"] = (f"Wound down over {silent_after} month(s) and then stopped "
+                                 f"({', '.join(str(c) for c in monthly)}). {a} victims were "
+                                 f"published during the tail."
+                                 + (f" A successor brand published {sa} in the same window." if sa else ""))
             elif claims_stopped:
                 rec["verdict"] = "CONSISTENT"
-                rec["reason"] = ("Recorded as stopped, and no victims were published under this "
-                                 "brand afterwards."
+                rec["reason"] = ("Recorded as stopped, and the brand went silent immediately."
                                  + (f" A successor brand published {sa}." if sa else ""))
             else:
                 rec["verdict"] = "CONSISTENT"
@@ -214,8 +249,15 @@ def write_health(payload, now):
     if ok:
         lines.append("Consistent with the record:")
         for o in ok:
-            lines.append(f"   {o['date']}  {o['target'][:30]:<31} "
-                         f"{o.get('victims_before','-')} -> {o.get('victims_after','-')} victims")
+            tail = o.get("months_until_silent")
+            shape = ", ".join(str(c) for c in (o.get("monthly_after") or [])) or "-"
+            lines.append(f"   {o['date']}  {o['target'][:26]:<27} "
+                         f"{o.get('victims_before','-')} -> {o.get('victims_after','-')}"
+                         + (f", silent after {tail}mo" if tail else ""))
+            if o.get("monthly_after"):
+                lines.append(f"        monthly after: {shape}"
+                             + (f"   successor: {o['successor_victims_after']}"
+                                if o.get("successor_victims_after") else ""))
         lines.append("")
     if nc:
         lines.append("Cannot be checked, and why. These are NOT successes:")
