@@ -1,11 +1,13 @@
 {
  "meta": {
   "source": "MalwareBazaar (abuse.ch) API, free account required",
-  "built": "2026-08-22T19:06:55Z",
-  "tags_queried": 12,
-  "tags_returning_data": 12,
+  "built": "2026-08-22T21:53:30Z",
+  "tags_queried": 20,
+  "tags_returning_data": 20,
   "tags_truncated": [
-   "UPX"
+   "UPX",
+   "upx-dec",
+   "signed"
   ],
   "sample_cap": 1000,
   "measures": "Which obfuscation wrappers appear on submitted malware samples.",
@@ -21,8 +23,8 @@
    "oldest_seen": "2026-07",
    "newest_seen": "2026-08",
    "by_month": {
-    "2026-07": 32,
-    "2026-08": 968
+    "2026-07": 23,
+    "2026-08": 977
    },
    "top_families": {
     "Mirai": 929,
@@ -191,6 +193,97 @@
    },
    "commodity": true,
    "note": "free packer"
+  },
+  "upx-dec": {
+   "query_status": "ok",
+   "samples": 1000,
+   "truncated": true,
+   "oldest_seen": "2026-07",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2026-07": 38,
+    "2026-08": 962
+   },
+   "top_families": {
+    "Mirai": 937,
+    "SalatStealer": 20,
+    "CoinMiner": 12,
+    "Gafgyt": 5,
+    "Prometei": 4,
+    "Vidar": 4,
+    "Loda": 2,
+    "ValleyRAT": 1,
+    "SparkRAT": 1,
+    "Babadeda": 1,
+    "SVCStealer": 1,
+    "Amadey": 1
+   },
+   "commodity": true,
+   "note": "UPX-packed and successfully unpacked; pairs with the upx tag"
+  },
+  "nsis": {
+   "query_status": "ok",
+   "samples": 12,
+   "truncated": false,
+   "oldest_seen": "2025-06",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2025-06": 1,
+    "2025-08": 1,
+    "2026-02": 1,
+    "2026-07": 2,
+    "2026-08": 7
+   },
+   "top_families": {
+    "Vidar": 2,
+    "RemcosRAT": 1,
+    "VIPKeylogger": 1
+   },
+   "commodity": true,
+   "note": "NSIS installer used as a delivery wrapper; also a legitimate installer format"
+  },
+  "electron": {
+   "query_status": "ok",
+   "samples": 153,
+   "truncated": false,
+   "oldest_seen": "2023-09",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2023-09": 1,
+    "2023-10": 1,
+    "2023-11": 1,
+    "2024-01": 13,
+    "2024-02": 3,
+    "2024-03": 7,
+    "2024-04": 8,
+    "2024-05": 2,
+    "2024-09": 2,
+    "2024-10": 1,
+    "2025-03": 1,
+    "2025-04": 2,
+    "2025-05": 1,
+    "2025-11": 1,
+    "2026-02": 1,
+    "2026-03": 6,
+    "2026-05": 11,
+    "2026-06": 36,
+    "2026-07": 34,
+    "2026-08": 21
+   },
+   "top_families": {
+    "EpsilonStealer": 18,
+    "Vidar": 11,
+    "RemusStealer": 4,
+    "AokigaharaStealer": 3,
+    "Stealit": 3,
+    "SheetRAT": 1,
+    "DonutLoader": 1,
+    "VoidStealer": 1,
+    "DuvetStealer": 1,
+    "StealitStealer": 1
+   },
+   "commodity": true,
+   "note": "Electron app used as a wrapper; overwhelmingly legitimate software"
   }
  },
  "criminal_wrappers": {
@@ -422,6 +515,170 @@
    },
    "commodity": false,
    "note": "generic marker"
+  },
+  "kryptik": {
+   "query_status": "ok",
+   "samples": 110,
+   "truncated": false,
+   "oldest_seen": "2020-04",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2020-04": 1,
+    "2021-03": 3,
+    "2022-09": 1,
+    "2025-04": 2,
+    "2025-06": 8,
+    "2025-07": 3,
+    "2025-08": 1,
+    "2025-10": 1,
+    "2026-02": 1,
+    "2026-04": 39,
+    "2026-05": 15,
+    "2026-06": 18,
+    "2026-07": 6,
+    "2026-08": 11
+   },
+   "top_families": {
+    "Vidar": 15,
+    "ValleyRAT": 6,
+    "SalatStealer": 5,
+    "RustyStealer": 4,
+    "SantaStealer": 4,
+    "RemusStealer": 2,
+    "Vi": 2,
+    "ScarfaceStealer": 2,
+    "Formbook": 2,
+    "ArkeiStealer": 1,
+    "DarkSideRAT": 1,
+    "Amatera": 1
+   },
+   "commodity": false,
+   "note": "generic detection family for packed/obfuscated payloads; closest thing to a criminal-crypter marker in the live vocabulary"
+  },
+  "malpack": {
+   "query_status": "ok",
+   "samples": 33,
+   "truncated": false,
+   "oldest_seen": "2026-04",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2026-04": 14,
+    "2026-05": 7,
+    "2026-06": 7,
+    "2026-07": 1,
+    "2026-08": 4
+   },
+   "top_families": {
+    "Vidar": 3,
+    "SalatStealer": 2,
+    "SilentCryptoMiner": 1,
+    "RemusStealer": 1,
+    "Stealc": 1
+   },
+   "commodity": false,
+   "note": "malicious packing marker, discovered in live tagging"
+  },
+  "injector": {
+   "query_status": "ok",
+   "samples": 153,
+   "truncated": false,
+   "oldest_seen": "2020-04",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2020-04": 1,
+    "2020-12": 1,
+    "2021-02": 2,
+    "2021-08": 2,
+    "2021-11": 1,
+    "2021-12": 1,
+    "2022-02": 2,
+    "2022-03": 1,
+    "2022-05": 7,
+    "2022-12": 1,
+    "2023-04": 1,
+    "2023-05": 1,
+    "2023-06": 1,
+    "2023-07": 1,
+    "2023-12": 1,
+    "2024-02": 1,
+    "2024-06": 1,
+    "2024-07": 7,
+    "2024-09": 6,
+    "2024-11": 2,
+    "2024-12": 5,
+    "2025-02": 1,
+    "2025-03": 1,
+    "2025-04": 1,
+    "2025-05": 2,
+    "2025-06": 37,
+    "2025-07": 20,
+    "2025-08": 9,
+    "2025-09": 6,
+    "2025-10": 3,
+    "2025-11": 1,
+    "2025-12": 1,
+    "2026-02": 1,
+    "2026-04": 6,
+    "2026-05": 5,
+    "2026-06": 6,
+    "2026-08": 7
+   },
+   "top_families": {
+    "ValleyRAT": 39,
+    "Gh0stRAT": 15,
+    "PocoRAT": 4,
+    "QuasarRAT": 3,
+    "zgRAT": 3,
+    "Vidar": 2,
+    "RustyStealer": 2,
+    "Blackmoon": 2,
+    "Nitol": 2,
+    "DCRat": 2,
+    "LummaStealer": 2,
+    "CobaltStrike": 2
+   },
+   "commodity": false,
+   "note": "process-injection wrapper"
+  },
+  "antosandbox": {
+   "query_status": "ok",
+   "samples": 1,
+   "truncated": false,
+   "oldest_seen": "2026-08",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2026-08": 1
+   },
+   "top_families": {},
+   "commodity": false,
+   "note": "anti-sandbox evasion, as spelled by the source"
+  },
+  "signed": {
+   "query_status": "ok",
+   "samples": 1000,
+   "truncated": true,
+   "oldest_seen": "2026-07",
+   "newest_seen": "2026-08",
+   "by_month": {
+    "2026-07": 35,
+    "2026-08": 965
+   },
+   "top_families": {
+    "Vidar": 463,
+    "ConnectWise": 177,
+    "RemusStealer": 112,
+    "GuLoader": 21,
+    "Stealc": 18,
+    "AgentTesla": 16,
+    "LummaStealer": 10,
+    "Formbook": 5,
+    "AokigaharaStealer": 4,
+    "ACRStealer": 4,
+    "RustyStealer": 3,
+    "VIPKeylogger": 3
+   },
+   "commodity": false,
+   "note": "code-signed sample; signing is an evasion technique when abused, so read with care"
   }
  },
  "tags_returning_nothing": []
