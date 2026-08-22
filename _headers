@@ -5,3 +5,18 @@
 
 /map.html
   Cache-Control: no-cache
+
+# Same reasoning as /map. The Observatory is a stable URL whose contents get
+# replaced on every rebuild, so a cached copy silently shows stale data. It also
+# got cached while broken on 22 Aug 2026, when the page was one 7.5 million
+# character line, and kept serving empty after the fix was deployed.
+/observatory
+  Cache-Control: no-cache
+
+/observatory.html
+  Cache-Control: no-cache
+
+# The data file is versioned by the ?v= on its script tag, so it is safe to
+# cache hard. A new build changes the query string and the browser refetches.
+/assets/observatory-data.js
+  Cache-Control: public, max-age=86400
