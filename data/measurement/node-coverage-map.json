@@ -33,9 +33,10 @@
   "bph": {
    "feeds": [
     "transit-carriers.json",
-    "registry-sponsors.json"
+    "registry-sponsors.json",
+    "hosted-threats.json"
    ],
-   "note": "Provider-level routing and registry standing. Rebuild and durability still come from the hand-maintained instruments.",
+   "note": "Routing, registry standing, and whether live malware infrastructure currently sits on the provider's own address space. The last of those measures use rather than existence, which the others cannot see.",
    "hand_maintained": [
     "reconstitution-data.js",
     "scoreboard.json",
@@ -68,14 +69,14 @@
    "reason": "Voice calls leave no artifact. Callback-phishing lure volume exists in commercial email telemetry, which is Tier 2, not public."
   },
   "loaders": {
-   "feeds": [],
-   "verdict_if_no_feed": "GAP",
-   "reason": "Botnet C2 and sinkhole data is partly public. Not built.",
+   "feeds": [
+    "hosted-threats.json"
+   ],
    "hand_maintained": [
     "scoreboard.json",
     "enforcement.json"
    ],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "note": "Live botnet command servers by malware family, ecosystem-wide. Counts what is reported, which is uneven and volunteer-driven.",
    "watched_by": [
     "sanctions-drift.json"
    ]

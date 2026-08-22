@@ -1,13 +1,13 @@
 {
  "meta": {
-  "built": "2026-08-22T19:49:17Z",
+  "built": "2026-08-22T20:16:40Z",
   "map_source": "data/ecosystem-map-data.js",
   "nodes_on_map": 35,
   "freshness_window_days": 7,
   "counts": {
-   "MEASURED": 8,
+   "MEASURED": 9,
    "GAP": 12,
-   "PARTIAL": 8,
+   "PARTIAL": 7,
    "NOT_MEASURABLE": 7
   },
   "measures": "Which map nodes are actually being measured right now.",
@@ -30,9 +30,15 @@
      "present": true,
      "built": "2026-08-22T19:06:16Z",
      "age_days": 0
+    },
+    {
+     "file": "hosted-threats.json",
+     "present": true,
+     "built": "2026-08-22T20:15:26Z",
+     "age_days": 0
     }
    ],
-   "note": "Provider-level routing and registry standing. Rebuild and durability still come from the hand-maintained instruments.",
+   "note": "Routing, registry standing, and whether live malware infrastructure currently sits on the provider's own address space. The last of those measures use rather than existence, which the others cannot see.",
    "hand_maintained": [
     "reconstitution-data.js",
     "scoreboard.json",
@@ -84,8 +90,15 @@
   "loaders": {
    "label": "Loaders and Botnets",
    "tier": "HIGH",
-   "feeds": [],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "feeds": [
+    {
+     "file": "hosted-threats.json",
+     "present": true,
+     "built": "2026-08-22T20:15:26Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Live botnet command servers by malware family, ecosystem-wide. Counts what is reported, which is uneven and volunteer-driven.",
    "hand_maintained": [
     "scoreboard.json",
     "enforcement.json"
@@ -98,8 +111,8 @@
      "age_days": 0
     }
    ],
-   "verdict": "PARTIAL",
-   "reason": "Covered by scoreboard.json, enforcement.json, which a person maintains. Watched for drift by sanctions-drift.json, checked recently."
+   "verdict": "MEASURED",
+   "freshest_days": 0
   },
   "stealers": {
    "label": "Stealers and Log Markets",
