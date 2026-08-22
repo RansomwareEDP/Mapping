@@ -50,7 +50,12 @@ from collections import Counter
 from datetime import datetime, timezone
 
 API = "https://api.ransomware.live/v2/victims"
-HISTORY_START = (2024, 1)          # earliest month the series covers
+# Extended from 2024-01 to 2022-01 on 22 Aug 2026. The KPI framework baselines
+# at Q1 2024 by choice and that is unaffected; the collector simply holds more
+# than the framework needs. The gain is that operations before 2024 become
+# checkable: Hive, ALPHV/BlackCat and LockBit all sit in the older window and
+# were previously reported as unverifiable.
+HISTORY_START = (2022, 1)          # earliest month the series covers
 OUT = pathlib.Path("data/measurement")
 UA = "RENO-Observatory-Measurement"
 
