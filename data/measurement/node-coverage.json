@@ -1,0 +1,383 @@
+{
+ "meta": {
+  "built": "2026-08-22T18:49:50Z",
+  "map_source": "data/ecosystem-map-data.js",
+  "nodes_on_map": 35,
+  "freshness_window_days": 7,
+  "counts": {
+   "MEASURED": 8,
+   "GAP": 12,
+   "PARTIAL": 8,
+   "NOT_MEASURABLE": 7
+  },
+  "measures": "Which map nodes are actually being measured right now.",
+  "why_this_can_mislead": "This reports whether a node is measured, never whether the measurement is sound. A collector pointed at the wrong data still reads MEASURED. Verdicts also depend on the freshness window: widen it and STALE nodes silently become MEASURED again without anything having been collected.",
+  "entries_not_on_map": []
+ },
+ "nodes": {
+  "bph": {
+   "label": "Bulletproof Hosting",
+   "tier": "CRITICAL",
+   "feeds": [
+    {
+     "file": "transit-carriers.json",
+     "present": true,
+     "built": "2026-08-22T18:35:56Z",
+     "age_days": 0
+    },
+    {
+     "file": "registry-sponsors.json",
+     "present": true,
+     "built": "2026-08-22T18:38:21Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Provider-level routing and registry standing. Rebuild and durability still come from the hand-maintained instruments.",
+   "hand_maintained": [
+    "reconstitution-data.js",
+    "scoreboard.json",
+    "enforcement.json",
+    "bphs/ profiles"
+   ],
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "vpn": {
+   "label": "VPN / Anonymity Providers",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Provider population is enumerable from the same routing and registry sources already in use. Not built."
+  },
+  "forums": {
+   "label": "Underground Forums",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "scoreboard.json"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by scoreboard.json, which a person maintains. No collector keeps it current."
+  },
+  "crypters": {
+   "label": "Crypters and Packers",
+   "tier": "MEDIUM",
+   "feeds": [
+    {
+     "file": "crypter-usage.json",
+     "present": true,
+     "built": "2026-08-22T18:39:00Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Obfuscation technique prevalence only. The crypter service market has no public source.",
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "callers": {
+   "label": "Callers and Spammers",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "Voice calls leave no artifact. Callback-phishing lure volume exists in commercial email telemetry, which is Tier 2, not public."
+  },
+  "loaders": {
+   "label": "Loaders and Botnets",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "scoreboard.json",
+    "enforcement.json"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by scoreboard.json, enforcement.json, which a person maintains. No collector keeps it current."
+  },
+  "stealers": {
+   "label": "Stealers and Log Markets",
+   "tier": "MEDIUM",
+   "feeds": [
+    {
+     "file": "crypter-usage.json",
+     "present": true,
+     "built": "2026-08-22T18:39:00Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Only incidentally, through malware family signatures on wrapped samples. Log market volume is not covered.",
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "exploits": {
+   "label": "Exploit Brokers",
+   "tier": "CRITICAL",
+   "feeds": [
+    {
+     "file": "exploit-lag.json",
+     "present": true,
+     "built": "2026-08-22T18:35:54Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Disclosure-to-exploitation lag. The broker market itself is not measured and cannot be.",
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "iab": {
+   "label": "Initial Access Brokers",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Access listings appear on forums. Requires monitoring that is not yet built."
+  },
+  "raas": {
+   "label": "RaaS Operator",
+   "tier": "HIGH",
+   "feeds": [
+    {
+     "file": "victims-monthly.json",
+     "present": true,
+     "built": "2026-08-22T18:35:49Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Group census and activity by month, derived from leak-site claims.",
+   "hand_maintained": [
+    "reconstitution-data.js",
+    "lineage-data.js",
+    "scoreboard.json"
+   ],
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "affiliate": {
+   "label": "RaaS Affiliates",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "lineage-data.js"
+   ],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "Affiliates are not distinguishable from operators in any public artifact. Only leaks and indictments separate them, which are events, not a series."
+  },
+  "datamkt": {
+   "label": "Underground Data Markets",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Market listings are observable where the market is reachable. Not built."
+  },
+  "leaksite": {
+   "label": "Leak Site Operations",
+   "tier": "HIGH",
+   "feeds": [
+    {
+     "file": "victims-monthly.json",
+     "present": true,
+     "built": "2026-08-22T18:35:49Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Posting volume, group count, victim country and sector. The most complete series in the set.",
+   "hand_maintained": [
+    "reconstitution-data.js"
+   ],
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "negot": {
+   "label": "Negotiation Services",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Negotiation OUTCOMES are published quarterly by incident-response vendors and are not yet ingested. The negotiator population itself remains unmeasurable."
+  },
+  "bridge": {
+   "label": "Cross-Chain Bridges",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Chain data is public. Requires on-chain analysis that is not built."
+  },
+  "mixers": {
+   "label": "Crypto Mixers",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "enforcement.json"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by enforcement.json, which a person maintains. No collector keeps it current."
+  },
+  "otc": {
+   "label": "OTC Crypto Brokers",
+   "tier": "CRITICAL",
+   "feeds": [],
+   "hand_maintained": [
+    "enforcement.json",
+    "exchanges/ profiles"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by enforcement.json, exchanges/ profiles, which a person maintains. No collector keeps it current."
+  },
+  "cex": {
+   "label": "Compliant Exchange (Nested)",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "hand_maintained": [
+    "exchanges/ profiles"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by exchanges/ profiles, which a person maintains. No collector keeps it current."
+  },
+  "ruexch": {
+   "label": "Russia-Based Exchanges",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "enforcement.json",
+    "exchanges/ profiles"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by enforcement.json, exchanges/ profiles, which a person maintains. No collector keeps it current."
+  },
+  "exchl": {
+   "label": "Non-Compliant Exchanges",
+   "tier": "CRITICAL",
+   "feeds": [],
+   "hand_maintained": [
+    "enforcement.json",
+    "exchanges/ profiles"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by enforcement.json, exchanges/ profiles, which a person maintains. No collector keeps it current."
+  },
+  "mules": {
+   "label": "Mule Networks",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "Mule networks surface only through prosecutions. Events can be logged; no series can exist from public sources."
+  },
+  "bankacct": {
+   "label": "Bank Account Transfer",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "Bank transfers are not public. Visible only in court records."
+  },
+  "a7a5": {
+   "label": "A7A5 Ruble Settlement Rail",
+   "tier": "CRITICAL",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "A rouble settlement rail with on-chain presence. Public chain data, unbuilt."
+  },
+  "fsb": {
+   "label": "FSB Protection",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "Conversion Test (reachability)",
+    "evidentiary record"
+   ],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "No public source reports how a security service behaves toward the actors it shelters. Covered only through the accumulating evidentiary record, which measures documents, not relationships."
+  },
+  "mvd": {
+   "label": "MVD Dept K",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Domestic prosecutions are published in Russian court records. Labour intensive, not blocked."
+  },
+  "rosfin": {
+   "label": "Rosfin Monitoring",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Published designations and reporting statistics exist. Not built."
+  },
+  "cbr": {
+   "label": "CBR 115-FZ",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "115-FZ enforcement actions against banks are published. Not built."
+  },
+  "gru": {
+   "label": "GRU Mil. Intel",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "Same as FSB. No public source reports the relationship."
+  },
+  "svr": {
+   "label": "SVR Foreign Intel",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "NOT_MEASURABLE",
+   "reason": "Same as FSB."
+  },
+  "genpros": {
+   "label": "Prosecutor General",
+   "tier": "HIGH",
+   "feeds": [],
+   "hand_maintained": [
+    "Conversion Test (reachability)"
+   ],
+   "verdict": "PARTIAL",
+   "reason": "Covered by Conversion Test (reachability), which a person maintains. No collector keeps it current."
+  },
+  "fns": {
+   "label": "FNS Tax Exposure",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Russian company and tax records are published and queryable. Labour intensive."
+  },
+  "doxing": {
+   "label": "Exposure / Doxxing Actors",
+   "tier": "HIGH",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Exposure actors publish openly. Volume and timing are directly observable. Not built."
+  },
+  "enab-transit": {
+   "label": "Upstream Transit Carriers",
+   "tier": "CRITICAL",
+   "feeds": [
+    {
+     "file": "transit-carriers.json",
+     "present": true,
+     "built": "2026-08-22T18:35:56Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Carriers still serving tracked providers, dated disconnections, and successor networks.",
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "enab-registry": {
+   "label": "Registries and Sponsoring LIRs",
+   "tier": "HIGH",
+   "feeds": [
+    {
+     "file": "registry-sponsors.json",
+     "present": true,
+     "built": "2026-08-22T18:38:21Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Registry standing and sponsor concentration across tracked networks.",
+   "verdict": "MEASURED",
+   "freshest_days": 0
+  },
+  "enab-corp": {
+   "label": "Corporate Formation Agents",
+   "tier": "MEDIUM",
+   "feeds": [],
+   "verdict": "GAP",
+   "reason": "Company registries are public in most relevant jurisdictions. Labour intensive rather than blocked, and partly automatable."
+  }
+ }
+}
