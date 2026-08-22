@@ -67,10 +67,17 @@ jobs:
           ABUSECH_AUTH_KEY: ${{ secrets.ABUSECH_AUTH_KEY }}
         run: python3 scripts/collect_crypters.py --discover || true
 
+      # Runs LAST, on purpose. It reads what the collectors above actually
+      # produced and works out each map node's verdict from that, so a broken
+      # collector degrades its nodes instead of leaving a stale claim standing.
+      - name: Build node coverage register
+        if: always()
+        run: python3 scripts/build_coverage.py
+
       - name: Show health reports
         if: always()
         run: |
-          for f in victims exploits transit registry crypters; do
+          for f in victims exploits transit registry crypters coverage; do
             echo "----- $f -----"
             cat "data/measurement/HEALTH-$f.txt" || echo "No $f health report."
             echo
