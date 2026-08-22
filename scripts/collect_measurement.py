@@ -46,6 +46,9 @@ import subprocess
 import sys
 import time
 import urllib.request
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+import _rlive
 from collections import Counter
 from datetime import datetime, timezone
 
@@ -100,21 +103,6 @@ def fetch(year, month):
             return json.loads(body), None
         except json.JSONDecodeError:
             return None, "failed"
-
-
-def fetch_with_retry(year, month, pause=None):
-    """
-    Wait out rate limiting rather than giving up on it. Being told to slow
-    down is normal; three growing waits clears it in almost every case.
-    """
-    records, err = fetch(year, month)
-    for wait in (30, 60, 120):
-        if err != "ratelimit":
-            break
-        print(f"        rate limited, waiting {wait}s")
-        time.sleep(wait)
-        records, err = fetch(year, month)
-    return records, err
 
 
 def months_back_to(start, now):
@@ -197,7 +185,7 @@ def main():
         key = f"{y}-{m:02d}"
         if i:
             time.sleep(pause)
-        records, err = fetch_with_retry(y, m, pause=30)
+        records, err = _rlive.fetch_month_with_retry(y, m, UA)
         if records is None or not isinstance(records, list):
             (ratelimited if err == "ratelimit" else failures).append(key)
             print(f"  {key}  {'RATE LIMITED' if err == 'ratelimit' else 'FETCH FAILED'}")
