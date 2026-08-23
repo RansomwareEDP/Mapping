@@ -1,13 +1,13 @@
 {
  "meta": {
-  "built": "2026-08-23T06:48:55Z",
+  "built": "2026-08-23T18:45:44Z",
   "map_source": "data/ecosystem-map-data.js",
   "nodes_on_map": 35,
   "freshness_window_days": 7,
   "counts": {
-   "MEASURED": 10,
+   "MEASURED": 13,
    "GAP": 11,
-   "PARTIAL": 7,
+   "PARTIAL": 4,
    "NOT_MEASURABLE": 7
   },
   "measures": "Which map nodes are actually being measured right now.",
@@ -275,8 +275,15 @@
   "mixers": {
    "label": "Crypto Mixers",
    "tier": "HIGH",
-   "feeds": [],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "feeds": [
+    {
+     "file": "sanctioned-wallets.json",
+     "present": true,
+     "built": "2026-08-23T14:39:48Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Listed wallet activity for designated mixers such as Blender.io and Sinbad. Measures the LISTED ADDRESSES only, never the entity's finances.",
    "hand_maintained": [
     "enforcement.json"
    ],
@@ -288,14 +295,21 @@
      "age_days": 0
     }
    ],
-   "verdict": "PARTIAL",
-   "reason": "Covered by enforcement.json, which a person maintains. Watched for drift by sanctions-drift.json, checked recently."
+   "verdict": "MEASURED",
+   "freshest_days": 0
   },
   "otc": {
    "label": "OTC Crypto Brokers",
    "tier": "CRITICAL",
-   "feeds": [],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "feeds": [
+    {
+     "file": "sanctioned-wallets.json",
+     "present": true,
+     "built": "2026-08-23T14:39:48Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Listed wallet activity for designated OTC brokers, from the sanctions list joined to public chains. Measures the LISTED ADDRESSES only, never the entity's finances.",
    "hand_maintained": [
     "enforcement.json",
     "exchanges/ profiles"
@@ -308,8 +322,8 @@
      "age_days": 0
     }
    ],
-   "verdict": "PARTIAL",
-   "reason": "Covered by enforcement.json, exchanges/ profiles, which a person maintains. Watched for drift by sanctions-drift.json, checked recently."
+   "verdict": "MEASURED",
+   "freshest_days": 0
   },
   "cex": {
    "label": "Compliant Exchange (Nested)",
@@ -352,8 +366,15 @@
   "exchl": {
    "label": "Non-Compliant Exchanges",
    "tier": "CRITICAL",
-   "feeds": [],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "feeds": [
+    {
+     "file": "sanctioned-wallets.json",
+     "present": true,
+     "built": "2026-08-23T14:39:48Z",
+     "age_days": 0
+    }
+   ],
+   "note": "Listed wallet activity for designated non-compliant exchanges and markets. Measures the LISTED ADDRESSES only, never the entity's finances.",
    "hand_maintained": [
     "enforcement.json",
     "exchanges/ profiles"
@@ -366,8 +387,8 @@
      "age_days": 0
     }
    ],
-   "verdict": "PARTIAL",
-   "reason": "Covered by enforcement.json, exchanges/ profiles, which a person maintains. Watched for drift by sanctions-drift.json, checked recently."
+   "verdict": "MEASURED",
+   "freshest_days": 0
   },
   "mules": {
    "label": "Mule Networks",
