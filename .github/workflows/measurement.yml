@@ -96,6 +96,12 @@ jobs:
         if: always()
         run: python3 scripts/check_scoreboard.py
 
+      # Reads the crypto addresses OFAC publishes with its designations and asks
+      # the public chains whether those wallets still move money. Keyless.
+      - name: Collect sanctioned wallet activity
+        if: always()
+        run: python3 scripts/collect_wallets.py
+
       # Reports how old the hand-maintained evidence is. Dates, not inferences.
       - name: Check hand-maintained evidence for staleness
         if: always()
@@ -111,7 +117,7 @@ jobs:
       - name: Show health reports
         if: always()
         run: |
-          for f in victims exploits transit registry crypters threats formation sanctions scoreboard staleness coverage; do
+          for f in victims exploits transit registry crypters threats formation sanctions scoreboard wallets staleness coverage; do
             echo "----- $f -----"
             cat "data/measurement/HEALTH-$f.txt" || echo "No $f health report."
             echo

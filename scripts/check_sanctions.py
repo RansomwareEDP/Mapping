@@ -24,10 +24,9 @@ silent staleness costs most.
 NAME MATCHING IS FUZZY, AND THAT IS THE MAIN LIMITATION
 --------------------------------------------------------
 OFAC writes "KHOROSHEV, Dmitry Yuryevich". The tracker writes "Dmitry Yuryevich
-Khoroshev". Transliteration from Russian varies. So matching is done on name
-tokens with a deliberately generous threshold, which trades false positives for
-missed matches: it is better to raise a name that turns out to be already logged
-than to stay silent about one that is not.
+Khoroshev". Transliteration from Russian varies. The rules that handle this, and
+the cases that pin them, live in scripts/_names.py and are shared with the wallet
+collector so the two cannot drift apart. Run --selftest after changing them.
 
 Every output is therefore a CANDIDATE for a human to check. Nothing here is a
 finding.
@@ -57,7 +56,6 @@ OUTPUT
 """
 
 import csv
-import difflib
 import io
 import json
 import pathlib
@@ -65,6 +63,9 @@ import re
 import subprocess
 import sys
 import urllib.request
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+import _names
 from datetime import datetime, timezone
 
 SDN_URL = "https://www.treasury.gov/ofac/downloads/sdn.csv"
@@ -76,9 +77,6 @@ UA = "RENO-Observatory-Measurement"
 # appear under RUSSIA-EO14024 and others, which this does not read: an entry
 # missing here is not evidence of anything on its own.
 CYBER_PROGRAMS = ("CYBER2", "CYBER3", "CYBER4")
-
-NOISE = {"THE", "LLC", "LTD", "OOO", "INC", "CO", "GROUP", "LIMITED", "COMPANY",
-         "AKA", "FKA", "OAO", "ZAO", "PJSC", "JSC", "AND", "OF", "SERVICES"}
 
 # The tracker writes the WORD "None" to mean not sanctioned. Read as a value it
 # is a non-empty string, which flagged 120 unsanctioned people for being missing
@@ -121,82 +119,11 @@ def download():
         return out.stdout if out.returncode == 0 and out.stdout.strip() else None
 
 
-def tokens(name):
-    """Name reduced to comparable parts. Order and punctuation are discarded
-    because OFAC writes surname-first and the tracker does not."""
-    parts = re.split(r"[^A-Za-z0-9]+", (name or "").upper())
-    return {p for p in parts if len(p) > 2 and p not in NOISE}
-
-
-def similar(x, y):
-    """
-    Two name parts that are the same name spelled differently.
-
-    Russian names reach these lists through several transliteration schemes:
-    OFAC wrote KOVALEV, Vitaly Nikolayevich where the tracker has Vitalii
-    Nikolaevich Kovalev. Exact token matching found only the surname and called
-    it a stranger. Any check on this data that ignores transliteration will
-    quietly report real people as missing.
-    """
-    if x == y:
-        return True
-    if abs(len(x) - len(y)) > 3:
-        return False
-    # 0.75, not higher: VITALII against VITALY scores 0.77 and is the same name.
-    # Not lower either: SERGEEVICH against BORISOVICH scores 0.60 and must stay
-    # apart, because the patronymic is what separates two men who share a
-    # surname. The window between those two numbers is the whole tuning.
-    return difflib.SequenceMatcher(None, x, y).ratio() >= 0.75
-
-
-def overlaps(a, b):
-    """Generous on purpose. Two matching name parts, or one when a side only
-    has one, counts as a CANDIDATE for a person to check."""
-    if not a or not b:
-        return False
-    matched = 0
-    unused = set(b)
-    for x in a:
-        hit = next((y for y in unused if similar(x, y)), None)
-        if hit:
-            matched += 1
-            unused.discard(hit)
-    # Russian names carry three parts, and the patronymic is what separates two
-    # people who share a surname and a first name. Sergey SERGEEVICH Ivanov and
-    # Sergei BORISOVICH Ivanov are different men, and a two-hit threshold calls
-    # them the same. Where both sides give three or more parts, require three.
-    if min(len(a), len(b)) >= 3:
-        return matched >= 3
-    return matched >= 2 or (matched == 1 and min(len(a), len(b)) == 1)
-
-
-# Cases that pin the name matching. Each one cost a real bug to find, and every
-# one of them broke at some threshold that looked reasonable. Run --selftest
-# after touching similar(), tokens() or overlaps().
-SELFTEST = [
-    ("Dmitry Yuryevich Khoroshev", "Dmitri Yurievich Khoroshov", True,
-     "same man, different transliteration"),
-    ("Vitalii Nikolaevich Kovalev", "KOVALEV, Vitaly Nikolayevich", True,
-     "same man, OFAC surname-first and a different scheme"),
-    ("Sergey Sergeevich Ivanov", "IVANOV, Sergey Sergeevich", True,
-     "same man, name order reversed"),
-    ("Sergey Sergeevich Ivanov", "Sergei Borisovich Ivanov", False,
-     "DIFFERENT men: shared surname and first name, different patronymic"),
-    ("Vitalii Nikolaevich Kovalev", "KOVALEV, Anatoliy Sergeyevich", False,
-     "different men sharing a surname"),
-]
-
-
+# The matching rules and the cases that pin them now live in _names.py, so the
+# two collectors that compare names cannot drift apart. This stays as a wrapper
+# because the workflow calls --selftest before every collection.
 def selftest():
-    failures = 0
-    for a, b, want, why in SELFTEST:
-        got = overlaps(tokens(a), tokens(b))
-        if got != want:
-            failures += 1
-        print(f"  {'PASS' if got == want else 'FAIL'}  "
-              f"{'match' if got else 'no   '}  {a[:28]:<29} vs {b[:30]:<31} {why}")
-    print(f"\n{'all cases pass' if not failures else str(failures) + ' FAILING'}")
-    return 1 if failures else 0
+    return _names.selftest()
 
 
 def main():
@@ -222,7 +149,7 @@ def main():
         sdn.append({"ent_num": row[0], "name": row[1].strip(),
                     "sdn_type": (row[2] or "").strip(" -0"),
                     "programs": programs, "remarks": (row[11] or "").strip()[:300],
-                    "_tok": tokens(row[1])})
+                    "_tok": _names.tokens(row[1])})
     print(f"  OFAC     {len(sdn)} entries under {', '.join(CYBER_PROGRAMS)}")
 
     tracker = json.loads(TRACKER.read_text())
@@ -231,18 +158,18 @@ def main():
         logged.append({"name": p.get("name", ""), "kind": "individual",
                        "claims_sanctions": claims_us_designation(p.get("sanctions")),
                        "sanctions_text": p.get("sanctions", ""),
-                       "_tok": tokens(p.get("name", "")) | tokens(p.get("aliases", ""))})
+                       "_tok": _names.tokens(p.get("name", "")) | _names.tokens(p.get("aliases", ""))})
     for e in tracker.get("entities", []):
         logged.append({"name": e.get("entity", ""), "kind": "entity",
                        "claims_sanctions": claims_us_designation(e.get("sanctions")),
                        "sanctions_text": e.get("sanctions", ""),
-                       "_tok": tokens(e.get("entity", ""))})
+                       "_tok": _names.tokens(e.get("entity", ""))})
     print(f"  Tracker  {len(logged)} people and entities, asOf "
           f"{tracker.get('meta', {}).get('asOf', 'unknown')}")
 
-    unlogged = [s for s in sdn if not any(overlaps(s["_tok"], l["_tok"]) for l in logged)]
+    unlogged = [s for s in sdn if not any(_names.overlaps(s["_tok"], l["_tok"]) for l in logged)]
     absent = [l for l in logged
-              if l["claims_sanctions"] and not any(overlaps(l["_tok"], s["_tok"]) for s in sdn)]
+              if l["claims_sanctions"] and not any(_names.overlaps(l["_tok"], s["_tok"]) for s in sdn)]
 
     payload = {
         "meta": {
