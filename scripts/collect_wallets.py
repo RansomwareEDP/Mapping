@@ -78,7 +78,14 @@ from datetime import datetime, timezone
 SDN_URL = "https://www.treasury.gov/ofac/downloads/sdn.csv"
 OUT = pathlib.Path("data/measurement")
 UA = "RENO-Observatory-Measurement"
-PAUSE = 0.8
+PAUSE = 2.0
+
+# Coverage below this makes every conclusion here unsafe. On 23 Aug 2026 six
+# runs in a morning drove reads from 138 down to 75 as the free API throttled,
+# and the report cheerfully announced "no address shows meaningful movement"
+# on 35 percent coverage. A null result computed from a third of the data is
+# not a null result, it is a missing one wearing the same clothes.
+MIN_COVERAGE = 0.80
 
 ADDR_RE = re.compile(r"Digital Currency Address - ([A-Z0-9]+)\s+([a-zA-Z0-9]{25,100})")
 TRACKER = pathlib.Path("data/enforcement.json")
@@ -88,10 +95,32 @@ CYBER = ("CYBER2", "CYBER3", "CYBER4")
 # but unread, which is honest; showing it as zero would invent a finding.
 SUPPORTED = {"XBT", "TRX"}
 
+# Movements at or below these values are treated as DUST, not activity.
+#
+# Published sanctioned addresses are dusted constantly: anyone can send a
+# fraction of a cent to an address on a public list, and some do it deliberately
+# to taint it. On 23 Aug 2026 this collector reported GRINEX as active 371 days
+# after its designation, three days before the check. The transfers were 0.032
+# and 0.033 TRX, worth a fraction of a cent each. Read as activity that is a
+# headline. Read as dust it is noise, and dust is what it was.
+#
+# Without a floor, every dusted address on the list looks alive forever, and the
+# one measurement here that could embarrass a bad sanctions claim becomes the
+# one most likely to produce a false one.
+# 0.0005 BTC was too low. It let a 0.000527 BTC crumb count as CHATEX still
+# moving money 545 days after designation, when its real transactions were 11
+# BTC and stopped on the designation date itself. Dust is not only the obvious
+# fractions of a cent; it is anything too small to be commerce.
+#
+# Whatever number sits here will be arguable, which is why the report now prints
+# the AMOUNT next to every date. A reader who disagrees with the threshold can
+# see what it excluded and judge for themselves.
+DUST_FLOOR = {"BTC": 0.01, "TRX": 1000.0}
+
 
 def http(url, timeout=45):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    for wait in (0, 4, 15):
+    for wait in (0, 10, 30, 90):
         if wait:
             time.sleep(wait)
         try:
@@ -128,11 +157,23 @@ def bitcoin(addr):
         txs = http(f"https://mempool.space/api/address/{addr}/txs")
         try:
             items = json.loads(txs) if txs else []
-            times = [t.get("status", {}).get("block_time") for t in items
-                     if t.get("status", {}).get("block_time")]
-            if times:
+            best, best_val = None, 0.0
+            for t in items:
+                bt = (t.get("status") or {}).get("block_time")
+                if not bt:
+                    continue
+                # Value moving to or from THIS address in that transaction.
+                val = sum(o.get("value", 0) for o in (t.get("vout") or [])
+                          if o.get("scriptpubkey_address") == addr)
+                val += sum((i.get("prevout") or {}).get("value", 0)
+                           for i in (t.get("vin") or [])
+                           if (i.get("prevout") or {}).get("scriptpubkey_address") == addr)
+                if best is None or bt > best:
+                    best, best_val = bt, val / 1e8
+            if best:
                 rec["last_activity"] = datetime.fromtimestamp(
-                    max(times), timezone.utc).strftime("%Y-%m-%d")
+                    best, timezone.utc).strftime("%Y-%m-%d")
+                rec["last_activity_value"] = round(best_val, 8)
         except (json.JSONDecodeError, ValueError, TypeError):
             pass
     return rec
@@ -238,7 +279,25 @@ def main():
                 tot_bal += data["balance"]
             if data.get("transactions"):
                 tot_tx += data["transactions"]
-            if data.get("last_activity") and (last is None or data["last_activity"] > last):
+            # Only count activity above the dust floor toward "last activity".
+            # The raw date is kept on the address either way, so nothing is
+            # hidden: it simply stops driving the headline number.
+            unit = data.get("unit", "")
+            floor = DUST_FLOOR.get(unit, 0)
+            last_val = data.get("last_activity_value")
+            if last_val is not None:
+                meaningful = last_val > floor
+            else:
+                # No per-transaction value available, as on Tron. Fall back to
+                # the balance, and mark it so the weaker basis is visible.
+                meaningful = (data.get("balance") or 0) > floor
+                data["dust_basis"] = "balance only; per-transaction value unavailable"
+            data["above_dust_floor"] = meaningful
+            recs[-1]["above_dust_floor"] = meaningful
+            recs[-1]["last_activity_value"] = last_val
+            if data.get("dust_basis"):
+                recs[-1]["dust_basis"] = data["dust_basis"]
+            if data.get("last_activity") and meaningful and (last is None or data["last_activity"] > last):
                 last = data["last_activity"]
 
         # Earliest matching designation. Earliest, because an entity can be
@@ -270,6 +329,10 @@ def main():
         if last or tot_tx:
             print(f"  {name[:36]:<37} {tot_recv:>10.2f} BTC in, last {last or '-'}")
 
+    read_ok = sum(v["addresses_read"] for v in results.values())
+    readable = total - sum(unread.values())
+    coverage = (read_ok / readable) if readable else 0.0
+
     active = {k: v for k, v in results.items()
               if v["days_since_activity"] is not None and v["days_since_activity"] <= 90}
     # The finding this collector exists to surface: wallets that kept moving
@@ -285,6 +348,12 @@ def main():
             "addresses_listed": total,
             "addresses_read": sum(v["addresses_read"] for v in results.values()),
             "chains_not_read": dict(unread),
+            "addresses_lookup_failed": sum(
+                1 for v in results.values() for a in v["addresses"]
+                if a.get("note") == "lookup failed"),
+            "coverage": round(coverage, 3),
+            "coverage_sufficient": coverage >= MIN_COVERAGE,
+            "min_coverage": MIN_COVERAGE,
             "entities_active_last_90_days": len(active),
             "entities_with_activity_after_designation": len(moved_after),
             "designation_dates_matched": sum(1 for v in results.values() if v.get("designated")),
@@ -299,6 +368,7 @@ def main():
                 "reported as unread rather than as zero. This measures the LISTED ADDRESSES, "
                 "never the entity's finances, and is a floor on activity rather than a total."
             ),
+            "dust_floor": DUST_FLOOR,
             "distortion": "High as a measure of an entity. Low as a measure of the addresses themselves.",
         },
         "entities": results,
@@ -321,7 +391,7 @@ def write_health(payload, now, problems):
     ranked = sorted(ents.items(), key=lambda kv: -(kv[1]["total_received_btc"] or 0))
     lines = [
         "SANCTIONED WALLETS - HEALTH REPORT", "",
-        "STATUS: OK", "",
+        f"STATUS: {'OK' if m.get('coverage_sufficient') else 'STALE'}", "",
         f"Checked                 {now.strftime('%d %b %Y at %H:%M')} UTC",
         f"Designated entities     {m['entities']}",
         f"Addresses listed        {m['addresses_listed']}",
@@ -331,26 +401,61 @@ def write_health(payload, now, problems):
         f"Designation dates matched {m['designation_dates_matched']} of {m['entities']}",
         "",
     ]
+    lines.append(f"Coverage                {m.get('coverage', 0) * 100:.0f} percent of readable addresses")
+    lines.append("")
+    failed = m.get("addresses_lookup_failed", 0)
+    if failed:
+        lines += [f"WARNING: {failed} of {m['addresses_listed']} addresses could not be read this",
+                  " run. Their entities are therefore understated, and a quiet entity below may",
+                  " simply be one that failed to look up. Coverage has varied between runs.", ""]
 
     moved = sorted(((n, v) for n, v in ents.items()
                     if (v.get("days_activity_after_designation") or 0) > 0),
                    key=lambda kv: -kv[1]["days_activity_after_designation"])
     if moved:
         lines += ["MONEY MOVED AFTER THE DESIGNATION LANDED.",
-                  "The listed addresses saw activity this long after the entity was designated:",
-                  "   entity                             designated    last activity     gap"]
+                  "The listed addresses saw activity this long after the entity was designated.",
+                  f"Movements at or below {m['dust_floor']} are excluded as dust; the amount of the",
+                  "last qualifying movement is shown so you can judge the threshold yourself:",
+                  "   entity                          designated    last activity    gap     amount"]
         for n, v in moved:
-            lines.append(f"   {n[:32]:<33} {v['designated']}    {v['last_activity']}   "
-                         f"{v['days_activity_after_designation']:>5}d")
+            # The amount must come from the SAME address that produced the date.
+            # Taking max() across addresses printed "0.5719 BTC on 2026-08-19"
+            # for FIRST VPN SERVICE, pairing an amount from a 2024 transaction
+            # on one address with a 2026 date from another. Neither transaction
+            # happened. A fabricated figure in a report about sanctions is the
+            # worst failure available here.
+            src = next((a for a in v["addresses"]
+                        if a.get("above_dust_floor")
+                        and a.get("last_activity") == v["last_activity"]), None)
+            amt = (src or {}).get("last_activity_value") or 0
+            lines.append(f"   {n[:30]:<31} {v['designated']}    {v['last_activity']}  "
+                         f"{v['days_activity_after_designation']:>5}d   {amt:>9.4f}")
+            if src:
+                lines.append(f"        that movement: {amt} {src.get('unit','')} "
+                             f"at {src.get('address','')[:44]}")
         lines += ["",
-                  " This is the number worth arguing about. It does NOT prove the entity was",
-                  " still trading: anyone can send funds to a published address, and a single",
-                  " late transaction may be a sweep, a dust attack, or a third party. But an",
-                  " address that keeps receiving years after listing is a fact that has to be",
-                  " explained, and nobody publishes it.", ""]
+                  " This does NOT prove the entity was still trading. A late movement may be a",
+                  " sweep, a third party, or noise. Read the amount before believing the date:",
+                  " most apparent cases here have turned out to be fractions of a coin arriving",
+                  " at a burned address, while the entity's real money stopped on or before the",
+                  " day it was designated.", ""]
+    elif not m.get("coverage_sufficient"):
+        lines += ["NO CONCLUSION DRAWN. Only "
+                  f"{m['coverage'] * 100:.0f} percent of readable addresses were fetched this run,",
+                  f"below the {m['min_coverage'] * 100:.0f} percent needed to say anything about absence.",
+                  "",
+                  " Nothing was found, but nothing being found on partial data is not a result.",
+                  " Wait for a run with full coverage before treating silence as meaningful.", ""]
     else:
-        lines += ["No listed address shows activity after its entity's designation date,",
-                  "among those where a date could be matched.", ""]
+        lines += ["NO listed address shows a meaningful movement after its entity's designation",
+                  "date, among those where a date could be matched.",
+                  "",
+                  " That is the result, not an absence of one. Published addresses go dark, and",
+                  " they go dark fast. It does NOT mean the entities stopped operating: it means",
+                  " these particular addresses stopped being used, which is the expected response",
+                  " to being listed. Measuring whether the BUSINESS continued needs the successor",
+                  " addresses, and those are not published by anyone.", ""]
 
     lines += ["Entities by lifetime bitcoin received into their listed addresses:",
               "   entity                              received      balance   last activity"]
