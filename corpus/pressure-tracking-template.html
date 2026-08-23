@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Pressure Tracking Template | EDP Document Library</title>
+<meta name="description" content="RANSOMWARE ECOSYSTEM">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070b16;--panel:#0a1220;--line:#162236;--line2:#1e3350;
+ --ink:#c0cfe0;--ink2:#8aa4c0;--dim:#4e6e8e;--faint:#2e4a68;--accent:#5a9acc;--accent2:#7ab0d8}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+ font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.sidebar{width:270px;flex-shrink:0;background:#060d1a;border-right:1px solid var(--line);
+ padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.sidebar-logo a{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.sidebar-title{font-size:15px;font-weight:700;color:#d6e5f4;margin-top:10px;line-height:1.35}
+.sidebar-nav{padding:14px 0}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:var(--faint);
+ padding:0 20px;margin-bottom:7px}
+.nav-link{display:block;padding:6px 20px;font-size:12.5px;color:var(--ink2);border-left:2px solid transparent}
+.nav-link:hover{color:var(--accent2);border-left-color:var(--line2);background:rgba(90,154,204,.05);text-decoration:none}
+.nav-num{color:var(--faint);font-size:10px;margin-right:7px}
+.sidebar-footer{padding:14px 20px 0;border-top:1px solid var(--line);margin-top:10px}
+.sidebar-meta{font-size:10px;color:var(--faint);line-height:1.8}
+.content{flex:1;min-width:0;padding:34px 48px 80px;max-width:1080px}
+.profile-header{border-bottom:1px solid var(--line2);padding-bottom:18px;margin-bottom:26px}
+.profile-breadcrumb{font-size:11px;color:var(--dim);margin-bottom:12px}
+.page-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.profile-name{font-size:27px;font-weight:700;color:#d6e5f4;line-height:1.2;letter-spacing:-.3px}
+.profile-sub{font-size:13.5px;color:var(--ink2);margin-top:9px;max-width:70ch}
+.badge-row{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;
+ border:1px solid var(--line2);border-radius:3px;color:var(--dim)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);
+ margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:14.5px;color:#b8cde0;margin:24px 0 9px;font-weight:600}
+.doc-p{margin:0 0 13px;max-width:78ch}
+.doc-banner{margin:0 0 22px;padding:13px 16px;border-radius:5px;font-size:13.5px;line-height:1.6}
+.doc-banner.super{border:1px solid #7a4a4a;background:rgba(255,123,114,.09);color:#f0c0bc}
+.doc-banner.dated{border:1px solid #7a6a3a;background:rgba(210,153,34,.09);color:#e8dcb8}
+.doc-banner b{color:#fff}
+.doc-banner a{color:#ffb4ad;text-decoration:underline}
+.doc-banner.dated a{color:#f0d68a}
+.doc-callout{margin:0 0 15px;max-width:78ch;padding:11px 14px;border-left:3px solid #d29922;
+ background:rgba(210,153,34,.07);color:#e0d0a8;font-size:14px}
+.doc-list{margin:0 0 15px 20px;max-width:78ch}
+.doc-list li{margin-bottom:7px}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.doc-table th{text-align:left;background:#0c1524;color:var(--accent);font-size:10px;
+ text-transform:uppercase;letter-spacing:1px;padding:9px 11px;border:1px solid var(--line2)}
+.doc-table td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.doc-foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:900px){
+ body{display:block} .sidebar{width:auto;height:auto;position:static;border-right:none;
+  border-bottom:1px solid var(--line)} .content{padding:24px 20px 60px}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+    <div class="sidebar-title">Group Pressure Tracking Template</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">On This Page</div>
+    <a class="nav-link" href="#s1"><span class="nav-num">01</span> HOW TO USE THIS TEMPLATE</a>
+    <a class="nav-link" href="#s2"><span class="nav-num">02</span> GROUP PROFILE</a>
+    <a class="nav-link" href="#s3"><span class="nav-num">03</span> BASELINE METRICS</a>
+    <a class="nav-link" href="#s4"><span class="nav-num">04</span> PRESSURE ACTION LOG</a>
+    <a class="nav-link" href="#s5"><span class="nav-num">05</span> OBSERVED EFFECTS TRACKER</a>
+    <a class="nav-link" href="#s6"><span class="nav-num">06</span> WAIS LOG</a>
+    <a class="nav-link" href="#s7"><span class="nav-num">07</span> STRIFE EVENT LOG</a>
+    <a class="nav-link" href="#s8"><span class="nav-num">08</span> ASSESSMENT</a>
+    <a class="nav-link" href="#s9"><span class="nav-num">09</span> ANNEX A | EXAMPLE: PRE-POPULATED TEMPL</a>
+    <div class="nav-section-label" style="margin-top:12px">Related</div>
+    <a class="nav-link" href="/library/">Document Library</a>
+    <a class="nav-link" href="/map">Ecosystem Map</a>
+    <a class="nav-link" href="/">Research Hub</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">Ecosystem Dependency Project<br>Converted to HTML 23 Aug 2026<br>Source: corpus document</div>
+  </div>
+</aside>
+<main class="content">
+  <header class="profile-header" id="top">
+    <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / Group Pressure Tracking Template</div>
+    <div class="page-label">EDP Corpus &middot; Document 11</div>
+    <h1 class="profile-name">Group Pressure Tracking Template</h1>
+    <p class="profile-sub">RANSOMWARE ECOSYSTEM</p><p class="profile-sub">DISRUPTION FRAMEWORK</p>
+    <div class="badge-row"><span class="badge">Corpus document</span><span class="badge">Doc 11</span></div>
+  </header>
+
+<h3>Group Pressure Tracking Template</h3>
+<p class="doc-p">Version 0.2  |  June 2026  |  Working Document</p>
+<p class="doc-p">Developed by Reno</p>
+<h2 id="s1">HOW TO USE THIS TEMPLATE</h2>
+<p class="doc-p">This template is the operational instrument for group-level pressure tracking. When a working group initiates sustained operations against a specific ransomware actor or brand, this template is opened and populated from the start. It runs alongside the per-operation micro-layer log entries in the KPI framework.</p>
+<p class="doc-p">The template serves two audiences: the operational team maintaining situational awareness on the target group, and leadership who need a pre/post picture of what specific pressure is producing against a specific actor.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>RELATIONSHIP TO THE KPI FRAMEWORK
+This template sits between the micro layer (per-operation logs) and the meso layer (node cluster metrics) in the KPI framework architecture.
+
+Micro-layer operation logs document individual actions against this group. This template aggregates those actions and tracks the cumulative effect on the target group specifically.
+
+Meso-layer node metrics track ecosystem-wide pressure. This template tracks group-specific effects that contribute to those meso metrics.
+
+Leadership receives this template as a group-level summary, not a node-level or ecosystem-level report.</td></tr>
+</tbody></table></div>
+<h3>Population Instructions</h3>
+<ul class="doc-list">
+<li>Open one template per active target group. Do not combine multiple groups in a single template.</li>
+<li>Populate Section 1 (Group Profile) before any pressure actions begin. This establishes the baseline.</li>
+<li>Populate Section 2 (Baseline Metrics) before any pressure actions begin. Baselines cannot be established retroactively.</li>
+<li>Update Section 3 (Pressure Action Log) after every action against this group.</li>
+<li>Update Section 4 (Observed Effects Tracker) at 30, 90, and 180-day intervals from the date of first action.</li>
+<li>Section 5 (WAIS Log) is populated only when an arrest occurs involving this group.</li>
+<li>Section 6 (Strife Event Log) is populated when any strife event type is observed.</li>
+<li>Section 7 (Assessment) is completed at each 90-day review cycle.</li>
+</ul>
+<h2 id="s2">SECTION 1 | GROUP PROFILE</h2>
+<p class="doc-p">Populate before operations begin. Update when material changes are observed.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Group Name / Handle</th><th>Primary name and known aliases</th></tr></thead>
+<tbody>
+<tr><td>Template ID</td><td>Unique identifier for this tracking file</td></tr>
+<tr><td>Date Opened</td><td>Date this template was initiated</td></tr>
+<tr><td>Owning Team / Agency</td><td>Primary team responsible for population</td></tr>
+<tr><td>Operational Model</td><td>RaaS franchise / Closed hierarchical / Independent affiliate / Other</td></tr>
+<tr><td>Estimated Active Since</td><td>Approximate date of first confirmed activity</td></tr>
+<tr><td>Lineage</td><td>Known predecessor groups or personnel origins (e.g., former Conti operators)</td></tr>
+<tr><td>Estimated Affiliate Count</td><td>Point-in-time estimate at template opening. Confidence level.</td></tr>
+<tr><td>Primary RaaS Platform</td><td>If applicable: Exploit, XSS, private recruitment, or other</td></tr>
+<tr><td>Known Operating Geography</td><td>Primary actor geography based on available intelligence</td></tr>
+</tbody></table></div>
+<h3>Node Exposure Assessment</h3>
+<p class="doc-p">For each ecosystem node, assess the target group's current dependency and known infrastructure. This drives which nodes to prioritize for pressure.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Dependency Level</th><th>Known Infrastructure / Actors</th><th>Substitutability</th><th>Priority</th></tr></thead>
+<tbody>
+<tr><td>Node 01: OTC Brokers</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 02: High-Risk Exchanges</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 03: BPH</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 04: IAB Markets</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 05: Botnet/Loaders</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 06: Leak Site</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 07: Underground Trust</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 08: Mixers</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+<tr><td>Node 09: Mule Networks</td><td>High / Medium / Low / Unknown</td><td></td><td>High / Medium / Low</td><td></td></tr>
+</tbody></table></div>
+<h3>Protection Layer Assessment</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Krysha Relationship Status</th><th>Active / Strained / Broken / Unknown / None Assessed</th></tr></thead>
+<tbody>
+<tr><td>Assessed Protecting Entity</td><td>FSB unit / officer / MVD / Other / Unknown. Move specifics to Tier 3 annex.</td></tr>
+<tr><td>Confidence Level</td><td>CONFIRMED / CREDIBLE / INDICATIVE</td></tr>
+<tr><td>Protection Evidence Basis</td><td>Brief description of evidence basis. Full sourcing in controlled annex.</td></tr>
+<tr><td>Backfire Risk Assessment</td><td>Low / Medium / High. Reference companion playbook engagement triggers.</td></tr>
+</tbody></table></div>
+<h2 id="s3">SECTION 2 | BASELINE METRICS</h2>
+<p class="doc-p">Establish before any pressure actions begin. These are the pre-action reference points against which all observed effects will be measured. A baseline that cannot be established is marked UNKNOWN, not estimated.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>BASELINE INTEGRITY RULE
+Baselines must be established before the first action. Retroactive baseline establishment is not permitted because actions may already have affected the indicators. If a baseline cannot be established before action commences, mark it UNKNOWN and note the date of first action. Future measurements will be relative to the first post-action observation, which must be clearly labeled as such.</td></tr>
+</tbody></table></div>
+<h3>Operational Tempo Baseline</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Leak site post volume (monthly average, 90-day window)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Average time-to-publish (days from compromise to publication)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Estimated active affiliate count</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Average ransom demand (USD, reported cases)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Victim payment rate (confirmed payments / confirmed incidents)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Average ransom demand fulfillment rate</td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>Financial Infrastructure Baseline</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Primary OTC broker nodes (count of identified)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Attributed wallet cluster activity (monthly volume, USD estimate)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Primary mixing service usage (identified services)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>OFAC-designated wallet percentage (of attributed wallets)</td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>Access and Delivery Infrastructure Baseline</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>IAB sourcing pattern (primary forums and volume)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Average IAB access cost (USD, by access type if available)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>BPH provider count (identified hosting nodes)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Loader/botnet dependency (primary delivery mechanism)</td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>Underground Trust and Forum Health Baseline</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Forum reputation score (Exploit/XSS, if available)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Active dispute threads against group on monitored forums</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Affiliate recruitment activity (posts per month, approximate)</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Current affiliate split percentage (advertised)</td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h2 id="s4">SECTION 3 | PRESSURE ACTION LOG</h2>
+<p class="doc-p">Add one row per action targeting this group. Cross-reference the operation ID to the micro-layer log entry in the KPI framework. Do not duplicate the full micro-layer log here: record the action type, expected effect, and reference the micro-layer entry for detail.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Date</th><th>Operation ID</th><th>Action Type</th><th>Target Node(s)</th><th>Expected Primary Effect (30 days)</th><th>Backfire Risk</th><th>Micro-Layer Log Ref</th></tr></thead>
+<tbody>
+<tr><td></td><td></td><td>Designation / Takedown / Sinkhole / Referral / Arrest / Journalism / Infrastructure</td><td></td><td></td><td>Low / Med / High</td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h2 id="s5">SECTION 4 | OBSERVED EFFECTS TRACKER</h2>
+<p class="doc-p">Update at 30, 90, and 180 days from the date of first action. Compare against baselines in Section 2. Annotate any divergence from expected effects.</p>
+<h3>4.1  Operational Tempo Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Leak site post volume vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Time-to-publish vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Active affiliate count vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Average ransom demand vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Victim payment rate vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>4.2  Financial Infrastructure Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>OTC broker nodes active vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Attributed wallet activity vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Mixing service usage vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Designated wallet percentage vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>4.3  Access and Delivery Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>IAB access costs vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>BPH provider count vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Loader/botnet delivery capacity vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>4.4  Underground Trust Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Forum dispute volume vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Affiliate recruitment activity vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Affiliate split percentage vs. baseline</td><td>See Section 2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>New brand/splinter emergence</td><td>None at baseline</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>4.5  Divergence Notes</h3>
+<p class="doc-p">Record any significant divergence between expected and observed effects here. Include the operation ID, the expected effect, what was actually observed, and a brief assessment of why the divergence occurred.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Date</th><th>Operation ID</th><th>Expected Effect</th><th>Observed Effect</th><th>Divergence Assessment</th></tr></thead>
+<tbody>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h2 id="s6">SECTION 5 | WAIS LOG</h2>
+<p class="doc-p">Populate when an arrest involving this group occurs. Score each arrest individually. Reference the full WAIS scoring guide in the KPI framework document, Section 6.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Arrest 1</th><th>Arrest 2</th><th>Arrest 3</th></tr></thead>
+<tbody>
+<tr><td>Operation ID / Date</td><td></td><td></td><td></td></tr>
+<tr><td>Actor Role / Node Criticality Score (1/2/3)</td><td></td><td></td><td></td></tr>
+<tr><td>Cooperation Output Score (1/2/3 or PENDING)</td><td></td><td></td><td></td></tr>
+<tr><td>Trust Cascade Effect Score (1/2/3)</td><td></td><td></td><td></td></tr>
+<tr><td>Reconstitution Impact Score (1/2/3)</td><td></td><td></td><td></td></tr>
+<tr><td>WAIS Total</td><td></td><td></td><td></td></tr>
+<tr><td>Coordination Bonus Applied (+2)?</td><td></td><td></td><td></td></tr>
+<tr><td>Final WAIS (with bonus if applicable)</td><td></td><td></td><td></td></tr>
+<tr><td>WAIS Category (High/Moderate/Limited)</td><td></td><td></td><td></td></tr>
+<tr><td>90-Day Update Required?</td><td>Yes / No</td><td>Yes / No</td><td>Yes / No</td></tr>
+</tbody></table></div>
+<p class="doc-p">Cooperation Output PENDING follow-up:</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Arrest ID</th><th>PENDING Since</th><th>Debrief Expected Date</th><th>Update When Available</th></tr></thead>
+<tbody>
+<tr><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h2 id="s7">SECTION 6 | STRIFE EVENT LOG</h2>
+<p class="doc-p">Populate when any strife event is observed involving this group. Use the event types defined in the KPI framework Section 5.2. Each event gets one row. Add rows as needed.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Date</th><th>Event Type</th><th>Source Reliability</th><th>Description</th><th>Ecosystem Effect Observed</th><th>Causal Link to Actions</th><th>Follow-On Indicators to Watch</th></tr></thead>
+<tbody>
+<tr><td></td><td>LEAK / PUBLIC DISPUTE / EXIT SCAM / DEFECTION / ARR-TRIGGERED FRAG / HANDLER COMPLAINT / DOX</td><td>CONFIRMED / CREDIBLE / INDICATIVE</td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h2 id="s8">SECTION 7 | ASSESSMENT</h2>
+<p class="doc-p">Complete at each 90-day review cycle. This is the leadership-reportable summary for this group. One page maximum. Designed for Tier 1 leadership dashboard use.</p>
+<h3>7.1  Current Group Status</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>Assessment Date</td><td></td></tr>
+<tr><td>Overall Group Status</td><td>Fully Operational / Degraded / Significantly Degraded / Inactive / Dissolved</td></tr>
+<tr><td>Operational Capacity vs. Baseline</td><td>Percentage estimate with confidence label</td></tr>
+<tr><td>Financial Rail Status</td><td>Intact / Partially Disrupted / Significantly Disrupted</td></tr>
+<tr><td>Protection Layer Status</td><td>Active / Strained / Broken / Unknown</td></tr>
+<tr><td>Reconstitution Risk</td><td>Low / Medium / High. If high, what is enabling reconstitution?</td></tr>
+</tbody></table></div>
+<h3>7.2  Pressure Effect Summary</h3>
+<p class="doc-p">In plain language, what has the pressure campaign produced? What is working, what is not, and what is the next recommended action. Three to five sentences maximum.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td></td></tr>
+</tbody></table></div>
+<h3>7.3  Recommended Next Actions</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Priority</th><th>Recommended Action</th><th>Target Node</th><th>Expected Effect</th><th>Owner</th></tr></thead>
+<tbody>
+<tr><td>1</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>2</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>3</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h3>7.4  KPI Framework Feed</h3>
+<p class="doc-p">Which macro and meso-layer KPIs are updated by this assessment? List the specific metrics and the direction of movement.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>KPI ID</th><th>KPI Name</th><th>Direction of Movement</th><th>Confidence</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td></td><td></td><td>Improving / Worsening / No Change</td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<h2 id="s9">ANNEX A | EXAMPLE: PRE-POPULATED TEMPLATE (Qilin)</h2>
+<p class="doc-p">This annex shows what a partially populated template looks like for an active group. Qilin is used as the example because it is well-documented in open-source reporting and has been the dominant franchise since RansomHub went dark in April 2025 and its affiliate base dispersed. This is illustrative only: all data drawn from public sources, and fields that require operational intelligence are left blank. The RansomHub collapse that displaced the previous version of this example is itself a reference case for the Section 6 strife event log: an exit-scam-pattern shutdown, a public loyalty dispute, and affiliate migration to competing brands inside 60 days.</p>
+<h3>Section 1 Partial: Group Profile</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Group Name / Handle</th><th>Qilin (formerly Agenda)</th></tr></thead>
+<tbody>
+<tr><td>Template ID</td><td>EXAMPLE-QL-001</td></tr>
+<tr><td>Date Opened</td><td>June 2026 (illustrative)</td></tr>
+<tr><td>Operational Model</td><td>RaaS franchise. Open affiliate recruitment. Advertised affiliate split of 80 to 85 percent in favor of the affiliate, with added services (integrated DDoS capability, negotiation support) used as recruitment differentiators post-RansomHub. Confidence: CREDIBLE.</td></tr>
+<tr><td>Estimated Active Since</td><td>Mid-2022 as Agenda; rebranded to Qilin by late 2022. Confidence: CONFIRMED.</td></tr>
+<tr><td>Lineage</td><td>Original core assessed distinct from the Conti diaspora. Absorbed a significant share of displaced RansomHub affiliates after the April 2025 collapse; that roster itself carried former LockBit and BlackCat/ALPHV personnel. Confidence: CREDIBLE.</td></tr>
+<tr><td>Estimated Affiliate Count</td><td>Unknown. Highest claimed-victim volume of any active brand since mid-2025; roster assessed large. Confidence: INDICATIVE.</td></tr>
+<tr><td>Primary RaaS Platform</td><td>Private panel. Affiliate recruitment via Russian-language forums (RAMP primary) and direct outreach. Confidence: CREDIBLE.</td></tr>
+</tbody></table></div>
+<h3>Section 2 Partial: Operational Tempo Baseline (Illustrative)</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>NOTE
+The following baseline values are drawn from open-source leak site tracking data (Ransomlook, Ransomware.live) and public reporting. They are illustrative of what a baseline entry looks like, not operational intelligence.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Baseline (Pre-Action)</th><th>30-Day</th><th>90-Day</th><th>180-Day</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Leak site post volume (monthly average, trailing 12 months)</td><td>~100-120 victims/month; roughly 1,400 plus claims in the trailing 12 months (open-source trackers; tracker-dependent)</td><td></td><td></td><td></td><td>CREDIBLE</td></tr>
+<tr><td>Average time-to-publish</td><td>~3-5 days post-compromise (estimated)</td><td></td><td></td><td></td><td>INDICATIVE</td></tr>
+<tr><td>Estimated active affiliate count</td><td>Unknown. High volume suggests large roster.</td><td></td><td></td><td></td><td>INDICATIVE</td></tr>
+<tr><td>Average ransom demand</td><td>Variable. High-value targets reported at $1M+</td><td></td><td></td><td></td><td>CREDIBLE</td></tr>
+</tbody></table></div>
+<h3>What a Pressure Campaign Against Qilin Would Track</h3>
+<p class="doc-p">Given the position Qilin holds as the dominant franchise since April 2025 and its absorption of displaced RansomHub affiliates, a pressure campaign would prioritize:</p>
+<ul class="doc-list">
+<li>Node 01 (OTC Brokers): identify and designate the OTC nodes serving Qilin admin wallet cash-out. With an 80/20 class split, admin flows run roughly 15 to 20 percent of ransom volume; at the current claim tempo that remains the highest-value financial target on the board.</li>
+<li>Node 04 (IAB Markets): monitor affiliate access purchasing patterns. A sustained claim tempo above 100 victims per month requires continuous access supply; IAB price increases and listing-volume reductions bite this group faster than lower-tempo brands.</li>
+<li>Node 07 (Underground Trust): the Qilin recruitment pitch rests on payment reliability and added services, marketed in direct contrast to the RansomHub collapse. Disrupting that reputation through escrow failures or dispute seeding is a high-value trust infrastructure action.</li>
+<li>Strife monitoring: watch for affiliate complaints about non-payment or delayed payment. Much of the roster has now survived two brand collapses (LockBit after Cronos, then RansomHub). Trust tolerance is minimal and strife indicators will surface fast; the April 2025 RansomHub end state, with the admin demanding a loyalty payment amid exit rumors, is the reference pattern.</li>
+</ul>
+<p class="doc-p">RANSOMWARE ECOSYSTEM DISRUPTION FRAMEWORK: GROUP PRESSURE TRACKING TEMPLATE v0.2 — June 2026</p>
+<p class="doc-p">Working Document — Handle Per Originating Agency Protocols — One Template Per Active Target Group</p>
+  <div class="doc-foot">
+    Ecosystem Dependency Project. This page is the full text of a corpus framework
+    document, converted from the original for reading on the web. Content is unchanged.
+    Figures and assessments carry the confidence language of the source document.
+  </div>
+</main>
+</body>
+</html>

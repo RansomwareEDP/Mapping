@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecosystem Dependency Map, Refined | EDP Document Library</title>
+<meta name="description" content="DEPENDENCY MAP, REFINED">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070b16;--panel:#0a1220;--line:#162236;--line2:#1e3350;
+ --ink:#c0cfe0;--ink2:#8aa4c0;--dim:#4e6e8e;--faint:#2e4a68;--accent:#5a9acc;--accent2:#7ab0d8}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+ font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.sidebar{width:270px;flex-shrink:0;background:#060d1a;border-right:1px solid var(--line);
+ padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.sidebar-logo a{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.sidebar-title{font-size:15px;font-weight:700;color:#d6e5f4;margin-top:10px;line-height:1.35}
+.sidebar-nav{padding:14px 0}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:var(--faint);
+ padding:0 20px;margin-bottom:7px}
+.nav-link{display:block;padding:6px 20px;font-size:12.5px;color:var(--ink2);border-left:2px solid transparent}
+.nav-link:hover{color:var(--accent2);border-left-color:var(--line2);background:rgba(90,154,204,.05);text-decoration:none}
+.nav-num{color:var(--faint);font-size:10px;margin-right:7px}
+.sidebar-footer{padding:14px 20px 0;border-top:1px solid var(--line);margin-top:10px}
+.sidebar-meta{font-size:10px;color:var(--faint);line-height:1.8}
+.content{flex:1;min-width:0;padding:34px 48px 80px;max-width:1080px}
+.profile-header{border-bottom:1px solid var(--line2);padding-bottom:18px;margin-bottom:26px}
+.profile-breadcrumb{font-size:11px;color:var(--dim);margin-bottom:12px}
+.page-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.profile-name{font-size:27px;font-weight:700;color:#d6e5f4;line-height:1.2;letter-spacing:-.3px}
+.profile-sub{font-size:13.5px;color:var(--ink2);margin-top:9px;max-width:70ch}
+.badge-row{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;
+ border:1px solid var(--line2);border-radius:3px;color:var(--dim)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);
+ margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:14.5px;color:#b8cde0;margin:24px 0 9px;font-weight:600}
+.doc-p{margin:0 0 13px;max-width:78ch}
+.doc-banner{margin:0 0 22px;padding:13px 16px;border-radius:5px;font-size:13.5px;line-height:1.6}
+.doc-banner.super{border:1px solid #7a4a4a;background:rgba(255,123,114,.09);color:#f0c0bc}
+.doc-banner.dated{border:1px solid #7a6a3a;background:rgba(210,153,34,.09);color:#e8dcb8}
+.doc-banner b{color:#fff}
+.doc-banner a{color:#ffb4ad;text-decoration:underline}
+.doc-banner.dated a{color:#f0d68a}
+.doc-callout{margin:0 0 15px;max-width:78ch;padding:11px 14px;border-left:3px solid #d29922;
+ background:rgba(210,153,34,.07);color:#e0d0a8;font-size:14px}
+.doc-list{margin:0 0 15px 20px;max-width:78ch}
+.doc-list li{margin-bottom:7px}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.doc-table th{text-align:left;background:#0c1524;color:var(--accent);font-size:10px;
+ text-transform:uppercase;letter-spacing:1px;padding:9px 11px;border:1px solid var(--line2)}
+.doc-table td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.doc-foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:900px){
+ body{display:block} .sidebar{width:auto;height:auto;position:static;border-right:none;
+  border-bottom:1px solid var(--line)} .content{padding:24px 20px 60px}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+    <div class="sidebar-title">Ecosystem Dependency Map, Refined</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">On This Page</div>
+    <a class="nav-link" href="#s1"><span class="nav-num">01</span> PRIORITY TIER: CRITICAL</a>
+    <a class="nav-link" href="#s2"><span class="nav-num">02</span> PRIORITY TIER: HIGH</a>
+    <a class="nav-link" href="#s3"><span class="nav-num">03</span> PRIORITY TIER: MEDIUM</a>
+    <div class="nav-section-label" style="margin-top:12px">Related</div>
+    <a class="nav-link" href="/library/">Document Library</a>
+    <a class="nav-link" href="/map">Ecosystem Map</a>
+    <a class="nav-link" href="/">Research Hub</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">Ecosystem Dependency Project<br>Converted to HTML 23 Aug 2026<br>Source: corpus document</div>
+  </div>
+</aside>
+<main class="content">
+  <header class="profile-header" id="top">
+    <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / Ecosystem Dependency Map, Refined</div>
+    <div class="page-label">EDP Corpus &middot; Document 03</div>
+    <h1 class="profile-name">Ecosystem Dependency Map, Refined</h1>
+    <p class="profile-sub">RANSOMWARE ECOSYSTEM</p><p class="profile-sub">DEPENDENCY MAP, REFINED</p>
+    <div class="badge-row"><span class="badge">Corpus document</span><span class="badge">Doc 03</span></div>
+  </header>
+
+<h3>Priority-Weighted Disruption Reference</h3>
+<p class="doc-p">Developed by Reno</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>ID</th><th>Node</th><th>Tier</th><th>Replace Difficulty</th><th>Primary Owner</th><th>Backfire Risk</th></tr></thead>
+<tbody>
+<tr><td>01</td><td>OTC Crypto Brokers</td><td>CRITICAL</td><td>HIGH</td><td>Treasury / OFAC + FVEY financial partners</td><td>LOW: financial actions do not trigger FSB protection reflexes</td></tr>
+<tr><td>02</td><td>High-Risk / Non-Compliant Exchanges</td><td>CRITICAL</td><td>HIGH</td><td>Treasury / OFAC + FVEY financial regulators + blockchain forensics firms</td><td>LOW</td></tr>
+<tr><td>03</td><td>Bulletproof Hosting (BPH) Providers</td><td>CRITICAL</td><td>HIGH</td><td>FVEY IC + LE + upstream provider engagement (ISPs, registrars, CDN providers)</td><td>LOW-MEDIUM: target providers, not individuals</td></tr>
+<tr><td>04</td><td>Initial Access Broker (IAB) Markets</td><td>HIGH</td><td>MEDIUM</td><td>FVEY LE + private sector threat intel (Intel 471, Flashpoint)</td><td>LOW</td></tr>
+<tr><td>05</td><td>Botnet / Loader Ecosystems</td><td>HIGH</td><td>HIGH</td><td>FVEY IC + LE (FBI, NCA, Europol)</td><td>LOW-MEDIUM</td></tr>
+<tr><td>06</td><td>Leak-Site Hosting Stack</td><td>HIGH</td><td>MEDIUM</td><td>FVEY LE + IC (for attribution); upstream hosting providers (for takedown)</td><td>LOW</td></tr>
+<tr><td>07</td><td>Underground Forum Trust Infrastructure</td><td>HIGH</td><td>HIGH</td><td>FVEY LE + private sector underground monitoring (Intel 471, Flashpoint)</td><td>LOW</td></tr>
+<tr><td>08</td><td>Mixing / Obfuscation Services</td><td>HIGH</td><td>MEDIUM</td><td>OFAC + blockchain forensics firms (Chainalysis, TRM, Elliptic)</td><td>LOW</td></tr>
+<tr><td>09</td><td>Mule / Money Laundering Networks</td><td>HIGH</td><td>MEDIUM</td><td>FVEY LE FOs + FNS referral channel (domestic framing) + Rosfinmonitoring pipeline</td><td>LOW-MEDIUM</td></tr>
+<tr><td>10</td><td>Credential / Stealer-Log Markets</td><td>MEDIUM</td><td>LOW-MEDIUM</td><td>FVEY LE + private sector (takedown / purchase disruption)</td><td>LOW</td></tr>
+<tr><td>11</td><td>Crypter / Packer Services</td><td>MEDIUM</td><td>LOW</td><td>Private sector (AV/EDR vendors, signature development); LE for high-volume providers</td><td>LOW</td></tr>
+<tr><td>12</td><td>Gray-Market VPS / Reseller Networks</td><td>MEDIUM</td><td>MEDIUM</td><td>Private sector (abuse reporting) + LE (for egregious providers)</td><td>LOW</td></tr>
+<tr><td>13</td><td>Domain Reseller / DNS Ecosystems</td><td>MEDIUM</td><td>MEDIUM</td><td>Private sector (registrar engagement, domain clustering analysis) + LE</td><td>LOW</td></tr>
+<tr><td>14</td><td>Data Exfiltration Staging Infrastructure</td><td>MEDIUM</td><td>MEDIUM</td><td>LE FOs (where victims cooperate and report) + IC</td><td>LOW</td></tr>
+<tr><td>15</td><td>Operational Proxy / Anonymization Services</td><td>MEDIUM</td><td>LOW</td><td>IC + LE (for attribution, not disruption)</td><td>LOW</td></tr>
+</tbody></table></div>
+<h2 id="s1">PRIORITY TIER: CRITICAL</h2>
+<h3>NODE 01, OTC CRYPTO BROKERS   [CRITICAL]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Large-volume cash-out and laundering coordination; converts ransom proceeds to fiat at scale</td></tr>
+<tr><td>What Breaks</td><td>Large ransom payments cannot be liquidated; admin cut becomes frozen or stranded; operational income collapses</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH: few brokers operate at the volume needed for high-value ransoms; OTC relationships are trust-dependent and slow to rebuild</td></tr>
+<tr><td>Primary Owner</td><td>Treasury / OFAC + FVEY financial partners</td></tr>
+<tr><td>Disruption Method</td><td>Designation / VASP KYC pressure / correspondent banking exposure</td></tr>
+<tr><td>Backfire Risk</td><td>LOW: financial actions do not trigger FSB protection reflexes</td></tr>
+<tr><td>Analyst Notes</td><td>Most durable pressure vector. Infrastructure rebuilds in days; financial exposure compounds over time. Top 20 OTC node designation is a defined investment priority. Chainalysis/TRM tracing is prerequisite.</td></tr>
+</tbody></table></div>
+<h3>NODE 02, HIGH-RISK / NON-COMPLIANT EXCHANGES   [CRITICAL]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Conversion of cryptocurrency ransom payments to fiat; primary cash-out gateway for mid-tier volumes</td></tr>
+<tr><td>What Breaks</td><td>Funds remain in crypto and cannot enter financial system; purchasing power inaccessible; actors forced to higher-friction alternatives</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH: VASP compliance pressure has materially narrowed the compliant exchange landscape; non-compliant alternatives face increasing designation risk</td></tr>
+<tr><td>Primary Owner</td><td>Treasury / OFAC + FVEY financial regulators + blockchain forensics firms</td></tr>
+<tr><td>Disruption Method</td><td>Designation / enhanced due diligence referrals / VASP engagement</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Closely linked to OTC node (01). Sanctions designation of exchange clusters compounds over time. Track sanctioned wallet activity post-designation as KPI, continued activity signals compliance gap.</td></tr>
+</tbody></table></div>
+<h3>NODE 03, BULLETPROOF HOSTING (BPH) PROVIDERS   [CRITICAL]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Durable hosting for C2 servers, affiliate panels, leak sites, and negotiation infrastructure</td></tr>
+<tr><td>What Breaks</td><td>Operations lose stable infrastructure; forced into gray-market VPS churn which increases detection risk and operational cost</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH: full-service BPH with abuse-resistant upstream relationships is scarce; substitution requires time and criminal trust relationships</td></tr>
+<tr><td>Primary Owner</td><td>FVEY IC + LE + upstream provider engagement (ISPs, registrars, CDN providers)</td></tr>
+<tr><td>Disruption Method</td><td>ISP/ASN notifications / upstream provider engagement / infrastructure takedown</td></tr>
+<tr><td>Backfire Risk</td><td>LOW-MEDIUM: target providers, not individuals</td></tr>
+<tr><td>Analyst Notes</td><td>Move from BPH brand targeting to provider-of-provider leverage: registrar, nameserver, ASN, CDN dependencies per BPH operator. Upstream dependency graph is a defined investment priority. Document infrastructure fingerprints before takedown for reconstitution tracking.</td></tr>
+</tbody></table></div>
+<h2 id="s2">PRIORITY TIER: HIGH</h2>
+<h3>NODE 04, INITIAL ACCESS BROKER (IAB) MARKETS   [HIGH]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Sale of pre-compromised corporate network footholds (RDP, VPN, domain admin) to ransomware affiliates</td></tr>
+<tr><td>What Breaks</td><td>Victim supply pipeline to affiliates shrinks; affiliates must conduct own intrusion (slower, higher exposure); operational tempo declines</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: IAB market is distributed; individual broker disruption is absorbed, but coordinated market pressure raises prices and slows supply</td></tr>
+<tr><td>Primary Owner</td><td>FVEY LE + private sector threat intel (Intel 471, Flashpoint)</td></tr>
+<tr><td>Disruption Method</td><td>Undercover market operations / infiltration / takedown / broker arrests</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>IAB disruption is low-backfire-risk, these actors are not typically state-protected. Rising IAB prices compress affiliate margins and reduce franchise attractiveness. Track new IAB listings per month as ecosystem health KPI.</td></tr>
+</tbody></table></div>
+<h3>NODE 05, BOTNET / LOADER ECOSYSTEMS   [HIGH]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Mass malware delivery; loaders distribute ransomware payloads at scale to pre-compromised hosts</td></tr>
+<tr><td>What Breaks</td><td>Payload distribution slows dramatically; campaigns require resource-intensive manual intrusion per victim</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH: mature loader ecosystems (QBot, IcedID successor variants) represent years of infrastructure investment; rebuilding distribution capacity is slow</td></tr>
+<tr><td>Primary Owner</td><td>FVEY IC + LE (FBI, NCA, Europol)</td></tr>
+<tr><td>Disruption Method</td><td>Infrastructure takedown / sinkholing / C2 disruption</td></tr>
+<tr><td>Backfire Risk</td><td>LOW-MEDIUM</td></tr>
+<tr><td>Analyst Notes</td><td>Sinkholing operations produce intelligence on victim population and actor TTPs simultaneously with disruption. Coordinate with ISACs and private sector (Microsoft DART, Mandiant) for victim notification. High intelligence yield before takedown.</td></tr>
+</tbody></table></div>
+<h3>NODE 06, LEAK-SITE HOSTING STACK   [HIGH]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Publication of stolen victim data to pressure payment; core extortion leverage mechanism for modern ransomware</td></tr>
+<tr><td>What Breaks</td><td>Extortion leverage collapses without credible publication threat; victim payment incentive declines; double-extortion model degrades</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: new leak sites can be stood up in days, but with loss of SEO, victim following, and affiliate confidence</td></tr>
+<tr><td>Primary Owner</td><td>FVEY LE + IC (for attribution); upstream hosting providers (for takedown)</td></tr>
+<tr><td>Disruption Method</td><td>Takedown / trust destruction / decryptor release (undermines payment incentive)</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Takedown of leak site simultaneously disrupts operations and signals to victims that payment may not be necessary. Combine with decryptor release where possible (Operation Cronos model). Post-takedown: monitor for reconstitution as intelligence on actor resilience.</td></tr>
+</tbody></table></div>
+<h3>NODE 07, UNDERGROUND FORUM TRUST INFRASTRUCTURE   [HIGH]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Escrow services, arbitration, reputation systems, and forum administration that enable criminal market function</td></tr>
+<tr><td>What Breaks</td><td>Market trust collapses; transaction costs rise; affiliate recruitment becomes unreliable; criminal commerce slows</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH: trust relationships are person-dependent and non-transferable; escrow operators and forum admins have irreplaceable reputation capital</td></tr>
+<tr><td>Primary Owner</td><td>FVEY LE + private sector underground monitoring (Intel 471, Flashpoint)</td></tr>
+<tr><td>Disruption Method</td><td>Trust node disruption / reputation attacks / forum seizure / infiltration</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Non-technical nodes are ecosystem-critical and low-backfire-risk. 'Top 10 trust nodes' targeting list is a defined investment priority. Disrupting escrow operators and arbitrators degrades market function independent of any technical action. Dependency analysis of removal effects is prerequisite.</td></tr>
+</tbody></table></div>
+<h3>NODE 08, MIXING / OBFUSCATION SERVICES   [HIGH]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Transaction laundering and fund tracing disruption; enables actors to obscure ransom flows before cash-out</td></tr>
+<tr><td>What Breaks</td><td>Blockchain tracing becomes significantly easier; actors forced to expose funds to enhanced due diligence at exchanges</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: multiple mixing alternatives exist; designation of one node pushes to next; but each shift raises friction and tracing cost for actors</td></tr>
+<tr><td>Primary Owner</td><td>OFAC + blockchain forensics firms (Chainalysis, TRM, Elliptic)</td></tr>
+<tr><td>Disruption Method</td><td>Designation / tracing / exchange-level flagging</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Track 'share of ecosystem funds forced onto higher-friction rails' as KPI. Closely linked to exchange and OTC nodes (01, 02). Each designation raises actor cost even if alternative exists. Coordinate designations with exchange KYC pressure for compounding effect.</td></tr>
+</tbody></table></div>
+<h3>NODE 09, MULE / MONEY LAUNDERING NETWORKS   [HIGH]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Fiat currency movement post cash-out; layering and integration of criminal proceeds; front company operation</td></tr>
+<tr><td>What Breaks</td><td>Proceeds cannot enter financial system cleanly; actors accumulate crypto they cannot spend; operational costs rise</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: mule recruiters operate continuously; disruption of network requires sustained pressure rather than single action</td></tr>
+<tr><td>Primary Owner</td><td>FVEY LE FOs + FNS referral channel (domestic framing) + Rosfinmonitoring pipeline</td></tr>
+<tr><td>Disruption Method</td><td>Mule arrests / recruitment disruption / front company exposure / FNS referrals</td></tr>
+<tr><td>Backfire Risk</td><td>LOW-MEDIUM</td></tr>
+<tr><td>Analyst Notes</td><td>Mule recruitment pipeline disruption raises operational costs and slows scaling. FNS lifestyle inconsistency referrals (unexplained wealth vs. declared income) are domestic-law-framed and lower backfire risk than cyber-specific charges. Intermediary cash-out mapping is a defined investment priority.</td></tr>
+</tbody></table></div>
+<h2 id="s3">PRIORITY TIER: MEDIUM</h2>
+<h3>NODE 10, CREDENTIAL / STEALER-LOG MARKETS   [MEDIUM]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Bulk stolen credentials used for initial access and lateral movement; feeds IAB pipeline</td></tr>
+<tr><td>What Breaks</td><td>Credential reuse attacks decline; access costs rise for affiliates; IAB supply quality degrades</td></tr>
+<tr><td>Replace Difficulty</td><td>LOW-MEDIUM: stealer log markets are numerous and distributed; disruption of individual markets is quickly absorbed</td></tr>
+<tr><td>Primary Owner</td><td>FVEY LE + private sector (takedown / purchase disruption)</td></tr>
+<tr><td>Disruption Method</td><td>Market takedown / bulk credential invalidation notifications / vendor engagement</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Lower standalone impact than IAB markets (node 04) but feeds the IAB pipeline. Most effective when combined with IAB disruption. Victim notification programs (HaveIBeenPwned model) reduce attacker value of seized credential sets.</td></tr>
+</tbody></table></div>
+<h3>NODE 11, CRYPTER / PACKER SERVICES   [MEDIUM]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Malware obfuscation to evade AV/EDR detection; extends operational lifespan of ransomware payloads</td></tr>
+<tr><td>What Breaks</td><td>Detection rates increase; campaigns burn faster; actors must invest more in payload maintenance</td></tr>
+<tr><td>Replace Difficulty</td><td>LOW: crypter services are commoditized; disruption of one provider causes rapid substitution</td></tr>
+<tr><td>Primary Owner</td><td>Private sector (AV/EDR vendors, signature development); LE for high-volume providers</td></tr>
+<tr><td>Disruption Method</td><td>Signature development / provider disruption / malware analysis</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Best addressed through private sector detection investment rather than LE action. Each new crypter requires new signatures; detection arms race favors defenders when endpoint coverage is high. Track detection rate improvement as indirect KPI.</td></tr>
+</tbody></table></div>
+<h3>NODE 12, GRAY-MARKET VPS / RESELLER NETWORKS   [MEDIUM]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Rapid redeployment and infrastructure churn after takedowns; fills gap between BPH and legitimate hosting</td></tr>
+<tr><td>What Breaks</td><td>Recovery time increases after takedowns; actors face higher friction in spinning up replacement infrastructure</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: numerous reseller networks exist, but quality (abuse-tolerant, fast) providers are more limited</td></tr>
+<tr><td>Primary Owner</td><td>Private sector (abuse reporting) + LE (for egregious providers)</td></tr>
+<tr><td>Disruption Method</td><td>Abuse notifications / registrar engagement / ISP upstream pressure</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Most effective as part of sustained infrastructure pressure alongside BPH targeting (node 03). Alone, impact is temporary. Key lever: upstream transit provider engagement, who sells IP space to the resellers?</td></tr>
+</tbody></table></div>
+<h3>NODE 13, DOMAIN RESELLER / DNS ECOSYSTEMS   [MEDIUM]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Domain churn, phishing infrastructure, fast-flux hosting; enables rapid replacement of seized domains</td></tr>
+<tr><td>What Breaks</td><td>Campaign infrastructure becomes easier to trace and seize; phishing and C2 rotation slows</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: domain churn is fast but leaves registration patterns; clustering analysis produces predictive attribution</td></tr>
+<tr><td>Primary Owner</td><td>Private sector (registrar engagement, domain clustering analysis) + LE</td></tr>
+<tr><td>Disruption Method</td><td>Registrar disruption / fast-flux tracking / DNS provider pressure</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Infrastructure persistence tracking (Shadowserver, Censys) surfaces reconstitution patterns quickly. Document registration fingerprints before takedown. Most effective when combined with BPH/VPS pressure (nodes 03, 12).</td></tr>
+</tbody></table></div>
+<h3>NODE 14, DATA EXFILTRATION STAGING INFRASTRUCTURE   [MEDIUM]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Temporary storage for stolen data before extortion; enables double-extortion model</td></tr>
+<tr><td>What Breaks</td><td>Leak-site extortion operations slow or fail; actors must maintain victim access longer, increasing detection risk</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM: staging infrastructure can be rebuilt, but disruption mid-operation forces re-exfiltration</td></tr>
+<tr><td>Primary Owner</td><td>LE FOs (where victims cooperate and report) + IC</td></tr>
+<tr><td>Disruption Method</td><td>Seizure / monitoring / victim cooperation</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Intelligence value of monitoring staging infrastructure before seizure is high, reveals victim list, data held, and negotiation timeline. Victim cooperation is prerequisite; under-reported in current environment.</td></tr>
+</tbody></table></div>
+<h3>NODE 15, OPERATIONAL PROXY / ANONYMIZATION SERVICES   [MEDIUM]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Conceals true server location and operator origin; degrades infrastructure attribution</td></tr>
+<tr><td>What Breaks</td><td>Infrastructure attribution becomes easier; actor operational security degrades</td></tr>
+<tr><td>Replace Difficulty</td><td>LOW: numerous VPN and proxy alternatives; disruption of individual services is quickly absorbed</td></tr>
+<tr><td>Primary Owner</td><td>IC + LE (for attribution, not disruption)</td></tr>
+<tr><td>Disruption Method</td><td>Attribution analysis; targeted disruption for high-value operators</td></tr>
+<tr><td>Backfire Risk</td><td>LOW</td></tr>
+<tr><td>Analyst Notes</td><td>Better treated as an attribution problem than a disruption target. Most value comes from using proxy metadata for operator identification, not from taking the proxy offline. Low standalone disruption value. Reassessment flag (June 2026): the First VPN takedown (Operation Saffron, May 2026) found one criminal-dedicated VPN serving 25 plus ransomware groups across 33 seized servers in 27 countries. Criminal-dedicated anonymization is more concentrated, and more disruptable, than this rating assumes. Revisit tier and disruption method at the next quarterly review.</td></tr>
+</tbody></table></div>
+<h3>NODE 16, EXPLOIT / VULNERABILITY BROKERS   [CRITICAL]</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>What It Enables</td><td>Zero-day and N-day exploit acquisition for affiliates and operators; bypasses the IAB market entirely for targets requiring stealth or specific access capabilities; enables intrusion against hardened networks that resist commodity IAB techniques</td></tr>
+<tr><td>What Breaks</td><td>High-value stealth access capability eliminated; operators restricted to commodity IAB-sourced access; attacks against hardened targets (critical infrastructure, financial sector) become significantly harder to initiate</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH: zero-day market is concentrated among a small number of trusted brokers; relationships are reputation-dependent and slow to rebuild; bug class exhaustion following coordinated disclosure permanently degrades specific exploit families</td></tr>
+<tr><td>Primary Owner</td><td>Policy lead: CISA + NSA (coordinated vulnerability disclosure, bug bounty scaling) | OFAC (designation of brokers serving state-adjacent customers) | FVEY IC (broker attribution)</td></tr>
+<tr><td>Disruption Method</td><td>Coordinated vulnerability disclosure (CVD) reform to reduce unpatched windows; scaled bug bounty programs to exhaust bug classes before criminal market acquisition; OFAC designation of identified brokers with state-adjacent customer base; IC-led broker attribution</td></tr>
+<tr><td>Backfire Risk</td><td>LOW-MEDIUM: policy-track actions (CVD, bug bounty) carry no backfire risk; OFAC designation or public attribution of brokers with FSB/GRU customer adjacency carries medium risk; sequence policy actions first</td></tr>
+<tr><td>Analyst Notes</td><td>Added per EDP Module 06 assessment (CRITICAL tier recommendation). Not in original 15-node map. Disruption logic differs from all other nodes: primary lever is policy-track (CVD reform, bug bounty scaling), not law enforcement. Suggested placement: Phase A+ or Phase B-pre, as a prerequisite assessment before IAB-market operations. No dedicated EDP playbook phase currently exists for this node.</td></tr>
+</tbody></table></div>
+<h3>PARTNER LANE MATRIX</h3>
+<p class="doc-p">P = Primary lane. S = Supporting role. Use this matrix to assign workstream ownership and avoid duplication. Nodes with multiple primary lanes require a coordination lead.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Tier</th><th>FVEY LE FOs</th><th>FVEY IC</th><th>OFAC / Treasury</th><th>Private Sector</th></tr></thead>
+<tbody>
+<tr><td>OTC Crypto Brokers</td><td>CRITICAL</td><td>,</td><td>S</td><td>P</td><td>P (Chainalysis/TRM)</td></tr>
+<tr><td>High-Risk Exchanges</td><td>CRITICAL</td><td>S</td><td>,</td><td>P</td><td>P (blockchain forensics)</td></tr>
+<tr><td>Bulletproof Hosting</td><td>CRITICAL</td><td>S</td><td>P</td><td>,</td><td>P (ISPs, registrars, CDNs)</td></tr>
+<tr><td>IAB Markets</td><td>HIGH</td><td>P</td><td>S</td><td>,</td><td>P (Intel 471, Flashpoint)</td></tr>
+<tr><td>Botnet / Loaders</td><td>HIGH</td><td>P</td><td>P</td><td>,</td><td>P (Microsoft, Mandiant)</td></tr>
+<tr><td>Leak-Site Hosting</td><td>HIGH</td><td>P</td><td>P</td><td>,</td><td>S (upstream hosting)</td></tr>
+<tr><td>Underground Trust Infra</td><td>HIGH</td><td>P</td><td>S</td><td>,</td><td>P (Intel 471, Flashpoint)</td></tr>
+<tr><td>Mixing / Obfuscation</td><td>HIGH</td><td>,</td><td>S</td><td>P</td><td>P (Chainalysis/TRM)</td></tr>
+<tr><td>Mule / Money Laundering</td><td>HIGH</td><td>P</td><td>,</td><td>S</td><td>S</td></tr>
+<tr><td>Credential / Stealer Mkts</td><td>MEDIUM</td><td>P</td><td>,</td><td>,</td><td>P (takedown support)</td></tr>
+<tr><td>Crypter / Packer Services</td><td>MEDIUM</td><td>S</td><td>,</td><td>,</td><td>P (AV/EDR vendors)</td></tr>
+<tr><td>Gray-Market VPS</td><td>MEDIUM</td><td>S</td><td>,</td><td>,</td><td>P (abuse reporting)</td></tr>
+<tr><td>Domain / DNS Ecosystems</td><td>MEDIUM</td><td>S</td><td>,</td><td>,</td><td>P (registrar engagement)</td></tr>
+<tr><td>Exfil Staging Infra</td><td>MEDIUM</td><td>P</td><td>S</td><td>,</td><td>S</td></tr>
+<tr><td>Proxy / Anonymization</td><td>MEDIUM</td><td>S</td><td>P</td><td>,</td><td>S</td></tr>
+</tbody></table></div>
+<p class="doc-p">Note on private sector integration: The private sector gap is most acute in three areas: (1) blockchain forensics firms feeding OFAC designations, (2) underground monitoring firms providing IAB and trust-node intelligence, and (3) upstream infrastructure providers taking voluntary abuse action. A structured referral-and-feedback loop is the missing piece, currently operating ad hoc.</p>
+<h3>TOP INVESTMENT PRIORITIES (GAP-WEIGHTED)</h3>
+<p class="doc-p">The following five investments produce the highest disruption-per-unit-of-effort based on current analytic coverage gaps. Drawn from structural ecosystem analysis and cross-referenced against the node map. See companion KPI Measurement Framework for full metric definitions.</p>
+<p class="doc-p">1. Intermediary Cash-Out Mapping Program   (Nodes: Nodes 01, 02, 09)</p>
+<p class="doc-p">Convert laundering concepts into repeatable, case-linked cash-out graphs covering top 20 OTC/broker nodes, mule recruitment patterns, and 3 to 5 end-to-end case exemplars. Feeds OFAC designations and VASP engagement directly.</p>
+<p class="doc-p">2. Underground Governance and Trust Node Mapping   (Nodes: Node 07)</p>
+<p class="doc-p">Identify top 10 escrow operators, forum administrators, and arbitrators. Dependency analysis showing how removal changes market behavior. Low-backfire-risk targets with high ecosystem impact.</p>
+<p class="doc-p">3. Upstream Infrastructure Dependency Graph   (Nodes: Nodes 03, 12, 13)</p>
+<p class="doc-p">Move from BPH brand lists to provider-of-provider leverage: registrar, nameserver, ASN, CDN, and payment acceptance per major BPH operator. Minimum deliverable: per top reseller/BPH, registrar + nameserver + ASN + payment rails + redundancy assessment.</p>
+<p class="doc-p">4. Measurement Layer Build-Out   (Nodes: All nodes)</p>
+<p class="doc-p">Implement KPI dashboard (monthly cadence) and pressure-effect ledger tied to every major action. Without this, effectiveness claims rest on narrative alone. Refer to the companion Ransomware Ecosystem Disruption Measurement Framework document for the full KPI set, confidence labeling system, and per-operation log template.</p>
+<p class="doc-p">5. Identity and Continuity Package   (Nodes: Nodes 03, 04, 07)</p>
+<p class="doc-p">Cross-platform handle mapping, PGP reuse tracking, panel fingerprints, and brand-asset reuse patterns for top 10 groups. Makes actor rebranding expensive. Minimum deliverable: cross-platform handle map + PGP reuse database + brand-asset reuse patterns.</p>
+<h3>RECOMMENDED NEXT STEPS</h3>
+<p class="doc-callout">This document is the analytical foundation. The logical next step is individual node playbooks for CRITICAL and HIGH priority nodes.</p>
+<p class="doc-p">Recommended sequencing for node playbook development:</p>
+<ul class="doc-list">
+<li>Phase A (CRITICAL nodes, build first): OTC Crypto Brokers, High-Risk Exchanges, Bulletproof Hosting. These three together cover the financial backbone and primary infrastructure layer. Node 16 (Exploit/Vulnerability Brokers) is assessed as a Phase A+ prerequisite per EDP Module 06: policy-track actions (CVD reform, bug bounty scaling, broker licensing) should be scoped concurrently with Phase A financial and infrastructure operations.</li>
+<li>Phase B (HIGH nodes, build in parallel): IAB Markets, Underground Trust Infrastructure, Mixing/Obfuscation. These are the operational engine and market-function nodes.</li>
+<li>Phase C (HIGH nodes, operational): Botnet/Loaders, Leak-Site Hosting, Mule Networks. Higher coordination complexity; benefits from Phase A/B groundwork.</li>
+<li>Phase D (MEDIUM nodes): Fold into relevant higher-tier node playbooks where dependencies exist; standalone playbooks only where partner ownership is clear.</li>
+</ul>
+<p class="doc-p">Each node playbook should include:</p>
+<ul class="doc-list">
+<li>Node description and ecosystem role</li>
+<li>Priority tier and substitutability assessment</li>
+<li>Partner lane assignments (primary and supporting)</li>
+<li>Action sequence (low to high backfire risk)</li>
+<li>Engagement triggers to avoid (cross-reference Playbook Section 8)</li>
+<li>KPIs and measurement approach</li>
+<li>Reconstitution monitoring protocol</li>
+</ul>
+<p class="doc-p">Document maintenance: review and update quarterly, or following any major takedown, actor rebrand, or material change in VASP/infrastructure compliance posture.</p>
+<p class="doc-p">Note: Nodes 01-11 are tracked in the companion KPI Measurement Framework and node playbooks (Phase A, B, C). Nodes 12-15 are mapped here for structural completeness and will be incorporated into meso-layer KPI tracking in a future framework update. Node 16 (Exploit/Vulnerability Brokers) was added per EDP Module 06 assessment as a CRITICAL-tier node; it is not yet assigned to a playbook phase and requires a dedicated policy-track action plan before full integration.</p>
+  <div class="doc-foot">
+    Ecosystem Dependency Project. This page is the full text of a corpus framework
+    document, converted from the original for reading on the web. Content is unchanged.
+    Figures and assessments carry the confidence language of the source document.
+  </div>
+</main>
+</body>
+</html>
