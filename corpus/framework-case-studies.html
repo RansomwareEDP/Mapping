@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework Case Studies | EDP Document Library</title>
+<meta name="description" content="RANSOMWARE ECOSYSTEM">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070b16;--panel:#0a1220;--line:#162236;--line2:#1e3350;
+ --ink:#c0cfe0;--ink2:#8aa4c0;--dim:#4e6e8e;--faint:#2e4a68;--accent:#5a9acc;--accent2:#7ab0d8}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+ font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.sidebar{width:270px;flex-shrink:0;background:#060d1a;border-right:1px solid var(--line);
+ padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.sidebar-logo a{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.sidebar-title{font-size:15px;font-weight:700;color:#d6e5f4;margin-top:10px;line-height:1.35}
+.sidebar-nav{padding:14px 0}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:var(--faint);
+ padding:0 20px;margin-bottom:7px}
+.nav-link{display:block;padding:6px 20px;font-size:12.5px;color:var(--ink2);border-left:2px solid transparent}
+.nav-link:hover{color:var(--accent2);border-left-color:var(--line2);background:rgba(90,154,204,.05);text-decoration:none}
+.nav-num{color:var(--faint);font-size:10px;margin-right:7px}
+.sidebar-footer{padding:14px 20px 0;border-top:1px solid var(--line);margin-top:10px}
+.sidebar-meta{font-size:10px;color:var(--faint);line-height:1.8}
+.content{flex:1;min-width:0;padding:34px 48px 80px;max-width:1080px}
+.profile-header{border-bottom:1px solid var(--line2);padding-bottom:18px;margin-bottom:26px}
+.profile-breadcrumb{font-size:11px;color:var(--dim);margin-bottom:12px}
+.page-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.profile-name{font-size:27px;font-weight:700;color:#d6e5f4;line-height:1.2;letter-spacing:-.3px}
+.profile-sub{font-size:13.5px;color:var(--ink2);margin-top:9px;max-width:70ch}
+.badge-row{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;
+ border:1px solid var(--line2);border-radius:3px;color:var(--dim)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);
+ margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:14.5px;color:#b8cde0;margin:24px 0 9px;font-weight:600}
+.doc-p{margin:0 0 13px;max-width:78ch}
+.doc-banner{margin:0 0 22px;padding:13px 16px;border-radius:5px;font-size:13.5px;line-height:1.6}
+.doc-banner.super{border:1px solid #7a4a4a;background:rgba(255,123,114,.09);color:#f0c0bc}
+.doc-banner.dated{border:1px solid #7a6a3a;background:rgba(210,153,34,.09);color:#e8dcb8}
+.doc-banner b{color:#fff}
+.doc-banner a{color:#ffb4ad;text-decoration:underline}
+.doc-banner.dated a{color:#f0d68a}
+.doc-callout{margin:0 0 15px;max-width:78ch;padding:11px 14px;border-left:3px solid #d29922;
+ background:rgba(210,153,34,.07);color:#e0d0a8;font-size:14px}
+.doc-list{margin:0 0 15px 20px;max-width:78ch}
+.doc-list li{margin-bottom:7px}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.doc-table th{text-align:left;background:#0c1524;color:var(--accent);font-size:10px;
+ text-transform:uppercase;letter-spacing:1px;padding:9px 11px;border:1px solid var(--line2)}
+.doc-table td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.doc-foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:900px){
+ body{display:block} .sidebar{width:auto;height:auto;position:static;border-right:none;
+  border-bottom:1px solid var(--line)} .content{padding:24px 20px 60px}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+    <div class="sidebar-title">Framework Case Studies</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">On This Page</div>
+    <a class="nav-link" href="#s1"><span class="nav-num">01</span> PURPOSE AND HOW TO USE THIS DOCUMENT</a>
+    <a class="nav-link" href="#s2"><span class="nav-num">02</span> CASE STUDY 1 | CONTI COLLAPSE (2022)</a>
+    <a class="nav-link" href="#s3"><span class="nav-num">03</span> CASE STUDY 2 | QAKBOT TAKEDOWN: OPERAT</a>
+    <a class="nav-link" href="#s4"><span class="nav-num">04</span> CASE STUDY 3 | LOCKBIT: OPERATION CRON</a>
+    <a class="nav-link" href="#s5"><span class="nav-num">05</span> CASE STUDY 4 | BLACKCAT/ALPHV: LAW ENF</a>
+    <a class="nav-link" href="#s6"><span class="nav-num">06</span> CASE STUDY 5 | BLACK BASTA LEAKS (Febr</a>
+    <a class="nav-link" href="#s7"><span class="nav-num">07</span> SUMMARY: FRAMEWORK SCORING ACROSS ALL </a>
+    <div class="nav-section-label" style="margin-top:12px">Related</div>
+    <a class="nav-link" href="/library/">Document Library</a>
+    <a class="nav-link" href="/map">Ecosystem Map</a>
+    <a class="nav-link" href="/">Research Hub</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">Ecosystem Dependency Project<br>Converted to HTML 23 Aug 2026<br>Source: corpus document</div>
+  </div>
+</aside>
+<main class="content">
+  <header class="profile-header" id="top">
+    <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / Framework Case Studies</div>
+    <div class="page-label">EDP Corpus &middot; Document 12</div>
+    <h1 class="profile-name">Framework Case Studies</h1>
+    <p class="profile-sub">RANSOMWARE ECOSYSTEM</p><p class="profile-sub">DISRUPTION FRAMEWORK</p>
+    <div class="badge-row"><span class="badge">Corpus document</span><span class="badge">Doc 12</span></div>
+  </header>
+
+<h3>Historical Case Studies: KPI Framework Applied</h3>
+<p class="doc-p">Version 1.1  |  June 2026  |  Working Document  |  v1.1: WAIS values superseded by Doc 13 back-test; Black Basta outcomes resolved</p>
+<p class="doc-p">Developed by Reno</p>
+<h2 id="s1">PURPOSE AND HOW TO USE THIS DOCUMENT</h2>
+<p class="doc-p">This document applies the Ransomware Ecosystem Disruption Measurement Framework retrospectively to five significant real-world operations and events. The purpose is threefold.</p>
+<ul class="doc-list">
+<li>Proof of concept: demonstrate that the KPI framework produces meaningful, defensible assessments when applied to documented events.</li>
+<li>Training: give analysts and operators a concrete reference for how to score events using the Weighted Arrest Impact Score (WAIS), how to read strife indicators, and how to connect node-level pressure to macro ecosystem effects.</li>
+<li>Baseline: establish reference points for what high-impact, moderate-impact, and limited-impact operations look like in practice, so future scoring is calibrated against real examples rather than abstract definitions.</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>IMPORTANT SCOPE NOTE
+All analysis in this document draws exclusively on open-source reporting, public law enforcement disclosures, and blockchain forensics published by firms including Chainalysis and TRM Labs. No classified or law enforcement-sensitive material is incorporated. Confidence labels reflect the quality of available open-source evidence, not the totality of what may be known through other channels.</td></tr>
+</tbody></table></div>
+<p class="doc-p">Each case study is structured identically: background, ecosystem role, framework layer analysis (macro/meso/micro), WAIS score where applicable, strife indicators observed, and key lessons for future operations.</p>
+<p class="doc-p">Cases are presented in chronological order. The Conti case is the most thoroughly documented and serves as the primary calibration reference for the WAIS scoring system.</p>
+<h2 id="s2">CASE STUDY 1 | CONTI COLLAPSE (2022)</h2>
+<p class="doc-p">Type: Internal Collapse triggered by External Leak | Date: February 2022 (leak) through mid-2022 (dissolution)</p>
+<h3>Background</h3>
+<p class="doc-p">Conti was among the most prolific and operationally sophisticated ransomware groups in documented history. Operating as a closed hierarchical RaaS with employed operators rather than independent affiliates, Conti was responsible for hundreds of confirmed attacks including multiple critical infrastructure incidents. At peak operation the group functioned as a structured criminal enterprise with departments, salaries, HR processes, and management hierarchy.</p>
+<p class="doc-p">In February 2022, following Conti leadership's public statement of support for Russia's invasion of Ukraine, a disgruntled Ukrainian-affiliated member leaked approximately 60,000 internal chat messages, source code, and operational files. The leak exposed the group's internal structure, financial flows, personnel, infrastructure, and protection relationships in unprecedented detail.</p>
+<h3>Ecosystem Role at Time of Collapse</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dimension</th><th>Assessment</th></tr></thead>
+<tbody>
+<tr><td>Node Criticality</td><td>Tier 1. Conti represented a non-substitutable brand at scale. Its closed operator model, established affiliate relationships, and infrastructure investment made it among the highest-replacement-difficulty actors in the ecosystem.</td></tr>
+<tr><td>Revenue Share</td><td>Estimated 20-25% of total ransomware ecosystem revenue at peak operation, based on Chainalysis blockchain analysis of attributed wallet clusters.</td></tr>
+<tr><td>Protection Layer Status</td><td>Active krysha relationship assessed. Internal chat logs surfaced in the leak referenced FSB contacts and protection payments. Relationship status post-leak: assessed as Strained then Broken as exposure became public.</td></tr>
+<tr><td>Operational Model</td><td>Closed hierarchical group with employed operators. Approximately 100 personnel across technical, administrative, and operational functions based on leaked HR materials.</td></tr>
+</tbody></table></div>
+<h3>Framework Layer Analysis</h3>
+<h3>Macro Layer Effects</h3>
+<ul class="doc-list">
+<li>Payment volume: Chainalysis data shows Conti-attributed wallet activity dropped sharply through Q2-Q3 2022 as the brand dissolved. Total ecosystem payment volume did not fall proportionally, indicating rapid migration to successor brands.</li>
+<li>Victim count: leak site posting ceased within weeks of the internal collapse. No successor brand maintained the Conti name at operational scale.</li>
+<li>Domestic enforcement: no Russian domestic enforcement action against identified Conti principals has been publicly confirmed as of the original date of this document. Update July 2026: this remains true inside Russia; the first courtroom outcome in the Conti-descendant line came on 4 May 2026, when Deniss Zolotarjovs of Karakurt (which DOJ ties to former Conti leadership) was sentenced in the US to 102 months, with DOJ stating the group used Russian government database access and paid bribes for draft exemptions and tax avoidance, placing protection-layer corruption on the public record.</li>
+</ul>
+<h3>Meso Layer Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Observed Effect</th></tr></thead>
+<tbody>
+<tr><td>Node 07: Underground Trust Infrastructure</td><td>Severe disruption. The leak exposed financial records, personnel identity, and internal dispute resolution processes. Forum trust in Conti-linked actors collapsed. Multiple former members reported being unable to establish new working relationships due to exposure risk.</td></tr>
+<tr><td>Node 01: OTC Brokers</td><td>Partial disruption. Blockchain analysis identified several OTC nodes serving Conti. Post-collapse, fund flows through those nodes dropped. Some brokers subsequently served successor brands.</td></tr>
+<tr><td>Node 04: IAB Markets</td><td>Moderate disruption. Conti's internal access sourcing model partially displaced IAB demand. Post-collapse, former Conti affiliates re-entered IAB markets as buyers, increasing demand temporarily.</td></tr>
+<tr><td>Node 09: Mule Networks</td><td>Limited observable disruption. Laundering infrastructure for Conti proceeds largely persisted through successor relationships.</td></tr>
+</tbody></table></div>
+<h3>Micro Layer: Strife Event Log Entry</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Event Type</td><td>LEAK</td></tr>
+<tr><td>Source Reliability</td><td>CONFIRMED (60,000+ messages independently verified by multiple security researchers and journalists)</td></tr>
+<tr><td>Actors Involved</td><td>Conti core leadership, approximately 100 operational personnel. FSB contact references surfaced. Specific officer identities not confirmed in open source.</td></tr>
+<tr><td>Ecosystem Effect Assessment</td><td>Brand collapse within 90 days. Leadership vacuum filled by splinter brands. Trust breakdown across former affiliate and partner network. Protection relationship assessed as severed.</td></tr>
+<tr><td>Causal Link to Pressure Actions</td><td>The leak was triggered by Conti leadership's political statement (Ukraine support declaration), not by a Western pressure action. External cause, but the cascading effects are consistent with what targeted exposure operations aim to produce.</td></tr>
+<tr><td>Follow-On Indicators Observed</td><td>Black Basta emerged within 60 days of Conti dissolution, staffed by confirmed former Conti operators. Royal, Quantum, and BlackByte similarly incorporated former Conti personnel. Conti infrastructure was partially reused in successor operations before being abandoned.</td></tr>
+</tbody></table></div>
+<h3>Strife Proxy Metrics Observed</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Observed Value</th><th>Signal</th></tr></thead>
+<tbody>
+<tr><td>Affiliate Defection Rate</td><td>Near-total dissolution within 90 days</td><td>Maximum signal. Full fragmentation.</td></tr>
+<tr><td>New RaaS Brand Emergence</td><td>5+ confirmed successor brands within 90 days</td><td>Highest fragmentation rate in documented ecosystem history.</td></tr>
+<tr><td>Forum Dispute Volume</td><td>Significant spike in Exploit/XSS dispute threads involving Conti-linked handles in Q1-Q2 2022</td><td>Trust breakdown confirmed across multiple forum sources.</td></tr>
+<tr><td>Exit Scam Frequency</td><td>Not applicable. Dissolution was involuntary, not admin-driven wallet exit.</td><td>N/A</td></tr>
+<tr><td>Recruitment Term Shifts</td><td>Successor brands offered improved affiliate splits (80/20 vs Conti's 70/30) in recruitment advertising</td><td>Internal pressure to attract displaced Conti affiliates confirmed.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>WAIS-D EVENT SCORE (Doc 13): ex-ante 9 of 9 (Node Criticality 3 / Intelligence Yield 3 / Trust Cascade 3); outcome Reconstitution Impact 3, brand dissolved. Not WAIS-eligible: no arrest. Supersedes prior in-text WAIS value per Doc 13 back-test, 2026-06-12.
+Node Criticality: 3/3 Non-substitutable core team. Tier 1 actor.
+Cooperation Output: N/A No arrest. Not applicable.
+Trust Cascade Effect: 3/3 Broad cascade. Full ecosystem-level trust disruption documented.
+Reconstitution Impact: 3/3 Brand failed to reconstitute. Successor brands operating at fraction of prior capacity individually.
+Note: WAIS is an arrest-scoring instrument. This case is scored on available dimensions to calibrate the Trust Cascade and Reconstitution Impact descriptors. Node Criticality and Cooperation Output require an arrest event to score fully.</td></tr>
+</tbody></table></div>
+<h3>Key Lessons for Framework Application</h3>
+<ul class="doc-list">
+<li>The Conti collapse was not caused by Western pressure. It was caused by an internal political miscalculation. The ecosystem effects, however, are identical to what a successful targeted exposure operation would aim to produce. This case calibrates what maximum-effect strife looks like.</li>
+<li>Reconstitution did not fail because the criminal capacity was destroyed. It failed because the trust infrastructure was destroyed. Personnel dispersed into successor brands because no one trusted each other enough to rebuild under the Conti name. Trust infrastructure (Node 07) is the critical variable.</li>
+<li>Successor brand emergence was rapid (under 60 days) but fragmented. Individual successor brands never approached Conti's operational scale. This is the expected pattern after a high-trust-cascade event: ecosystem capacity is preserved but distributed, making it less efficient and more visible.</li>
+<li>The protection relationship status is the unresolved question. The leak exposed FSB contacts but no domestic Russian enforcement followed. This is consistent with the framework's analysis: FSB protection, once activated, is not reversed by embarrassment alone. It requires the krysha relationship to become an institutional liability, not just a visible one.</li>
+</ul>
+<h2 id="s3">CASE STUDY 2 | QAKBOT TAKEDOWN: OPERATION DUCK HUNT (August 2023)</h2>
+<p class="doc-p">Type: Law Enforcement Takedown (Sinkhole and Infrastructure Seizure)  |  Date: August 2023</p>
+<h3>Background</h3>
+<p class="doc-p">QakBot (also known as Qbot and Pinkslipbot) was one of the most widely deployed malware loader ecosystems in operation, with an infection history spanning over 15 years. By 2023 it had become a primary delivery mechanism for ransomware payloads, having delivered Black Basta, Conti successor variants, and multiple other RaaS operations to victim networks at scale.</p>
+<p class="doc-p">Operation Duck Hunt, executed by the FBI in coordination with international partners in August 2023, sinkholed QakBot's C2 infrastructure and pushed a removal tool to approximately 700,000 infected hosts. The operation represented the reference model for botnet/loader disruption and is cited explicitly in the framework's Node 05 playbook.</p>
+<h3>Ecosystem Role at Time of Takedown</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dimension</th><th>Assessment</th></tr></thead>
+<tbody>
+<tr><td>Node</td><td>Node 05: Botnet/Loaders. Primary delivery mechanism for ransomware payloads at mass scale.</td></tr>
+<tr><td>Infected Host Count</td><td>Approximately 700,000 confirmed at time of sinkhole, per FBI disclosure.</td></tr>
+<tr><td>RaaS Customers</td><td>Black Basta, Royal, and multiple other active RaaS groups confirmed as primary customers of QakBot-delivered access.</td></tr>
+<tr><td>Replace Difficulty</td><td>HIGH. QakBot represented 15+ years of infrastructure investment: spam networks, crypter relationships, C2 hierarchies, and affiliate distribution agreements.</td></tr>
+<tr><td>Protection Layer</td><td>No confirmed Russian state protection relationship. QakBot operators assessed as criminal service providers without direct FSB krysha.</td></tr>
+</tbody></table></div>
+<h3>Framework Layer Analysis</h3>
+<h3>Macro Layer Effects</h3>
+<ul class="doc-list">
+<li>Payment volume: no statistically significant drop in ecosystem-wide ransom payment volume attributable to QakBot disruption in Q3-Q4 2023. Victims affected were remediated before ransomware deployment, preventing payments, but the ecosystem as a whole absorbed the disruption.</li>
+<li>Victim count: affiliated ransomware groups reported temporary slowdowns in victim pipeline. Black Basta activity dropped noticeably in the 30-60 day window post-takedown before recovering.</li>
+<li>This is the expected pattern for a node-level disruption without corresponding financial and meso-layer pressure on the same actor set simultaneously.</li>
+</ul>
+<h3>Meso Layer Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Observed Effect</th></tr></thead>
+<tbody>
+<tr><td>Node 05: Botnet/Loaders</td><td>Full disruption at time of sinkhole. 700,000 infected hosts severed from C2. Distribution infrastructure dismantled simultaneously. This is a CONFIRMED high-impact node-level disruption.</td></tr>
+<tr><td>Node 03: BPH</td><td>Partial compounding effect. QakBot C2 servers had used a mix of BPH and legitimate VPS. BPH pressure was not applied simultaneously, limiting sustained disruption.</td></tr>
+<tr><td>Node 04: IAB Markets</td><td>Temporary price spike in IAB listings observed in 30-60 day window post-takedown as ransomware affiliates sought alternative access sources. Consistent with framework prediction.</td></tr>
+<tr><td>Reconstitution</td><td>QakBot operators began rebuilding infrastructure within approximately 6 months. By mid-2024, QakBot-attributed activity was observed at reduced but significant scale. Full reconstitution to prior capacity not confirmed.</td></tr>
+</tbody></table></div>
+<h3>Reconstitution Tracking (Node 05 Reference Model)</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Timeframe</th><th>Status</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>0-30 days</td><td>Full disruption</td><td>All C2 connectivity severed. 700,000 hosts cleaned via sinkhole removal tool. No observed QakBot-attributed activity.</td></tr>
+<tr><td>31-90 days</td><td>Rebuilding detected</td><td>New QakBot infrastructure identified by security researchers. Smaller scale, new C2 architecture, modified malware variants.</td></tr>
+<tr><td>90-180 days</td><td>Partial reconstitution</td><td>QakBot activity at estimated 30-40% of prior volume. Ransomware customer relationships partially restored.</td></tr>
+<tr><td>180+ days</td><td>Ongoing reduced capacity</td><td>QakBot not restored to pre-takedown operational scale as of available reporting. Successor loaders (Pikabot, DanaBot variants) filled partial gap. Update 2026: DOJ indicted operator Rustam Gallyamov on 22 May 2025 with more than 24 million USD in forfeiture actions; QakBot did not rebuild and actors pivoted to social-engineering campaigns, resolving the reconstitution question toward durable degradation.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>WAIS-D EVENT SCORE (Doc 13): ex-ante 6 of 9 (Node Criticality 3 / Intelligence Yield 2 / Trust Cascade 1); outcome Reconstitution Impact 2, partial reconstitution. Not WAIS-eligible: no arrests at time of action. Supersedes prior in-text WAIS value per Doc 13 back-test, 2026-06-12.
+Node Criticality: 3/3  Non-substitutable at scale. 15+ year infrastructure, mass delivery capacity.
+Cooperation Output: 2/3  Infrastructure seizure yielded significant technical intelligence. No confirmed arrests of operators with full cooperation.
+Trust Cascade Effect: 2/3  Localized disruption to QakBot customer groups. No broad ecosystem-level trust cascade observed.
+Reconstitution Impact: 2/3  Partial reconstitution at reduced capacity within 90-180 days. Did not reach prior operational scale.
+The +2 coordination bonus does not apply as this was a single-operation action rather than a multi-arrest coordinated takedown.</td></tr>
+</tbody></table></div>
+<h3>Key Lessons for Framework Application</h3>
+<ul class="doc-list">
+<li>Operation Duck Hunt is the reference model for Node 05 disruption. The simultaneous sinkhole plus victim notification plus removal tool delivery is the correct operational model. Any botnet/loader disruption that does not include all three components will score lower on Reconstitution Impact.</li>
+<li>The IAB price spike in the 30-60 day window post-takedown is a confirmed leading indicator. When Node 05 is disrupted, watch Node 04 IAB pricing immediately. Price increases confirm that the disruption imposed real access costs on ransomware affiliates.</li>
+<li>Reconstitution speed for this operation was faster than the framework's 90-day high-impact threshold would suggest. This reinforces the need for BPH pressure (Node 03) to be applied simultaneously or in advance. QakBot reconstituted partly because hosting infrastructure was not simultaneously degraded.</li>
+<li>No macro-level payment volume effect was observable. This is consistent with the framework's design: a single node disruption without coordinated pressure across financial and access nodes does not move macro metrics. It is a necessary but not sufficient condition for ecosystem-level degradation.</li>
+</ul>
+<h2 id="s4">CASE STUDY 3 | LOCKBIT: OPERATION CRONOS (February 2024)</h2>
+<p class="doc-p">Type: Coordinated Law Enforcement Takedown with Arrests  |  Date: February 2024</p>
+<h3>Background</h3>
+<p class="doc-p">LockBit was the dominant RaaS franchise in the ecosystem at the time of Operation Cronos, accounting for an estimated 25-30% of all publicly claimed ransomware attacks in 2023 based on leak site data. It operated as a franchise model with a large affiliate roster, aggressive recruitment, and the highest public profile of any active group.</p>
+<p class="doc-p">Operation Cronos, coordinated by the NCA with FBI, Europol, and multiple national law enforcement agencies, seized LockBit's infrastructure, took control of its leak site (publishing law enforcement content in place of victim data), arrested two LockBit-affiliated operators, and unsealed indictments against additional members including the identified administrator LockBitSupp.</p>
+<h3>Ecosystem Role at Time of Takedown</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dimension</th><th>Assessment</th></tr></thead>
+<tbody>
+<tr><td>Market Position</td><td>Dominant. Estimated 25-30% of ecosystem attack volume by leak site count in 2023.</td></tr>
+<tr><td>Affiliate Model</td><td>Open franchise. Large affiliate roster with reported 100+ active affiliates at peak. Lower trust requirements than closed models.</td></tr>
+<tr><td>Replace Difficulty</td><td>MEDIUM-HIGH. The franchise model made the brand more substitutable than a closed group, but the infrastructure investment and affiliate network made full reconstitution non-trivial.</td></tr>
+<tr><td>Protection Layer</td><td>Assessed as having some protection layer relationships based on operational longevity and Russia-based operation, but lower confidence than Tier 1 actors. LockBitSupp publicly stated Russian affiliation while claiming independence.</td></tr>
+</tbody></table></div>
+<h3>Framework Layer Analysis</h3>
+<h3>Macro Layer Effects</h3>
+<ul class="doc-list">
+<li>Leak site post volume: LockBit's leak site went dark at time of seizure. Law enforcement publishing victim decryption keys and criminal infrastructure details on the seized site created significant trust disruption.</li>
+<li>Takedown/Relaunch Cycle: LockBit relaunched a new leak site within approximately 5 days, claiming continued operations. However, post-relaunch victim posting volume was significantly reduced for 60-90 days.</li>
+<li>Market share: competitors including RansomHub and BlackCat/ALPHV successors absorbed displaced LockBit affiliates in the 30-90 day window.</li>
+</ul>
+<h3>Meso Layer Effects</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Observed Effect</th></tr></thead>
+<tbody>
+<tr><td>Node 06: Leak Site Hosting</td><td>Full temporary disruption. Law enforcement seizure and reuse of the leak site for operational messaging was a high-impact trust cascade action beyond simple takedown.</td></tr>
+<tr><td>Node 07: Underground Trust Infrastructure</td><td>Significant disruption. Law enforcement's publication of affiliate identities, decryption keys, and internal data on the seized site created affiliate-level trust breakdown. Affiliates could not be certain what data had been compromised.</td></tr>
+<tr><td>Node 04: IAB Markets</td><td>Moderate disruption. LockBit affiliate purchasing patterns showed temporary reduction. Former LockBit affiliates migrated to competing franchises within 60-90 days.</td></tr>
+<tr><td>Node 01: OTC Brokers</td><td>Limited observable effect. LockBit's financial rails were not simultaneously disrupted.</td></tr>
+</tbody></table></div>
+<h3>WAIS Scoring: LockBit Operator Arrests</h3>
+<p class="doc-p">Two arrests were made in connection with Operation Cronos. These are scored individually.</p>
+<h3>Arrest 1: LockBit-affiliated operator, third-country arrest</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>WAIS (strict, per arrest, scored 2026-06-12 in Doc 13): Cronos arrests 9 MODERATE each (including coordination bonus); Panev follow-on arrest 7 MODERATE. WAIS-D event score: ex-ante 8 of 9; outcome Reconstitution Impact 2. PENDING status resolved.
+Node Criticality: 2/3  Mid-tier operator. Not core team.
+Cooperation Output: PENDING  Debrief status not confirmed in open source.
+Trust Cascade Effect: 2/3  Localized disruption. Combined with simultaneous infrastructure action, cascade effect was elevated.
+Reconstitution Impact: 2/3  Partial. LockBit reconstituted under same name at reduced capacity.
++2 coordination bonus applies to the operation as a whole given simultaneous infrastructure seizure.</td></tr>
+</tbody></table></div>
+<h3>Takedown/Relaunch Cycle Analysis</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Value</th><th>Framework Signal</th></tr></thead>
+<tbody>
+<tr><td>Time to relaunch</td><td>Approximately 5 days</td><td>Fast relaunch. High resilience. Reconstitution capacity was largely intact.</td></tr>
+<tr><td>Post-relaunch posting volume (30 days)</td><td>Approximately 40% of pre-operation baseline</td><td>Partial degradation confirmed. Affiliate roster shrank measurably.</td></tr>
+<tr><td>Post-relaunch posting volume (90 days)</td><td>Approximately 65-70% of pre-operation baseline</td><td>Partial reconstitution. Framework Reconstitution Impact score: 2 (partial at 31-90 days, reduced capacity). Update 2026: LockBit never regained dominance; affiliates migrated to RansomHub then Qilin, Khoroshev remains indicted and at large, and LockBit 5.0 launched in late 2025 as an active but smaller operation, so the 2024 relaunch should not be read as the endpoint.</td></tr>
+<tr><td>Competitor absorption of affiliates</td><td>RansomHub emerged as primary beneficiary, rapidly growing affiliate roster post-Cronos</td><td>Ecosystem capacity preserved but redistributed. No net reduction in ecosystem attack volume.</td></tr>
+</tbody></table></div>
+<h3>Key Lessons for Framework Application</h3>
+<ul class="doc-list">
+<li>The law enforcement reuse of the seized leak site for operational messaging (publishing affiliate data, decryption keys, and mocking the administrator) was a high-value trust cascade action not captured in standard takedown metrics. Future operations should plan this as a deliberate trust disruption step, not an afterthought.</li>
+<li>Fast relaunch (5 days) reflects the absence of simultaneous financial rail disruption. When OTC brokers and mixing services are not simultaneously pressured, the financial capacity to rebuild infrastructure remains intact. Node 01 and Node 08 pressure must be coordinated with infrastructure takedowns to extend reconstitution time.</li>
+<li>RansomHub's emergence as the primary affiliate absorber was rapid and predictable. The framework's substitutability assessment requirement (identify the likely replacement actor before acting) would have flagged RansomHub as a pre-positioning target. Absent that pre-positioning, the ecosystem lost LockBit's brand but not its operational capacity.</li>
+</ul>
+<h2 id="s5">CASE STUDY 4 | BLACKCAT/ALPHV: LAW ENFORCEMENT ACTION AND EXIT SCAM (December 2023, March 2024)</h2>
+<p class="doc-p">Type: Law Enforcement Disruption followed by Suspected Exit Scam  |  Dates: December 2023 (DOJ action), March 2024 (exit scam)</p>
+<h3>Background</h3>
+<p class="doc-p">BlackCat/ALPHV was a technically sophisticated RaaS group operating since late 2021, known for its Rust-based malware, triple extortion model (encryption, leak, and DDoS), and high-profile attacks including Change Healthcare. The DOJ disrupted BlackCat infrastructure in December 2023, obtaining a decryption key and seizing the leak site.</p>
+<p class="doc-p">BlackCat regained control of the leak site briefly before the FBI re-seized it. In March 2024, following the Change Healthcare payment (reported at approximately 22 million USD), BlackCat administrators disappeared with the ransom proceeds in what was widely assessed as an exit scam against their own affiliates, with the likely intent of rebranding.</p>
+<h3>Why This Case Is Analytically Valuable</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>FRAMEWORK APPLICATION NOTE
+This case demonstrates two distinct event types occurring in sequence: a law enforcement disruption followed by an exit scam. The framework treats these as separate events in the strife event log. The law enforcement action scores as a takedown/disruption. The exit scam scores as an EXIT SCAM event type in the Layer 2 strife event log. The interaction between the two is the analytically interesting element: the law enforcement action likely accelerated the exit scam by increasing pressure on the administrators and reducing their confidence in continued operations.</td></tr>
+</tbody></table></div>
+<h3>Framework Layer Analysis</h3>
+<h3>Event 1: DOJ Infrastructure Disruption (December 2023)</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>Node 06: Leak Site Hosting</td><td>Temporary seizure. BlackCat regained control within days, demonstrating resilience of the hosting infrastructure. Takedown/Relaunch Cycle: approximately 48-72 hours. Low reconstitution cost.</td></tr>
+<tr><td>Node 07: Underground Trust</td><td>Moderate disruption. The seizure and re-seizure back-and-forth created uncertainty among affiliates about the reliability of the operation.</td></tr>
+<tr><td>Macro</td><td>Limited immediate effect. BlackCat continued operations including the Change Healthcare attack post-disruption.</td></tr>
+</tbody></table></div>
+<h3>Event 2: Exit Scam (March 2024)</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Event Type</td><td>EXIT SCAM</td></tr>
+<tr><td>Source Reliability</td><td>CREDIBLE. Blockchain analysis by multiple firms confirmed the Change Healthcare payment wallet and traced funds to BlackCat administrator wallets. Affiliates publicly complained on underground forums confirming non-payment.</td></tr>
+<tr><td>Ecosystem Effect</td><td>Affiliate trust destruction. Public affiliate complaints on Exploit and XSS confirmed non-payment of affiliate shares from Change Healthcare ransom. Brand collapsed within days of exit scam confirmation.</td></tr>
+<tr><td>Causal Link to Prior Pressure</td><td>CREDIBLE inference. The sequence (law enforcement disruption followed by large payment followed by exit scam) is consistent with administrators taking a final large payment under pressure and exiting before reconstitution became necessary.</td></tr>
+<tr><td>Follow-On Indicators</td><td>RansomHub rapidly emerged absorbing former BlackCat affiliates. Multiple former BlackCat personnel confirmed in RansomHub operations within 60 days. Update 2026: RansomHub itself went dark on 1 April 2025 and displaced affiliates dispersed heavily to Qilin (an approximately 56 percent victim-count jump), a second-generation churn worth capturing in the framework.</td></tr>
+</tbody></table></div>
+<h3>Combined Effect Assessment</h3>
+<p class="doc-p">The two events together produced a higher ecosystem effect than either would have alone. The law enforcement disruption created instability; the exit scam destroyed the remaining trust. This is the compounding effect the framework is designed to produce through deliberate pressure: each action raises the cost of continued operation and lowers the benefit of loyalty to the brand.</p>
+<h3>Key Lessons for Framework Application</h3>
+<ul class="doc-list">
+<li>Exit scams are predictable under certain conditions: large payment received, law enforcement pressure active, administrators facing personal exposure risk. The framework's exit scam frequency proxy metric should be read in context of simultaneous law enforcement activity against the same actor.</li>
+<li>The 48-72 hour relaunch of the leak site after the initial seizure reflects the importance of simultaneous action against hosting infrastructure (Node 03/06) rather than sequential. When hosting is re-seized quickly, it signals that BPH relationships are intact and the cost of reconstitution is low.</li>
+<li>The Change Healthcare payment illustrates the payment volume vs. victim count divergence metric in reverse: a single extremely large payment can move payment volume metrics significantly without representing ecosystem health. Large outlier payments must be annotated separately in KPI C-1 to avoid misinterpretation.</li>
+</ul>
+<h2 id="s6">CASE STUDY 5 | BLACK BASTA LEAKS (February 2025)</h2>
+<p class="doc-p">Type: Internal Leak (Ongoing Event)  |  Date: February 2025</p>
+<h3>Background</h3>
+<p class="doc-p">Black Basta emerged in April 2022 as one of the most significant post-Conti successor groups, widely assessed to include former Conti operators. It operated as a closed hierarchical group with high operational security and targeted high-value victims. In February 2025, a large volume of internal Black Basta chat logs was leaked publicly, attributed to an internal dispute.</p>
+<p class="doc-p">The leak exposed internal communications, operational processes, victim negotiation transcripts, and personnel information. The full downstream effects were still developing at the time this document was prepared.</p>
+<h3>Framework Layer Analysis</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>ANALYTICAL STATUS NOTE
+STATUS RESOLVED (v1.1, June 2026). This case was scored as an ongoing event when this document was prepared. Outcomes are now resolved: Black Basta posted its last victim in January 2025 and was inactive by March 2025. Members are assessed to have migrated to the existing Cactus operation rather than forming a successor brand. Leader Oleg Nefedov (Tramp) was added to the EU Most Wanted list and an Interpol Red Notice in January 2026. Final scoring in Doc 13: WAIS-D ex-ante 9 of 9, outcome Reconstitution Impact 3. The original PENDING workflow demonstrated here remains the correct model for live events.</td></tr>
+</tbody></table></div>
+<h3>Strife Event Log Entry</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Event Type</td><td>LEAK</td></tr>
+<tr><td>Source Reliability</td><td>CONFIRMED. Chat logs independently verified by multiple security research organizations.</td></tr>
+<tr><td>Actors Involved</td><td>Black Basta core operators and administrators. Conti lineage personnel confirmed. Specific individuals identifiable from logs.</td></tr>
+<tr><td>Immediate Ecosystem Effect</td><td>Significant trust disruption within Black Basta affiliate and partner network. Internal disputes visible in the leaked logs themselves, indicating pre-existing strife that the leak accelerated. Victim negotiation transcripts exposed, undermining future negotiation credibility.</td></tr>
+<tr><td>Causal Link to Pressure Actions</td><td>Leak attributed to internal dispute, not a Western pressure action. However, the underlying strife may reflect accumulated pressure on the group including law enforcement attention, financial friction from sanctions on associated infrastructure, and OPSEC costs.</td></tr>
+<tr><td>Follow-On Indicators to Monitor (PENDING)</td><td>Black Basta operational tempo post-leak. Affiliate defection rate. New brand emergence by identified personnel. Protection relationship status changes for any assessed krysha connections. Update 2026: Black Basta is assessed to have ceased operations in early 2025; on 15 January 2026 Ukrainian and German authorities raided suspected members and alleged leader Oleg Nefedov was identified, added to Europol Most Wanted under an Interpol Red Notice, and assessed to be sheltering in Russia. These PENDING fields are now answerable.</td></tr>
+</tbody></table></div>
+<h3>Comparison to Conti Leak</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dimension</th><th>Conti (2022)</th><th>Black Basta (2025)</th></tr></thead>
+<tbody>
+<tr><td>Scale of leak</td><td>60,000+ messages, source code, financial records</td><td>Internal chat logs, negotiation transcripts, operational data</td></tr>
+<tr><td>Trigger</td><td>Political statement (Ukraine support)</td><td>Internal financial dispute, assessed</td></tr>
+<tr><td>Pre-existing strife</td><td>Moderate: political tension over Ukraine affiliation</td><td>High: financial disputes visible within leaked content itself</td></tr>
+<tr><td>90-day dissolution</td><td>Yes. Brand collapsed within 90 days.</td><td>Yes. Last victim Jan 2025; inactive by Mar 2025 (resolved Jun 2026).</td></tr>
+<tr><td>Successor emergence</td><td>5+ successor brands within 60 days</td><td>No successor brand. Members assessed migrated to Cactus (resolved Jun 2026).</td></tr>
+<tr><td>Protection layer effect</td><td>Assessed as Strained to Broken post-leak</td><td>PENDING as of the original assessment. Updated July 2026: protection outcome assessed as intact for alleged leader Nefedov (sheltering in Russia, no domestic action); the February 2025 leak strained operational trust but not state protection.</td></tr>
+</tbody></table></div>
+<h3>Key Lessons for Framework Application</h3>
+<ul class="doc-list">
+<li>The Black Basta case demonstrates how the framework handles ongoing events. Not every strife event resolves within 90 days. The Layer 2 event log format is designed to capture the event immediately and track effects over time, with PENDING fields updated as information becomes available.</li>
+<li>The pre-existing financial disputes visible in the leaked content are a confirmation of the recruitment term shifts proxy metric: when internal disputes are about financial splits, the group is under pressure. Monitoring affiliate compensation complaints on underground forums provides early warning before a leak event occurs.</li>
+<li>The Conti comparison is instructive for calibrating expected timelines. If the Black Basta leak produces effects comparable to Conti, 90-day dissolution and rapid successor emergence would be the expected pattern. If the group reconstitutes, it suggests the trust infrastructure was more resilient or the protection layer more intact than the Conti comparison would suggest.</li>
+</ul>
+<h2 id="s7">SUMMARY: FRAMEWORK SCORING ACROSS ALL FIVE CASES</h2>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Case</th><th>Primary Event Type</th><th>WAIS (if applicable)</th><th>Trust Cascade</th><th>Reconstitution</th><th>Macro Effect</th></tr></thead>
+<tbody>
+<tr><td>Conti (2022)</td><td>Internal Leak</td><td>N/A strict; WAIS-D ex-ante 9 (Doc 13)</td><td>3/3 Broad cascade</td><td>3/3 Brand dissolved</td><td>High: ecosystem-wide fragmentation</td></tr>
+<tr><td>QakBot (2023)</td><td>Infrastructure Takedown</td><td>N/A strict; WAIS-D ex-ante 6 (Doc 13)</td><td>2/3 Localized</td><td>2/3 Partial at 90-180 days</td><td>Limited: no macro payment effect</td></tr>
+<tr><td>LockBit (2024)</td><td>Coordinated Takedown plus Arrests</td><td>Scored: 9 / 9 / 7 MODERATE (Doc 13)</td><td>2-3/3 with coordination bonus</td><td>2/3 Partial at 90 days</td><td>Moderate: affiliate redistribution</td></tr>
+<tr><td>BlackCat (2023-24)</td><td>Takedown plus Exit Scam</td><td>N/A strict; WAIS-D ex-ante 6 for Dec 2023 action (Doc 13); exit scam excluded from scoring</td><td>3/3 Exit scam destroyed residual trust</td><td>3/3 Brand dissolved</td><td>Moderate: RansomHub absorbed capacity</td></tr>
+<tr><td>Black Basta (2025)</td><td>Internal Leak (resolved Jun 2026)</td><td>N/A</td><td>3/3 Broad cascade (resolved Jun 2026)</td><td>3/3 Brand dissolved (inactive by Mar 2025)</td><td>Moderate: no successor brand; members assessed migrated to Cactus (resolved Jun 2026, Doc 13)</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>CALIBRATION TAKEAWAY
+High ecosystem impact (macro-level observable effects) requires at minimum two of the following three conditions to be present simultaneously: trust cascade at broad level (3/3), brand dissolution (reconstitution 3/3), and coordinated financial rail pressure. No case in this review produced sustained macro-level payment volume reduction from a single operation alone. Compounding pressure across multiple nodes and multiple timeframes is the necessary condition for macro-level movement.</td></tr>
+</tbody></table></div>
+<p class="doc-p">RANSOMWARE ECOSYSTEM DISRUPTION FRAMEWORK: HISTORICAL CASE STUDIES v0.1 — March 2026</p>
+<p class="doc-p">Working Document — Handle Per Originating Agency Protocols — Open Source Analysis Only</p>
+  <div class="doc-foot">
+    Ecosystem Dependency Project. This page is the full text of a corpus framework
+    document, converted from the original for reading on the web. Content is unchanged.
+    Figures and assessments carry the confidence language of the source document.
+  </div>
+</main>
+</body>
+</html>

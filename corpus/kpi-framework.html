@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPI Framework | EDP Document Library</title>
+<meta name="description" content="DISRUPTION MEASUREMENT FRAMEWORK">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070b16;--panel:#0a1220;--line:#162236;--line2:#1e3350;
+ --ink:#c0cfe0;--ink2:#8aa4c0;--dim:#4e6e8e;--faint:#2e4a68;--accent:#5a9acc;--accent2:#7ab0d8}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+ font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.sidebar{width:270px;flex-shrink:0;background:#060d1a;border-right:1px solid var(--line);
+ padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.sidebar-logo a{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.sidebar-title{font-size:15px;font-weight:700;color:#d6e5f4;margin-top:10px;line-height:1.35}
+.sidebar-nav{padding:14px 0}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:var(--faint);
+ padding:0 20px;margin-bottom:7px}
+.nav-link{display:block;padding:6px 20px;font-size:12.5px;color:var(--ink2);border-left:2px solid transparent}
+.nav-link:hover{color:var(--accent2);border-left-color:var(--line2);background:rgba(90,154,204,.05);text-decoration:none}
+.nav-num{color:var(--faint);font-size:10px;margin-right:7px}
+.sidebar-footer{padding:14px 20px 0;border-top:1px solid var(--line);margin-top:10px}
+.sidebar-meta{font-size:10px;color:var(--faint);line-height:1.8}
+.content{flex:1;min-width:0;padding:34px 48px 80px;max-width:1080px}
+.profile-header{border-bottom:1px solid var(--line2);padding-bottom:18px;margin-bottom:26px}
+.profile-breadcrumb{font-size:11px;color:var(--dim);margin-bottom:12px}
+.page-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.profile-name{font-size:27px;font-weight:700;color:#d6e5f4;line-height:1.2;letter-spacing:-.3px}
+.profile-sub{font-size:13.5px;color:var(--ink2);margin-top:9px;max-width:70ch}
+.badge-row{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;
+ border:1px solid var(--line2);border-radius:3px;color:var(--dim)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);
+ margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:14.5px;color:#b8cde0;margin:24px 0 9px;font-weight:600}
+.doc-p{margin:0 0 13px;max-width:78ch}
+.doc-banner{margin:0 0 22px;padding:13px 16px;border-radius:5px;font-size:13.5px;line-height:1.6}
+.doc-banner.super{border:1px solid #7a4a4a;background:rgba(255,123,114,.09);color:#f0c0bc}
+.doc-banner.dated{border:1px solid #7a6a3a;background:rgba(210,153,34,.09);color:#e8dcb8}
+.doc-banner b{color:#fff}
+.doc-banner a{color:#ffb4ad;text-decoration:underline}
+.doc-banner.dated a{color:#f0d68a}
+.doc-callout{margin:0 0 15px;max-width:78ch;padding:11px 14px;border-left:3px solid #d29922;
+ background:rgba(210,153,34,.07);color:#e0d0a8;font-size:14px}
+.doc-list{margin:0 0 15px 20px;max-width:78ch}
+.doc-list li{margin-bottom:7px}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.doc-table th{text-align:left;background:#0c1524;color:var(--accent);font-size:10px;
+ text-transform:uppercase;letter-spacing:1px;padding:9px 11px;border:1px solid var(--line2)}
+.doc-table td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.doc-foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:900px){
+ body{display:block} .sidebar{width:auto;height:auto;position:static;border-right:none;
+  border-bottom:1px solid var(--line)} .content{padding:24px 20px 60px}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+    <div class="sidebar-title">KPI Framework</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">On This Page</div>
+    <a class="nav-link" href="#s1"><span class="nav-num">01</span> PURPOSE AND DESIGN PRINCIPLES</a>
+    <a class="nav-link" href="#s2"><span class="nav-num">02</span> MACRO KPIs - THREE THEMES</a>
+    <a class="nav-link" href="#s3"><span class="nav-num">03</span> MESO LAYER: NODE CLUSTER METRICS</a>
+    <a class="nav-link" href="#s4"><span class="nav-num">04</span> MICRO LAYER: PER-OPERATION LOG TEMPLAT</a>
+    <a class="nav-link" href="#s5"><span class="nav-num">05</span> INTERNAL STRIFE ARCHITECTURE</a>
+    <a class="nav-link" href="#s6"><span class="nav-num">06</span> WEIGHTED ARREST IMPACT SCORE, SCORING </a>
+    <a class="nav-link" href="#s7"><span class="nav-num">07</span> OWNERSHIP MAP</a>
+    <a class="nav-link" href="#s8"><span class="nav-num">08</span> GOVERNANCE</a>
+    <a class="nav-link" href="#s9"><span class="nav-num">09</span> ANNEX A | QUICK REFERENCE: ALL KPIs</a>
+    <div class="nav-section-label" style="margin-top:12px">Related</div>
+    <a class="nav-link" href="/library/">Document Library</a>
+    <a class="nav-link" href="/map">Ecosystem Map</a>
+    <a class="nav-link" href="/">Research Hub</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">Ecosystem Dependency Project<br>Converted to HTML 23 Aug 2026<br>Source: corpus document</div>
+  </div>
+</aside>
+<main class="content">
+  <header class="profile-header" id="top">
+    <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / KPI Framework</div>
+    <div class="page-label">EDP Corpus &middot; Document 08</div>
+    <h1 class="profile-name">KPI Framework</h1>
+    <p class="profile-sub">RANSOMWARE ECOSYSTEM</p><p class="profile-sub">DISRUPTION MEASUREMENT FRAMEWORK</p>
+    <div class="badge-row"><span class="badge">Corpus document</span><span class="badge">Doc 08</span></div>
+  </header>
+<div class="doc-banner dated"><b>Newer work exists.</b> The KPI framework was rebuilt and finalised as v1.0 in August 2026, in separate Observer and Government editions. That work is not published here yet. Treat this page as the earlier v1 and check before citing its metrics.</div>
+<h3>KPI Architecture</h3>
+<p class="doc-p">Version 0.3 | June 2026 | Working Document</p>
+<p class="doc-p">Developed by Reno</p>
+<h2 id="s1">SECTION 1 | PURPOSE AND DESIGN PRINCIPLES</h2>
+<h3>1.1 What This Document Is</h3>
+<p class="doc-p">This framework provides a structured, operationally defensible system for measuring the sustained degradation of the Russia/CIS-linked ransomware ecosystem. It is designed for IC/LE interagency use, feeding strategic-level matrix development and operational accountability.</p>
+<p class="doc-p">It is not a scorecard for leadership optics. Every metric in this framework traces to concrete underlying data, carries an explicit confidence label, and has a stated limitation. Unless otherwise specified, all KPIs are scoped to Russia/CIS-linked ransomware and associated enabling infrastructure. Do not apply this framework to global ransomware without revisiting the design assumptions.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>CORE MEASUREMENT PHILOSOPHY
+Ecosystem-wide indicators are lagging. They tell you something already happened. Node-level indicators are leading. They tell you pressure is working before it shows up in aggregate data. This framework requires both, explicitly linked. A macro number without a traceable causal chain is not a KPI. It is a narrative.
+
+Any operation claiming ecosystem-level impact must be logged at the micro layer with at minimum: WAIS score (if arrest), time-to-reconstitution, and any protection-relationship observations. Undocumented operations do not count toward ecosystem metrics.</td></tr>
+</tbody></table></div>
+<h3>1.2 Framework Architecture</h3>
+<p class="doc-p">The framework operates at three levels. They are explicitly linked. Micro feeds meso, meso feeds macro. A change at the macro level must be explainable by movement at the meso and micro levels, or the confidence label on that macro metric drops.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Layer</th><th>What It Measures</th><th>Cadence</th><th>Primary Audience</th></tr></thead>
+<tbody>
+<tr><td>MACRO: Ecosystem Outcomes</td><td>Ransom volume trends, domestic enforcement incidents, FSB/RIS strife indicators, payment rates</td><td>Quarterly</td><td>Senior leadership, STRAT offices</td></tr>
+<tr><td>MESO: Node Pressure</td><td>Per-node cluster metrics: OTC brokers, IAB markets, BPH, leak sites, mixers, mule networks, stealers, marketplaces. Maps directly to Nodes 01-10 in the companion disruption playbooks, plus a Node 07 supplemental marketplace cluster.</td><td>Monthly or per action</td><td>Interagency working groups, operational leads</td></tr>
+<tr><td>MICRO: Operation Logging</td><td>Per-action: expected effect vs. observed effect, time-to-reconstitution, cooperation output, protection-layer observations</td><td>Per operation</td><td>Owning agency or team</td></tr>
+</tbody></table></div>
+<h3>1.3 Confidence Labeling System</h3>
+<p class="doc-p">Every metric carries one of three confidence labels. Confidence reflects source reliability and measurement precision, not the importance of the indicator.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Label</th><th>Definition</th><th>Typical Sources</th></tr></thead>
+<tbody>
+<tr><td>CONFIRMED</td><td>Hard data, traceable source, reproducible methodology</td><td>Chainalysis/TRM blockchain forensics, official arrest and designation records, verified leak site tracking</td></tr>
+<tr><td>CREDIBLE</td><td>Corroborated reporting, reasonable inference, multiple source types</td><td>Intel 471/Flashpoint underground monitoring, cross-validated financial intelligence, observed reconstitution tracking</td></tr>
+<tr><td>ANALYST INFERENCE</td><td>Single-source or proxy measure, directional only. Not sufficient for operational targeting.</td><td>Forum monitoring, social signals, strife proxy metrics, stealer and marketplace indicators</td></tr>
+</tbody></table></div>
+<h3>1.4 Maturity Levels</h3>
+<p class="doc-p">Metrics are designated at one of two maturity levels. This is an honest assessment, not a limitation to hide.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Level</th><th>Definition</th><th>Implication</th></tr></thead>
+<tbody>
+<tr><td>LEVEL 1: Operational Now</td><td>Populatable with existing available data sources and current partner contacts</td><td>Build and maintain immediately</td></tr>
+<tr><td>LEVEL 2: Requires Buy-In</td><td>Requires formal interagency ownership assignment or classified collection feeds</td><td>Design is complete. Awaiting ownership assignment and authority confirmation.</td></tr>
+</tbody></table></div>
+<h2 id="s2">SECTION 2 | MACRO KPIs - THREE THEMES</h2>
+<p class="doc-p">The framework is organized under three strategic success themes. These are the outcomes that define ecosystem degradation at the senior-reportable level. Each theme carries 3-4 macro KPIs with explicit formula, data source, confidence label, and known limitation.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>THEME A
+More Russian Domestic Enforcement. Russia's own institutions treat cybercriminals as liabilities, not assets.</td></tr>
+</tbody></table></div>
+<h3>KPI A-1 | Russian Domestic Actions Against Ecosystem Actors</h3>
+<p class="doc-p">Reliability: ● CREDIBLE</p>
+<p class="doc-p">Definition: Count of Russian criminal, administrative, or tax enforcement actions against actors previously mapped as protected or linked to ransomware ecosystem operations. Includes tax fraud charges, AML actions, currency violations, and organized crime charges. Cyber-specific charges are not required.</p>
+<ul class="doc-list">
+<li>Formula: Count of actions per quarter, broken out by actor tier (elite, mid-tier, support). Primary analytic focus is on elite and mid-tier actions. Support-tier counts are reported but not emphasized in leadership summaries. A count inflated by low-tier symbolic busts does not represent progress toward this framework's objectives.</li>
+<li>Tier weighting: Each quarter, report the breakdown as elite-tier actions / mid-tier actions / support-tier actions. A ratio shifting toward elite and mid-tier is the signal. Raw count increases driven by support-tier arrests are not.</li>
+<li>Data Sources: Open-source Russian court records, MVD press releases, investigative journalism (iStories, Meduza, OCCRP), FinCEN and Rosfinmonitoring cross-referencing</li>
+<li>Known Limitation: Russian domestic actions are frequently unreported or reported with significant lag. Non-public charges may be invisible. Count is almost certainly an undercount.</li>
+<li>Maturity: LEVEL 1 for open-source visible actions. LEVEL 2 for seeded-referral attribution.</li>
+</ul>
+<h3>KPI A-2 | Time Lag: Referral to Observable Russian Action</h3>
+<p class="doc-p">Reliability: ● CREDIBLE</p>
+<p class="doc-p">Definition: For operations where a financial exposure or referral package was seeded through domestic Russian channels (FNS, Rosfinmonitoring, CBR), the elapsed time between the seeding action and a visible Russian enforcement response.</p>
+<ul class="doc-list">
+<li>Formula: Days from documented referral or seeding action to confirmed Russian enforcement event, per case</li>
+<li>Data Sources: Internal operation logs (micro layer), open-source Russian enforcement reporting</li>
+<li>Known Limitation: Attribution of Russian action to a specific seeding operation is inferred, not confirmed. Correlation is the operative standard. Causation cannot be proven.</li>
+<li>Maturity: LEVEL 2. Requires internal operation log population by owning teams.</li>
+</ul>
+<h3>KPI A-3 | Protection Relationship Status Inventory</h3>
+<p class="doc-p">Reliability: ● ANALYST INFERENCE</p>
+<p class="doc-p">Definition: Count and status classification of known or assessed protection relationships between Russian state officers or units and ecosystem actors. Status categories: Active, Strained, Broken, Unknown.</p>
+<ul class="doc-list">
+<li>Formula: Snapshot count per quarter by status category. Track transitions (Active to Strained, Strained to Broken) as a separate trend line.</li>
+<li>Data Sources: Underground forum monitoring, blockchain anomaly detection (sudden wallet behavior changes), IC reporting, investigative journalism outputs</li>
+<li>Known Limitation: Status assessment is analytic inference. A relationship assessed as Broken may be suspended rather than permanently severed. Current confidence is ANALYST INFERENCE: the primary data foundation (underground forum monitoring, blockchain anomaly detection) does not meet the CREDIBLE threshold. The CREDIBLE label applies only after L2 IC reporting feeds are formally assigned and operational. Do not brief protection relationship status counts at leadership level without noting this data limitation explicitly.</li>
+<li>Governance Note: At the leadership level, report counts and status categories only. Individual officer-level data is maintained in a controlled analytic annex, not the leadership dashboard.</li>
+<li>Maturity: LEVEL 2. Requires IC reporting feeds and protected analytic annex structure.</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>THEME B
+Visible FSB/RIS Strife. Create and exploit contradictions inside the protection apparatus.</td></tr>
+</tbody></table></div>
+<h3>KPI B-1 | Weighted Arrest Impact Score (WAIS)</h3>
+<p class="doc-p">Reliability: ● CONFIRMED</p>
+<p class="doc-p">Definition: A composite score for arrest and prosecution events that captures effect quality, not just occurrence. Raw arrest counts treat a single affiliate arrest and a coordinated RaaS core team takedown as equivalent events. WAIS does not.</p>
+<p class="doc-p">Scoring principle: it is better to score coarsely but consistently than perfectly but rarely. Where debrief data is unavailable for the Cooperation Output dimension, mark the field PENDING rather than assigning a default value. A pending field is honest. A defaulted score is not.</p>
+<ul class="doc-list">
+<li>Known Limitation: The CONFIRMED reliability label applies to the underlying source data — arrest events, attribution assessments, prosecution outcomes — not to the scoring model itself. WAIS is an analyst-constructed composite framework. The four-dimension structure and point weighting reflect analytical judgment; they have not been independently validated against historical ecosystem-disruption outcomes. Treat WAIS scores as defensible structured estimates, not empirically calibrated measurements. The framework should be reviewed and recalibrated if a sustained data series (10+ scored events) becomes available.</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dimension</th><th>Score 1 - Limited</th><th>Score 2 - Moderate</th><th>Score 3 - High</th></tr></thead>
+<tbody>
+<tr><td>NODE CRITICALITY Who was arrested?</td><td>Replaceable affiliate or low-tier support actor. Substitutable within 30 days.</td><td>Mid-tier operator or specialist such as an IAB operator, mule coordinator, or BPH contact. Substitutable with friction.</td><td>Non-substitutable node: RaaS core team member, key OTC broker, or protection-layer officer. Loss creates a sustained gap.</td></tr>
+<tr><td>COOPERATION OUTPUT What did the arrest yield?  Mark PENDING if debrief data is unavailable.</td><td>No cooperation. Or cooperation produced no actionable intelligence beyond the arrested actor's own operations.</td><td>Partial cooperation. Yielded some identity, infrastructure, or financial data enabling follow-on investigation.</td><td>Full cooperation. Enabled follow-on arrests, exposed financial records at scale, or produced protection-layer intelligence.</td></tr>
+<tr><td>TRUST CASCADE EFFECT What happened in the ecosystem?</td><td>No observable disruption. Underground ecosystem continued without visible behavioral change.</td><td>Localized disruption. Target's immediate network went dark, changed communications infrastructure, or showed elevated OPSEC behavior.</td><td>Broad cascade. Multiple actors burned infrastructure, forum-level confidence disruption observed, or competing groups exploited the vacuum.</td></tr>
+<tr><td>RECONSTITUTION IMPACT Could they rebuild?</td><td>Full reconstitution within 30 days at comparable or greater operational capacity.</td><td>Partial reconstitution at 31-90 days. Operating at reduced capacity or under a new brand with a smaller affiliate roster.</td><td>Failed or significantly delayed reconstitution. 90-plus days out, or successor brand still below 50% prior operational capacity at 180 days.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>SCORING FORMULA AND CALIBRATION EXAMPLES
+WAIS = Sum of four-dimension scores. Range: 4-12. Cooperation Output may be marked PENDING until debrief is complete.
+
+Score 10-12: High ecosystem impact. Report as strategic-level success at macro layer.
+Score 7-9: Moderate impact. Report as significant operational success at meso layer.
+Score 4-6: Limited ecosystem impact. Report as operational activity. Do not inflate to strategic narrative.
+
+Multi-arrest coordinated operations: score each arrest individually, then apply a +2 coordination bonus to the highest single WAIS score in the operation.
+
+Calibration examples:
+LockBit core administrator arrest: Node Criticality 3, Cooperation Output PENDING until debrief complete, Trust Cascade 3, Reconstitution Impact scored at 90 days. Expected range: 9-11.
+Mid-tier IAB operator, third-country arrest, no cooperation: Node Criticality 2, Cooperation Output 1, Trust Cascade 1-2, Reconstitution Impact 2. Expected range: 6-7.
+Single replaceable affiliate, no cooperation, full reconstitution within 30 days: Score 4-5. Do not present as ecosystem-level progress.</td></tr>
+</tbody></table></div>
+<h3>KPI B-2 | FSB/RIS Internal Strife Indicators: Two-Layer Architecture</h3>
+<p class="doc-p">Reliability: ● ANALYST INFERENCE</p>
+<p class="doc-p">Internal strife cannot be systematically quantified. It can be systematically detected and classified. This KPI uses a two-layer architecture: proxy metrics for STRAT reporting and an event log for IC-level analysis.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>INTERPRETATION WARNING
+Layer 1 proxy metrics are interpreted only in context of the event log and node-level pressure data. Do not treat small quarter-to-quarter changes in any single proxy metric as a standalone signal. A single exit scam or a brief spike in forum dispute volume is noise until corroborated by event log entries or corresponding meso-layer pressure data. The event log is primary. The proxy metrics are a quick visual summary.</td></tr>
+</tbody></table></div>
+<h3>Layer 1 Proxy Metrics (Quantitative, Directional)</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Proxy Metric</th><th>What It Measures</th><th>Confidence</th><th>Data Source</th></tr></thead>
+<tbody>
+<tr><td>Affiliate defection rate</td><td>New group formations by known former affiliates of a disrupted brand within 90 days of disruption</td><td>CREDIBLE</td><td>Intel 471, Flashpoint, underground monitoring</td></tr>
+<tr><td>Exit scam frequency</td><td>Admin wallet disappearances or sudden site closures not attributed to law enforcement action, per quarter. Distinguish from LE takedowns using Chainalysis wallet analysis.</td><td>CREDIBLE</td><td>Chainalysis, TRM, underground forum monitoring</td></tr>
+<tr><td>Forum dispute volume</td><td>Arbitration requests and accusation threads against specific actors on Exploit and XSS. Track by target actor and time proximity to pressure actions.</td><td>CREDIBLE</td><td>Intel 471, Flashpoint</td></tr>
+<tr><td>New RaaS brand emergence rate</td><td>Count of new RaaS brand launches per quarter. Rising fragmentation after a disruption is a strife or pressure cascade signal. Consolidation indicates ecosystem recovery.</td><td>ANALYST INFERENCE</td><td>Ransomlook, Ransomwatch, private sector threat intel</td></tr>
+<tr><td>Recruitment term shifts</td><td>Changes in advertised affiliate split percentages or targeting rule relaxation. Sudden improvements in affiliate terms signal internal pressure to retain operators.</td><td>ANALYST INFERENCE</td><td>Underground forum monitoring, Intel 471</td></tr>
+</tbody></table></div>
+<h3>Layer 2 Strife Event Log (IC-Level Analysis)</h3>
+<p class="doc-p">Qualitative structured entries. This is the primary IC-value product. The Conti leak is the canonical reference: not a number, but an event whose ecosystem effects were measurable in the aftermath.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Event Type</td><td>Leak / Public Dispute / Exit Scam / Defection / Arrest-Triggered Fragmentation / Handler Complaint / Dox of Internal Actor</td></tr>
+<tr><td>Source Reliability</td><td>CONFIRMED / CREDIBLE / ANALYST INFERENCE</td></tr>
+<tr><td>Actors Involved</td><td>Actor handles and group affiliations. Move to controlled annex if named individually.</td></tr>
+<tr><td>Ecosystem Effect Assessment</td><td>Did it produce operational disruption? Trust breakdown? Leadership vacuum? Krysha withdrawal?</td></tr>
+<tr><td>Causal Link to Pressure Actions</td><td>Which prior disruption action, if any, preceded this event? Time lag?</td></tr>
+<tr><td>Follow-On Indicators to Monitor</td><td>What should be watched in the next 30-90 days because of this event?</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>THEME C
+Fewer Payments and Worse Economics. Degrade the business model, not just individual brands.</td></tr>
+</tbody></table></div>
+<h3>KPI C-1 | Ransom Payment Volume vs. Victim Count (Divergence Metric)</h3>
+<p class="doc-p">Reliability: ● CREDIBLE</p>
+<p class="doc-p">Definition: Directional trend of total ransom payments against total victim count. The operationally meaningful signal is divergence. When victim counts hold steady or rise while payment volume falls, the business model is degrading independent of attack frequency. Payment volume alone is insufficient.</p>
+<ul class="doc-list">
+<li>Formula: Quarterly - payment volume trend plotted against victim count trend. Report the divergence ratio, not just one line.</li>
+<li>Crypto price normalization: Payment volume is tracked in USD but interpreted with awareness of major crypto-market movements. Large exogenous price swings are annotated in the pressure-effect ledger and are not attributed as disruption effects. A payment volume drop driven by a Bitcoin price collapse is not a KPI success.</li>
+<li>Data Sources: Chainalysis Crypto Crime Report (annual with mid-year updates), TRM Labs Illicit Crypto Report, leak site victim counts via Ransomlook and Ransomwatch</li>
+<li>Known Limitation: Structural undercounting is real and complicated. Monero payments, unreported incidents, and private negotiations are invisible. This metric is a directional trend only. Do not treat absolute figures as precise. Labeled CREDIBLE, not CONFIRMED.</li>
+<li>Maturity: LEVEL 1. Chainalysis and TRM data available now.</li>
+</ul>
+<h3>KPI C-2 | Victim Payment Rate by Sector</h3>
+<p class="doc-p">Reliability: ● CREDIBLE</p>
+<p class="doc-p">Definition: Percentage of confirmed victims who paid ransom, tracked by sector (critical infrastructure, healthcare, financial services, general commercial). Declining payment rates indicate improved resilience or increased payment-discouragement policy effectiveness.</p>
+<ul class="doc-list">
+<li>Formula: Confirmed payments divided by confirmed victim incidents per sector, per quarter. Trend over rolling 4-quarter window.</li>
+<li>Data Sources: Coveware Ransomware Marketplace Report (quarterly), IR firm case data from Mandiant and CrowdStrike, sector Information Sharing and Analysis Center (ISAC) reporting</li>
+<li>Known Limitation: Denominator (total victim incidents) is significantly undercounted due to non-reporting. Sector breakdowns are approximate. Treat as directional.</li>
+<li>Maturity: LEVEL 1. Coveware quarterly data available.</li>
+</ul>
+<h3>KPI C-3 | Leak Site Three-Signal Composite</h3>
+<p class="doc-p">Reliability: ● CONFIRMED</p>
+<p class="doc-p">Leak sites are the highest-quality real-time signal in the open-source environment. Three distinct signals are tracked independently. They measure different things and should not be collapsed into a single number.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Signal</th><th>What It Measures</th><th>Directional Interpretation</th><th>Confidence</th></tr></thead>
+<tbody>
+<tr><td>Post Volume</td><td>Number of victims published per month across all active leak sites</td><td>Decrease signals operational tempo degradation or increased payments. Increase signals ecosystem health or escalating extortion pressure.</td><td>CONFIRMED</td></tr>
+<tr><td>Time-to-Publish</td><td>Gap between confirmed compromise date and leak site publication date</td><td>Compression means groups are escalating pressure because victims are not paying fast enough. Extension means victims are paying more readily or groups are operationally slower.</td><td>CREDIBLE</td></tr>
+<tr><td>Takedown/Relaunch Cycle</td><td>Time between a site going dark and a functional successor or replacement appearing</td><td>Longer cycle means higher resilience cost imposed. Sustained failure to relaunch indicates ecosystem degradation.</td><td>CONFIRMED</td></tr>
+</tbody></table></div>
+<ul class="doc-list">
+<li>Data Sources: Ransomlook, Ransomware.live, Ransomwatch, DarkFeed, cross-validated for accuracy</li>
+<li>Known Limitation: Measures published victims only. Groups collecting ransom without publishing are invisible here. Post volume is a floor, not a ceiling.</li>
+<li>Maturity: LEVEL 1. Open source, available now.</li>
+</ul>
+<h2 id="s3">SECTION 3 | MESO LAYER: NODE CLUSTER METRICS</h2>
+<p class="doc-p">Meso-layer metrics are the causal attribution layer. When a macro metric moves, the meso layer explains why. Without it, macro numbers are undefendable in a STRAT briefing or oversight context. Node IDs map directly to the companion disruption playbooks (Phase A Nodes 01-03, Phase B Nodes 04/07/08, Phase C Nodes 05/06/09). Three clarifications. First, the marketplace-health cluster below is tracked as a supplement to Node 07; Dependency Map Node 11 (Crypter/Packer Services) carries no meso metric and is addressed through private-sector detection levers. Second, there is no M-06 metric ID: leak-site measurement is consolidated under KPI C-3 and rolled up in the Node 06 row. Third, Node 16 (Exploit/Vulnerability Brokers), added to the Dependency Map per Module 06, is not yet tracked at the meso layer and requires a policy-track metric set at the next framework revision.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>DESIGN PRINCIPLE
+Each node cluster has a designated owner responsible for metric population. Where ownership is currently unassigned, this document explicitly marks the gap. Visible gaps are budget arguments and interagency forcing functions, not deficiencies to be hidden.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Node</th><th>Priority</th><th>Key Metrics</th><th>Owner</th><th>Level</th></tr></thead>
+<tbody>
+<tr><td>Node 01: OTC Crypto Brokers</td><td>CRITICAL</td><td>Percentage of top-20 OTC brokers under active designation. Average days to substitute broker identification post-designation. Volume of blockchain-attributed flows through designated vs. non-designated nodes.</td><td>OFAC / Treasury / Chainalysis</td><td>L1/L2</td></tr>
+<tr><td>Node 02: High-Risk Exchanges</td><td>CRITICAL</td><td>Count of VASP enhanced-due-diligence referrals acted on. Proportion of ransomware-attributed withdrawal addresses flagged at exchange level. Correspondent banking friction events.</td><td>Treasury / FinCEN / FVEY financial partners</td><td>L1</td></tr>
+<tr><td>Node 03: Bulletproof Hosting</td><td>CRITICAL</td><td>Average time-to-reconstitution post-takedown for BPH providers. Count of active providers vs. baseline. Infrastructure cost inflation proxy via new provider emergence rate.</td><td>FBI / NCA / Shadowserver</td><td>L1</td></tr>
+<tr><td>Node 04: IAB Markets</td><td>HIGH</td><td>Monthly IAB listing volume on Exploit and XSS. Average asking price by access type (RDP, VPN, domain admin). Top-10 operator churn rate. Victim notification success rate.</td><td>Intel 471 / Flashpoint / CISA</td><td>L1</td></tr>
+<tr><td>Node 05: Botnet/Loaders</td><td>HIGH</td><td>Time-to-reconstitution post-sinkhole, using the QakBot operation as the reference model. Infected host count reduction post-operation. Distribution infrastructure disruption events. Successor loader emergence lag.</td><td>FBI / NCA / Europol / national CERTs</td><td>L1/L2</td></tr>
+<tr><td>Node 06: Leak Site Hosting</td><td>HIGH</td><td>Rolled up from KPI C-3 leak site three-signal composite (Ransomlook, Ransomware.live, Ransomwatch, DarkFeed). Hosting provider churn rate post-takedown. Geographic migration patterns.</td><td>FBI / Europol / FVEY LE</td><td>L1</td></tr>
+<tr><td>Node 07: Underground Trust Infrastructure</td><td>HIGH</td><td>Forum arbitration dispute volume. Escrow failure rate. Market exit scam frequency. Active forum health score using member activity and post volume.</td><td>Intel 471 / Flashpoint</td><td>L1</td></tr>
+<tr><td>Node 08: Mixing/Obfuscation Services</td><td>HIGH</td><td>Count of active mixing services vs. baseline. Designation rate. Post-designation fund migration patterns. Time to substitute service identification.</td><td>Chainalysis / TRM / OFAC</td><td>L1</td></tr>
+<tr><td>Node 09A: Mule Networks (Russia-Domestic)</td><td>HIGH</td><td>FNS anomalous lifestyle flags on mule accounts. CBR 115-FZ actions against mule front accounts. Domestic laundering pattern visibility vs. baseline.</td><td>Rosfinmonitoring / FNS / CBR channel</td><td>L2</td></tr>
+<tr><td>Node 09B: Mule Networks (Third-Country)</td><td>HIGH</td><td>MLAT referral count and action rate. Third-country prosecution packages filed. Crypto-to-fiat nexus linkages confirmed.</td><td>FVEY LE / Europol / MLAT partners</td><td>L1/L2</td></tr>
+<tr><td>Node 10: Stealer/Credential Markets</td><td>MEDIUM</td><td>Directional only: major stealer takedowns and observed IAB price response at a 60-90 day lag. Credential market listing volume trend. Attribution distance is high. Treat as ANALYST INFERENCE.</td><td>Intel 471 / Flashpoint / private sector</td><td>L1 (ANALYST INFERENCE)</td></tr>
+<tr><td>Node 07 supplemental: Underground Marketplaces</td><td>MEDIUM</td><td>Forum health score trend. Migration events from forum to Telegram. New forum emergence rate. Migration must be tracked, not just the forum. A forum going dark does not equal disrupted.</td><td>Intel 471 / Flashpoint</td><td>L1 (ANALYST INFERENCE)</td></tr>
+</tbody></table></div>
+<h2 id="s4">SECTION 4 | MICRO LAYER: PER-OPERATION LOG TEMPLATE</h2>
+<p class="doc-p">Every disruption action generates a micro-layer log entry. This is the foundational data that makes meso and macro metrics defensible. If this layer is not populated, the framework loses its causal chain.</p>
+<p class="doc-p">The owning team or agency populates this log at three points: pre-action (expected effects), immediately post-action (observed immediate effects), and at 30, 90, and 180-day follow-up for reconstitution tracking.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Content</th><th>When Populated</th></tr></thead>
+<tbody>
+<tr><td>Operation ID</td><td>Unique identifier. Links to meso and macro tracking.</td><td>Pre-action</td></tr>
+<tr><td>Target Node(s)</td><td>Which node(s) does this action target? Reference Section 3 node taxonomy and companion playbook phase.</td><td>Pre-action</td></tr>
+<tr><td>Action Type</td><td>Designation / Takedown / Sinkhole / Referral / Arrest / Journalism Pipeline / Infrastructure Disruption</td><td>Pre-action</td></tr>
+<tr><td>Expected Primary Effect</td><td>Specific observable effect expected within 30 days. Be precise.</td><td>Pre-action</td></tr>
+<tr><td>Expected Secondary Effect</td><td>Compounding effect expected at 60-90 days, including interaction with other active pressure.</td><td>Pre-action</td></tr>
+<tr><td>Backfire Risk Assessment</td><td>Low / Medium / High. Reference engagement triggers in companion playbooks.</td><td>Pre-action</td></tr>
+<tr><td>Observed Immediate Effect</td><td>What actually happened within 30 days. Annotate divergence from expected.</td><td>30-day follow-up</td></tr>
+<tr><td>Reconstitution Status at 90 Days</td><td>Full / Partial / Failed. Detail the form of reconstitution.</td><td>90-day follow-up</td></tr>
+<tr><td>Reconstitution Status at 180 Days</td><td>Full / Partial / Failed. Flag if successor is same actor under a new brand.</td><td>180-day follow-up</td></tr>
+<tr><td>WAIS Score (if arrest)</td><td>Weighted Arrest Impact Score. Populate all four dimensions per Section 2 KPI B-1. Mark Cooperation Output as PENDING if debrief is incomplete.</td><td>Post-arrest, updated at 90 days</td></tr>
+<tr><td>Trust Cascade Observed</td><td>Yes / No / Partial. Describe observable underground forum or actor behavior changes.</td><td>30 and 90-day follow-up</td></tr>
+<tr><td>Protection Layer Effect</td><td>Did this action affect any known krysha relationship? Describe status change if applicable.</td><td>90-day follow-up Level 2</td></tr>
+<tr><td>Feed to Meso Metric</td><td>Which meso-layer node cluster metric does this entry update? List specific metric.</td><td>Post-population</td></tr>
+</tbody></table></div>
+<h2 id="s5">SECTION 5 | INTERNAL STRIFE ARCHITECTURE</h2>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>MEASUREMENT PRINCIPLE
+Internal strife cannot be systematically quantified. It can be systematically detected and classified. The goal is not a strife index. The goal is a structured detection system that makes strife legible for STRAT reporting and preserves IC-level signal fidelity.</td></tr>
+</tbody></table></div>
+<p class="doc-p">The STRAT-reportable output is not 'internal strife: high.' It follows a specific action, affiliate defection rate increased, two new splinter brands emerged within 60 days, and forum dispute volume against the targeted group spiked. Assessment: pressure-induced trust breakdown. Confidence: CREDIBLE.</p>
+<h3>5.1 Layer 1: Proxy Metrics (STRAT Reporting Layer)</h3>
+<p class="doc-p">Quantitative but directional. These do not measure strife directly. They measure conditions that strife produces or precedes. All carry ANALYST INFERENCE to CREDIBLE confidence. Do not interpret any single proxy metric as a standalone signal.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric</th><th>Operational Definition</th><th>Confidence</th><th>Data Source</th></tr></thead>
+<tbody>
+<tr><td>Affiliate Defection Rate</td><td>New group formations by known former affiliates of a disrupted brand within 90 days. Count per disruption event and as quarterly aggregate.</td><td>CREDIBLE</td><td>Intel 471, Flashpoint, underground monitoring</td></tr>
+<tr><td>Exit Scam Frequency</td><td>Admin wallet disappearances or site closures not attributed to LE action. Distinguish from law enforcement takedowns using Chainalysis wallet analysis.</td><td>CREDIBLE</td><td>Chainalysis, TRM, underground forum monitoring</td></tr>
+<tr><td>Forum Dispute Volume</td><td>Arbitration requests and accusation threads against specific actors on Exploit and XSS. Track by target actor and time proximity to pressure actions.</td><td>CREDIBLE</td><td>Intel 471, Flashpoint</td></tr>
+<tr><td>New RaaS Brand Emergence Rate</td><td>Count of new RaaS brand launches per quarter. Rising fragmentation after a disruption is a strife or pressure cascade signal. Consolidation indicates ecosystem recovery.</td><td>ANALYST INFERENCE</td><td>Ransomlook, Ransomwatch, private sector threat intel</td></tr>
+<tr><td>Recruitment Term Shifts</td><td>Changes in advertised affiliate split percentages or targeting rule relaxation. Sudden improvements in affiliate terms signal internal pressure to retain operators.</td><td>ANALYST INFERENCE</td><td>Underground forum monitoring, Intel 471</td></tr>
+</tbody></table></div>
+<h3>5.2 Layer 2: Strife Event Log (IC-Level Analysis)</h3>
+<p class="doc-p">Qualitative structured entries. This is the primary IC-value product. Events are episodic and source dependent. The event log is the analytic anchor. Proxy metrics summarize its contents for STRAT audiences.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Event Type</th><th>Definition and Examples</th></tr></thead>
+<tbody>
+<tr><td>LEAK</td><td>Internal communications, financial records, or operational data exposed, whether voluntarily by a disgruntled affiliate or involuntarily through LE or IC action. The Conti leaks (2022) and Black Basta leaks are reference examples.</td></tr>
+<tr><td>PUBLIC DISPUTE</td><td>Open accusation threads, arbitration failures, or public naming of internal actors on underground forums or Telegram. Signals trust breakdown at affiliate or operator level.</td></tr>
+<tr><td>EXIT SCAM</td><td>Admin-level wallet disappearance with no LE attribution. Indicates internal collapse or deliberate abandonment of brand, often preceding a rebrand under a new identity.</td></tr>
+<tr><td>DEFECTION EVENT</td><td>Confirmed departure of affiliates or key operators to a competing group, with observable operational continuity under a new brand.</td></tr>
+<tr><td>ARREST-TRIGGERED FRAGMENTATION</td><td>Following an arrest, observable disintegration of the affected group's operational structure. Distinct from temporary disruption. Measured by 90-day reconstitution failure or splinter emergence.</td></tr>
+<tr><td>HANDLER COMPLAINT</td><td>Criminal actor publicly threatening to expose a handler, switching protection patrons, or demonstrating loss of confidence in a krysha relationship. Rare but high-signal.</td></tr>
+<tr><td>DOX OF INTERNAL ACTOR</td><td>Identity or financial exposure of a core team member, protection officer, or key service provider through journalism, rival actors, or LE action.</td></tr>
+</tbody></table></div>
+<h2 id="s6">SECTION 6 | WEIGHTED ARREST IMPACT SCORE, SCORING GUIDE</h2>
+<p class="doc-p">The WAIS translates arrest and prosecution events into ecosystem-effect assessments. A single affiliate arrest and a coordinated RaaS core team takedown are not the same event. WAIS makes that distinction explicit and defensible.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dimension</th><th>Score 1 - Limited</th><th>Score 2 - Moderate</th><th>Score 3 - High</th></tr></thead>
+<tbody>
+<tr><td>NODE CRITICALITY Who was arrested?</td><td>Replaceable affiliate or low-tier support actor. Substitutable within 30 days.</td><td>Mid-tier operator, specialist (IAB operator, mule coordinator, BPH contact). Substitutable with friction.</td><td>Non-substitutable node: RaaS core team member, key OTC broker, protection-layer officer. Loss creates a sustained gap.</td></tr>
+<tr><td>COOPERATION OUTPUT What did the arrest yield?  Mark PENDING if debrief data is unavailable.</td><td>No cooperation. Or cooperation produced no actionable intelligence beyond the arrested actor's own operations.</td><td>Partial cooperation. Yielded some identity, infrastructure, or financial data enabling follow-on investigation.</td><td>Full cooperation. Enabled follow-on arrests, exposed financial records at scale, or produced protection-layer intelligence.</td></tr>
+<tr><td>TRUST CASCADE EFFECT What happened in the ecosystem?</td><td>No observable disruption. Underground ecosystem continued without visible behavioral change.</td><td>Localized disruption. Target's immediate network went dark, changed communications infrastructure, or showed elevated OPSEC behavior.</td><td>Broad cascade. Multiple actors burned infrastructure, forum-level confidence disruption observed, or competing groups exploited the vacuum.</td></tr>
+<tr><td>RECONSTITUTION IMPACT Could they rebuild?</td><td>Full reconstitution within 30 days at comparable or greater operational capacity.</td><td>Partial reconstitution at 31-90 days. Operating at reduced capacity or under a new brand with a smaller affiliate roster.</td><td>Failed or significantly delayed reconstitution. 90-plus days out, or successor brand still below 50% prior operational capacity at 180 days.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>SCORING FORMULA
+WAIS = Sum of four dimension scores. Range: 4-12. Cooperation Output may be marked PENDING until debrief is complete.
+
+Score 10-12: High ecosystem impact. Report as strategic-level success at macro layer.
+Score 7-9: Moderate impact. Report as significant operational success at meso layer.
+Score 4-6: Limited ecosystem impact. Report as operational activity. Do not inflate to strategic narrative.
+
+Multi-arrest coordinated operations: score each arrest individually, then apply a +2 coordination bonus to the highest single WAIS score in the operation.</td></tr>
+</tbody></table></div>
+<h2 id="s7">SECTION 7 | OWNERSHIP MAP</h2>
+<p class="doc-p">Ownership defines accountability. Every metric requires an agency or team responsible for population, maintenance, and quality control. Where ownership is currently unassigned, this document identifies the gap explicitly. Gaps are not deficiencies. They are the interagency coordination agenda.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Metric / Layer</th><th>Designated Owner</th><th>Status</th><th>Gap / Note</th></tr></thead>
+<tbody>
+<tr><td>KPI A-1: Russian domestic enforcement actions</td><td>Open-source: Analyst team with RU investigative journalism access</td><td>L1 AVAILABLE</td><td>Seeded-referral attribution requires IC reporting feed. L2 gap.</td></tr>
+<tr><td>KPI A-2: Referral-to-action lag</td><td>Owning operational team (internal log)</td><td>L2 PENDING</td><td>Requires formal internal operation log mandate. No current owner.</td></tr>
+<tr><td>KPI A-3: Protection relationship inventory</td><td>IC analytic team - controlled annex</td><td>L2 PENDING</td><td>Requires classified reporting feed and analytic annex governance structure.</td></tr>
+<tr><td>KPI B-1: WAIS scoring</td><td>Owning agency per arrest, aggregated by framework coordinator</td><td>L1/L2 PARTIAL</td><td>Node criticality and reconstitution: L1. Cooperation output: L2 pending debrief access.</td></tr>
+<tr><td>KPI B-2: Strife proxy metrics</td><td>Intel 471 / Flashpoint primary, IC supplementary</td><td>L1 AVAILABLE</td><td>Event log requires dedicated analytic owner. Currently unassigned.</td></tr>
+<tr><td>KPI C-1: Payment volume vs. victim count</td><td>Framework coordinator - Chainalysis and TRM primary sources</td><td>L1 AVAILABLE</td><td>Annual cadence from public sources. Quarterly cadence requires subscription access.</td></tr>
+<tr><td>KPI C-2: Victim payment rate by sector</td><td>Framework coordinator - Coveware primary</td><td>L1 AVAILABLE</td><td>Sector breakdown granularity is Coveware-dependent. May require direct engagement.</td></tr>
+<tr><td>KPI C-3: Leak site three-signal composite</td><td>Framework coordinator: Ransomlook, Ransomware.live, and Ransomwatch</td><td>L1 AVAILABLE</td><td>Automated tracking recommended at scale.</td></tr>
+<tr><td>Node 01-02: OTC and Exchange metrics</td><td>OFAC / Treasury / Chainalysis</td><td>L1 AVAILABLE</td><td>Designation pipeline coordination with OFAC required for real-time tracking.</td></tr>
+<tr><td>Node 03: BPH reconstitution</td><td>FBI / NCA / Shadowserver</td><td>L1 AVAILABLE</td><td>Post-action follow-up protocol required. Currently ad hoc.</td></tr>
+<tr><td>Node 04: IAB market metrics</td><td>Intel 471 / Flashpoint / CISA</td><td>L1 AVAILABLE</td><td>Victim notification program requires ISAC coordination for closure rate tracking.</td></tr>
+<tr><td>Node 05: Botnet/loader metrics</td><td>FBI / NCA / Europol / CERTs</td><td>L1/L2 PARTIAL</td><td>IC equities review protocol required before sinkhole victim data use.</td></tr>
+<tr><td>Node 07: Underground trust metrics</td><td>Intel 471 / Flashpoint</td><td>L1 AVAILABLE</td><td>No current gap.</td></tr>
+<tr><td>Node 08: Mixing and obfuscation metrics</td><td>Chainalysis / TRM / OFAC</td><td>L1 AVAILABLE</td><td>Requires OFAC designation pipeline access for real-time tracking.</td></tr>
+<tr><td>Node 09A: Domestic mule networks</td><td>Rosfinmonitoring / FNS / CBR channel</td><td>L2 PENDING</td><td>Highest-priority unassigned gap. Requires formal back-channel relationship.</td></tr>
+<tr><td>Node 09B: Third-country mule networks</td><td>FVEY LE / Europol</td><td>L1/L2 PARTIAL</td><td>MLAT referral tracking requires formal reporting from partner agencies.</td></tr>
+<tr><td>Node 10 / marketplace supplemental: Stealers and Marketplaces</td><td>Intel 471 / Flashpoint (ANALYST INFERENCE)</td><td>L1 AVAILABLE</td><td>Treat as indicative only. Attribution distance too high for operational weighting.</td></tr>
+<tr><td>Micro-layer operation logs</td><td>Owning agency per action. No current aggregator.</td><td>L2 PENDING</td><td>CRITICAL GAP: Without a designated log aggregator, the causal chain from micro to macro cannot be maintained.</td></tr>
+</tbody></table></div>
+<h2 id="s8">SECTION 8 | GOVERNANCE</h2>
+<h3>8.1 Distribution Tiers</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Tier</th><th>Content</th><th>Distribution</th></tr></thead>
+<tbody>
+<tr><td>TIER 1: Leadership Dashboard</td><td>Macro KPIs (Themes A, B, C) with meso trend summaries. Confidence labels required on every metric. No individual officer names.</td><td>Senior IC/LE leadership, STRAT offices</td></tr>
+<tr><td>TIER 2: Operational Reference</td><td>Full framework including meso node metrics, micro log template, WAIS scoring guide, strife proxy metrics</td><td>Interagency working groups, operational and analytic leads</td></tr>
+<tr><td>TIER 3: Controlled Analytic Annex</td><td>Protection relationship inventory with individual officer and unit detail, event log with sourced entries, cooperation output data from debrief records</td><td>Restricted. Analytic teams with appropriate authorities only.</td></tr>
+</tbody></table></div>
+<h3>8.2 Protection-Layer Panel: Governance Note</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>MANDATORY GOVERNANCE REQUIREMENT
+The protection-layer KPIs (KPI A-3, strife event log entries involving officers, Node 09A domestic mule tracking) are analytic products, not targeting directives. Any operational use of protection-layer analytic outputs must go through existing agency authorities and approval processes. This framework does not constitute operational authorization.</td></tr>
+</tbody></table></div>
+<ul class="doc-list">
+<li>At the Tier 1 leadership level: report counts and status categories only, for example '4 protection relationships assessed as strained this quarter.' No individual names.</li>
+<li>Individual officer-level data is maintained in the Tier 3 controlled analytic annex under existing foreign-intelligence minimization rules.</li>
+<li>Officer-level metrics are counts and trendlines of cases and relationship states, not a targeting panel.</li>
+<li>Sanctions packages are built from underlying case files with appropriate legal authority. The KPI summarizes the status of those packages. It does not drive them.</li>
+<li>If protection-layer analysis surfaces data on domestic persons of any nationality, apply standard minimization procedures immediately.</li>
+</ul>
+<h3>8.3 Analytic vs. Operational Distinction</h3>
+<p class="doc-p">This framework is analytic input for operational planning. It does not supersede agency-specific legal authorities or protocols. The KPI outputs are measurement and accountability tools.</p>
+<ul class="doc-list">
+<li>This framework does not constitute intelligence products for targeting.</li>
+<li>It does not replace agency-specific operational authorization requirements.</li>
+<li>It does not override classification and handling requirements for any underlying source material.</li>
+<li>Red flag: using macro KPI movements as justification for specific new operational authorities without showing corresponding micro and meso-level evidence. A macro number moving in the right direction is not sufficient basis for expanded authorities. The causal chain must be shown.</li>
+</ul>
+<h3>8.4 Framework Maintenance</h3>
+<ul class="doc-list">
+<li>Review cadence: quarterly metric review, annual framework structure review</li>
+<li>Version control: maintained by framework coordinator. Changes require interagency working group concurrence.</li>
+<li>Metric retirement: any metric that cannot be populated with reliable data for three consecutive quarters is flagged for review and potential retirement or downgrade to ANALYST INFERENCE.</li>
+<li>Ownership gap resolution: unassigned Level 2 metrics are reviewed at each quarterly meeting for ownership assignment progress. Gaps are reported to senior leadership as interagency coordination requirements, not silently carried forward.</li>
+</ul>
+<h2 id="s9">ANNEX A | QUICK REFERENCE: ALL KPIs</h2>
+<p class="doc-p">All KPIs are scoped to Russia/CIS-linked ransomware and associated enabling infrastructure unless otherwise specified.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>KPI ID</th><th>Name</th><th>Theme</th><th>Confidence</th><th>Level</th></tr></thead>
+<tbody>
+<tr><td>A-1</td><td>Russian Domestic Actions Against Ecosystem Actors</td><td>Domestic Enforcement</td><td>CREDIBLE</td><td>L1/L2</td></tr>
+<tr><td>A-2</td><td>Referral-to-Action Lag</td><td>Domestic Enforcement</td><td>CREDIBLE</td><td>L2</td></tr>
+<tr><td>A-3</td><td>Protection Relationship Status Inventory</td><td>Domestic Enforcement</td><td>ANALYST INFERENCE</td><td>L2</td></tr>
+<tr><td>B-1</td><td>Weighted Arrest Impact Score (WAIS)</td><td>FSB/RIS Strife</td><td>CONFIRMED/CREDIBLE</td><td>L1/L2</td></tr>
+<tr><td>B-2a</td><td>Strife Proxy Metrics: Layer 1</td><td>FSB/RIS Strife</td><td>ANALYST INFERENCE to CREDIBLE</td><td>L1</td></tr>
+<tr><td>B-2b</td><td>Strife Event Log: Layer 2</td><td>FSB/RIS Strife</td><td>VARIES</td><td>L2</td></tr>
+<tr><td>C-1</td><td>Payment Volume vs. Victim Count Divergence</td><td>Ecosystem Economics</td><td>CREDIBLE</td><td>L1</td></tr>
+<tr><td>C-2</td><td>Victim Payment Rate by Sector</td><td>Ecosystem Economics</td><td>CREDIBLE</td><td>L1</td></tr>
+<tr><td>C-3a</td><td>Leak Site Post Volume</td><td>Ecosystem Economics</td><td>CONFIRMED</td><td>L1</td></tr>
+<tr><td>C-3b</td><td>Leak Site Time-to-Publish</td><td>Ecosystem Economics</td><td>CREDIBLE</td><td>L1</td></tr>
+<tr><td>C-3c</td><td>Leak Site Takedown/Relaunch Cycle</td><td>Ecosystem Economics</td><td>CONFIRMED</td><td>L1</td></tr>
+<tr><td>M-01</td><td>OTC Broker Designation Coverage</td><td>Node Pressure - Financial</td><td>CONFIRMED</td><td>L1</td></tr>
+<tr><td>M-02</td><td>Exchange VASP Friction Metrics</td><td>Node Pressure - Financial</td><td>CONFIRMED</td><td>L1</td></tr>
+<tr><td>M-03</td><td>BPH Reconstitution Speed</td><td>Node Pressure - Infrastructure</td><td>CONFIRMED</td><td>L1</td></tr>
+<tr><td>M-04</td><td>IAB Market Volume and Pricing</td><td>Node Pressure - Access</td><td>CREDIBLE</td><td>L1</td></tr>
+<tr><td>M-05</td><td>Botnet/Loader Reconstitution</td><td>Node Pressure - Delivery</td><td>CONFIRMED</td><td>L1/L2</td></tr>
+<tr><td>M-07</td><td>Underground Trust Health</td><td>Node Pressure - Trust</td><td>CREDIBLE</td><td>L1</td></tr>
+<tr><td>M-08</td><td>Mixer/Obfuscation Service Coverage</td><td>Node Pressure - Financial</td><td>CONFIRMED</td><td>L1</td></tr>
+<tr><td>M-09A</td><td>Domestic Mule Network Visibility</td><td>Node Pressure - Laundering</td><td>CREDIBLE</td><td>L2</td></tr>
+<tr><td>M-09B</td><td>Third-Country Mule Prosecution Packages</td><td>Node Pressure - Laundering</td><td>CREDIBLE</td><td>L1/L2</td></tr>
+<tr><td>M-10</td><td>Stealer/Credential Market Trends</td><td>Node Pressure - Supply</td><td>ANALYST INFERENCE</td><td>L1</td></tr>
+<tr><td>M-11</td><td>Underground Marketplace Health</td><td>Node Pressure - Trust</td><td>ANALYST INFERENCE</td><td>L1</td></tr>
+</tbody></table></div>
+<p class="doc-p">RANSOMWARE ECOSYSTEM DISRUPTION MEASUREMENT FRAMEWORK v0.3 June 2026</p>
+  <div class="doc-foot">
+    Ecosystem Dependency Project. This page is the full text of a corpus framework
+    document, converted from the original for reading on the web. Content is unchanged.
+    Figures and assessments carry the confidence language of the source document.
+  </div>
+</main>
+</body>
+</html>

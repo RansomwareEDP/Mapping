@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecosystem Disruption Playbook | EDP Document Library</title>
+<meta name="description" content="Sustained Degradation of the Russia-Linked Ransomware Ecosystem">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070b16;--panel:#0a1220;--line:#162236;--line2:#1e3350;
+ --ink:#c0cfe0;--ink2:#8aa4c0;--dim:#4e6e8e;--faint:#2e4a68;--accent:#5a9acc;--accent2:#7ab0d8}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+ font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.sidebar{width:270px;flex-shrink:0;background:#060d1a;border-right:1px solid var(--line);
+ padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.sidebar-logo a{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.sidebar-title{font-size:15px;font-weight:700;color:#d6e5f4;margin-top:10px;line-height:1.35}
+.sidebar-nav{padding:14px 0}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:var(--faint);
+ padding:0 20px;margin-bottom:7px}
+.nav-link{display:block;padding:6px 20px;font-size:12.5px;color:var(--ink2);border-left:2px solid transparent}
+.nav-link:hover{color:var(--accent2);border-left-color:var(--line2);background:rgba(90,154,204,.05);text-decoration:none}
+.nav-num{color:var(--faint);font-size:10px;margin-right:7px}
+.sidebar-footer{padding:14px 20px 0;border-top:1px solid var(--line);margin-top:10px}
+.sidebar-meta{font-size:10px;color:var(--faint);line-height:1.8}
+.content{flex:1;min-width:0;padding:34px 48px 80px;max-width:1080px}
+.profile-header{border-bottom:1px solid var(--line2);padding-bottom:18px;margin-bottom:26px}
+.profile-breadcrumb{font-size:11px;color:var(--dim);margin-bottom:12px}
+.page-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.profile-name{font-size:27px;font-weight:700;color:#d6e5f4;line-height:1.2;letter-spacing:-.3px}
+.profile-sub{font-size:13.5px;color:var(--ink2);margin-top:9px;max-width:70ch}
+.badge-row{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;
+ border:1px solid var(--line2);border-radius:3px;color:var(--dim)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);
+ margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:14.5px;color:#b8cde0;margin:24px 0 9px;font-weight:600}
+.doc-p{margin:0 0 13px;max-width:78ch}
+.doc-banner{margin:0 0 22px;padding:13px 16px;border-radius:5px;font-size:13.5px;line-height:1.6}
+.doc-banner.super{border:1px solid #7a4a4a;background:rgba(255,123,114,.09);color:#f0c0bc}
+.doc-banner.dated{border:1px solid #7a6a3a;background:rgba(210,153,34,.09);color:#e8dcb8}
+.doc-banner b{color:#fff}
+.doc-banner a{color:#ffb4ad;text-decoration:underline}
+.doc-banner.dated a{color:#f0d68a}
+.doc-callout{margin:0 0 15px;max-width:78ch;padding:11px 14px;border-left:3px solid #d29922;
+ background:rgba(210,153,34,.07);color:#e0d0a8;font-size:14px}
+.doc-list{margin:0 0 15px 20px;max-width:78ch}
+.doc-list li{margin-bottom:7px}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.doc-table th{text-align:left;background:#0c1524;color:var(--accent);font-size:10px;
+ text-transform:uppercase;letter-spacing:1px;padding:9px 11px;border:1px solid var(--line2)}
+.doc-table td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.doc-foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:900px){
+ body{display:block} .sidebar{width:auto;height:auto;position:static;border-right:none;
+  border-bottom:1px solid var(--line)} .content{padding:24px 20px 60px}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+    <div class="sidebar-title">Ecosystem Disruption Playbook</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">On This Page</div>
+    <a class="nav-link" href="#s1"><span class="nav-num">01</span> OPERATOR SNAPSHOT</a>
+    <a class="nav-link" href="#s2"><span class="nav-num">02</span> PURPOSE &amp; SCOPE</a>
+    <a class="nav-link" href="#s3"><span class="nav-num">03</span> CORE THESIS</a>
+    <a class="nav-link" href="#s4"><span class="nav-num">04</span> STRATEGIC PRINCIPLES</a>
+    <a class="nav-link" href="#s5"><span class="nav-num">05</span> PHASE FRAMEWORK</a>
+    <a class="nav-link" href="#s6"><span class="nav-num">06</span> AFFILIATE STRATEGIC FRAMEWORK &amp; RaaS-S</a>
+    <a class="nav-link" href="#s7"><span class="nav-num">07</span> TAKEDOWN vs. MONITORING: THE CORE OPER</a>
+    <a class="nav-link" href="#s8"><span class="nav-num">08</span> RUSSIAN AGENCY QUICK REFERENCE</a>
+    <a class="nav-link" href="#s9"><span class="nav-num">09</span> ENGAGEMENT TRIGGERS TO AVOID</a>
+    <a class="nav-link" href="#s10"><span class="nav-num">10</span> PROTECTION LAYER DISRUPTION: FSB OFFIC</a>
+    <a class="nav-link" href="#s11"><span class="nav-num">11</span> CRYPTO-TO-FIAT METHODOLOGY</a>
+    <a class="nav-link" href="#s12"><span class="nav-num">12</span> MEASUREMENT FRAMEWORK</a>
+    <a class="nav-link" href="#s13"><span class="nav-num">13</span> TOOL &amp; PARTNER REFERENCE</a>
+    <a class="nav-link" href="#s14"><span class="nav-num">14</span> ANNEX A  |  EUROPEAN JURISDICTIONAL FR</a>
+    <div class="nav-section-label" style="margin-top:12px">Related</div>
+    <a class="nav-link" href="/library/">Document Library</a>
+    <a class="nav-link" href="/map">Ecosystem Map</a>
+    <a class="nav-link" href="/">Research Hub</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">Ecosystem Dependency Project<br>Converted to HTML 23 Aug 2026<br>Source: corpus document</div>
+  </div>
+</aside>
+<main class="content">
+  <header class="profile-header" id="top">
+    <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / Ecosystem Disruption Playbook</div>
+    <div class="page-label">EDP Corpus &middot; Document 02</div>
+    <h1 class="profile-name">Ecosystem Disruption Playbook</h1>
+    <p class="profile-sub">ECOSYSTEM DISRUPTION PLAYBOOK</p><p class="profile-sub">Sustained Degradation of the Russia-Linked Ransomware Ecosystem</p><p class="profile-sub">Developed by Reno</p>
+    <div class="badge-row"><span class="badge">Corpus document</span><span class="badge">Doc 02</span></div>
+  </header>
+
+<h2 id="s1">OPERATOR SNAPSHOT</h2>
+<p class="doc-p">Mission. Sustained ecosystem degradation, not episodic takedowns. Success is measured by compounding friction over time: actors spending more on security and reconstitution, Russian institutions treating criminals as internal liabilities, protection relationships dismantled, ransom volume and operational tempo declining across multi-quarter windows.</p>
+<h3>The 4 Phases</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Phase</th><th>Name</th><th>Objective</th><th>Key Outputs</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Ecosystem Mapping</td><td>Build dependency-linked map across financial, infrastructure, human terrain, protection layer, and state-interaction layers</td><td>Dependency graph, choke point inventory, substitutability assessment, protection relationship map</td></tr>
+<tr><td>2</td><td>Pressure Alignment</td><td>Identify which Russian institutions are susceptible to which levers; align pressure to internal contradictions including manufactured contradictions via the protection layer track</td><td>Agency alignment matrix, referral targeting plan, reframing strategy, officer liability candidates</td></tr>
+<tr><td>3</td><td>Cost Imposition</td><td>Apply coordinated pressure across financial, infrastructure, legal, social, and protection layer vectors to impose compounding costs</td><td>Sanctions actions, infrastructure takedowns, domestic referrals, underground trust disruption, officer exposure operations</td></tr>
+<tr><td>4</td><td>Sustainment</td><td>Monitor adaptation, prevent reconstitution, reapply pressure to emergent nodes and successor protection relationships (continuous, never ends)</td><td>Reconstitution tracking, KPI dashboards, updated pressure actions, protection relationship succession map</td></tr>
+</tbody></table></div>
+<h3>Critical Do / Don’t Rules</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>DO</th><th>DON’T</th></tr></thead>
+<tbody>
+<tr><td>Lead with domestic harm framing (tax fraud, organized crime, harm to Russian citizens)</td><td>Lead with geopolitical harm framing (activates protection reflexes)</td></tr>
+<tr><td>Sequence low-backfire-risk actions first; disrupt protection relationship before or simultaneously with the criminal actor</td><td>Lead with public attribution or extradition requests (hardens protection, not suppression)</td></tr>
+<tr><td>Monitor before takedown; use seizure as a data collection event and feed follow-on actions</td><td>Treat a takedown as an endpoint: without sustained follow-on pressure, actors reconstitute within 30-90 days</td></tr>
+<tr><td>Exploit internal Russian institutional contradictions (MVD vs. FSB; FNS financial exposure; FSB factional competition; CBR 115-FZ friction)</td><td>Seek coordinated Russian cooperation at the strategic level (not achievable; signals foreign ownership of the case)</td></tr>
+<tr><td>Measure every action: define expected effect before acting; log observed results and time-to-reconstitution</td><td>Run disruption operations without measurement (narrative without accountability)</td></tr>
+</tbody></table></div>
+<h2 id="s2">SECTION 1  |  PURPOSE &amp; SCOPE</h2>
+<h3>What This Document Is</h3>
+<p class="doc-p">This document proposes a framework for sustained disruption operations targeting the Russia-linked ransomware and cybercrime ecosystem, including the protection infrastructure (Russian state officers and institutional relationships) that insulates top-tier actors from enforcement. It is offered as analytic input for interagency partners with operational or analytic roles.</p>
+<ul class="doc-list">
+<li>A proposed phased framework for ecosystem-level disruption</li>
+<li>A strategic reference for pressure alignment across domestic Russian institutions</li>
+<li>A guide for avoiding engagement patterns that trigger protection reflexes</li>
+<li>A methodology for identifying and dismantling FSB officer protection relationships</li>
+<li>A tool and partner reference for capability targeting</li>
+</ul>
+<h3>What This Document Is Not</h3>
+<ul class="doc-list">
+<li>A policy document or legal authority</li>
+<li>A replacement for agency-specific operational protocols</li>
+<li>A senior leadership orientation document: this is analytic input for operational planning</li>
+<li>A directive for operational units: analytic recommendations require appropriate authority before action</li>
+<li>A static product: it must evolve as the ecosystem adapts</li>
+</ul>
+<p class="doc-p">This document draws on structural analysis of Russian agency behavior, observed enforcement outcomes, and analytic assessments of the ransomware ecosystem. Confidence levels are labeled throughout. Realpolitik incentives, not normative expectations, drive the analytical framework.</p>
+<h3>Scope Limitations</h3>
+<p class="doc-p">Three categories of actor fall outside this framework's intended scope and should be flagged through separate channels if encountered:</p>
+<ul class="doc-list">
+<li>GRU-linked actors and wartime-absorbed criminal infrastructure. The GRU leverages criminal actors for military and geopolitical operations and maintains different protection dynamics than the FSB. More critically, actors who have been operationally absorbed into GRU or FSB wartime operations occupy a different legal and policy environment. This framework does not address them. Indicators of wartime state absorption (actors receiving operational tasking against NATO or Ukrainian infrastructure, or actors whose targeting patterns align with active Russian military objectives) should be flagged separately.</li>
+<li>Non-Russia CIS actors with independent state protection. This framework's institutional leverage points (FSB, MVD, FNS, CBR) are Russian. Actors operating under Kazakh, Belarusian, or other CIS state protection require jurisdiction-specific analysis. Note: Kazakhstan has functioned as an actual enforcement partner on specific cases and its enforcement dynamics differ meaningfully from Russia's, Kazakhstani actors without Russian state protection may be accessible through local law enforcement channels. Belarus is operationally equivalent to Russia (see Annex A). Other CIS jurisdictions require case-by-case assessment.</li>
+<li>SVR-linked actors. The SVR's relationship with the cybercriminal ecosystem is more limited than the FSB's but is not zero, particularly at the financial fraud and intelligence nexus. This framework does not address SVR-protected actors.</li>
+</ul>
+<h2 id="s3">SECTION 2  |  CORE THESIS</h2>
+<p class="doc-p">The Russia-linked ransomware ecosystem is resilient by design. Individual actors, infrastructure nodes, and even ransomware brands reconstitute quickly after episodic disruptions. Takedowns create friction but not degradation unless compounded over time.</p>
+<p class="doc-p">The correct strategic model is sustained cost imposition across multiple ecosystem layers simultaneously: financial, infrastructural, human terrain, protection layer, and domestic Russian institutional. When pressure is applied in coordination across these layers, actors face compounding costs that cannot be absorbed through simple reconstitution.</p>
+<p class="doc-p">Scope qualification: the compounding friction thesis is structurally sound but rests on an assumption of sustained, coordinated multi-node pressure that has no confirmed historical precedent at this scale. Available evidence — including the 2024 ransomware revenue decline — is consistent with the model but reflects partial implementation across a subset of vectors, not a full coordinated execution. The thesis should be treated as an operational framework and planning model, not an empirically validated outcome. Confidence in the model's logic is high; confidence that full coordinated execution is achievable within current interagency and allied coordination constraints is moderate. [ANALYST INFERENCE]</p>
+<p class="doc-p">A critical layer absent from many disruption frameworks is the protection infrastructure itself. FSB officers who recruit, co-opt, and shield cybercriminal actors are not passive bystanders. They are load-bearing nodes in the ecosystem. Disrupting the protection relationship is as operationally important as disrupting the criminal infrastructure it shields.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Episodic Takedowns</th><th>vs.</th><th>Sustained Disruption</th></tr></thead>
+<tbody>
+<tr><td>Single actor or infrastructure target</td><td></td><td>Multiple simultaneous pressure vectors</td></tr>
+<tr><td>Rapid reconstitution within 30-90 days</td><td></td><td>Compounding costs across financial, infra, human, and protection layers</td></tr>
+<tr><td>Creates narrative, not lasting friction</td><td></td><td>Forces tradeoffs between criminal operations and regime stability</td></tr>
+<tr><td>No measurable ecosystem effect</td><td></td><td>Measurable ecosystem health degradation over time</td></tr>
+<tr><td>Protection layer untouched</td><td></td><td>Protection relationships dismantled, not worked around</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  CORE MISSION
+The objective is not episodic takedowns. It is sustained ecosystem degradation: increasing operational friction, raising domestic risk for criminal actors, forcing alignment of Russia's internal institutional incentives against cybercrime, and dismantling the protection infrastructure that insulates top-tier actors from enforcement. Success is measured by compounding pressure, not individual arrests.</td></tr>
+</tbody></table></div>
+<h3>Defining Success</h3>
+<ul class="doc-list">
+<li>Increased operational friction: actors spending more time and money on security, reconstitution, and vetting</li>
+<li>Rising domestic risk: Russian institutions treating cybercriminal actors as internal liabilities, not tolerated assets</li>
+<li>Protection layer erosion: specific FSB officers and factions whose protection relationships become institutional liabilities</li>
+<li>Forced tradeoffs: criminal operations creating regime-level costs that cannot be ignored</li>
+<li>Measurable ecosystem contraction: victim counts, ransom volume, and operational tempo declining over multi-quarter windows</li>
+</ul>
+<p class="doc-p">The strategic principles that follow govern all phases of this framework. Violating them (particularly the engagement triggers) consistently produces the opposite of the intended effect.</p>
+<h2 id="s4">SECTION 3  |  STRATEGIC PRINCIPLES</h2>
+<h3>3.1  Lead with Domestic Harm Framing</h3>
+<p class="doc-p">Russian institutions respond to internal threats, not external ones. Cybercriminals must be reframed as threats to Russian financial stability, domestic public trust, and regime legitimacy, not as foreign adversaries. Framing that emphasizes geopolitical harms activates protection reflexes and is counterproductive. Confidence: CREDIBLE</p>
+<ul class="doc-list">
+<li>Emphasize harm to Russian citizens, businesses, and financial infrastructure</li>
+<li>Use tax irregularities, currency violations, and fraud charges (not cyber-specific charges) where possible</li>
+<li>Surface financial inconsistencies (lifestyle vs. declared income) through FNS referrals</li>
+<li>Avoid framing that allows actors to be cast as resisting foreign interference</li>
+</ul>
+<h3>3.2  Exploit Internal Contradictions, Including Within FSB</h3>
+<p class="doc-p">Russian agencies do not operate in unified alignment. The FSB, GRU, MVD, and FNS frequently have competing institutional interests. Effective pressure identifies and exploits these contradictions rather than seeking coordinated Russian cooperation, which is not achievable at the strategic level. Confidence: CREDIBLE</p>
+<p class="doc-p">Critically, FSB itself is not a monolith. It contains competing factions, officers with divergent financial interests, and internal competition for political favor. The officer liability track (Section 9) rests on this reality: the goal is not to activate a unified FSB response, but to create conditions where specific FSB factions or leadership figures (who have their own institutional incentives) find it in their interest to act against a specific officer. This is a different and more achievable objective than FSB cooperation.</p>
+<ul class="doc-list">
+<li>MVD Department K has arrest incentives that FSB does not always override for mid-tier actors</li>
+<li>FNS modernization objectives can be leveraged to surface financial anomalies independent of RIS direction</li>
+<li>Rosfinmonitoring operates under Egmont obligations that create exposure even when political will is absent</li>
+<li>CBR 115-FZ creates non-attributable friction without requiring prosecutorial intent</li>
+<li>Within FSB: officers whose protected criminal assets have become attribution risks may face internal pressure from competing officers or factions, this internal friction is exploitable</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  MANUFACTURING CONTRADICTIONS
+Contradictions are not only exploited. They can be manufactured. The protection layer track (Section 9) operationalizes this: financial exposure operations that surface an FSB officer's criminal protection relationships to competing officers or FSB leadership create contradictions where none previously existed. When an officer's krysha relationship becomes visible to FSB leadership as an attribution risk or domestic embarrassment, the institution's factional dynamics and self-preservation instincts can activate against that officer. You are not waiting for contradictions to exist, you are generating them through targeted analytic and exposure work.</td></tr>
+</tbody></table></div>
+<h3>3.3  Sequence for Minimum Backfire Risk</h3>
+<p class="doc-p">Actions that trigger protection reflexes (particularly public attribution and extradition requests) harden actor protection rather than undermining it. Pressure sequencing must account for this dynamic. Confidence: CREDIBLE</p>
+<ul class="doc-list">
+<li>Low backfire risk first: financial exposure, infrastructure provider pressure, underground trust node disruption</li>
+<li>Mid-risk second: domestic agency referrals through non-intelligence channels (FNS, MVD)</li>
+<li>Avoid triggering actions unless actor is already isolated from state protection</li>
+<li>Full backfire risk reference: Section 8</li>
+</ul>
+<h3>3.4  Measure Everything</h3>
+<p class="doc-p">Disruption operations without measurement become narrative. Every pressure action should have a defined expected effect and a mechanism for observing actual outcomes. Adaptation by actors is itself signal, log it. Confidence: CREDIBLE (as principle); implementation quality varies by resourcing</p>
+<ul class="doc-list">
+<li>Define expected effect before taking action</li>
+<li>Log pressure applied, observed response, and time-to-reconstitution for every major action</li>
+<li>Track ecosystem health KPIs on a recurring basis (see Section 11)</li>
+<li>Use adaptation patterns to predict next-state ecosystem behavior</li>
+</ul>
+<h2 id="s5">SECTION 4  |  PHASE FRAMEWORK</h2>
+<p class="doc-p">The four phases are sequential at ecosystem scale but overlapping at the actor level. Phase 4 (Sustainment) begins as soon as the first pressure actions are taken and never ends.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Phase</th><th>Name</th><th>Primary Objective</th><th>Key Outputs</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Ecosystem Mapping</td><td>Build a complete, dependency-linked map of the ecosystem across financial, infrastructure, human terrain, protection layer, and state-interaction layers</td><td>Dependency graph, choke point inventory, substitutability assessment, protection relationship map</td></tr>
+<tr><td>2</td><td>Pressure Alignment</td><td>Identify which Russian domestic institutions are susceptible to which levers, and align foreign pressure to exploit internal contradictions, including manufactured contradictions via the protection layer track</td><td>Agency alignment matrix, referral targeting plan, reframing strategy, officer liability candidates</td></tr>
+<tr><td>3</td><td>Cost Imposition</td><td>Apply coordinated pressure across financial, infrastructure, legal, social, and protection layer vectors to impose compounding costs</td><td>Sanctions actions, infrastructure takedowns, domestic referrals, underground trust disruption, officer exposure operations</td></tr>
+<tr><td>4</td><td>Sustainment</td><td>Monitor adaptation, prevent reconstitution, reapply pressure to emergent nodes</td><td>Reconstitution tracking, KPI dashboards, updated pressure actions</td></tr>
+</tbody></table></div>
+<h3>4.1  Phase 1: Ecosystem Mapping</h3>
+<p class="doc-p">Before pressure can be applied effectively, the ecosystem must be understood as an interdependent system, not a collection of individual actors. Mapping focuses on nodes, dependencies, choke points, and substitutability. The protection layer is a mandatory fifth mapping domain.</p>
+<h3>Financial Layer</h3>
+<ul class="doc-list">
+<li>Wallet clusters and attribution: primary wallets, layering wallets, mixing endpoints</li>
+<li>Cash-out infrastructure: OTC brokers, crypto exchanges (VASP compliance gaps), payment aggregators</li>
+<li>Mule networks: recruitment patterns, geographic concentrations, lifecycle</li>
+<li>Front companies and laundering fronts: registration, banking relationships, beneficial ownership</li>
+<li>Anomalous outflows: payments that do not fit criminal operational cost profiles, these are protection payment candidates (see Section 9 and Section 10)</li>
+</ul>
+<p class="doc-p">Key question: where do funds become fiat, and who touches them?</p>
+<h3>Infrastructure Layer</h3>
+<ul class="doc-list">
+<li>Hosting and BPH providers: registrar, nameserver, ASN, upstream transit</li>
+<li>Domain infrastructure: registration patterns, DNS clustering, CDN/DDoS protection dependencies</li>
+<li>Payment acceptance: what payment rails accept criminal proceeds at each node</li>
+<li>Upstream dependencies: who hosts the BPH providers? Who sells IP space to the ASNs?</li>
+</ul>
+<p class="doc-p">Key question: what is the minimum set of upstream providers whose removal collapses multiple downstream nodes?</p>
+<h3>Human Terrain</h3>
+<ul class="doc-list">
+<li>Technical roles: malware developers, IAB operators, affiliate managers, crypters</li>
+<li>Governance and trust roles: escrow operators, forum administrators, arbitrators, reputation managers</li>
+<li>Financial roles: cash-out brokers, mule recruiters, accountants, front company directors</li>
+<li>State linkages: which actors have RIS recruitment history, krysha relationships, or prior enforcement contact?</li>
+</ul>
+<h3>Protection Layer</h3>
+<ul class="doc-list">
+<li>Map which FSB officers or factions are actively handling, recruiting, or shielding which actors</li>
+<li>Document protection payment flows: anomalous outflows from criminal actor finances that represent krysha fees or bribe payments</li>
+<li>Identify protection relationship tenure: how long has the relationship existed, and has it ever shown signs of strain?</li>
+<li>Map officer personal financial exposure: Western assets, family holdings, real estate, business interests</li>
+<li>Cross-reference officer travel patterns against viable third-country arrest jurisdictions (Annex A)</li>
+</ul>
+<p class="doc-p">Key question: for each protected actor, who is the officer or faction, what is the payment relationship, and what would make that officer a liability to FSB leadership or competing factions?</p>
+<h3>Substitutability Assessment</h3>
+<p class="doc-p">Substitutability is not a mapping output, it is a targeting input. Build substitutability assessments before disruption actions, not after. For each critical role:</p>
+<ul class="doc-list">
+<li>Identify the likely replacement actor within 30 days of disruption, name them, map them, pre-position pressure on them</li>
+<li>Assess recruitment pipeline depth: is the replacement pool thin (high substitutability cost) or deep (low cost)?</li>
+<li>For protection relationships: who is the backup officer if the primary is removed? Is there one? Absence of a backup officer is a high-value disruption indicator</li>
+<li>Document succession signals in underground forums: who is building reputation that positions them for role succession?</li>
+<li>Pre-position pressure on identified successors so disruption of the primary does not create a clean handoff</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  SUBSTITUTABILITY FAILURE PATTERN
+The most common operational error: disrupting a node without pre-positioned pressure on the identified successor. The successor steps in cleanly, reconstitution accelerates, and the operation produces a leadership transition rather than ecosystem degradation. Map the successor first. Apply pressure to the successor simultaneously with or before disrupting the primary.</td></tr>
+</tbody></table></div>
+<h3>State Interaction Layer</h3>
+<ul class="doc-list">
+<li>Map which Russian agencies are currently tolerating, exploiting, or suppressing which actors</li>
+<li>Identify actors without current state protection (highest-value disruption targets)</li>
+<li>Identify contradictions: actors whose behavior creates friction with agencies that could be activated</li>
+<li>Cross-reference against enforcement outcomes and known recruitment histories</li>
+</ul>
+<h3>4.2  Phase 2: Pressure Alignment</h3>
+<p class="doc-p">Alignment means identifying which levers work through which Russian institutions, sequencing referrals to exploit internal contradictions, and ensuring domestic framing is in place before any action is taken. The full Russian agency reference is in Section 7.</p>
+<h3>Priority Channels: Confidence CREDIBLE</h3>
+<ul class="doc-list">
+<li>MVD Department K: mid-tier actors without active RIS protection; responsive to domestic harm framing and arrest metrics incentives</li>
+<li>FNS: financial exposure and lifestyle inconsistencies; no arrest power but feeds downstream enforcement</li>
+<li>Rosfinmonitoring: laundering infrastructure mapping; Egmont obligations create exposure pathways independent of political will</li>
+<li>CBR (115-FZ): non-attributable financial friction without prosecutorial threshold; disrupts infrastructure without targeting individuals</li>
+</ul>
+<h3>Secondary Channels, Confidence: CREDIBLE (conditional)</h3>
+<ul class="doc-list">
+<li>FSB factions: reachable when a specific officer or faction has reason to act against a competing officer's protected asset, or when an actor has defied or embarrassed the service. Not reachable through standard channels. Reachable through manufactured liability (Section 9)</li>
+<li>SKR (Investigative Committee): activates only on elite political signal; not accessible through routine referrals</li>
+<li>Prosecutor General: downstream packager, not an initiator; useful for reframing charges once a case is politically elevated</li>
+</ul>
+<h3>Reframing Strategy</h3>
+<ul class="doc-list">
+<li>Tax fraud and undeclared income, not hacking charges</li>
+<li>Organized crime (Article 210), applicable when group structure, hierarchy, and economic benefit are documented</li>
+<li>Harm to Russian citizens or financial stability, not Western victim framing</li>
+<li>Financial irregularities exposing political patrons, creates incentive for krysha relationships to weaken</li>
+</ul>
+<h3>4.3  Phase 3: Cost Imposition</h3>
+<p class="doc-p">Cost imposition operates across five simultaneous vectors. Actions within each vector should be sequenced from lowest to highest backfire risk and coordinated across vectors where possible.</p>
+<h3>Vector 1: Financial Pressure</h3>
+<ul class="doc-list">
+<li>Wallet sanctions (OFAC/OFSI/EU): designate wallets with documented criminal attribution</li>
+<li>Exchange KYC pressure: engage VASPs with weak AML compliance; flag suspicious clusters</li>
+<li>Correspondent banking exposure: surface laundering routes that touch Western correspondent banks</li>
+<li>CBR referrals: flag suspicious domestic transaction patterns through Rosfinmonitoring-to-CBR pipeline</li>
+<li>OTC broker exposure: identify and designate key OTC nodes that serve as cash-out bottlenecks</li>
+</ul>
+<h3>Vector 2: Infrastructure Pressure</h3>
+<ul class="doc-list">
+<li>Upstream provider engagement: registrars, hosting companies, DNS providers, CDN/DDoS services</li>
+<li>ISP and ASN notifications: abuse notifications to upstream transit providers for BPH-linked ASNs</li>
+<li>Takedown coordination: infrastructure seizures timed to financial actions to prevent emergency reconstitution</li>
+<li>Roskomnadzor friction: platform restriction requests that disrupt criminal communications channels</li>
+</ul>
+<h3>Vector 3: Legal and Non-Cyber Charges</h3>
+<ul class="doc-list">
+<li>Tax and financial charges: work through FNS exposure to generate domestic enforcement basis</li>
+<li>Currency violations: undeclared foreign assets and illegal currency operations</li>
+<li>Article 210 (criminal organization): applicable when group structure, hierarchy, and economic benefit are documented</li>
+<li>Corruption and bribery: where krysha relationships involve documented payments to officials</li>
+<li>Drug and travel violations: non-cyber charges usable in third-country jurisdictions for arrest during travel</li>
+</ul>
+<h3>Vector 4: Underground Social Infrastructure</h3>
+<ul class="doc-list">
+<li>Trust node disruption: escrow operators, arbitrators, and forum administrators are non-technical but ecosystem-critical</li>
+<li>Reputation system attacks: discrediting actors within underground markets creates internal friction</li>
+<li>Recruitment pipeline disruption: targeting mule recruitment networks raises operational costs</li>
+<li>Communication platform pressure: degrade Telegram channels and forums used for coordination</li>
+<li>Escrow and arbitration record exploitation: disputes between criminal actors and protection relationships surface in arbitration, these records contain protection payment documentation and officer contact methods</li>
+</ul>
+<h3>Vector 5: Protection Layer Pressure</h3>
+<p class="doc-p">Full methodology in Section 9. Summary:</p>
+<ul class="doc-list">
+<li>Anomalous outflow analysis: identify protection payment flows from criminal actor finances using the crypto-to-fiat methodology (Section 10)</li>
+<li>Officer financial exposure: map Western asset holdings, family financial relationships, lifestyle inconsistency, feed to FNS and investigative journalism channels</li>
+<li>Manufactured contradiction generation: surface officer-criminal financial relationships to FSB institutional awareness through non-attributable channels, exploiting internal factional competition, not seeking unified FSB cooperation</li>
+<li>Simultaneous officer + criminal network sanctions: batch designations that land on the officer and their protected network simultaneously, eliminating reconstitution window</li>
+<li>Third-country arrest development: pre-position legal frameworks in viable European jurisdictions for officers and former officers with documented travel patterns (Annex A)</li>
+</ul>
+<h3>4.4  Phase 4: Sustainment</h3>
+<p class="doc-p">Sustainment is not a final phase, it is a continuous operational posture. Disrupted ecosystems reconstitute unless pressure is reapplied to emergent nodes.</p>
+<h3>Reconstitution Monitoring</h3>
+<ul class="doc-list">
+<li>Track infrastructure reappearance: new domains, ASNs, and hosting providers linked to disrupted actors</li>
+<li>Monitor wallet re-activation: new wallets receiving funds from known criminal clusters</li>
+<li>Track actor rebranding: name changes, new affiliate programs, forum re-registration</li>
+<li>Map role succession: who fills vacated positions in governance, financial, technical, and protection roles?</li>
+<li>Protection relationship reconstitution: does a disrupted actor acquire a new FSB handler? How quickly? Who is the new officer? Which faction?</li>
+</ul>
+<h3>Pressure Rotation</h3>
+<ul class="doc-list">
+<li>Avoid predictable action patterns: actors adapt to anticipated enforcement rhythms</li>
+<li>Rotate pressure vectors: if financial actions become anticipated, shift to infrastructure or social pressure</li>
+<li>Exploit adaptation: when actors move to new infrastructure or financial rails, those new nodes become targets</li>
+<li>Reassess agency alignment: domestic institutional tolerance shifts over time; re-map quarterly</li>
+</ul>
+<h2 id="s6">SECTION 5  |  AFFILIATE STRATEGIC FRAMEWORK &amp; RaaS-SPECIFIC DISRUPTION</h2>
+<p class="doc-p">The affiliate layer is the operational engine of the entire ecosystem. It has historically received less strategic attention than core leadership, a gap this section addresses. The framework below applies to both RaaS franchise operations and closed hierarchical groups.</p>
+<h3>5.1  Structural Comparison: RaaS vs. Closed Groups</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Characteristic</th><th>Closed Group (e.g. early Conti, WizardSpider)</th><th>RaaS (e.g. LockBit, Qilin, RansomHub)</th></tr></thead>
+<tbody>
+<tr><td>Structure</td><td>Centralized. Employed developers, operators, and negotiators under unified leadership.</td><td>Franchise model. Small core team (3-10) provides encryptor, infrastructure, and panel. Affiliates do the hacking.</td></tr>
+<tr><td>Revenue split</td><td>Centralized revenue; leadership distributes salaries or shares.</td><td>70-80% to affiliates, 20-30% admin cut to core team per ransom payment.</td></tr>
+<tr><td>Leadership exposure</td><td>Higher. Leadership directs operations and is connected to victim activity.</td><td>Lower. Core team never touches victim networks. Admin wallet abstracted through multiple layers.</td></tr>
+<tr><td>Affiliate role</td><td>Employed operators, internal, vetted, salaried or revenue-share.</td><td>Independent contractors, external, self-vetted via forum reputation, disposable.</td></tr>
+<tr><td>Resilience to takedown</td><td>Moderate. Remove leadership, remove the operation.</td><td>High. Affiliates migrate to competing RaaS within days. Core team rebrands and re-recruits.</td></tr>
+<tr><td>Primary disruption lever</td><td>Leadership identification and arrest.</td><td>Business model degradation: trust destruction, affiliate risk elevation, cash-out pressure.</td></tr>
+</tbody></table></div>
+<h3>5.2  Affiliate Strategic Framework, Both Group Types</h3>
+<p class="doc-p">Regardless of group structure, the affiliate layer shares common characteristics that make it a high-value strategic target.</p>
+<h3>Affiliate Prioritization</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Priority Tier</th><th>Profile</th><th>Rationale</th><th>Primary Action</th></tr></thead>
+<tbody>
+<tr><td>Tier 1, High Value</td><td>High-volume affiliates responsible for DIB, CIKR, or healthcare targeting; affiliates with documented travel outside Russia/CIS</td><td>Maximum operational impact + maximum arrest feasibility</td><td>Third-country arrest development; simultaneous financial designation</td></tr>
+<tr><td>Tier 2, Intelligence Value</td><td>Affiliates with documented contact methods, forum handles, or infrastructure links to core team leadership</td><td>Every affiliate arrest is a potential collection opportunity toward core team identification</td><td>Arrest + structured debrief; cultivate as CI with extreme OPSEC</td></tr>
+<tr><td>Tier 3, Chilling Effect</td><td>High-profile, visible affiliates whose arrest will be observed by the remaining affiliate pool</td><td>Arrests chill recruitment more than any single leadership action</td><td>Public arrest + maximum public attribution to signal ecosystem-wide risk</td></tr>
+<tr><td>Tier 4, Financial Pressure</td><td>Affiliates with Western-touchable financial exposure (exchange accounts, real estate, business interests)</td><td>Financial pressure without arrest; imposes cost even without custody</td><td>OFAC designation + VASP KYC pressure + correspondent banking exposure</td></tr>
+</tbody></table></div>
+<h3>Affiliate Mapping Methodology</h3>
+<ul class="doc-list">
+<li>Forum vetting history: RaaS affiliates are recruited through Exploit and XSS. Forum registration patterns, vouching relationships, and posting history build identity continuity packages</li>
+<li>Payment address clustering: affiliate payments from ransom proceeds follow predictable patterns, 70-80% splits are detectable in blockchain forensics; affiliate wallet clusters build over time</li>
+<li>Operational signatures: victim targeting patterns, negotiation style, ransom amount calibration, and deployment timing are affiliate-specific fingerprints that persist across group migrations</li>
+<li>Infrastructure reuse: affiliates reuse tooling, staging infrastructure, and C2 patterns across operations and across group migrations, these are identity continuity indicators</li>
+<li>Closed groups: internal communication leaks provide direct affiliate roster visibility; treat every seized or leaked internal dataset as a primary affiliate mapping source</li>
+</ul>
+<h3>Affiliate Migration Tracking</h3>
+<p class="doc-p">When a group is disrupted, affiliates migrate. Migration patterns are intelligence, they reveal which competing groups are absorbing talent, what the new operational tempo will be, and who the resilient actors are.</p>
+<ul class="doc-list">
+<li>Pre-position monitoring on likely recipient groups before takedown, not after</li>
+<li>Track forum re-registration and new vouching relationships in the 30 days following disruption</li>
+<li>Map operational signature reappearance: same targeting patterns and deployment timing appearing under a new group banner identifies migrated affiliates</li>
+<li>Migration speed is an ecosystem health indicator: fast migration (under 14 days) indicates high affiliate confidence in alternatives; slow migration indicates ecosystem-level friction</li>
+</ul>
+<h3>The Affiliate Arrest Multiplier Effect</h3>
+<p class="doc-p">A single well-chosen affiliate arrest produces effects that extend far beyond the individual:</p>
+<ul class="doc-list">
+<li>Immediate: removes operational capacity, disrupts active victim negotiations</li>
+<li>Intelligence: creates CI pathway toward core team; seized devices yield infrastructure and contact data</li>
+<li>Psychological: remaining affiliates do not know what the arrested affiliate has provided, uncertainty is operationally degrading independent of what was actually shared</li>
+<li>Recruitment: high-profile arrests chill new affiliate recruitment; the RaaS franchise becomes visibly dangerous to join</li>
+<li>Financial: affiliate payment flows seized or frozen impose direct cost on the core team's revenue stream</li>
+</ul>
+<h3>5.3  RaaS-Specific: Paths to Leadership Identification</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Vector</th><th>Mechanism</th><th>Reliability</th><th>Operational Notes</th></tr></thead>
+<tbody>
+<tr><td>Financial tracing (admin cut)</td><td>Admin wallet receives a consistent percentage of every ransom. High-volume recurring flows are harder to fully obscure. Trace through layering, OTC, and exchange withdrawal.</td><td>High</td><td>Primary path. Requires blockchain forensics combined with exchange KYC pressure. Long timeline but most durable evidence.</td></tr>
+<tr><td>Seized infrastructure</td><td>Takedown operations on affiliate panels and leak sites yield negotiation logs, affiliate identifiers, payment addresses, and admin access patterns. Operation Cronos (LockBit, Feb 2024) produced direct visibility into admin payment flows.</td><td>High (if obtained)</td><td>Requires prior takedown. Intelligence from seized panels compounds over time.</td></tr>
+<tr><td>Affiliate cooperation</td><td>Arrested affiliates know core team contact methods, forum vetting handles, and sometimes infrastructure details.</td><td>Medium</td><td>Cooperators become CI targets if exposed. Cooperator handling requires extreme OPSEC. Exposure triggers reverse enforcement by Russian agencies.</td></tr>
+<tr><td>Developer artifacts in malware</td><td>Compile-time metadata, PDB paths, error strings, language settings, and coding style fingerprint individual developers across rebrands.</td><td>Medium</td><td>Slow but rebrand-resistant. Most valuable for linking a new group to a prior identity after reconstitution.</td></tr>
+<tr><td>Underground forum history</td><td>RaaS operators maintain reputations on Exploit and XSS. Forum registration patterns, PGP key reuse, and posting style link current identities to prior personas.</td><td>Medium</td><td>Intel 471 and Flashpoint are primary sources.</td></tr>
+<tr><td>Infrastructure persistence</td><td>Even OPSEC-conscious groups reuse infrastructure elements across brands: ASN patterns, hosting providers, panel code, domain registration behaviors.</td><td>Medium</td><td>Document infrastructure fingerprints before takedown so reconstitution is immediately detectable.</td></tr>
+</tbody></table></div>
+<h3>5.4  Attacking the RaaS Business Model</h3>
+<h3>Trust Destruction</h3>
+<ul class="doc-list">
+<li>Law enforcement seizure of affiliate panels exposes affiliate identities and active operations, creating fear of exposure across the remaining roster</li>
+<li>Posting apparent evidence of compromise on the group's own infrastructure makes affiliates question whether the platform is burned</li>
+<li>Affiliates who doubt the core team's security migrate to competitors within days, you do not need to arrest the admin to empty the affiliate roster</li>
+</ul>
+<h3>Payment Rail Pressure</h3>
+<ul class="doc-list">
+<li>Designate OTC nodes and exchanges that service RaaS admin wallets</li>
+<li>VASP engagement: flag high-volume criminal clusters for enhanced due diligence at withdrawal points</li>
+<li>Correspondent banking exposure: surface laundering routes touching Western banks</li>
+<li>This is the most durable pressure vector, infrastructure rebuilds in days; financial exposure compounds over time</li>
+</ul>
+<h3>IAB Layer Disruption</h3>
+<ul class="doc-list">
+<li>IAB arrests and underground market disruption reduce quality access supply available to affiliates</li>
+<li>Rising IAB prices compress affiliate margins, reducing franchise attractiveness</li>
+<li>IAB disruption is low-backfire-risk, these actors are not typically state-protected assets</li>
+</ul>
+<h3>Decryptor Release</h3>
+<ul class="doc-list">
+<li>Every publicly released decryptor reduces victim payment rates and undermines core franchise value</li>
+<li>Operation Cronos released 7,000+ LockBit decryption keys publicly</li>
+<li>Even the credible threat of decryptor release reduces victim payment likelihood during active negotiations</li>
+</ul>
+<h3>5.5  Preventing Reconstitution and Rebrands</h3>
+<ul class="doc-list">
+<li>Document infrastructure fingerprints before takedown: panel code, ASN patterns, hosting behaviors, domain registration style</li>
+<li>Maintain malware attribution continuity: code lineage, developer artifacts, crypter relationships</li>
+<li>Immediate public attribution of new brand to prior identity resets brand equity to zero</li>
+<li>Pre-position sanctions designations to fire immediately upon rebrand identification</li>
+<li>If the same developer writes the new encryptor, the same artifacts will appear in samples, malware analysis on day-zero samples closes the attribution gap</li>
+</ul>
+<h3>5.6  Victim-Side Engagement Framework</h3>
+<p class="doc-p">The ecosystem has historically been approached from the supply side. Victim payment refusal is one of the most powerful ecosystem pressure mechanisms available, it directly attacks the financial incentive sustaining the entire RaaS model. Every refused payment imposes a cost that no infrastructure rebuild can recover. This section proposes an engagement model, not just a list of mechanisms.</p>
+<h3>The Engagement Model</h3>
+<p class="doc-p">Victim-side pressure does not operate through law enforcement alone. It requires coordinated engagement across five institutional channels, each of which owns a different lever. These channels should be engaged in parallel, not sequentially.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Channel</th><th>Lever</th><th>Ecosystem Effect</th><th>Engagement Mechanism</th></tr></thead>
+<tbody>
+<tr><td>Law Enforcement (FBI/CISA)</td><td>Decryptor release + affiliate panel seizure</td><td>Direct revenue reduction; undermines franchise value proposition</td><td>Coordinate decryptor release with takedown operations; public release maximizes chilling effect on pending victim negotiations</td></tr>
+<tr><td>CISA / Sector ISACs</td><td>Pre-encryption victim notification</td><td>Reduces successful attack completion rate; raises affiliate operational cost</td><td>CISA and sector ISACs maintain victim notification pipelines, engage early to ensure high-priority sectors receive alerts before encryption completes</td></tr>
+<tr><td>FinCEN / Treasury</td><td>Insurer payment policy pressure</td><td>Reduces victim payment rate systematically across the ecosystem</td><td>FinCEN engagement with cyber insurance sector; ransomware payment coverage restrictions and mandatory law enforcement notification requirements reduce payment rates without legislative action</td></tr>
+<tr><td>OFAC</td><td>Sanctions payment prohibition</td><td>Reduces payment rate for designated groups; compels victim reporting</td><td>OFAC designation paired with payment prohibition guidance creates legal liability for victim payment; should be coordinated with takedown timing to maximize disruption</td></tr>
+<tr><td>CISA / Sector Regulators</td><td>Resilience investment incentives</td><td>Long-term structural reduction in victim payment rate</td><td>Backup and recovery capability eliminates payment incentive entirely for resilient victims; resilience standards and investment incentives are the only mechanism that attacks the demand side structurally</td></tr>
+</tbody></table></div>
+<h3>Connection to Supply-Side Operations</h3>
+<p class="doc-p">Victim-side and supply-side operations should be sequenced to compound each other:</p>
+<ul class="doc-list">
+<li>Takedown operations release decryptors → reduces value of pending ransoms → affiliates receive less from ongoing operations → franchise attractiveness declines</li>
+<li>OFAC designations paired with payment prohibition guidance → victim legal liability for payment → payment refusal rate rises → admin cut volume drops → officer protection payment value drops (Section 9 feedback loop)</li>
+<li>CISA pre-notification programs work best when threat intelligence from monitoring operations is shared in time to enable defensive action, this creates a direct operational link between monitoring decisions (Section 6) and victim-side outcomes</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  CURRENT EFFECTIVENESS SIGNAL
+Ransom payment volumes have declined despite attack frequency increasing. This divergence is the clearest measurable signal that multi-vector ecosystem pressure is producing real compounding friction. The drivers are consistent with the model in this playbook: better victim resilience, law enforcement trust destruction operations, sanctions reducing payment legality, and insurers tightening payment policies.
+The critical caveat: attacks staying high while payments fall means groups are working harder for less. Friction is real. But victims are still being hit and data is still being exfiltrated. Payment refusal is a victory; attack prevention is the harder and more important objective.</td></tr>
+</tbody></table></div>
+<h3>5.7  HUMINT and Cooperator Handling</h3>
+<p class="doc-p">The playbook references HUMINT as a source across several sections, particularly for protection relationship reconstitution tracking and core team identification. Given that cooperator exposure triggers active counterintelligence responses by Russian agencies, a brief set of handling principles is warranted. These are offered as analytic input; cooperator programs require specific authority and tradecraft that exceeds this document's scope.</p>
+<h3>Core Handling Principles</h3>
+<ul class="doc-list">
+<li>Treat every cooperating actor as a potentially compromised source from day one. Russian agencies conduct counterintelligence against their own criminal assets. Assume FSB awareness of cooperation is a matter of time, not if.</li>
+<li>Limit knowledge of cooperation status to minimum necessary personnel, in both U.S. and host-country institutions. Leaks that burn arrest windows are well-documented; leaks that burn cooperators carry greater human risk.</li>
+<li>Do not take actions against the cooperating actor's associates that would reveal the source or timing of information. Each action should be justifiable from open-source intelligence alone before the cooperator's information is incorporated into operational decisions.</li>
+<li>Suspected cooperators face serious physical risk. The playbook's engagement trigger table (Section 8) identifies cooperator exposure as activating reverse enforcement by Russian agencies. Design debrief programs and subsequent operations with this explicitly in mind.</li>
+<li>Structure debriefs to systematically extract officer contact methods, protection payment documentation, and infrastructure access credentials, the protection layer track depends on this data and it is rarely available through OSINT alone.</li>
+<li>Do not terminate cooperation abruptly. Use decay rather than cutoff to reduce exposure risk, declining contact frequency over time is less detectable than a clean break following an operational action.</li>
+</ul>
+<p class="doc-p">Any cooperator program requires dedicated tradecraft expertise and appropriate authority beyond this document’s scope.</p>
+<h2 id="s7">SECTION 6  |  TAKEDOWN vs. MONITORING: THE CORE OPERATIONAL DECISION</h2>
+<p class="doc-p">Whether to take down infrastructure or continue monitoring it is one of the most consequential decisions in disruption operations. The central error is treating them as competing options. They are sequential phases of a single operation.</p>
+<h3>6.1  The Core Tension</h3>
+<p class="doc-p">Takedown produces immediate disruption and, if infrastructure is seized rather than just shut down, an intelligence windfall, potentially years of logs, user data, transaction records, and admin access patterns. Monitoring produces ongoing intelligence but allows real harm to continue while you watch.</p>
+<p class="doc-p">Monitoring advantages: reveals operational intent, planned attacks, internal disputes, and full network structure before disruption. The panic signal after a takedown, who disappears, who migrates, who tries to contact whom, is itself intelligence on network structure. Live channels with operational planning visible generally outweigh the disruption value of shutting them down, unless imminent victim harm is preventable.</p>
+<p class="doc-p">Takedown advantages: burn risk, if your access is discovered, you lose the intelligence and actors migrate to a hardened platform. Seized infrastructure often exceeds the value of continued monitoring. The seizure itself is a trust destruction weapon: remaining actors do not know who cooperated or what law enforcement now knows.</p>
+<h3>6.2  Decision Threshold: When to Move from Monitor to Takedown</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Trigger</th><th>Rationale</th><th>Risk if Delayed</th></tr></thead>
+<tbody>
+<tr><td>Ongoing victim harm exceeds intelligence value</td><td>Particularly if critical infrastructure, healthcare, or DIB targets are being hit. Continued monitoring becomes legally and ethically indefensible.</td><td>Legal/oversight exposure; reputational damage if monitoring is disclosed</td></tr>
+<tr><td>Monitoring access is at risk of discovery</td><td>Sophisticated actors conduct counterintelligence. A controlled takedown on your terms is better than a discovered access.</td><td>Loss of all intelligence; actors harden new platform</td></tr>
+<tr><td>Sufficient ecosystem mapping to support follow-on actions</td><td>Leadership identified or substantially narrowed; affiliate roster mapped; financial flows traced. Marginal value of additional monitoring is declining.</td><td>Diminishing returns; unnecessary harm continuation</td></tr>
+<tr><td>Time-sensitive operational opportunity</td><td>A key actor is traveling outside Russia, a financial window exists for simultaneous designations, or a partner operation creates a coordination moment.</td><td>Missed arrest or designation window</td></tr>
+<tr><td>Coordinated multi-partner action is ready</td><td>Maximum disruption requires simultaneous action across jurisdictions. When all partners are aligned, delay reduces coordination quality.</td><td>Partner readiness degrades; coordination gaps widen</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  BOTTOM LINE
+Monitor to map. Take down at maximum yield. Use seized data to pursue follow-on actions. Monitor reconstitution to target the next iteration. The takedown is a phase, not an endpoint.</td></tr>
+</tbody></table></div>
+<h2 id="s8">SECTION 7  |  RUSSIAN AGENCY QUICK REFERENCE</h2>
+<p class="doc-p">Confidence levels reflect observed enforcement behavior, not legal doctrine. Note: FSB is not treated as a unified actor. Internal factions, competing officer interests, and political dynamics within FSB create divergent enforcement behaviors, the column below reflects FSB's aggregate behavior while Section 9 operationalizes the factional divergences.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Agency</th><th>Role in Ecosystem</th><th>Best Leverage Points</th><th>Confidence</th><th>Key Limits</th></tr></thead>
+<tbody>
+<tr><td>FSB</td><td>Primary architect of cyber ecosystem; recruits, co-opts, or protects actors for CI and strategic ops. Internally factional, competing officers and units have divergent interests that can be exploited.</td><td>Attribution fallout; actor defiance of recruitment; actor ties to foreign intelligence; manufactured liability via protection layer exposure (Section 9); factional competition between FSB units</td><td>High (selective)</td><td>No legal cooperation as an institution. Foreign pressure reduces enforcement appetite at agency level. Individual factions may act when actor defies, embarrasses, or becomes a liability to specific officers or units.</td></tr>
+<tr><td>GRU</td><td>Leverages actors for military/geopolitical ops; rarely arrests but will silence or cut off. Note: actors absorbed into wartime GRU operations fall outside this framework's scope.</td><td>Sloppy OPSEC; attribution risk to ongoing ops; actor disobedience post-campaign</td><td>Low</td><td>No transparency; no prosecutorial handoff. Disruption must be indirect.</td></tr>
+<tr><td>MVD / Dept K</td><td>Enforces mid-level fraud and technical cybercrime; reputationally sensitive; sidelined in elite cases</td><td>Domestic financial harm; media scrutiny; interagency competition with FSB; arrest metrics pressure</td><td>High (non-RIS)</td><td>FSB can override at any time. Not accessible for RIS-linked actors.</td></tr>
+<tr><td>FNS</td><td>Identifies shell companies, undeclared income, and lifestyle inconsistencies; no arrest power</td><td>Financial irregularities; family asset exposure; laundering front structures</td><td>Med-High</td><td>Action requires political greenlight. Surfaces exposure; does not prosecute.</td></tr>
+<tr><td>Rosfinmonitoring</td><td>Russia's financial intelligence hub; maps laundering infrastructure; triggers asset controls and referrals</td><td>Crypto-fiat flows; suspicious transactions; Egmont Group scrutiny pathways</td><td>High (mapping)</td><td>Politicized. Requires downstream adoption by MVD or FSB to produce arrests.</td></tr>
+<tr><td>CBR</td><td>Via 115-FZ, enables banks to freeze or deny transactions based on risk without prosecution</td><td>Suspicious transaction patterns; politically exposed clients; AML risk flags</td><td>Med-High</td><td>Does not attribute activity or target individuals. Non-attributable friction only.</td></tr>
+<tr><td>SKR</td><td>Engages only when cybercrime is elevated to elite criminality or political scandal</td><td>Political embarrassment; regime exposure; organized crime framing (Art. 210)</td><td>Medium</td><td>Not reachable through standard LE channels. Requires Kremlin-level political signal.</td></tr>
+<tr><td>Roskomnadzor</td><td>Restricts communications platforms; imposes infrastructure friction</td><td>Hosting noncompliance; foreign platform resistance; digital sovereignty framing</td><td>Medium</td><td>Does not target individuals. Disrupts legitimate users equally.</td></tr>
+</tbody></table></div>
+<h2 id="s9">SECTION 8  |  ENGAGEMENT TRIGGERS TO AVOID</h2>
+<p class="doc-p">These patterns consistently cause Russian agencies to protect, absorb, or redirect cybercriminals rather than suppress them. They are drawn from historical enforcement outcomes and institutional behavior analysis. Red = high backfire risk (avoid or delay until actor is isolated). Amber = conditional risk (proceed with domestic framing in place).</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Trigger</th><th>Effect</th><th>Mechanism</th><th>Implication for Operations</th></tr></thead>
+<tbody>
+<tr><td>Public attribution by foreign government</td><td>Actor converts from criminal liability to national security asset</td><td>Once named by a foreign power (especially the U.S.), FSB/GRU may treat actor as soft-state asset regardless of prior behavior</td><td>Attribution hardens protection. Publicity equals absorption. Delay public attribution until actor is already isolated.</td></tr>
+<tr><td>Formal arrest or extradition request</td><td>Triggers defensive nationalism; reduces arrest probability to near zero</td><td>Russian doctrine opposes surrender of nationals. Extradition requests signal foreign ownership of the case.</td><td>Extradition-first strategies produce the opposite of suppression. Pursue third-country arrest opportunities instead.</td></tr>
+<tr><td>Media naming and shaming campaigns</td><td>Agencies treat engagement as hostile information warfare; enforcement appetite declines</td><td>When actors are labeled 'Russian cybercriminals' without domestic impact framing, it reads as sovereignty violation</td><td>Paired domestic framing is required before any public naming.</td></tr>
+<tr><td>Indication of actor cooperation with foreign LE</td><td>Actor becomes a counterintelligence interest; FSB views as double-agent risk</td><td>Suspected cooperators are arrested, disappeared, or neutralized</td><td>Cooperator handling requires extreme operational security. Exposure of cooperation triggers reverse enforcement.</td></tr>
+<tr><td>Actor technical value or recruitment potential</td><td>Delays or cancels enforcement; actor becomes reusable state asset</td><td>Actors with malware or infrastructure capabilities are considered recruitable</td><td>Prioritize disruption of capability before it triggers recruitment.</td></tr>
+<tr><td>Target selection aligned with Russian strategic interests</td><td>Actor becomes functionally aligned with state objectives; impunity follows</td><td>Operations against Western banks, NATO infrastructure, or sanctions enforcement are considered symbiotic by Russian state</td><td>Document target patterns to predict and preempt state absorption.</td></tr>
+<tr><td>Internal elite sponsorship (krysha)</td><td>Immunity from arrest regardless of cybercrime visibility</td><td>Actor operates under protection of regional, political, or RIS patron</td><td>Pressure must first weaken or circumvent sponsor relationship. FNS/Rosfinmonitoring exposure of patron is prerequisite.</td></tr>
+<tr><td>Multilateral pressure without local framing</td><td>Resistance from all Russian agencies; interpreted as sovereignty violation</td><td>Pressure through Western consortiums without Russian criminal charge equivalents reads as hostile</td><td>Align multilateral pressure with simultaneous domestic framing.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  BOTTOM LINE
+Russian agencies protect cybercriminals when engagement signals foreign ownership, regime threat, or operational opportunity. Effective disruption depends on avoiding these triggers while exploiting internal contradictions and institutional sensitivities.</td></tr>
+</tbody></table></div>
+<h2 id="s10">SECTION 9  |  PROTECTION LAYER DISRUPTION: FSB OFFICER LIABILITY TRACK</h2>
+<h3>9.1  Core Concept: Protection as a Load-Bearing Ecosystem Node</h3>
+<p class="doc-p">FSB officers who provide krysha, recruitment, and protection to cybercriminal actors are not peripheral to the ecosystem, they are load-bearing nodes. Disrupting a criminal actor whose protection relationship remains intact produces reconstitution. Disrupting the protection relationship first, or simultaneously, produces ecosystem degradation.</p>
+<p class="doc-p">The mechanism: individual FSB officers maintain protection relationships because they generate personal value, financial, operational, reputational within the service. When a specific protection relationship generates more cost than value, domestic embarrassment, attribution risk to the officer personally, institutional liability to FSB leadership or competing factions, the pressures on that officer change. You are not asking FSB to cooperate as an institution. You are creating conditions where a specific officer's calculus shifts, or where competing FSB factions find it advantageous to act against the liability-generating officer. These are different and more achievable objectives.</p>
+<p class="doc-p">This distinction matters operationally. FSB's internal factions do not share interests. An officer in the FSB's economic security directorate and an officer in a cyber unit may be in active competition. Surfacing one officer's criminal financial exposure to competing FSB units, rather than to FSB 'leadership' as an abstraction, is a more precise and realistic targeting objective. Confidence: Medium-High (mechanism is well-supported; execution difficulty is high)</p>
+<p class="doc-p">Worked example (Karakurt / Zolotarjovs, May 2026). On 4 May 2026 a US court sentenced Deniss Zolotarjovs to 102 months for his role in Karakurt, a data-extortion group the Department of Justice describes as led by former Conti leadership. DOJ stated the group relied on access to Russian government databases and law-enforcement connections, and paid bribes to secure military draft exemptions and tax avoidance for its members. This is the clearest open-source confirmation to date of the premise in this section: protection is a purchased, load-bearing relationship with named state touchpoints (government databases, draft boards, tax authorities), not a vague tolerance. It also illustrates the officer-liability logic in reverse. The same corruption that shields members is itself documentable financial exposure, exactly the paper trail the financial-exposure methodology below is built to surface. Confidence: Confirmed (DOJ statement and sentencing, 4 May 2026).</p>
+<h3>9.2  Officer Relationship Types and Leverage</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Officer Relationship Type</th><th>Protection Mechanism</th><th>Liability Trigger</th><th>Primary Lever</th></tr></thead>
+<tbody>
+<tr><td>Direct handler / recruiter</td><td>Tasks criminal actors for intelligence collection or strategic ops; provides operational cover</td><td>Sloppy OPSEC by the criminal actor creating attribution risk back to the officer; criminal actor creating domestic harm visible enough to attract MVD attention</td><td>Attribute criminal actor's domestic harm to officer's operational portfolio; surface attribution risk to competing FSB units</td></tr>
+<tr><td>Krysha / protection provider</td><td>Financial relationship, officer receives payment to ensure enforcement non-interference</td><td>Financial exposure: payment flows documented and surfaced domestically; Western asset exposure via sanctions</td><td>Anomalous outflow analysis to document payment relationship; FNS lifestyle referral on officer; simultaneous criminal network + officer sanctions</td></tr>
+<tr><td>Passive tolerance / non-interference</td><td>Officer aware of actor but chooses not to act; implicit protection through inaction</td><td>Actor creates embarrassment or domestic harm sufficient to make the officer's inaction visible to superiors or competing units</td><td>Domestic harm amplification via investigative journalism; FNS lifestyle flags on actor to create paper trail officer cannot ignore</td></tr>
+<tr><td>Retired / former officer</td><td>Residual institutional relationships and access used to provide informal protection</td><td>No active institutional protection; most vulnerable to financial sanctions and third-country arrest</td><td>Western asset designation; third-country arrest development (Annex A); family financial exposure</td></tr>
+</tbody></table></div>
+<h3>9.3  Financial Exposure Methodology for Officers</h3>
+<p class="doc-p">FSB officers on government salary who maintain protection relationships with high-volume cybercriminal actors accumulate financial exposure that does not match their declared income. Building this exposure profile requires no HUMINT, it is an open source and financial registry analytic task that extends directly from the criminal-side financial mapping already in this playbook. All deliverables in this section are proposed; none currently exist.</p>
+<h3>Step 1: Identify Anomalous Outflows from Criminal Actor Finances</h3>
+<p class="doc-p">This is the keystone analytic task. Detailed methodology in Section 10. For this section: the question to ask of every criminal actor's financial map is what outflows do not fit criminal operational cost profiles.</p>
+<ul class="doc-list">
+<li>Criminal operational costs: hosting, tooling, affiliate payments, mule recruitment, OTC fees, developer salaries, all have identifiable patterns and counterparties</li>
+<li>Protection payments sit outside these patterns: they are recurring, consistent in amount or proportion, do not flow to known criminal operational nodes, and often convert to fiat through channels separate from the main cash-out infrastructure</li>
+<li>Flag these anomalous outflows as protection payment candidates, they are the entry point to the officer financial profile</li>
+</ul>
+<h3>Step 2: Build the Officer Financial Profile</h3>
+<ul class="doc-list">
+<li>Russian property registries: egrn.ru and regional equivalents show real estate holdings in officer and immediate family names</li>
+<li>Corporate registries: egrul.nalog.ru surfaces business ownership, shell companies, consulting firms, and holding structures in spouse or children's names</li>
+<li>European property and corporate registries: country-specific registries (see Annex A) surface Western-held assets; Cyprus, Malta, and pre-2022 EU jurisdictions have historically been favored</li>
+<li>Travel and lifestyle signals: visa application histories, social media, school enrollment records for children, vehicle registrations, build lifestyle inconsistency profile against declared government salary</li>
+<li>Cross-reference: connect anomalous criminal outflows to officer financial profile via timing, amount consistency, and geographic correlation of cash-out endpoints</li>
+</ul>
+<h3>Step 3: Channel Selection for Exposure</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Channel</th><th>Mechanism</th><th>Backfire Risk</th><th>Best Use Case</th></tr></thead>
+<tbody>
+<tr><td>FNS referral (domestic)</td><td>Lifestyle inconsistency and undeclared income flagged to Federal Tax Service, no foreign fingerprint, purely domestic process</td><td>Low</td><td>Officers with documented Russian-held assets inconsistent with salary; generates domestic paper trail</td></tr>
+<tr><td>Rosfinmonitoring referral</td><td>Suspicious transaction flags on protection payment flows, feeds CBR 115-FZ freeze pipeline</td><td>Low</td><td>High-volume payment flows between criminal actor and officer-linked accounts</td></tr>
+<tr><td>Investigative journalism (OCCRP / Bellingcat / iStories / Meduza)</td><td>Financial and lifestyle documentation provided to investigative outlets, produces domestic scandal framing rather than foreign attribution</td><td>Medium (lower than official attribution)</td><td>Officers with Western asset exposure and documentable lifestyle inconsistency; creates domestic embarrassment without official foreign-government fingerprint</td></tr>
+<tr><td>Simultaneous OFAC/OFSI designation</td><td>Officer + criminal network designated simultaneously; Western asset freeze + correspondent banking pressure</td><td>Medium-High (acceptable if domestic framing pre-positioned)</td><td>Retired/former officers or officers already domestically exposed; batch with criminal network to maximize impact</td></tr>
+<tr><td>Third-country legal pre-positioning</td><td>Sealed indictments or arrest warrants filed in viable European jurisdictions; activated when travel window opens</td><td>Low (if kept sealed)</td><td>Officers with documented travel patterns to viable jurisdictions (Annex A)</td></tr>
+</tbody></table></div>
+<h3>9.4  Manufacturing Internal FSB Contradictions</h3>
+<p class="doc-p">The goal is not to get FSB to cooperate as an institution, it is to make specific officers liabilities that competing FSB units or FSB leadership's factional interests will act against. This requires surfacing the right information to the right internal FSB audience, which requires knowing which FSB factions are in competition with the officer's unit. Confidence: Medium (mechanism is sound; intelligence requirements are high)</p>
+<h3>What Makes an Officer a Liability to FSB Leadership or Competing Factions</h3>
+<ul class="doc-list">
+<li>Attribution risk: the officer's criminal protection relationship creates a documented link between a specific FSB unit and a ransomware operation that has hit high-profile targets ,  particularly U.S. critical infrastructure or healthcare, giving competing FSB units leverage against that officer's unit</li>
+<li>Domestic embarrassment: the officer's financial exposure becomes visible in Russian domestic media or through FNS/Rosfinmonitoring processes, creates pressure on leadership to demonstrate institutional integrity</li>
+<li>Operational incompetence signal: the protected actor gets disrupted repeatedly despite protection, makes the officer look ineffective and the protection relationship a waste of institutional resources</li>
+<li>Foreign entanglement risk: evidence that the officer's financial exposure involves Western assets creates counterintelligence concern for FSB leadership, is this officer a recruitment target for foreign intelligence services? This framing activates FSB's counterintelligence units as a potential instrument against the officer</li>
+</ul>
+<h3>9.5  Portfolio Sequencing for Officer Targets</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Tier</th><th>Officer Profile</th><th>Action Sequence</th><th>Timeline</th></tr></thead>
+<tbody>
+<tr><td>Tier 1, Immediate</td><td>Retired/former officers with Western asset exposure and active criminal network ties</td><td>Financial profile build → OFAC/OFSI designation (officer + criminal network simultaneously) → third-country arrest legal pre-positioning → investigative journalism pipeline</td><td>0-90 days</td></tr>
+<tr><td>Tier 2, Financial Exposure</td><td>Active duty krysha officers with documentable payment relationships</td><td>Anomalous outflow identification → FNS referral → Rosfinmonitoring flag → investigative journalism (if profile is strong) → OFAC designation after domestic exposure is established</td><td>90-180 days</td></tr>
+<tr><td>Tier 3, Contradiction Manufacturing</td><td>Active duty handlers whose protected actors are generating domestic harm or attribution risk</td><td>Domestic harm amplification → attribution risk surfacing to competing FSB unit awareness → operational incompetence signaling via repeated disruption of protected actor → monitor for protection relationship strain</td><td>180-365 days</td></tr>
+<tr><td>Tier 4, Long Lead</td><td>Active duty officers with unclear status or current high collection value</td><td>Monitor only, define trigger conditions before monitoring begins; do not act until protection relationship mapping is complete and successor officer is identified</td><td>Ongoing</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  COMPOUNDING FEEDBACK LOOP
+Criminal-side financial pressure → anomalous outflow identification → officer financial profile → FNS/investigative journalism exposure → domestic liability for officer → FSB factional pressure on officer's relationship → criminal actor loses protection → criminal actor becomes accessible to MVD enforcement → MVD enforcement generates more intelligence on financial flows → stronger anomalous outflow identification → repeat. Each cycle strengthens the next.</td></tr>
+</tbody></table></div>
+<h2 id="s11">SECTION 10  |  CRYPTO-TO-FIAT METHODOLOGY</h2>
+<h3>10.1  Why This Is the Keystone Analytic Task</h3>
+<p class="doc-p">Every financial pressure action in this playbook, wallet designations, VASP engagement, correspondent banking exposure, OTC node targeting, protection payment identification, requires knowing where funds become fiat and who touches them. Without a documented cash-out graph, financial pressure actions are targeted at symptoms rather than structural nodes. With it, single actions produce cascading disruptions across multiple actor flows.</p>
+<p class="doc-p">The cash-out graph also contains the protection payment data that drives the Section 9 officer liability track. Anomalous outflows, payments that do not fit criminal operational cost profiles, are only identifiable against a complete model of what criminal operational costs look like. Build the model first.</p>
+<h3>10.2  The Cash-Out Graph: Layer Structure</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Layer</th><th>What It Contains</th><th>Key Questions</th><th>Primary Sources</th></tr></thead>
+<tbody>
+<tr><td>Layer 1: Ransom Receipt</td><td>Initial ransom payment wallets; victim-to-actor payment flows; multi-sig escrow structures used in negotiation</td><td>What wallets receive ransom payments? Are they reused or single-use? What mixing or structuring occurs immediately post-receipt?</td><td>Chainalysis Reactor; TRM Labs; on-chain forensics</td></tr>
+<tr><td>Layer 2: Layering</td><td>Mixing services, chain-hopping (BTC→Monero→BTC), structuring into sub-threshold amounts, peel chains, consolidation wallets</td><td>How many hops before funds reach a cash-out node? What mixing services are used? Are layer 2 wallets shared across multiple actor flows?</td><td>Chainalysis; TRM; Elliptic, cross-validate outputs</td></tr>
+<tr><td>Layer 3: Pre-Cash-Out Aggregation</td><td>Consolidation wallets that aggregate layered funds before exchange deposit or OTC transfer; admin cut separation at this layer</td><td>Where does the admin cut separate from affiliate payments? What wallets aggregate funds from multiple ransom flows? These are high-value designation targets.</td><td>Blockchain forensics, look for consistent percentage splits</td></tr>
+<tr><td>Layer 4: Cash-Out Nodes</td><td>OTC brokers, exchange deposits (VASP), peer-to-peer platforms, payment aggregators, crypto ATMs</td><td>Which specific OTC nodes and exchange accounts receive funds? What are the withdrawal patterns? What geographic concentration exists?</td><td>Chainalysis + exchange KYC pressure; Intel 471 for OTC broker identification</td></tr>
+<tr><td>Layer 5: Fiat Entry</td><td>Bank accounts, payment systems, real estate purchases, front company revenue, luxury asset acquisition</td><td>Which banks receive fiat proceeds? What front companies hold proceeds? Where does money enter the legitimate financial system?</td><td>Rosfinmonitoring referrals; FNS corporate registry; property registries; correspondent banking data</td></tr>
+</tbody></table></div>
+<h3>10.3  Anomalous Outflow Identification</h3>
+<p class="doc-p">Once the standard cash-out graph is built, anomalous outflows become visible as flows that do not fit the expected pattern at each layer. These are protection payment candidates.</p>
+<h3>Criminal Operational Cost Baseline</h3>
+<p class="doc-p">Establish what normal operational costs look like before flagging anomalies:</p>
+<ul class="doc-list">
+<li>Hosting and infrastructure: BPH provider payments, domain registration, server rental, typically small, recurring, technically-attributable</li>
+<li>Affiliate payments: 70-80% of ransom value flowing to affiliate wallets, consistent split ratio, identifiable at Layer 3</li>
+<li>Developer and tooling costs: malware developer payments, crypter services, IAB access purchases, typically one-time or irregular, flow to identifiable underground market nodes</li>
+<li>Mule recruitment and cash-out fees: OTC broker fees (typically 1-5%), mule handler payments, identifiable by counterparty type</li>
+<li>Operational security costs: VPN services, infrastructure rotation, OPSEC tooling, small and recurring</li>
+</ul>
+<h3>Anomalous Outflow Indicators</h3>
+<ul class="doc-list">
+<li>Consistent percentage flows to wallets with no identifiable criminal operational counterparty</li>
+<li>Recurring payments of consistent amounts on regular intervals, salary or retainer patterns not consistent with contractor relationships</li>
+<li>Flows that convert to fiat through separate channels from main cash-out infrastructure, protection payments are often kept operationally separate from the main financial flow</li>
+<li>Payments that predate or follow enforcement non-action on a specific actor, temporal correlation with protection delivery is a strong indicator</li>
+<li>Flows to wallets that connect to Russian domestic banking through politically-exposed-person adjacent accounts</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>▶  ANALYTICAL DISCIPLINE NOTE
+Anomalous outflow identification requires a complete operational cost baseline before anomalies can be flagged. Designating a wallet as a protection payment candidate without establishing what normal looks like produces false positives that undermine subsequent legal action. Build the baseline first. Flag anomalies against it. Cross-validate across multiple ransom payment flows for the same actor before drawing conclusions.</td></tr>
+</tbody></table></div>
+<h3>10.4  OTC Broker Network Mapping</h3>
+<p class="doc-p">OTC brokers are the most critical cash-out bottleneck in the Russian ransomware ecosystem. Unlike exchanges, they are relationship-based, less regulated, and serve as the primary bridge between crypto and Russian domestic fiat for high-volume criminal actors.</p>
+<h3>OTC Identification Methodology</h3>
+<ul class="doc-list">
+<li>Blockchain cluster analysis: OTC brokers accumulate funds from multiple unrelated criminal sources, their wallets show a distinctive pattern of diverse inflows and consistent outflow to banking channels</li>
+<li>Underground forum advertising: major OTC brokers advertise on Exploit, XSS, and Telegram channels, Intel 471 and Flashpoint provide primary visibility</li>
+<li>Exchange KYC linkage: OTC brokers often maintain exchange accounts for liquidity, KYC pressure on exchanges surfaces OTC broker identities</li>
+<li>Rosfinmonitoring cross-reference: high-volume fiat conversion through Russian banking channels without obvious legitimate business origin is flagged by Rosfinmonitoring, cross-reference with blockchain forensics to identify the crypto side of the same broker</li>
+</ul>
+<h3>OTC Network Graph Components</h3>
+<ul class="doc-list">
+<li>Tier 1 brokers: high-volume, serve multiple ransomware groups simultaneously, these are ecosystem-critical nodes whose designation produces cascading effects across multiple actor financial flows</li>
+<li>Tier 2 brokers: group-specific or actor-specific; less systemic impact but more directly traceable to specific actors</li>
+<li>Mule network integration: OTC brokers frequently operate mule recruitment networks as a complementary service, map the connection between OTC operations and mule handler networks</li>
+<li>Geographic concentration: Russian OTC operations tend to concentrate in Moscow, Saint Petersburg, and Yekaterinburg, geographic mapping supports physical surveillance and arrest operations</li>
+</ul>
+<h2 id="s12">SECTION 11  |  MEASUREMENT FRAMEWORK</h2>
+<p class="doc-p">Disruption operations without measurement produce narrative, not accountability. This section defines the minimum viable measurement posture for tracking ecosystem health and operational effectiveness. None of these measurement capabilities currently exist; they are proposed for build-out.</p>
+<h3>11.1  Establishing Baselines</h3>
+<p class="doc-p">KPIs defined without documented baselines cannot be used to attribute change to specific actions versus ecosystem-level trends. Establish baselines before any pressure actions are taken.</p>
+<ul class="doc-list">
+<li>For each KPI: document the 6-month rolling average at the time operations commence, this is your pre-intervention baseline</li>
+<li>Establish a control period of 60-90 days before first pressure action during which KPIs are tracked but no actions taken, this separates pre-existing trend from intervention effect</li>
+<li>Document all significant external events (major law enforcement actions by other agencies, geopolitical developments, cryptocurrency market movements) that could independently affect KPIs, these are confounding variables that must be noted when interpreting results</li>
+<li>For the officer liability track: establish a baseline protection relationship map (Section 9 mapping) before any exposure operations, changes in protection status are only measurable against a documented prior state</li>
+</ul>
+<h3>11.2  Ecosystem Health KPIs</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>KPI</th><th>What It Measures</th><th>Source</th><th>Cadence</th></tr></thead>
+<tbody>
+<tr><td>Active ransomware groups (count)</td><td>Total groups posting victims; proxy for ecosystem breadth</td><td>Ransomware.live</td><td>Monthly</td></tr>
+<tr><td>Victims posted per week (rolling average)</td><td>Operational tempo; leading indicator of ecosystem health</td><td>Ransomware.live</td><td>Weekly</td></tr>
+<tr><td>Ransom payment volume (USD)</td><td>Financial incentive sustaining ecosystem; lagging indicator</td><td>Chainalysis</td><td>Quarterly</td></tr>
+<tr><td>Time to reconstitution after takedown</td><td>Resilience measure; declining trend = increasing friction</td><td>Censys / internal</td><td>Per event</td></tr>
+<tr><td>BPH provider count (active)</td><td>Infrastructure supply; declining trend = upstream pressure working</td><td>Shadowserver / Censys</td><td>Monthly</td></tr>
+<tr><td>Sanctioned wallet activity (post-designation)</td><td>Sanctions effectiveness; continued activity = compliance gap</td><td>Chainalysis / TRM</td><td>Monthly</td></tr>
+<tr><td>Underground market activity index</td><td>Forum post volume, pricing stability, trust-node activity; proxy for market health</td><td>Intel 471 / Flashpoint</td><td>Quarterly</td></tr>
+<tr><td>New IAB listings (count)</td><td>Supply of network access available to ransomware affiliates</td><td>Intel 471 / Flashpoint</td><td>Monthly</td></tr>
+<tr><td>Affiliate migration speed post-disruption</td><td>Ecosystem resilience; fast migration = low friction; slow = increasing cost</td><td>Intel 471 / forum monitoring</td><td>Per event</td></tr>
+<tr><td>Victim payment refusal rate (where measurable)</td><td>Victim-side resilience; increasing trend compounds supply-side pressure</td><td>Coveware / insurer reporting</td><td>Quarterly</td></tr>
+<tr><td>Protection relationship reconstitution time</td><td>How quickly disrupted actors acquire new FSB protection; declining speed = officer network under pressure</td><td>HUMINT / forum monitoring / enforcement gap analysis</td><td>Per event</td></tr>
+</tbody></table></div>
+<h3>11.3  Protection Layer Leading Indicators</h3>
+<p class="doc-p">Reconstitution time is a lagging indicator, it measures outcomes after the fact. The following leading indicators are proposed to track Section 9 progress before protection relationship changes are observable in reconstitution data:</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Leading Indicator</th><th>What It Signals</th><th>Source</th><th>Cadence</th></tr></thead>
+<tbody>
+<tr><td>Officer lifestyle exposure pipeline activity</td><td>FNS referrals filed; investigative journalism materials prepared and delivered, signals that exposure operations are in motion before domestic effects are visible</td><td>Internal tracking</td><td>Monthly</td></tr>
+<tr><td>Anomalous outflow identification progress</td><td>Number of protection payment candidates documented with cross-validation, leading indicator for both officer profiles and designation packages</td><td>Internal tracking</td><td>Monthly</td></tr>
+<tr><td>Criminal actor forum signals re: protection confidence</td><td>Underground forum discussions showing actor uncertainty about protection status, complaints about krysha quality, or explicit concern about handler reliability, these precede protection relationship breakdown</td><td>Intel 471 / Flashpoint / forum monitoring</td><td>Monthly</td></tr>
+<tr><td>Reconstitution attempts without normal protection speed</td><td>Actor attempts to reconstitute more slowly than historical baseline, or without the infrastructure access that protected actors typically have, signals protection may be weakening before explicit breakdown</td><td>Censys / internal monitoring</td><td>Per event</td></tr>
+<tr><td>Protection payment flow routing changes</td><td>Anomalous outflows rerouting, declining in volume, or converting through different channels than established pattern, may signal actor concern about protection relationship integrity</td><td>Chainalysis / TRM</td><td>Monthly</td></tr>
+</tbody></table></div>
+<h3>11.4  Pressure-Effect Ledger</h3>
+<p class="doc-p">Every significant pressure action should be logged in a structured ledger. This enables retrospective analysis of what worked, what failed, and what adaptation patterns emerged.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Field</th><th>Description</th><th>Required?</th></tr></thead>
+<tbody>
+<tr><td>Action date</td><td>Date action was taken</td><td>Yes</td></tr>
+<tr><td>Action type</td><td>Sanction / takedown / referral / designation / exposure / officer liability action / other</td><td>Yes</td></tr>
+<tr><td>Target</td><td>Actor, wallet, domain, provider, node, or officer targeted</td><td>Yes</td></tr>
+<tr><td>Expected effect</td><td>What outcome was predicted and over what timeframe</td><td>Yes</td></tr>
+<tr><td>Observed effect</td><td>What actually happened; include null result if no observable change</td><td>Yes</td></tr>
+<tr><td>Time to reconstitution</td><td>Days until actor resumed operations or infrastructure re-appeared</td><td>If applicable</td></tr>
+<tr><td>Protection status change</td><td>Did protection relationship change following action? New officer? Weakened protection? New FSB faction involved?</td><td>If applicable</td></tr>
+<tr><td>Adaptation pattern</td><td>How actor adapted; use this to update substitutability models</td><td>If applicable</td></tr>
+</tbody></table></div>
+<h3>11.5  Recommended Investment Priorities</h3>
+<p class="doc-p">These recommendations are offered for consideration by operational and policy stakeholders. None are currently resourced; all require appropriate authority and partner coordination before implementation.</p>
+<ul class="doc-list">
+<li>Intermediary cash-out mapping: converting laundering concepts into repeatable, case-linked cash-out graphs (Section 10). This single investment raises financial plumbing coverage more than any other action. Proposed minimum deliverable: top 20 OTC/broker nodes + mule recruitment patterns + 3-5 end-to-end case exemplars + anomalous outflow registry.</li>
+<li>Protection layer financial exposure capability: applying the Section 10 methodology specifically to identify anomalous outflows as protection payment candidates, then building officer financial profiles using open source registry analysis. Proposed minimum deliverable: anomalous outflow registry for top 20 protected actors + officer financial profiles for identified protection relationships.</li>
+<li>Affiliate mapping and succession pre-positioning: building full affiliate rosters for priority groups with substitutability assessments and pre-positioned pressure on identified successors. Proposed minimum deliverable: affiliate roster + operational signature database + successor map with pre-positioned pressure packages for top 5 groups.</li>
+<li>Underground governance and trust node mapping: identifying escrow operators, forum administrators, and arbitrators, non-technical but ecosystem-critical, low-backfire-risk targets. Proposed minimum deliverable: top 10 trust nodes + dependency analysis + escrow/arbitration record exploitation plan.</li>
+<li>Measurement layer build-out: implementing baseline documentation, KPI set, and pressure-effect ledger. Without this, effectiveness claims rest on narrative alone. Proposed minimum deliverable: KPI dashboard (monthly cadence) + baseline documentation + logging template tied to every major action. See companion document: Ransomware Ecosystem Disruption Measurement Framework (KPI Architecture) for the complete measurement architecture, confidence labeling system, and per-operation log template.</li>
+<li>Identity and continuity package: building cross-platform handle mapping, PGP reuse tracking, panel fingerprints, and brand-asset reuse patterns. Proposed minimum deliverable: cross-platform handle map + PGP reuse database + brand-asset reuse patterns for top 10 groups.</li>
+</ul>
+<h2 id="s13">SECTION 12  |  TOOL &amp; PARTNER REFERENCE</h2>
+<p class="doc-p">Vendors provide validation, not conclusions. Outputs should be cross-checked across multiple sources before driving operational decisions.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Tool / Partner</th><th>Category</th><th>When to Use</th><th>Key Questions to Ask</th></tr></thead>
+<tbody>
+<tr><td>Chainalysis Reactor / Data Solutions</td><td>Blockchain attribution</td><td>Wallet clustering, sanctions exposure screening, laundering typology mapping, tracing from ransom payment to cash-out</td><td>What assumptions underpin the clustering? Where does attribution confidence drop? What exchanges or OTC nodes touch the end of the chain?</td></tr>
+<tr><td>TRM Labs / Elliptic</td><td>Blockchain attribution</td><td>Cross-validation of Chainalysis outputs; sanctions screening; VASP risk profiling</td><td>Where do outputs diverge from Chainalysis, and why? What is the confidence basis for VASP compliance risk scoring?</td></tr>
+<tr><td>Mandiant / CrowdStrike Intelligence</td><td>Malware &amp; campaign intel</td><td>Malware lineage and evolution, affiliate migration, tradecraft shifts, actor attribution</td><td>What would falsify this attribution? What evidence supports continuity vs. rebrand? What replaces this toolchain within 30 days?</td></tr>
+<tr><td>ESET Research / Kaspersky (open-source only)</td><td>Malware &amp; campaign intel</td><td>Technical malware analysis, campaign tracking; Kaspersky limited to public reporting with verification</td><td>What is the publication basis? For Kaspersky: has this been corroborated by a second source?</td></tr>
+<tr><td>Intel 471 / Flashpoint</td><td>Underground monitoring</td><td>Underground market dynamics, pricing, trust relationships, actor reputation, recruitment channels, forum activity</td><td>What is the source methodology? How current is the access? Where does underground visibility drop off?</td></tr>
+<tr><td>Ransomware.live / RansomLook</td><td>Victim &amp; campaign tracking</td><td>Real-time victim counts, leak site monitoring, group activity tracking, ecosystem health KPIs</td><td>What is the data lag? Are posting dates confirmed or estimated? What groups are absent from monitoring?</td></tr>
+<tr><td>Shadowserver / Censys</td><td>Infrastructure attribution</td><td>Infrastructure persistence and reconstitution patterns, ASN and hosting clustering, BPH provider mapping</td><td>What upstream dependencies are shared across multiple criminal nodes? How quickly does reconstitution appear in scan data?</td></tr>
+<tr><td>Recorded Future / Microsoft MDTI</td><td>Infrastructure &amp; OSINT</td><td>Domain and IP intelligence, cross-platform OSINT fusion, threat actor profiling, infrastructure persistence</td><td>What is the evidence basis for actor-to-infrastructure attribution? What is the confidence tier?</td></tr>
+<tr><td>OCCRP / Bellingcat / iStories / Meduza</td><td>Investigative journalism pipeline</td><td>Officer financial exposure and lifestyle documentation; surfacing protection relationship evidence through non-attributable channels</td><td>Is the documentation package sufficient to withstand investigative scrutiny? Does it contain USG fingerprints that would trigger backfire? Is domestic framing pre-positioned?</td></tr>
+</tbody></table></div>
+<h2 id="s14">ANNEX A  |  EUROPEAN JURISDICTIONAL FRAMEWORK</h2>
+<p class="doc-p">This annex provides country-by-country assessment of European jurisdictions for third-country arrest viability, legal pre-positioning requirements, and treaty landscape for Russia/CIS-linked cybercriminal actors and FSB officers. Five Eyes jurisdictions (US, UK, Canada, Australia, New Zealand) are treated as assumed known baseline and not covered here.</p>
+<p class="doc-p">Assessment criteria for each jurisdiction: extradition treaty status with the U.S.; treaty status with Russia (a bilateral extradition treaty with Russia makes the jurisdiction less viable as Russia can request competing extradition); rule of law and judicial independence; historical cooperation on cybercrime cases; travel pattern intelligence; and practical arrest infrastructure (liaison relationships, legal pre-positioning lead time).</p>
+<h3>A.1  Tier 1, High Viability (Priority Pre-Positioning)</h3>
+<h3>Germany</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Extradition treaty (U.S.)</th><th>Yes, bilateral treaty; active cooperation history</th></tr></thead>
+<tbody>
+<tr><td>Treaty with Russia</td><td>None, Russia cannot compete for extradition</td></tr>
+<tr><td>Cooperation track record</td><td>High, Operation Endgame (2024) demonstrated deep BKA/FBI/Europol cooperation; German prosecutors have filed independent cybercrime indictments</td></tr>
+<tr><td>Travel pattern relevance</td><td>Significant Russian business and diaspora community; transit hub for Eastern European actors traveling west</td></tr>
+<tr><td>Pre-positioning lead time</td><td>60-90 days for coordination with BKA and German federal prosecutors; MLAT requests processed efficiently</td></tr>
+<tr><td>Key limits</td><td>German courts require substantial evidentiary basis before issuing arrest warrants on foreign requests; political sensitivity around Russia-related cases post-2022 has increased rather than decreased cooperation willingness</td></tr>
+<tr><td>Verdict</td><td>VIABLE, TIER 1. Priority pre-positioning jurisdiction. BKA relationship and Operation Endgame precedent make this the strongest European arrest jurisdiction for cybercrime.</td></tr>
+</tbody></table></div>
+<h3>Netherlands</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Extradition treaty (U.S.)</th><th>Yes, active cooperation; NHTCU has deep FBI/DOJ relationship</th></tr></thead>
+<tbody>
+<tr><td>Treaty with Russia</td><td>None</td></tr>
+<tr><td>Cooperation track record</td><td>Exceptional, Operation Cronos (LockBit), Hive takedown, DoubleVPN, RaidForums all involved Dutch jurisdiction; NHTCU is among the most capable and cooperative cybercrime units in Europe</td></tr>
+<tr><td>Travel pattern relevance</td><td>Amsterdam Schiphol is a major transit hub; significant Russian business presence; financial sector attracts criminal financial infrastructure</td></tr>
+<tr><td>Pre-positioning lead time</td><td>45-60 days; established MLAT channels and existing working relationships accelerate pre-positioning</td></tr>
+<tr><td>Key limits</td><td>Dutch legal standards for provisional arrest require imminent flight risk documentation; judges are independent and will scrutinize evidentiary basis</td></tr>
+<tr><td>Verdict</td><td>VIABLE, TIER 1. Possibly the single strongest European jurisdiction for cybercrime arrests. Default first-choice pre-positioning jurisdiction.</td></tr>
+</tbody></table></div>
+<h3>Spain</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Extradition treaty (U.S.)</th><th>Yes, bilateral treaty; multiple successful extraditions</th></tr></thead>
+<tbody>
+<tr><td>Treaty with Russia</td><td>None</td></tr>
+<tr><td>Cooperation track record</td><td>Good, multiple Russia/CIS cybercrime arrests; Spanish law enforcement has demonstrated willingness to act on U.S. requests</td></tr>
+<tr><td>Travel pattern relevance</td><td>High, favored destination for Russian/CIS criminal actors and oligarchs; Costa del Sol and Barcelona have significant Russian community presence; known residence jurisdiction for multiple cybercriminal actors</td></tr>
+<tr><td>Pre-positioning lead time</td><td>60-90 days; Guardia Civil and Policia Nacional have established FBI liaison relationships</td></tr>
+<tr><td>Key limits</td><td>Spanish judicial process can be slow; provisional arrest requests require prompt follow-up with formal extradition documentation or the subject must be released</td></tr>
+<tr><td>Verdict</td><td>VIABLE, TIER 1. High travel pattern relevance elevates Spain as a high-priority pre-positioning jurisdiction, particularly for actors known to reside or vacation there.</td></tr>
+</tbody></table></div>
+<h3>A.2  Tier 2, Conditional Viability (Compressed Assessment)</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Jurisdiction</th><th>Key Strengths</th><th>Key Limits</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>France</td><td>Bilateral U.S. extradition treaty; Paris and Riviera have Russian high-net-worth presence; ANSSI and DGSI have participated in joint operations</td><td>Judicial process is slow (90-120 day pre-positioning lead time); French courts are genuinely independent, provisional arrest without strong evidentiary package risks release</td><td>TIER 2, CONDITIONAL. Secondary option; do not rely as primary jurisdiction unless actor has documented presence.</td></tr>
+<tr><td>Poland</td><td>Bilateral U.S. extradition treaty; no Russia extradition treaty; strong post-2022 political motivation to counter Russian-linked activity; ABW expanding cybercrime cooperation</td><td>Less established MLAT infrastructure; judicial standards less predictable than Western European counterparts; more relevant for Eastern European actors than Russian actors specifically</td><td>TIER 2, CONDITIONAL. Increasing viability post-2022. Best for Eastern European-based actors transiting Poland.</td></tr>
+<tr><td>Czech Republic</td><td>Bilateral U.S. extradition treaty; no Russia treaty; Nikulin arrest (2017) proved viability; Czech courts withstood Russian diplomatic pressure</td><td>Nikulin-style cases attract significant Russian diplomatic pressure; Czech authorities held firm but the political cost was real</td><td>TIER 2, CONDITIONAL. Proven jurisdiction with established precedent. Russia will apply maximum diplomatic pressure on high-profile cases.</td></tr>
+<tr><td>Italy</td><td>Bilateral U.S. extradition treaty; no Russia treaty; high Russian high-net-worth residential presence (northern Italy, Sardinia)</td><td>Slow judicial process (90-120 day lead time); inconsistent cooperation track record; provisional arrest procedures less streamlined than Northern Europe</td><td>TIER 2, CONDITIONAL. High travel relevance but slower and less predictable. Pre-position for actors with documented Italian presence; not primary for time-sensitive operations.</td></tr>
+<tr><td>Greece</td><td>Bilateral U.S. extradition treaty; no Russia treaty; Vinnik arrest (2017) demonstrated viability; high Russian tourist and transit traffic; significant Russian property ownership</td><td>Vinnik case showed Greece will arrest but then spent years processing competing extradition requests from Russia and France, extradited to France, not U.S. (2022). Viable for arrest; unreliable for extradition completion.</td><td>TIER 2, ARREST ONLY. Use for disruption and detention while primary extradition proceedings run through a more reliable jurisdiction. Do not pre-position as sole extradition pathway.</td></tr>
+</tbody></table></div>
+<h3>A.3  Tier 3, Limited Viability</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Jurisdiction</th><th>Actor Presence</th><th>Key Problem</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td>Cyprus</td><td>Very high, major Russian business and residential jurisdiction; significant Russian asset holding post-2022 sanctions evasion</td><td>Deep Russian economic integration creates political obstacles to cooperation. Low active cooperation track record despite bilateral U.S. extradition treaty.</td><td>FINANCIAL DOCUMENTATION ONLY. Most valuable as a financial registry and asset mapping jurisdiction. Do not pre-position for arrest.</td></tr>
+<tr><td>Hungary</td><td>Moderate, Budapest transit point; some Russian actor presence</td><td>Orban government's Russia policy makes this jurisdiction actively unreliable for Russia-linked cases regardless of EU membership and treaty status. Has blocked EU sanctions measures.</td><td>AVOID FOR RUSSIA-LINKED CASES. Do not pre-position here.</td></tr>
+<tr><td>Turkey</td><td>Very high, Istanbul and Antalya are among the most significant Russian actor transit and residence jurisdictions post-2022 sanctions; Turkish financial system actively used for sanctions evasion</td><td>Independent Russia policy and economic interests create significant unpredictability. Some cases have received cooperation; others have not. Treat every Turkey-based operation as a potential compromise risk.</td><td>LIMITED, TIER 3. Useful for financial documentation and asset mapping. Do not rely on Turkish cooperation for high-priority arrest operations without current bilateral relationship assessment.</td></tr>
+</tbody></table></div>
+<h3>A.4  Avoid, Explicit Entries</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Jurisdiction</th><th>Why Avoid</th></tr></thead>
+<tbody>
+<tr><td>Serbia</td><td>Russia alignment and limited extradition cooperation. Serbian authorities have demonstrated willingness to alert Russian-linked subjects to law enforcement interest, making Serbia an active operational security risk. Do not pre-position, do not share case information with Serbian authorities, do not rely on Serbian cooperation for any Russia-linked operation.</td></tr>
+<tr><td>Belarus</td><td>Union State, operationally equivalent to Russia. Lukashenko government will not cooperate on any Russia-linked cybercrime case. Actors based in Belarus have the same practical protection as actors based in Russia.</td></tr>
+<tr><td>Armenia / Georgia</td><td>Georgia and Armenia have both produced confirmed arrests of Russian nationals and should not be treated as equivalent to Russia-aligned jurisdictions. Neither has a U.S. extradition treaty, and formal extradition frameworks are underdeveloped in both. However, operational cooperation has occurred on a case-by-case basis and should be pursued through bilateral LE channels rather than formal treaty mechanisms. Georgia is the more viable of the two post-2022: Russia-Georgia tensions have increased Georgian willingness to act, and Georgian authorities have demonstrated operational cooperation on specific cases. Armenia has also produced confirmed arrests despite its historically closer Russian alignment. Both jurisdictions carry risks of Russian pressure on local authorities and require tight operational security and limited advance disclosure. Pre-position through bilateral relationships, not MLAT. Do not treat as primary extradition jurisdictions; treat as viable arrest and temporary detention jurisdictions with case-by-case assessment required.</td></tr>
+<tr><td>Azerbaijan</td><td>No U.S. extradition treaty. Significant Russian economic and political influence. No confirmed operational cooperation on Russia/CIS cybercrime cases. Cooperation posture is unpredictable and insufficient data exists to assess viability. Do not pre-position. Monitor for changes in bilateral posture; reassess if cooperation track record develops.</td></tr>
+</tbody></table></div>
+<h3>A.5  Jurisdictional Quick Reference</h3>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Jurisdiction</th><th>Extradition (US)</th><th>Russia Treaty</th><th>Track Record</th><th>Travel Relevance</th><th>Tier</th></tr></thead>
+<tbody>
+<tr><td>Germany</td><td>Yes</td><td>None</td><td>High</td><td>High</td><td>Tier 1, Viable</td></tr>
+<tr><td>Netherlands</td><td>Yes</td><td>None</td><td>Exceptional</td><td>High</td><td>Tier 1, Viable</td></tr>
+<tr><td>Spain</td><td>Yes</td><td>None</td><td>Good</td><td>Very High</td><td>Tier 1, Viable</td></tr>
+<tr><td>France</td><td>Yes</td><td>None</td><td>Moderate</td><td>Mod-High</td><td>Tier 2, Conditional</td></tr>
+<tr><td>Poland</td><td>Yes</td><td>None</td><td>Increasing</td><td>Moderate</td><td>Tier 2, Conditional</td></tr>
+<tr><td>Czech Republic</td><td>Yes</td><td>None</td><td>Proven</td><td>Moderate</td><td>Tier 2, Conditional</td></tr>
+<tr><td>Italy</td><td>Yes</td><td>None</td><td>Moderate</td><td>High</td><td>Tier 2, Conditional</td></tr>
+<tr><td>Greece</td><td>Yes</td><td>None</td><td>Inconsistent</td><td>High</td><td>Tier 2, Arrest only</td></tr>
+<tr><td>Cyprus</td><td>Yes</td><td>Close</td><td>Low</td><td>Very High</td><td>Tier 3, Finance only</td></tr>
+<tr><td>Hungary</td><td>Yes (EU)</td><td>Close</td><td>Unreliable</td><td>Moderate</td><td>AVOID</td></tr>
+<tr><td>Turkey</td><td>Yes</td><td>Maintained</td><td>Unpredictable</td><td>Very High</td><td>Tier 3, Limited</td></tr>
+<tr><td>Serbia</td><td>Yes</td><td>Close</td><td>Unreliable</td><td>Moderate</td><td>AVOID, OPSEC risk</td></tr>
+<tr><td>Belarus</td><td>None</td><td>Union State</td><td>None</td><td>N/A</td><td>AVOID, Treat as Russia</td></tr>
+<tr><td>Armenia / Georgia</td><td>Partial</td><td>Variable</td><td>Insufficient</td><td>Low-Mod</td><td>Tier 2, Arrest / Bilateral Only</td></tr>
+<tr><td>Azerbaijan</td><td>None</td><td>Close</td><td>None confirmed</td><td>Low</td><td>AVOID, Insufficient Data</td></tr>
+</tbody></table></div>
+<h3>A.6  Legal Pre-Positioning Checklist</h3>
+<p class="doc-p">For each priority jurisdiction where an actor has documented travel patterns, complete the following before any arrest window opens:</p>
+<ul class="doc-list">
+<li>Sealed indictment or arrest warrant filed in U.S. jurisdiction, this is the prerequisite for all pre-positioning</li>
+<li>MLAT request submitted to target jurisdiction, initiate 60-120 days before expected travel window</li>
+<li>Liaison relationship activated: FBI Legal Attaché (Legat) or DEA country office informed and briefed, do not rely on cold MLAT submissions alone</li>
+<li>Provisional arrest framework confirmed with host country judicial authority, know exactly what documentation the host country judge will require</li>
+<li>Travel pattern intelligence current, verify that the subject is still traveling to the target jurisdiction; patterns change</li>
+<li>Competing extradition risk assessed, is Russia likely to file a competing extradition request? If yes, prepare legal response framework in advance</li>
+<li>Operational security: limit knowledge of pre-positioning to minimum necessary personnel in both U.S. and host country, leaks have burned arrest windows in multiple prior cases</li>
+</ul>
+<h3>DOCUMENT MAINTENANCE</h3>
+<p class="doc-p">This playbook should be reviewed and updated quarterly. Key triggers for unscheduled updates: major takedown or law enforcement action, significant actor rebrand or ecosystem restructuring, new agency alignment evidence from Russian domestic enforcement, material change in VASP or infrastructure provider compliance posture, new jurisdictional cooperation developments in Annex A jurisdictions, or identification of new FSB officer protection relationships requiring integration into Section 9 targeting.</p>
+<p class="doc-p">Version tracking is maintained by the document owner and is not reflected in the document text. Recipients should confirm they hold the current version before acting on this analysis.</p>
+  <div class="doc-foot">
+    Ecosystem Dependency Project. This page is the full text of a corpus framework
+    document, converted from the original for reading on the web. Content is unchanged.
+    Figures and assessments carry the confidence language of the source document.
+  </div>
+</main>
+</body>
+</html>

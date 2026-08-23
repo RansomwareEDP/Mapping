@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework Overview and Reader's Guide | EDP Document Library</title>
+<meta name="description" content="RANSOMWARE ECOSYSTEM">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070b16;--panel:#0a1220;--line:#162236;--line2:#1e3350;
+ --ink:#c0cfe0;--ink2:#8aa4c0;--dim:#4e6e8e;--faint:#2e4a68;--accent:#5a9acc;--accent2:#7ab0d8}
+body{background:var(--bg);color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+ font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.sidebar{width:270px;flex-shrink:0;background:#060d1a;border-right:1px solid var(--line);
+ padding:22px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.sidebar-logo a{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:700}
+.sidebar-title{font-size:15px;font-weight:700;color:#d6e5f4;margin-top:10px;line-height:1.35}
+.sidebar-nav{padding:14px 0}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:var(--faint);
+ padding:0 20px;margin-bottom:7px}
+.nav-link{display:block;padding:6px 20px;font-size:12.5px;color:var(--ink2);border-left:2px solid transparent}
+.nav-link:hover{color:var(--accent2);border-left-color:var(--line2);background:rgba(90,154,204,.05);text-decoration:none}
+.nav-num{color:var(--faint);font-size:10px;margin-right:7px}
+.sidebar-footer{padding:14px 20px 0;border-top:1px solid var(--line);margin-top:10px}
+.sidebar-meta{font-size:10px;color:var(--faint);line-height:1.8}
+.content{flex:1;min-width:0;padding:34px 48px 80px;max-width:1080px}
+.profile-header{border-bottom:1px solid var(--line2);padding-bottom:18px;margin-bottom:26px}
+.profile-breadcrumb{font-size:11px;color:var(--dim);margin-bottom:12px}
+.page-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.profile-name{font-size:27px;font-weight:700;color:#d6e5f4;line-height:1.2;letter-spacing:-.3px}
+.profile-sub{font-size:13.5px;color:var(--ink2);margin-top:9px;max-width:70ch}
+.badge-row{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;
+ border:1px solid var(--line2);border-radius:3px;color:var(--dim)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent);
+ margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:14.5px;color:#b8cde0;margin:24px 0 9px;font-weight:600}
+.doc-p{margin:0 0 13px;max-width:78ch}
+.doc-banner{margin:0 0 22px;padding:13px 16px;border-radius:5px;font-size:13.5px;line-height:1.6}
+.doc-banner.super{border:1px solid #7a4a4a;background:rgba(255,123,114,.09);color:#f0c0bc}
+.doc-banner.dated{border:1px solid #7a6a3a;background:rgba(210,153,34,.09);color:#e8dcb8}
+.doc-banner b{color:#fff}
+.doc-banner a{color:#ffb4ad;text-decoration:underline}
+.doc-banner.dated a{color:#f0d68a}
+.doc-callout{margin:0 0 15px;max-width:78ch;padding:11px 14px;border-left:3px solid #d29922;
+ background:rgba(210,153,34,.07);color:#e0d0a8;font-size:14px}
+.doc-list{margin:0 0 15px 20px;max-width:78ch}
+.doc-list li{margin-bottom:7px}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.doc-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.doc-table th{text-align:left;background:#0c1524;color:var(--accent);font-size:10px;
+ text-transform:uppercase;letter-spacing:1px;padding:9px 11px;border:1px solid var(--line2)}
+.doc-table td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.doc-foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--faint);line-height:1.8}
+@media(max-width:900px){
+ body{display:block} .sidebar{width:auto;height:auto;position:static;border-right:none;
+  border-bottom:1px solid var(--line)} .content{padding:24px 20px 60px}
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><a href="/">THE OBSERVATORY</a></div>
+    <div class="sidebar-title">Framework Overview and Reader's Guide</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">On This Page</div>
+    <a class="nav-link" href="#s1"><span class="nav-num">01</span> WHAT THIS FRAMEWORK IS</a>
+    <a class="nav-link" href="#s2"><span class="nav-num">02</span> THE FRAMEWORK SUITE</a>
+    <a class="nav-link" href="#s3"><span class="nav-num">03</span> HOW THE DOCUMENTS CONNECT</a>
+    <a class="nav-link" href="#s4"><span class="nav-num">04</span> WHERE TO START BY ROLE</a>
+    <a class="nav-link" href="#s5"><span class="nav-num">05</span> KNOWN GAPS AND SCOPE BOUNDARIES</a>
+    <a class="nav-link" href="#s6"><span class="nav-num">06</span> DOCUMENT REGISTRY</a>
+    <a class="nav-link" href="#s7"><span class="nav-num">07</span> GOVERNANCE SUMMARY</a>
+    <div class="nav-section-label" style="margin-top:12px">Related</div>
+    <a class="nav-link" href="/library/">Document Library</a>
+    <a class="nav-link" href="/map">Ecosystem Map</a>
+    <a class="nav-link" href="/">Research Hub</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-meta">Ecosystem Dependency Project<br>Converted to HTML 23 Aug 2026<br>Source: corpus document</div>
+  </div>
+</aside>
+<main class="content">
+  <header class="profile-header" id="top">
+    <div class="profile-breadcrumb"><a href="/">The Observatory</a> / <a href="/library/">Document Library</a> / Framework Overview and Reader's Guide</div>
+    <div class="page-label">EDP Corpus &middot; Document 00</div>
+    <h1 class="profile-name">Framework Overview and Reader's Guide</h1>
+    <p class="profile-sub">RANSOMWARE ECOSYSTEM</p><p class="profile-sub">DISRUPTION FRAMEWORK</p>
+    <div class="badge-row"><span class="badge">Corpus document</span><span class="badge">Doc 00</span></div>
+  </header>
+
+<h3>Framework Overview and Reader's Guide</h3>
+<p class="doc-p">Version 0.3  |  July 2026  |  Working Document</p>
+<p class="doc-p">Developed by Reno</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>READ THIS FIRST
+This document is the entry point to the Ransomware Ecosystem Disruption Framework suite. It explains what the framework is, why it was built, how the documents relate to each other, and where to start based on your role. If you have received any document in this suite, read this one first.</td></tr>
+</tbody></table></div>
+<h2 id="s1">SECTION 1 | WHAT THIS FRAMEWORK IS</h2>
+<p class="doc-p">The Russia-linked ransomware ecosystem does not reconstitute because it is resilient by accident. It reconstitutes because the criminal infrastructure, financial rails, and state protection relationships that sustain it are left intact after episodic disruption operations. Takedowns create friction. They do not create degradation unless the friction compounds over time across multiple layers simultaneously.</p>
+<p class="doc-p">This framework is a structured system for producing that compounding effect. It defines the ecosystem, identifies its structural leverage points, assigns operational pressure across interagency lanes, measures the effects of that pressure, and maintains accountability for whether actions are producing the degradation they claim to produce.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>THE SINGLE MOST IMPORTANT PRINCIPLE
+Episodic takedowns are not the objective. Sustained ecosystem degradation is. Success is measured by compounding friction over time: actors spending more on security and reconstitution, Russian institutions treating criminals as liabilities rather than assets, protection relationships dismantled, ransom volume and operational tempo declining across multi-quarter windows.
+
+Any operation that cannot demonstrate its contribution to that trajectory is operational activity, not strategic progress. This framework exists to make that distinction visible and defensible.</td></tr>
+</tbody></table></div>
+<h3>1.1  What This Framework Is Not</h3>
+<ul class="doc-list">
+<li>A policy document or legal authority. Nothing in this framework constitutes operational authorization.</li>
+<li>A targeting directive. KPI outputs are measurement and accountability tools, not targeting panels.</li>
+<li>A static product. The ecosystem adapts. This framework must evolve with it.</li>
+<li>A leadership optics scorecard. Every metric traces to concrete underlying data. Undocumented operations do not count.</li>
+<li>A global ransomware framework. All documents are scoped to Russia/CIS-linked ransomware and associated enabling infrastructure unless explicitly stated otherwise. Do not apply to global ransomware without revisiting design assumptions.</li>
+</ul>
+<h3>1.2  The Strategic Logic</h3>
+<p class="doc-p">The Russia-linked ransomware ecosystem has three structural dependencies that, when pressured simultaneously, produce compounding friction:</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Dependency</th><th>What It Enables</th><th>What Breaks It</th></tr></thead>
+<tbody>
+<tr><td>Financial rails</td><td>Ransom proceeds converted to spendable fiat. Without cash-out, criminal income exists only on-chain.</td><td>OTC broker designation, exchange KYC pressure, mixer disruption, mule network friction (Nodes 01/02/08/09)</td></tr>
+<tr><td>Operational infrastructure</td><td>Attacks conducted, payloads delivered, victims managed, data published. Without infrastructure, operational tempo collapses.</td><td>BPH takedowns, botnet sinkholing, leak site disruption, IAB market pressure (Nodes 03/04/05/06)</td></tr>
+<tr><td>State protection</td><td>Elite actors insulated from Russian domestic enforcement. Without protection, domestic risk rises and criminal-state bargain erodes.</td><td>Krysha relationship disruption, FSB factional exploitation, FNS exposure, officer liability operations (Protection Layer)</td></tr>
+</tbody></table></div>
+<p class="doc-p">Pressure on any single dependency creates friction. Pressure on all three simultaneously creates degradation. The framework is designed to impose all three simultaneously, compounding over time.</p>
+<h2 id="s2">SECTION 2 | THE FRAMEWORK SUITE</h2>
+<p class="doc-p">The framework consists of twelve documents and one Excel workbook. They are grouped into three tiers based on audience and operational sensitivity.</p>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>DISTRIBUTION TIERS
+Tier 1 (Leadership): Strategic overview, macro KPI outputs. No individual officer names. For senior IC/LE leadership and STRAT offices.
+Tier 2 (Operational): Full framework, node playbooks, measurement architecture, case studies, tracking tools. For interagency working groups and operational/analytic leads.
+Tier 3 (Controlled Annex): Protection relationship inventory with individual officer detail, cooperation output from debrief records. Restricted to analytic teams with appropriate authorities.</td></tr>
+</tbody></table></div>
+<h3>2.1  Foundation Documents (Read in Order)</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>00
+ALL TIERS</td><td>Framework Overview and Reader's Guide (this document)
+Entry point. Explains what the framework is, how documents relate, and where to start by role. Read before any other document.
+Who reads this: Everyone who receives any document in this suite.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>01
+ALL TIERS</td><td>Glossary of Terms
+Defines all terms used across the suite, grouped by category with operational context. Covers framework-specific terms, ecosystem node terms, Russian institutional terms, legal/regulatory terms, technical terms, and partner/platform terms.
+Who reads this: Anyone new to this material. Reference throughout.</td></tr>
+</tbody></table></div>
+<h3>2.2  Strategic and Institutional Documents</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>02
+TIER 2</td><td>Ecosystem Disruption Playbook (Flagship)
+The strategic framework for sustained disruption operations. Covers the four-phase model (Mapping, Pressure Alignment, Cost Imposition, Sustainment), engagement triggers to avoid, protection layer disruption methodology, affiliate strategy, and third-country arrest framework. The document all other operational documents reference.
+Who reads this: Operational and analytic leads. Senior leadership for the Operator Snapshot section.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>03
+TIER 2</td><td>Dependency Map (Refined)
+Priority-weighted disruption reference across all 16 ecosystem nodes. Orders nodes by disruption priority tier (CRITICAL/HIGH/MEDIUM), assigns partner lanes, defines disruption methods, and identifies backfire risk. The structural foundation from which the node playbooks were built. Note: Nodes 01-11 have companion playbooks and KPI tracking. Nodes 12-15 are mapped but not yet tracked at the meso layer.
+Who reads this: Operational leads for workstream assignment. Analytic leads for ecosystem mapping.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>04
+TIER 2</td><td>Russian Government Protection and Exploitation Framework
+Examines seven Russian government entities (FSB, MVD, Rosfinmonitoring, CBR, FNS, GRU, SVR) through a single lens: how each protects cybercriminals, what breaks that protection, what to do about it, and what will blow back. The institutional exploitation layer that underpins the protection layer strategy.
+Who reads this: Analytic leads and operational teams working the protection layer track.</td></tr>
+</tbody></table></div>
+<h3>2.3  Node Disruption Playbooks</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>05
+TIER 2</td><td>Phase A: Critical Node Playbooks (Nodes 01-03)
+Operational playbooks for OTC Crypto Brokers (Node 01), High-Risk Exchanges (Node 02), and Bulletproof Hosting (Node 03). The financial backbone and primary infrastructure layer. Build first. Eight-section format: ecosystem role, structural vulnerabilities, pre-action requirements, action sequence, partner lanes, reconstitution monitoring, KPIs, and engagement triggers.
+Who reads this: Operational teams with OTC/financial and infrastructure lanes. Treasury/OFAC, FBI/NCA, Chainalysis.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>06
+TIER 2</td><td>Phase B: High Node Playbooks (Nodes 04, 07, 08)
+Operational playbooks for IAB Markets (Node 04), Underground Trust Infrastructure (Node 07), and Mixing/Obfuscation Services (Node 08). The operational engine and financial obscuration layer. Designed to run in parallel with Phase A and compound its effects.
+Who reads this: Operational teams with access intelligence, underground monitoring, and financial obfuscation lanes.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>07
+TIER 2</td><td>Phase C: High Node Playbooks (Nodes 05, 06, 09)
+Operational playbooks for Botnet/Loaders (Node 05), Leak Site Hosting (Node 06), and Mule Networks (Node 09, dual-track: Russia-domestic and third-country). Highest coordination complexity. Benefits directly from Phase A and B groundwork. Node 09 dual-track requires reading each track independently.
+Who reads this: FBI/NCA/Europol (botnet), FVEY LE (leak sites), Rosfinmonitoring channel and FVEY LE/Europol (mule networks).</td></tr>
+</tbody></table></div>
+<h3>2.4  Measurement and Tracking Documents</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>08
+TIER 2</td><td>KPI Measurement Framework
+The complete measurement architecture. Three-layer system (micro/meso/macro), three macro themes (domestic enforcement, FSB strife, ecosystem economics), confidence labeling system, maturity levels, WAIS scoring guide, internal strife architecture, node cluster metrics, per-operation log template, ownership map, and governance. The analytic backbone of the suite.
+Who reads this: Framework coordinator, interagency working group leads, operational teams responsible for metric population.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>09
+TIER 2</td><td>KPI Tracking Workbook (Excel)
+The operational measurement instrument. Eight tabs: Instructions, KPI Sourcing Plan, WAIS Scorer (auto-calculating), Macro KPI Dashboard, Node Pressure tracker, Leak Site Signals, Group Pressure Tracker, and Operation Log. Compatible with Excel 97-2004 and later. No macros. Drop-down fields throughout.
+Who reads this: All teams populating metrics. One workbook per reporting period or per active operation.</td></tr>
+</tbody></table></div>
+<h3>2.5  Reference and Training Documents</h3>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>12
+TIER 2</td><td>Historical Case Studies
+Five real-world operations and events scored against the KPI framework: Conti collapse (2022), QakBot/Operation Duck Hunt (2023), LockBit/Operation Cronos (2024), BlackCat/ALPHV (2023-24), and Black Basta leak (2025). Demonstrates the framework works, calibrates WAIS scoring, and trains analysts on how to connect node-level pressure to macro ecosystem effects. All analysis is open-source only.
+Who reads this: New analysts and operational teams onboarding to the framework. Reference for WAIS calibration.</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>11
+TIER 2</td><td>Group Pressure Tracking Template
+The operational instrument for sustained pressure campaigns against specific target groups. Seven sections: group profile, baseline metrics, pressure action log, observed effects tracker, WAIS log, strife event log, and 90-day assessment. One template per active target group. Pre-populated RansomHub annex included as a worked example.
+Who reads this: Operational teams running sustained campaigns against specific actors or brands.</td></tr>
+</tbody></table></div>
+<h2 id="s3">SECTION 3 | HOW THE DOCUMENTS CONNECT</h2>
+<p class="doc-p">The documents are not independent. Each feeds the others. Understanding the connections is required to use the suite effectively.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>If you want to...</th><th>Start with...</th><th>Which feeds...</th></tr></thead>
+<tbody>
+<tr><td>Understand the overall strategy and mission</td><td>Ecosystem Disruption Playbook (Doc 02)</td><td>Everything. Doc 02 is the strategic reference all other documents presuppose.</td></tr>
+<tr><td>Understand Russian institutional behavior and exploitation</td><td>RU_GOV Protection Framework (Doc 04)</td><td>Protection layer strategy in Doc 02. KPI A-3 protection relationship inventory in Doc 08.</td></tr>
+<tr><td>Understand ecosystem structure and node priorities</td><td>Dependency Map (Doc 03)</td><td>Phase A/B/C playbooks (Docs 05/06/07). Node cluster metrics in Doc 08.</td></tr>
+<tr><td>Plan a specific node pressure action</td><td>Relevant phase playbook (Docs 05/06/07)</td><td>Micro-layer log in Doc 08/09. Group Pressure Tracker (Doc 11).</td></tr>
+<tr><td>Measure whether actions are working</td><td>KPI Framework (Doc 08) and Workbook (Doc 09)</td><td>Leadership reporting. Interagency accountability. Pressure-effect ledger.</td></tr>
+<tr><td>Score an arrest event</td><td>KPI Framework Section 6 (WAIS guide)</td><td>WAIS Scorer tab in Excel (Doc 09). Micro-layer log.</td></tr>
+<tr><td>Track a sustained campaign against a specific group</td><td>Group Pressure Tracking Template (Doc 11)</td><td>Group Pressure Tracker tab in Excel (Doc 09). Micro-layer log.</td></tr>
+<tr><td>Understand how past operations scored</td><td>Historical Case Studies (Doc 12)</td><td>WAIS calibration. Reconstitution benchmark setting. Training.</td></tr>
+<tr><td>Look up a term</td><td>Glossary (Doc 01)</td><td>Any document where the term appears.</td></tr>
+</tbody></table></div>
+<h3>3.1  The Causal Chain</h3>
+<p class="doc-p">The framework is built on a single causal chain. Operations at the micro level must feed metrics at the meso level, which must explain movements at the macro level. If any link in the chain is missing, the macro numbers are not defensible.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Layer</th><th>Document</th><th>What It Requires From The Layer Below</th></tr></thead>
+<tbody>
+<tr><td>MACRO: Ecosystem outcomes</td><td>KPI Framework (Doc 08), Excel Dashboard (Doc 09)</td><td>Meso-layer node metrics must explain why macro indicators moved. Without meso evidence, macro claims are narrative.</td></tr>
+<tr><td>MESO: Node pressure</td><td>KPI Framework Section 3 (Doc 08), Node Pressure tab (Doc 09)</td><td>Micro-layer operation logs must document which specific actions produced which node-level effects. Without micro logs, meso metrics have no causal basis.</td></tr>
+<tr><td>MICRO: Per-operation logging</td><td>KPI Framework Section 4 (Doc 08), Operation Log tab (Doc 09)</td><td>Every disruption action must have a log entry before acting (expected effects) and at 30/90/180 days (observed effects). Undocumented operations do not count.</td></tr>
+</tbody></table></div>
+<h2 id="s4">SECTION 4 | WHERE TO START BY ROLE</h2>
+<p class="doc-p">Different roles require different entry points. This section gives a direct reading path for each.</p>
+<h3>Senior Leadership / STRAT Offices</h3>
+<ul class="doc-list">
+<li>Read this document (Doc 00) for framework orientation.</li>
+<li>Read the Operator Snapshot section of the Ecosystem Disruption Playbook (Doc 02) for mission and four-phase summary.</li>
+<li>Review the Macro KPI Dashboard tab in the Excel workbook (Doc 09) for current ecosystem status.</li>
+<li>The KPI Framework document (Doc 08) Section 2 covers what each macro metric means and how to interpret it.</li>
+<li>Do not read node playbooks or the protection layer annex at this entry point. Those are Tier 2 operational documents.</li>
+</ul>
+<h3>Operational Leads (New to Framework)</h3>
+<ul class="doc-list">
+<li>Read the Glossary (Doc 01) first. Many terms are framework-specific or used in non-standard ways.</li>
+<li>Read the Ecosystem Disruption Playbook (Doc 02) in full. This is the strategic foundation.</li>
+<li>Read the RU_GOV Protection Framework (Doc 04) for the institutional exploitation layer.</li>
+<li>Read the Dependency Map (Doc 03) for node priority and partner lane assignments.</li>
+<li>Then read the relevant phase playbook for your assigned node lane.</li>
+<li>Read the KPI Framework (Doc 08) to understand measurement obligations before any action.</li>
+</ul>
+<h3>Analytic Leads (Measurement and Reporting)</h3>
+<ul class="doc-list">
+<li>Read the KPI Framework (Doc 08) in full. This is your primary reference document.</li>
+<li>Set up the Excel workbook (Doc 09) for your reporting cycle.</li>
+<li>Read the Historical Case Studies (Doc 12) to calibrate WAIS scoring and understand what framework-scored events look like in practice.</li>
+<li>Maintain the Group Pressure Tracking Template (Doc 11) for each active target group.</li>
+<li>The strife event log (KPI Framework Section 5.2) is your primary IC-value product. Own it.</li>
+</ul>
+<h3>Interagency Partners (Receiving Suite for First Time)</h3>
+<ul class="doc-list">
+<li>Read this document (Doc 00) for full suite orientation.</li>
+<li>Read the Glossary (Doc 01).</li>
+<li>Identify your node lane from the Dependency Map (Doc 03) partner lane matrix.</li>
+<li>Read the relevant phase playbook for your assigned nodes.</li>
+<li>Review the Ownership Map in the KPI Framework (Doc 08, Section 7) to understand what metric population your agency is responsible for.</li>
+<li>Contact the framework coordinator to confirm your agency's ownership assignments and establish reporting cadence.</li>
+</ul>
+<h2 id="s5">SECTION 5 | KNOWN GAPS AND SCOPE BOUNDARIES</h2>
+<p class="doc-p">This section is explicit about what the framework does not yet cover. Gaps are not failures. They are the next coordination agenda.</p>
+<h3>5.1  Nodes 12-15</h3>
+<p class="doc-p">The Dependency Map identifies 16 ecosystem nodes; Node 16 (Exploit/Vulnerability Brokers, CRITICAL) was added per the Module 06 assessment and does not yet have a playbook phase or meso-layer tracking. The node playbooks (Phase A/B/C) cover Nodes 01-11. Nodes 12-15 (Gray-Market VPS Networks, Domain/DNS Ecosystems, Data Exfiltration Staging Infrastructure, and Operational Proxy/Anonymization Services) are mapped in the Dependency Map but do not yet have companion playbooks or meso-layer KPI tracking. These nodes are designated MEDIUM priority with lower standalone disruption value. They will be incorporated into meso-layer tracking in a future framework update.</p>
+<h3>5.2  GRU-Nexus and SVR-Adjacent Actors</h3>
+<p class="doc-p">Actors with confirmed GRU operational nexus or SVR infrastructure overlap are explicitly outside this framework's scope. The institutional leverage logic (FSB factional exploitation, FNS exposure, MVD referrals) does not apply to state employees conducting military operations. These actors require separate analytic frameworks and different authority structures. If GRU nexus indicators are observed during operations within this framework, flag separately through appropriate channels.</p>
+<h3>5.3  Non-Russia CIS Actors</h3>
+<p class="doc-p">Actors operating under Kazakh, Belarusian, or other non-Russian CIS state protection require jurisdiction-specific analysis. This framework's institutional pressure points (FSB, MVD, FNS, CBR) are Russian. Belarus is operationally equivalent to Russia for framework purposes. Kazakhstan has functioned as an actual enforcement partner on specific cases and its dynamics differ meaningfully. Other CIS jurisdictions require case-by-case assessment.</p>
+<h3>5.4  L2 Ownership Gaps</h3>
+<p class="doc-p">Several high-value metrics in the KPI framework are designated Level 2 (Requires Buy-In) because they require formal interagency ownership or classified collection feeds that are not yet assigned. The most critical unresolved gap is the micro-layer operation log aggregator: without a designated agency or team responsible for collecting and maintaining per-operation logs across all active operations, the causal chain from micro to macro cannot be maintained. This gap is identified in the KPI Framework ownership map (Doc 08, Section 7) and is the highest-priority interagency coordination item.</p>
+<h3>5.5  Protection Layer Intelligence Products (Tier 1 Analytic Gap)</h3>
+<p class="doc-p">The protection layer disruption track (Doc 02, Section 9) is this framework’s primary strategic differentiator from prior disruption approaches. Its core premise is that FSB officer protection relationships are load-bearing ecosystem nodes, and that disrupting the officer’s financial exposure and internal FSB standing produces more durable ecosystem degradation than disrupting the protected criminal actor alone. This premise is analytically sound and well-supported by the institutional dynamics documented in Doc 04.</p>
+<p class="doc-p">The intelligence products the track requires do not currently exist. Doc 02, Section 9.3 explicitly notes: “All deliverables in this section are proposed; none currently exist.” The three minimum deliverables required to execute the protection layer track are: (1) an anomalous outflow registry for the top 20 protected actors, identifying protection payment candidates from crypto-to-fiat financial maps; (2) officer financial exposure profiles built from open-source property registries, corporate registries, and lifestyle inconsistency analysis; and (3) a cash-out graph covering the top 20 OTC and broker nodes with end-to-end case exemplars. None of these products are built. Until they are, the protection layer disruption track is a documented methodology without an executable intelligence base.</p>
+<p class="doc-p">This is the framework’s highest-priority analytic production gap. The intermediary cash-out mapping program and protection layer financial exposure capability are identified as the top two investment priorities in the Dependency Map (Doc 03, Section 3). Neither requires classified collection. Both are open-source and financial registry analytic tasks executable with existing blockchain forensics tools and OSINT methodology. The gap is one of resource allocation and tasking authority, not methodology.</p>
+<h3>5.6  Group Tracking vs. Actor Targeting</h3>
+<p class="doc-p">The Group Pressure Tracking Template (Doc 11) and Group Pressure Tracker tab in the Excel workbook (Doc 09) track group-level pressure effects. They do not constitute targeting directives for individual actors. Individual actor-level data (named operator identities, protection officer relationships, cooperation output from specific debriefs) is maintained in the Tier 3 controlled analytic annex under existing foreign-intelligence minimization rules, not in Tier 2 framework documents.</p>
+<h2 id="s6">SECTION 6 | DOCUMENT REGISTRY</h2>
+<p class="doc-p">Current status of all documents in the framework suite as of July 2026.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Doc</th><th>Title</th><th>Version</th><th>Status</th><th>Distribution</th><th>Companion</th></tr></thead>
+<tbody>
+<tr><td>00</td><td>Framework Overview and Reader's Guide</td><td>0.3</td><td>Working Document</td><td>All Tiers</td><td>All documents</td></tr>
+<tr><td>01</td><td>Glossary of Terms</td><td>0.1</td><td>Working Document</td><td>All Tiers</td><td>All documents</td></tr>
+<tr><td>02</td><td>Ecosystem Disruption Playbook</td><td>0.3</td><td>Working Document</td><td>Tier 2</td><td>All playbooks, Doc 08</td></tr>
+<tr><td>03</td><td>Dependency Map (Refined)</td><td>1.0</td><td>Working Document</td><td>Tier 2</td><td>Docs 05/06/07</td></tr>
+<tr><td>04</td><td>RU_GOV Protection and Exploitation Framework</td><td>2.1</td><td>Working Document</td><td>Tier 2</td><td>Doc 02, Doc 08</td></tr>
+<tr><td>05</td><td>Phase A: Critical Node Playbooks (Nodes 01-03)</td><td>1.0</td><td>Working Document</td><td>Tier 2</td><td>Doc 03, Doc 08</td></tr>
+<tr><td>06</td><td>Phase B: High Node Playbooks (Nodes 04/07/08)</td><td>1.0</td><td>Working Document</td><td>Tier 2</td><td>Doc 03, Doc 08</td></tr>
+<tr><td>07</td><td>Phase C: High Node Playbooks (Nodes 05/06/09)</td><td>1.0</td><td>Working Document</td><td>Tier 2</td><td>Doc 03, Doc 08</td></tr>
+<tr><td>08</td><td>KPI Measurement Framework</td><td>0.3</td><td>Working Document</td><td>Tier 2</td><td>Doc 09, Doc 11</td></tr>
+<tr><td>09</td><td>KPI Tracking Workbook (Excel)</td><td>0.1</td><td>Working Document</td><td>Tier 2</td><td>Doc 08</td></tr>
+<tr><td>10</td><td>KPI Sourcing Plan</td><td>1.0</td><td>Working Document</td><td>Tier 2</td><td>Doc 08, Doc 09</td></tr>
+<tr><td>11</td><td>Group Pressure Tracking Template</td><td>0.1</td><td>Working Document</td><td>Tier 2</td><td>Doc 08, Doc 09</td></tr>
+<tr><td>12</td><td>Historical Case Studies</td><td>0.1</td><td>Working Document</td><td>Tier 2</td><td>Doc 08, Doc 11</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>VERSION CONTROL NOTE
+All documents in this suite are Working Documents subject to revision. Version tracking is maintained by the framework coordinator. Recipients should confirm they hold the current version before acting on this analysis. Changes to any document require interagency working group concurrence. The framework is reviewed quarterly at the metric level and annually at the structural level.</td></tr>
+</tbody></table></div>
+<h2 id="s7">SECTION 7 | GOVERNANCE SUMMARY</h2>
+<p class="doc-p">Full governance detail is in the KPI Framework document (Doc 08, Section 8). This section provides the key rules for all users.</p>
+<h3>What This Framework Authorizes</h3>
+<ul class="doc-list">
+<li>Measurement and accountability for disruption operations.</li>
+<li>Analytic input for operational planning.</li>
+<li>Interagency coordination on metric ownership and reporting.</li>
+<li>Strategic-level reporting to leadership on ecosystem degradation.</li>
+</ul>
+<h3>What This Framework Does Not Authorize</h3>
+<ul class="doc-list">
+<li>Operational authorization for any specific action. Agency-specific authorities and approval processes govern operational decisions.</li>
+<li>Targeting of specific individuals. The framework tracks counts and trendlines of cases and relationship states, not a targeting panel.</li>
+<li>Use of macro KPI movements to justify new operational authorities without corresponding micro and meso evidence. A macro number moving in the right direction is not sufficient basis for expanded authorities. The causal chain must be shown.</li>
+<li>Distribution of Tier 3 controlled annex content (protection relationship inventory with individual officer detail) beyond analytic teams with appropriate authorities.</li>
+</ul>
+<div class="table-wrap"><table class="doc-table">
+<tbody>
+<tr><td>THE MOST IMPORTANT GOVERNANCE RULE
+The protection-layer KPIs and strife event log entries involving officers are analytic products, not targeting directives. Any operational use of protection-layer analytic outputs must go through existing agency authorities and approval processes. At the leadership level, report counts and status categories only. Individual officer-level data stays in the Tier 3 controlled annex.</td></tr>
+</tbody></table></div>
+<p class="doc-p">RANSOMWARE ECOSYSTEM DISRUPTION FRAMEWORK: OVERVIEW v0.3 — July 2026</p>
+<p class="doc-p">Working Document — Handle Per Originating Agency Protocols</p>
+  <div class="doc-foot">
+    Ecosystem Dependency Project. This page is the full text of a corpus framework
+    document, converted from the original for reading on the web. Content is unchanged.
+    Figures and assessments carry the confidence language of the source document.
+  </div>
+</main>
+</body>
+</html>
