@@ -159,26 +159,26 @@
    "reason": "Chain data is public. Requires on-chain analysis that is not built."
   },
   "mixers": {
-   "feeds": [],
-   "verdict_if_no_feed": "GAP",
-   "reason": "Same as bridges. Public chain data, unbuilt analysis.",
+   "feeds": [
+    "sanctioned-wallets.json"
+   ],
    "hand_maintained": [
     "enforcement.json"
    ],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "note": "Listed wallet activity for designated mixers such as Blender.io and Sinbad. Measures the LISTED ADDRESSES only, never the entity's finances.",
    "watched_by": [
     "sanctions-drift.json"
    ]
   },
   "otc": {
-   "feeds": [],
-   "verdict_if_no_feed": "GAP",
-   "reason": "Broker identification rests on sanctions and indictment records already held in enforcement.json, which is not yet a live feed.",
+   "feeds": [
+    "sanctioned-wallets.json"
+   ],
    "hand_maintained": [
     "enforcement.json",
     "exchanges/ profiles"
    ],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "note": "Listed wallet activity for designated OTC brokers, from the sanctions list joined to public chains. Measures the LISTED ADDRESSES only, never the entity's finances.",
    "watched_by": [
     "sanctions-drift.json"
    ]
@@ -208,14 +208,14 @@
    ]
   },
   "exchl": {
-   "feeds": [],
-   "verdict_if_no_feed": "GAP",
-   "reason": "Same as Russia-based exchanges.",
+   "feeds": [
+    "sanctioned-wallets.json"
+   ],
    "hand_maintained": [
     "enforcement.json",
     "exchanges/ profiles"
    ],
-   "note": "Still maintained by hand. A daily check watches the OFAC list for designations added or removed underneath it.",
+   "note": "Listed wallet activity for designated non-compliant exchanges and markets. Measures the LISTED ADDRESSES only, never the entity's finances.",
    "watched_by": [
     "sanctions-drift.json"
    ]
