@@ -5,78 +5,78 @@
    "URLhaus (abuse.ch)",
    "RIPEstat"
   ],
-  "built": "2026-08-23T06:47:52Z",
-  "runs": 5,
+  "built": "2026-08-24T07:08:11Z",
+  "runs": 6,
   "prefixes_checked": 657,
   "networks_unreadable": [],
-  "indicators_examined": 21426,
-  "indicators_on_confirmed_networks": 430,
-  "indicators_on_adjacent_networks": 244,
+  "indicators_examined": 22324,
+  "indicators_on_confirmed_networks": 427,
+  "indicators_on_adjacent_networks": 251,
   "measures": "Whether tracked hosting providers are currently carrying live malware infrastructure.",
   "why_this_can_mislead": "Absence is not innocence: zero means nothing was REPORTED on that network, and reporting is uneven and volunteer-driven. The source exports cover a recent rolling window, so one run is a snapshot rather than a series. Address space changes hands, so a prefix inside a tracked network today may not be tomorrow. And presence is not proof the provider knew: it is a reason to look at abuse response, which is what separates a bulletproof host from a careless one. Indicators on compromised machines are counted separately and must never be added to the rest, because a hacked server is a victim, not inventory. Hits on sibling and successor networks are also kept apart: those are networks a profile records as adjacent without establishing ownership, so counting them against a provider asserts an attribution the research did not make.",
   "distortion": "Medium"
  },
  "ecosystem_botnet_c2_by_family": {
-  "Cobalt Strike": 1246,
-  "PureRAT": 455,
-  "AsyncRAT": 337,
-  "Unknown malware": 253,
-  "AdaptixC2": 247,
-  "Vidar": 129,
+  "Cobalt Strike": 1242,
+  "PureRAT": 456,
+  "AsyncRAT": 329,
+  "AdaptixC2": 245,
+  "Unknown malware": 244,
   "Tofsee": 112,
-  "DCRat": 104,
-  "Sliver": 97,
+  "DCRat": 103,
+  "Vidar": 89,
+  "IClickFix": 85,
   "Evilginx": 81,
-  "Aisuru": 70,
-  "HypeAgent": 65,
+  "Aisuru": 67,
+  "HypeAgent": 66,
   "Havoc": 61,
-  "VShell": 58,
+  "Sliver": 51,
   "Tsundere": 45,
+  "VShell": 41,
   "RansomHub": 36,
-  "Quasar RAT": 31,
   "DeimosC2": 31,
   "NetSupportManager RAT": 30,
-  "Remus": 27,
   "pupy": 25,
-  "ValleyRAT": 24,
-  "Stealc": 20,
-  "Latrodectus": 19,
+  "Latrodectus": 23,
+  "Stealc": 23,
+  "Remus": 20,
+  "Quasar RAT": 18,
   "DanaBot": 17,
-  "Eye Pyramid": 17,
-  "Chaos": 16,
+  "Chaos": 17,
+  "Eye Pyramid": 16,
+  "Mirai": 15,
   "BianLian": 15,
-  "Mirai": 14,
-  "Unknown RAT": 12,
+  "Unknown Stealer": 12,
+  "Unknown RAT": 11,
   "Brute Ratel C4": 10,
-  "IClickFix": 8,
-  "ClearFake": 7,
+  "ClearFake": 8,
   "PoshC2": 7,
   "Hook": 7,
   "Deimos": 7,
   "vo1d": 6,
   "GCleaner": 5,
-  "TELEPUZ": 4,
+  "ValleyRAT": 3,
   "Kimwolf": 3
  },
  "indicator_types_on_tracked_space": {
-  "malware_distribution": 566,
-  "botnet_cc": 107,
-  "payload_delivery": 4
+  "malware_distribution": 574,
+  "botnet_cc": 106,
+  "payload_delivery": 2
  },
  "malware_families_on_tracked_space": {
   "elf, mirai, ua-wget": 155,
-  "c2-monitor-auto, dropped-by-amadey": 139,
+  "c2-monitor-auto, dropped-by-amadey": 141,
   "unknown": 30,
   "ua-wget": 26,
   "AsyncRAT": 24,
   "ascii, powershell, ps1": 18,
   "Tofsee": 16,
-  "54e64e, dropped-by-amadey": 14,
+  "54e64e, dropped-by-amadey": 15,
+  "censys, elf, mirai, ua-wget": 15,
+  "censys, elf, ua-wget": 14,
+  "PureRAT": 13,
   "censys, sh, ua-wget": 13,
-  "censys, elf, ua-wget": 13,
-  "PureRAT": 12,
   "DCRat": 11,
-  "censys, elf, mirai, ua-wget": 11,
   "9d2ca3, dropped-by-amadey": 9,
   "AdaptixC2": 7,
   "Stealc": 6,
@@ -86,12 +86,10 @@
   "Cobalt Strike": 5,
   "54e64e, dropped-by-amadey, rustystealer": 5,
   "54e64e, dropped-by-amadey, RemoteX": 5,
-  "Phorpiex": 4,
   "Eye Pyramid": 4,
   "c2-monitor-auto, dropped-by-amadey, rustystealer": 4,
   "sh, ua-wget": 4,
   "c2-monitor-auto, dropped-by-amadey, RemoteX": 4,
-  "Quasar RAT": 3,
   "54e64e, dropped-by-amadey, Stealc": 3,
   "c2-monitor-auto, dropped-by-amadey, OverlordRAT": 3,
   "ascii, Formbook, powershell, ps1": 3,
@@ -101,9 +99,11 @@
   "Sliver": 2,
   "PoshC2": 2,
   "Amadey": 2,
+  "censys, mirai, sh, ua-wget": 2,
   "ascii, opendir, powershell, ps1, VIPKeylogger": 2,
   "178-16-52-133, connectwise, exe, ua-wget": 2,
-  "CoinMiner, elf, iot": 2
+  "CoinMiner, elf, iot": 2,
+  "77-83-39-9, connectwise, exe, ua-wget": 2
  },
  "providers": {
   "aeza": {
@@ -426,21 +426,21 @@
   "virtualine": {
    "name": "VIRTUALINE",
    "designated": false,
-   "indicators_confirmed_own": 404,
+   "indicators_confirmed_own": 401,
    "indicators_on_successor": 0,
-   "indicators_on_sibling": 244,
-   "indicators_on_compromised_hosts": 3,
+   "indicators_on_sibling": 251,
+   "indicators_on_compromised_hosts": 4,
    "by_network": {
-    "AS202412 (measured)": 401,
-    "AS205759 (sibling)": 244,
+    "AS202412 (measured)": 398,
+    "AS205759 (sibling)": 251,
     "AS214940 (measured)": 3
    },
    "malware_families": {
-    "c2-monitor-auto, dropped-by-amadey": 139,
+    "c2-monitor-auto, dropped-by-amadey": 141,
     "unknown": 29,
     "ua-wget": 26,
     "ascii, powershell, ps1": 18,
-    "54e64e, dropped-by-amadey": 14,
+    "54e64e, dropped-by-amadey": 15,
     "AsyncRAT": 10,
     "PureRAT": 9,
     "9d2ca3, dropped-by-amadey": 9,
@@ -451,7 +451,6 @@
     "54e64e, dropped-by-amadey, rustystealer": 5,
     "54e64e, dropped-by-amadey, RemoteX": 5,
     "Stealc": 4,
-    "Phorpiex": 4,
     "Cobalt Strike": 4,
     "c2-monitor-auto, dropped-by-amadey, rustystealer": 4,
     "c2-monitor-auto, dropped-by-amadey, RemoteX": 4,
@@ -461,7 +460,6 @@
     "ascii, powershell, ps1, VIPKeylogger": 3,
     "ascii, opendir, powershell, ps1": 3,
     "dropped-by-Phorpiex": 3,
-    "Quasar RAT": 2,
     "AdaptixC2": 2,
     "Eye Pyramid": 2,
     "Amadey": 2,
@@ -479,7 +477,9 @@
     "158-94-211-110, connectwise, exe": 2,
     "91-92-240-17, connectwise, exe": 2,
     "178-16-55-95, connectwise, exe": 2,
+    "ClearFake": 1,
     "VShell": 1,
+    "Phorpiex": 1,
     "Unknown malware": 1,
     "Latrodectus": 1,
     "c2-monitor-auto, dropped-by-amadey, RemusStealer": 1,
@@ -519,11 +519,27 @@
     "9d2ca3, dropped-by-amadey, xworm": 1,
     "ClickFix, geofenced, ua-powershell, USA": 1,
     "CHE, ClickFix, exe, geofenced, ua-ps": 1,
-    "ascii, ClickFix, powershell, ps1": 1,
-    "dropped-by-Phorpiex, rustystealer": 1,
-    "PhantomStealer": 1
+    "ascii, ClickFix, powershell, ps1": 1
    },
    "indicators": [
+    {
+     "value": "http://91.92.241.160/files/output.exe",
+     "malware": "ClearFake",
+     "threat_type": "payload_delivery",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-24",
+     "source": "threatfox"
+    },
+    {
+     "value": "196.251.121.124:56001",
+     "malware": "PureRAT",
+     "threat_type": "botnet_cc",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "threatfox"
+    },
     {
      "value": "178.16.52.120:8787",
      "malware": "VShell",
@@ -536,24 +552,6 @@
     {
      "value": "91.92.240.98:7707",
      "malware": "AsyncRAT",
-     "threat_type": "botnet_cc",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-21",
-     "source": "threatfox"
-    },
-    {
-     "value": "64.89.160.4:4782",
-     "malware": "Quasar RAT",
-     "threat_type": "botnet_cc",
-     "asn": 205759,
-     "confidence": "sibling",
-     "first_seen": "2026-08-21",
-     "source": "threatfox"
-    },
-    {
-     "value": "178.16.52.169:4782",
-     "malware": "Quasar RAT",
      "threat_type": "botnet_cc",
      "asn": 202412,
      "confidence": "measured",
@@ -576,15 +574,6 @@
      "asn": 202412,
      "confidence": "measured",
      "first_seen": "2026-08-20",
-     "source": "threatfox"
-    },
-    {
-     "value": "178.16.55.56:4782",
-     "malware": "Quasar RAT",
-     "threat_type": "botnet_cc",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-19",
      "source": "threatfox"
     },
     {
@@ -819,24 +808,6 @@
      "asn": 202412,
      "confidence": "measured",
      "first_seen": "2026-08-10",
-     "source": "threatfox"
-    },
-    {
-     "value": "http://178.16.54.109/locopoco",
-     "malware": "Phorpiex",
-     "threat_type": "payload_delivery",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-08",
-     "source": "threatfox"
-    },
-    {
-     "value": "http://178.16.54.109/molakc",
-     "malware": "Phorpiex",
-     "threat_type": "payload_delivery",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-08",
      "source": "threatfox"
     },
     {
@@ -1182,15 +1153,6 @@
      "source": "threatfox"
     },
     {
-     "value": "http://178.16.54.109/sodola",
-     "malware": "Phorpiex",
-     "threat_type": "payload_delivery",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-06-03",
-     "source": "threatfox"
-    },
-    {
      "value": "178.16.54.48:443",
      "malware": "Eye Pyramid",
      "threat_type": "botnet_cc",
@@ -1360,6 +1322,132 @@
      "confidence": "measured",
      "first_seen": "2025-08-20",
      "source": "threatfox"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_bb11b14604ad9109.exe",
+     "malware": "54e64e, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_a91ac6d4a7389993.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_dccbce95dc080534.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_aa509ab4dee7634e.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_273b8dff51cd4015.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_adad2e4ddbc81c70.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://91.92.242.236/files-129312398/files/file_5513ab74e8b43371.exe",
+     "malware": "c2-monitor-auto, dropped-by-amadey",
+     "threat_type": "malware_distribution",
+     "asn": 202412,
+     "confidence": "measured",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/bot.i468",
+     "malware": "censys, elf, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/x86_64",
+     "malware": "censys, elf, mirai, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/wget.sh",
+     "malware": "censys, mirai, sh, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/arm7",
+     "malware": "censys, elf, mirai, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/x86",
+     "malware": "censys, elf, mirai, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/arm",
+     "malware": "censys, elf, mirai, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
+    },
+    {
+     "value": "http://46.151.182.200/s",
+     "malware": "censys, mirai, sh, ua-wget",
+     "threat_type": "malware_distribution",
+     "asn": 205759,
+     "confidence": "sibling",
+     "first_seen": "2026-08-23",
+     "source": "urlhaus"
     },
     {
      "value": "http://91.92.242.236/files-129312398/files/file_4ba1a9722212abed.exe",
@@ -2232,96 +2320,6 @@
      "asn": 202412,
      "confidence": "measured",
      "first_seen": "2026-08-13",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://91.92.242.236/files-129312398/files/file_de67bd60facbd66c.exe",
-     "malware": "c2-monitor-auto, dropped-by-amadey",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/DV/aaacrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/DV/ojcrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/OJAK/uucrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/OJAK/EZcrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/DV/cryptede.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/OJAK/Ecrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/DV/akcrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/OJAK/ucrypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
-     "source": "urlhaus"
-    },
-    {
-     "value": "http://178.16.53.176/OJAK/U1crypted.ps1",
-     "malware": "ascii, powershell, ps1",
-     "threat_type": "malware_distribution",
-     "asn": 202412,
-     "confidence": "measured",
-     "first_seen": "2026-08-12",
      "source": "urlhaus"
     }
    ]
