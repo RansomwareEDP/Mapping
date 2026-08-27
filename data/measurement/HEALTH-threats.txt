@@ -2,20 +2,20 @@ LIVE THREAT INFRASTRUCTURE - HEALTH REPORT
 
 STATUS: OK
 
-Checked                26 Aug 2026 at 06:54 UTC
-Run number             8
-Prefixes checked       663
-Indicators examined    22,210
-On confirmed networks  427
-On adjacent networks   253  (ownership not established)
+Checked                27 Aug 2026 at 17:29 UTC
+Run number             9
+Prefixes checked       661
+Indicators examined    22,497
+On confirmed networks  436
+On adjacent networks   272  (ownership not established)
 
 By provider:
    provider                    confirmed   adjacent   compromised
-    VIRTUALINE                       395        250             7
-   *AEZA GROUP                        16          0             0
-    Bearhost / Underground /          16          0             0
+    VIRTUALINE                       406        272             4
+    Bearhost / Underground /          17          0             0
+   *AEZA GROUP                        13          0             4
     DEDBROPRO                          0          0             0
-   *Media Land LLC / Yalishan          0          3             0
+   *Media Land LLC / Yalishan          0          0             0
    *Stark Industries Solution          0          0             0
    *ZServers / XHost                   0          0             0
 
@@ -27,33 +27,33 @@ By provider:
    These three are separate measurements. Never add them together.
 
 Malware families on CONFIRMED provider address space only:
-    155  elf, mirai, ua-wget
-    142  c2-monitor-auto, dropped-by-amadey
-     29  unknown
+    159  elf, mirai, ua-wget
+    144  c2-monitor-auto, dropped-by-amadey
+     30  unknown
+     26  ascii, powershell, ps1
      26  ua-wget
-     24  AsyncRAT
-     20  Overlord RAT
-     19  54e64e, dropped-by-amadey
-     18  ascii, powershell, ps1
+     25  AsyncRAT
+     22  Stealc
+     20  54e64e, dropped-by-amadey
+     16  PureRAT
+     16  Tofsee
      15  censys, elf, mirai, ua-wget
-     14  PureRAT
-     14  Unknown malware
      14  censys, elf, ua-wget
 
 Live botnet command servers reported across the whole internet,
 by family. This stands on its own, independent of the providers above:
-   1239  Cobalt Strike
-    474  PureRAT
-    470  Unknown malware
-    332  Overlord RAT
-    317  AsyncRAT
-    243  AdaptixC2
-    141  Remus
-    137  Vidar
-    105  DCRat
-     81  Evilginx
-     78  Aisuru
-     76  HypeAgent
+   1244  Cobalt Strike
+    518  PureRAT
+    329  AsyncRAT
+    292  Unknown malware
+    244  AdaptixC2
+    113  HypeAgent
+    112  Tofsee
+    106  DCRat
+     88  Aisuru
+     83  Evilginx
+     80  Vidar
+     71  Stealc
 
 READ THESE NUMBERS CAREFULLY:
  Absence is not innocence: zero means nothing was REPORTED on that network, and reporting is uneven and volunteer-driven. The source exports cover a recent rolling window, so one run is a snapshot rather than a series. Address space changes hands, so a prefix inside a tracked network today may not be tomorrow. And presence is not proof the provider knew: it is a reason to look at abuse response, which is what separates a bulletproof host from a careless one. Indicators on compromised machines are counted separately and must never be added to the rest, because a hacked server is a victim, not inventory. Hits on sibling and successor networks are also kept apart: those are networks a profile records as adjacent without establishing ownership, so counting them against a provider asserts an attribution the research did not make.
