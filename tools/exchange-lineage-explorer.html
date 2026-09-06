@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exchange Lineage Explorer | The Observatory</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root {
+  --bg: #090d12;
+  --panel: #0f1923;
+  --panel2: #162030;
+  --border: #1e2f42;
+  --text: #e8f0f8;
+  --muted: #7a93ad;
+  --accent: #14b8a6;
+  --accent2: #2dd4bf;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* HEADER */
+header { padding: 10px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; background: rgba(9,13,18,.97); backdrop-filter: blur(8px); z-index: 20; flex-shrink: 0; }
+header h1 { font-size: 16px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+header .sub { font-size: 11px; color: var(--muted); }
+header .sub a { color: var(--accent2); text-decoration: none; }
+header .sub a:hover { text-decoration: underline; }
+.header-stats { display: flex; gap: 14px; margin-left: auto; }
+.hstat { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.hstat span { color: var(--accent); font-weight: 700; }
+
+/* LAYOUT */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* LEFT PANEL */
+.left-panel { width: 264px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--panel); overflow-y: auto; }
+.panel-section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.panel-section label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 6px; }
+input[type=text], select { width: 100%; background: #0a131d; border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 9px; font-size: 12px; outline: none; }
+input[type=text]:focus, select:focus { border-color: var(--accent); }
+select option { background: #0f1923; }
+
+/* TIME SLIDER (single-row dual handle) */
+.range-vals { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.range-wrap { position: relative; height: 22px; }
+.range-track { position: absolute; top: 9px; left: 0; right: 0; height: 4px; border-radius: 2px; background: #14202e; }
+.range-fill { position: absolute; top: 9px; height: 4px; border-radius: 2px; background: var(--accent); opacity: .75; }
+.range-wrap input[type=range] { position: absolute; top: 0; left: 0; width: 100%; height: 22px; margin: 0; -webkit-appearance: none; appearance: none; background: none; pointer-events: none; }
+.range-wrap input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; pointer-events: auto; width: 14px; height: 14px; border-radius: 50%; background: var(--accent2); border: 2px solid #090d12; cursor: pointer; }
+.range-wrap input[type=range]::-moz-range-thumb { pointer-events: auto; width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); border: 2px solid #090d12; cursor: pointer; }
+
+/* FILTER CHECKBOXES */
+.filter-group { display: flex; flex-direction: column; gap: 5px; }
+.filter-row { display: flex; align-items: center; gap: 7px; font-size: 12px; cursor: pointer; }
+.filter-row input[type=checkbox] { accent-color: var(--accent); width: 13px; height: 13px; flex-shrink: 0; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.dash-sample { width: 20px; height: 0; border-top: 2px solid var(--muted); flex-shrink: 0; }
+
+/* SEARCH RESULTS */
+.search-results { min-height: 120px; padding: 6px 8px; }
+.search-item { padding: 7px 9px; border-radius: 7px; cursor: pointer; font-size: 12px; border: 1px solid transparent; margin-bottom: 3px; }
+.search-item:hover { background: var(--panel2); border-color: var(--border); }
+.search-item.selected { background: var(--panel2); border-color: var(--accent); }
+.search-item .si-name { font-weight: 600; }
+.search-item .si-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+.status-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
+
+/* TIMELINE AREA */
+.graph-area { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+#axis-wrap { flex-shrink: 0; background: rgba(9,13,18,.98); border-bottom: 1px solid var(--border); overflow: hidden; position: relative; z-index: 5; }
+#scroll-wrap { flex: 1; overflow: auto; position: relative; }
+#axis-svg { display: block; }
+#tl-svg { display: block; }
+
+.lane-band { fill: rgba(15,25,35,.45); }
+.lane-band.alt { fill: rgba(22,32,48,.30); }
+.lane-label { fill: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.lane-count { fill: #4a6076; font-size: 9px; font-weight: 600; }
+.year-grid { stroke: #14202e; stroke-width: 1; }
+.year-grid.major { stroke: #1b2b3d; }
+.axis-year { fill: var(--muted); font-size: 10px; font-weight: 600; }
+
+.bar { cursor: pointer; }
+.bar rect.lifespan { rx: 3.5; }
+.bar text.bar-label { font-size: 10.5px; font-weight: 600; pointer-events: none; }
+.bar.dimmed { opacity: .12; }
+.bar.selected rect.lifespan { stroke-width: 2.5; filter: drop-shadow(0 0 6px rgba(20,184,166,.7)); }
+.edge-path { fill: none; pointer-events: none; }
+.edge-path.dimmed { opacity: .05 !important; }
+.edge-path.highlight { opacity: 1 !important; }
+.edge-hit { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: pointer; }
+.edge-interval { pointer-events: none; }
+.edge-interval.dimmed { opacity: .05; }
+.edge-interval text { font-size: 11px; font-weight: 800; letter-spacing: .02em; }
+.edge-interval rect { fill: #0d1620; fill-opacity: .95; }
+.event-mark { cursor: pointer; }
+.event-mark.dimmed { opacity: .1; }
+
+/* RIGHT PANEL */
+.right-panel { width: 292px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--panel); overflow-y: auto; display: flex; flex-direction: column; }
+.detail-header { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); }
+.detail-header h2 { font-size: 15px; font-weight: 700; }
+.detail-header .dtype { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .06em; }
+.detail-section { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.detail-section h3 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.kv-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; gap: 8px; }
+.kv-row .k { color: var(--muted); flex-shrink: 0; }
+.kv-row .v { text-align: right; font-weight: 500; word-break: break-word; }
+.rel-item { font-size: 12px; padding: 6px 0; border-top: 1px solid var(--border); display: flex; align-items: flex-start; gap: 7px; }
+.rel-item:first-child { border-top: none; }
+.rel-arrow { color: var(--muted); flex-shrink: 0; font-size: 14px; line-height: 1.2; }
+.rel-name { font-weight: 600; cursor: pointer; color: var(--accent2); }
+.rel-name:hover { text-decoration: underline; }
+.rel-type { font-size: 10px; color: var(--muted); display: block; margin-top: 1px; }
+.conf-tag { display: inline-block; font-size: 9px; padding: 0 5px; border-radius: 3px; border: 1px solid var(--border); color: var(--muted); margin-left: 4px; text-transform: uppercase; letter-spacing: .04em; }
+.event-item { font-size: 12px; padding: 5px 0; border-top: 1px solid var(--border); }
+.event-item:first-child { border-top: none; }
+.event-year { color: var(--accent); font-weight: 700; font-size: 11px; }
+.empty-state { padding: 24px 14px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* LEGEND */
+.legend { display: none; position: absolute; bottom: 46px; left: 12px; background: rgba(15,25,35,.94); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; font-size: 11px; backdrop-filter: blur(6px); z-index: 8; max-height: 52vh; overflow-y: auto; }
+.legend.open { display: block; }
+#legend-btn { position: absolute; bottom: 12px; left: 12px; z-index: 9; }
+.legend h4 { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; font-size: 10px; }
+.legend-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+.legend-line { width: 22px; height: 2px; flex-shrink: 0; }
+.legend-node { width: 16px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+
+/* TOOLTIP */
+#tooltip { position: fixed; background: rgba(15,25,35,.97); border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; font-size: 12px; pointer-events: none; max-width: 260px; z-index: 50; display: none; }
+#tooltip .tt-name { font-weight: 700; margin-bottom: 3px; }
+#tooltip .tt-meta { color: var(--muted); font-size: 11px; }
+
+/* CONTROLS BAR */
+.controls-bar { position: absolute; top: 40px; right: 10px; display: flex; gap: 6px; z-index: 8; }
+.ctrl-btn { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px; cursor: pointer; }
+.ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+.ctrl-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(20,184,166,.08); }
+
+/* TRACE MODE BANNER */
+.trace-banner { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); background: rgba(20,184,166,.12); border: 1px solid rgba(20,184,166,.4); border-radius: 7px; padding: 5px 14px; font-size: 12px; color: var(--accent); display: none; z-index: 10; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 7px; height: 7px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+<header>
+  <div>
+    <h1 id="page-title">Exchange Lineage Explorer</h1>
+    <div class="sub" id="page-sub"></div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat">Entities: <span id="stat-nodes">0</span></div>
+    <div class="hstat">Links: <span id="stat-edges">0</span></div>
+    <div class="hstat">Visible: <span id="stat-visible">0</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="panel-section">
+      <label>Search</label>
+      <input type="text" id="search-input" placeholder="Garantex, Grinex, AWX…">
+    </div>
+
+    <div class="panel-section">
+      <label>Time Range</label>
+      <div class="range-vals"><span id="yr-start-val"></span><span id="yr-end-val"></span></div>
+      <div class="range-wrap">
+        <div class="range-track"></div>
+        <div class="range-fill" id="range-fill"></div>
+        <input type="range" id="year-start" step="1">
+        <input type="range" id="year-end" step="1">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <label>Status Filter</label>
+      <div class="filter-group" id="status-filters"></div>
+    </div>
+
+    <div class="panel-section">
+      <label>Link Types</label>
+      <div class="filter-group" id="edge-filters"></div>
+    </div>
+
+    <div class="panel-section">
+      <label>Evidence Level</label>
+      <div class="filter-group" id="conf-filters"></div>
+    </div>
+
+    <div class="panel-section">
+      <label>Network</label>
+      <select id="net-filter">
+        <option value="">All networks</option>
+      </select>
+    </div>
+
+    <div class="panel-section" style="border-bottom:none;padding-bottom:4px">
+      <label>Results (<span id="result-count">0</span>)</label>
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="graph-area">
+    <div id="axis-wrap"><svg id="axis-svg" height="26"></svg></div>
+    <div id="scroll-wrap"><svg id="tl-svg"></svg></div>
+    <div class="controls-bar">
+      <button class="ctrl-btn" id="btn-trace" title="Trace full lineage of selected entity">Trace Lineage</button>
+      <button class="ctrl-btn" id="btn-reset-view">Reset View</button>
+      <button class="ctrl-btn" id="btn-reset-filters">Clear Filters</button>
+    </div>
+    <div class="trace-banner" id="trace-banner">Lineage Trace Mode: click an entity to trace, press Escape to exit</div>
+    <button class="ctrl-btn" id="legend-btn">Legend</button>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" id="right-panel">
+    <div class="empty-state" id="detail-empty">
+      <div style="font-size:28px;margin-bottom:10px">🔍</div>
+      Click any bar to see<br>its details and lineage
+    </div>
+    <div id="detail-content" style="display:none"></div>
+  </div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-meta" id="tt-meta"></div>
+</div>
+
+<script src="../data/exchange-lineage-data.js"></script>
+<script>
+// ── DATA LOAD GUARD ─────────────────────────────────────────────────────────
+// If the data file could not load (typically: the page was opened by double-
+// clicking the file, and the browser blocks local data files on file:// pages),
+// say so in plain language instead of rendering a blank page.
+if (typeof EX_DATA === "undefined") {
+  document.body.innerHTML =
+    '<div style="max-width:560px;margin:80px auto;padding:28px 32px;background:#0f1923;border:1px solid #1e2f42;border-radius:12px;font-size:14px;line-height:1.7;color:#e8f0f8">' +
+    '<div style="font-size:17px;font-weight:700;color:#14b8a6;margin-bottom:10px">The data file did not load</div>' +
+    'The page itself is fine, but the browser refused to read the data file next to it. ' +
+    'This happens when the page is opened by double-clicking the HTML file: browsers block local data files on pages opened that way.' +
+    '<div style="margin-top:14px;color:#7a93ad">To preview locally, double-click <b style="color:#e8f0f8">PREVIEW EXCHANGE EXPLORER.command</b> in the Mapping folder. ' +
+    'On the published website this page loads normally.</div></div>';
+  throw new Error("EX_DATA not loaded, halting");
+}
+// ── GENERALIZED LINEAGE SHELL ───────────────────────────────────────────────
+// Nothing below is exchange-specific. All vocabularies (node types, statuses,
+// link types, evidence levels, event types), lane labels, titles and the year
+// range come from the data file. A third lineage explorer (mixers, forums,
+// BPHs) is a new data file plus a copy of this page pointing at it.
+
+const META = EX_DATA.meta;
+const VOCAB = EX_DATA.vocab;
+const NETWORKS = EX_DATA.networks || {};
+const YEAR_MIN = META.yearMin, YEAR_MAX = META.yearMax;
+const ROW_H = 24, BAR_H = 14, LANE_HEAD = 30, LANE_PAD = 8, TOP_PAD = 6, LEFT_PAD = 10, RIGHT_PAD = 46;
+
+const allNodes = EX_DATA.nodes;
+const allEdges = EX_DATA.edges;
+const allEvents = EX_DATA.events || [];
+const nodeById = new Map(allNodes.map(n => [n.id, n]));
+
+// date helpers: "YYYY", "YYYY-MM", "YYYY-MM-DD" -> decimal year
+function parseDate(s) {
+  if (s === null || s === undefined) return null;
+  const p = String(s).split("-").map(Number);
+  const y = p[0], m = p[1] || 1, d = p[2] || 1;
+  return y + (m - 1) / 12 + (d - 1) / 365.25;
+}
+function dispDate(s, approx) {
+  if (s === null || s === undefined) return "Ongoing";
+  return (approx ? "~" : "") + s;
+}
+function startVal(n) { return parseDate(n.first) ?? YEAR_MIN; }
+function endVal(n) { return n.last === null || n.last === undefined ? YEAR_MAX + 0.95 : parseDate(n.last); }
+
+let selectedId = null;
+let traceMode = false;
+let traceIds = new Set();
+let traceEdgeKeys = new Set();
+let rowPos = new Map();
+let xScale = null;
+
+let state = {
+  search: "", yearStart: YEAR_MIN, yearEnd: YEAR_MAX,
+  statusFilters: new Set(Object.keys(VOCAB.statuses)),
+  edgeFilters: new Set(Object.keys(VOCAB.edgeTypes)),
+  confFilters: new Set(Object.keys(VOCAB.confidence)),
+  network: ""
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+function netLabel(k) { return NETWORKS[k] || (k ? k.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "Standalone"); }
+function typeLabel(t) { return (VOCAB.nodeTypes[t] || {}).label || t; }
+function statusBadge(s) {
+  const st = VOCAB.statuses[s] || { label: s, color: "#8b949e" };
+  return `<span class="status-badge" style="background:${st.color}22;color:${st.color}">${st.label.toUpperCase()}</span>`;
+}
+function edgeKey(e) { return e.source + ">" + e.target + ":" + e.type; }
+function edgeStyle(e) {
+  const t = VOCAB.edgeTypes[e.type] || { color: "#64748b", width: 1.2 };
+  const c = VOCAB.confidence[e.confidence] || { dash: null };
+  return { color: t.color, width: t.width, dash: c.dash };
+}
+
+function getVisibleNodes() {
+  const s = state;
+  return allNodes.filter(n => {
+    if (!s.statusFilters.has(n.status)) return false;
+    const start = startVal(n), end = endVal(n);
+    if (end < s.yearStart || start > s.yearEnd + 1) return false;
+    if (s.network && n.network !== s.network) return false;
+    if (s.search) {
+      const q = s.search.toLowerCase();
+      if (!n.label.toLowerCase().includes(q) && !n.id.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+function getVisibleEdges(nodeIds) {
+  return allEdges.filter(e => state.edgeFilters.has(e.type) && state.confFilters.has(e.confidence) && nodeIds.has(e.source) && nodeIds.has(e.target));
+}
+
+// ── LANE LAYOUT ─────────────────────────────────────────────────────────────
+function buildLanes(visNodes) {
+  const byNet = d3.group(visNodes, n => n.network || "standalone");
+  const order = Object.keys(NETWORKS);
+  const lanes = [];
+  const seen = new Set();
+  for (const key of order) {
+    if (byNet.has(key)) {
+      lanes.push({ label: netLabel(key), key, nodes: byNet.get(key) });
+      seen.add(key);
+    }
+  }
+  for (const [key, nodes] of byNet) {
+    if (!seen.has(key)) lanes.push({ label: netLabel(key), key, nodes });
+  }
+  lanes.forEach(l => l.nodes = l.nodes.slice().sort((a, b) => startVal(a) - startVal(b) || a.label.localeCompare(b.label)));
+  return lanes;
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+function build() {
+  const visNodes = getVisibleNodes();
+  const nodeIds = new Set(visNodes.map(n => n.id));
+  const visEdges = getVisibleEdges(nodeIds);
+  const lanes = buildLanes(visNodes);
+
+  document.getElementById("stat-nodes").textContent = allNodes.length;
+  document.getElementById("stat-edges").textContent = allEdges.length;
+  document.getElementById("stat-visible").textContent = visNodes.length;
+
+  renderSearchResults(visNodes);
+
+  const scrollWrap = document.getElementById("scroll-wrap");
+  const width = Math.max(680, scrollWrap.clientWidth - 2);
+  const y0dom = state.yearStart, y1dom = state.yearEnd;
+  xScale = d3.scaleLinear().domain([y0dom - 0.25, y1dom + 1.05]).range([LEFT_PAD, width - RIGHT_PAD]);
+
+  let y = TOP_PAD;
+  const laneMeta = [];
+  lanes.forEach((lane, i) => {
+    const h = LANE_HEAD + lane.nodes.length * ROW_H + LANE_PAD;
+    laneMeta.push({ ...lane, y0: y, h, alt: i % 2 === 1 });
+    y += h;
+  });
+  const totalH = y + 20;
+
+  const svg = d3.select("#tl-svg").attr("width", width).attr("height", totalH);
+  svg.selectAll("*").remove();
+
+  const defs = svg.append("defs");
+  Object.entries(VOCAB.edgeTypes).forEach(([t, cfg]) => {
+    defs.append("marker").attr("id", "tl-arr-" + t).attr("markerWidth", 7).attr("markerHeight", 7)
+      .attr("refX", 6).attr("refY", 3).attr("orient", "auto")
+      .append("path").attr("d", "M0,0 L0,6 L7,3 z").attr("fill", cfg.color);
+  });
+
+  const laneG = svg.append("g");
+  laneMeta.forEach(l => {
+    laneG.append("rect").attr("class", "lane-band" + (l.alt ? " alt" : ""))
+      .attr("x", 0).attr("y", l.y0).attr("width", width).attr("height", l.h);
+    laneG.append("text").attr("class", "lane-label").attr("x", LEFT_PAD).attr("y", l.y0 + 18).text(l.label);
+    laneG.append("text").attr("class", "lane-count").attr("x", LEFT_PAD + l.label.length * 7.5 + 10).attr("y", l.y0 + 18)
+      .text(l.nodes.length + (l.nodes.length === 1 ? " entity" : " entities"));
+  });
+
+  const gridG = svg.append("g");
+  for (let yr = Math.ceil(y0dom); yr <= y1dom + 1; yr++) {
+    gridG.append("line").attr("class", "year-grid" + (yr % 5 === 0 ? " major" : ""))
+      .attr("x1", xScale(yr)).attr("x2", xScale(yr)).attr("y1", 0).attr("y2", totalH);
+  }
+
+  rowPos = new Map();
+  laneMeta.forEach(l => {
+    l.nodes.forEach((n, i) => {
+      const ry = l.y0 + LANE_HEAD + i * ROW_H + (ROW_H - BAR_H) / 2;
+      const sv = Math.max(startVal(n), y0dom - 0.2);
+      const ev = Math.min(endVal(n), y1dom + 1.0);
+      rowPos.set(n.id, { y: ry + BAR_H / 2, x0: xScale(sv), x1: xScale(Math.max(ev, sv + 0.15)), barY: ry, node: n });
+    });
+  });
+
+  // edges (under bars)
+  const edgeG = svg.append("g");
+  visEdges.forEach(e => {
+    const s = rowPos.get(e.source), t = rowPos.get(e.target);
+    if (!s || !t) return;
+    const st = edgeStyle(e);
+    const tx = Math.max(t.x0, LEFT_PAD);
+    const sx = Math.min(Math.max(tx, s.x0 + 6), s.x1 - 2);
+    const sy = s.y, ty = t.y;
+    const targetEntry = tx - 4;
+    const midY = (sy + ty) / 2;
+    const path = `M${sx},${sy} C${sx},${midY} ${targetEntry},${midY} ${targetEntry},${ty}`;
+    edgeG.append("path")
+      .attr("class", "edge-path")
+      .attr("d", path)
+      .attr("data-key", edgeKey(e))
+      .attr("data-src", e.source).attr("data-tgt", e.target)
+      .attr("stroke", st.color)
+      .attr("stroke-width", st.width)
+      .attr("stroke-dasharray", st.dash)
+      .attr("opacity", e.type === "succession" || e.type === "rebrand" ? 0.9 : e.type === "relationship" ? 0.35 : 0.55)
+      .attr("marker-end", `url(#tl-arr-${e.type})`);
+    // invisible wide twin of the same curve so the hover target is generous
+    edgeG.append("path")
+      .attr("class", "edge-hit")
+      .attr("d", path)
+      .on("mouseover", (event) => showTooltipRaw(event,
+        (nodeById.get(e.source)?.label || e.source) + " → " + (nodeById.get(e.target)?.label || e.target),
+        (VOCAB.edgeTypes[e.type]?.label || e.type) + " [" + (VOCAB.confidence[e.confidence]?.label || e.confidence) + "]" + (e.label ? " · " + e.label : "")))
+      .on("mousemove", moveTooltip)
+      .on("mouseout", hideTooltip);
+    // reconstitution interval printed on the arrow itself, in a small pill
+    if (e.interval) {
+      const cx = (sx + targetEntry) / 2;
+      const tw = e.interval.length * 6.6 + 14;
+      const g = edgeG.append("g").attr("class", "edge-interval").attr("data-key", edgeKey(e));
+      g.append("rect")
+        .attr("x", cx - tw / 2).attr("y", midY - 9)
+        .attr("width", tw).attr("height", 18).attr("rx", 9)
+        .attr("stroke", st.color).attr("stroke-width", 1.2);
+      g.append("text")
+        .attr("x", cx).attr("y", midY + 4)
+        .attr("text-anchor", "middle")
+        .attr("fill", st.color)
+        .text(e.interval);
+    }
+  });
+
+  // bars
+  const barG = svg.append("g");
+  laneMeta.forEach(l => {
+    l.nodes.forEach(n => {
+      const p = rowPos.get(n.id);
+      const tv = VOCAB.nodeTypes[n.type] || { fill: "#1e3a5f", stroke: "#3d6a9e", text: "#dce8f5" };
+      const sc = (VOCAB.statuses[n.status] || {}).color || "#8b949e";
+      const g = barG.append("g").attr("class", "bar").attr("data-id", n.id)
+        .on("click", (event) => { event.stopPropagation(); selectNode(n); })
+        .on("mouseover", (event) => showTooltip(event, n))
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip);
+      const barW = Math.max(p.x1 - p.x0, 8);
+      g.append("rect").attr("class", "lifespan")
+        .attr("x", p.x0).attr("y", p.barY).attr("width", barW).attr("height", BAR_H)
+        .attr("fill", tv.fill).attr("fill-opacity", 0.9)
+        .attr("stroke", sc).attr("stroke-width", 1.5);
+      const est = n.label.length * 6.3 + 10;
+      let lx, anchor, fill;
+      if (barW >= est) { lx = p.x0 + 6; anchor = "start"; fill = tv.text; }
+      else if (p.x1 + est < width - 6) { lx = p.x1 + 6; anchor = "start"; fill = "#b9cbdd"; }
+      else { lx = p.x0 - 6; anchor = "end"; fill = "#b9cbdd"; }
+      g.append("text").attr("class", "bar-label")
+        .attr("x", lx).attr("y", p.barY + BAR_H - 3.5)
+        .attr("text-anchor", anchor).attr("fill", fill)
+        .text(n.label);
+    });
+  });
+
+  // event markers
+  const evG = svg.append("g");
+  allEvents.forEach(ev => {
+    const ex0 = parseDate(ev.date);
+    if (ex0 < y0dom || ex0 > y1dom + 1) return;
+    ev.actor_ids.forEach(aid => {
+      const p = rowPos.get(aid);
+      if (!p) return;
+      const ex = xScale(ex0);
+      evG.append("path").attr("class", "event-mark").attr("data-id", aid)
+        .attr("d", `M${ex},${p.y - 6.5} l5,6.5 l-5,6.5 l-5,-6.5 z`)
+        .attr("fill", (VOCAB.eventTypes[ev.type] || {}).color || "#14b8a6")
+        .attr("stroke", "#090d12").attr("stroke-width", 1)
+        .on("mouseover", (event) => showTooltipRaw(event, ev.label, ev.date + " · " + ((VOCAB.eventTypes[ev.type] || {}).label || ev.type)))
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip);
+    });
+  });
+
+  // axis (sticky)
+  const axisSvg = d3.select("#axis-svg").attr("width", width);
+  axisSvg.selectAll("*").remove();
+  for (let yr = Math.ceil(y0dom); yr <= y1dom; yr++) {
+    axisSvg.append("text").attr("class", "axis-year").attr("x", xScale(yr + 0.5)).attr("y", 17).attr("text-anchor", "middle").text(yr);
+    axisSvg.append("line").attr("x1", xScale(yr)).attr("x2", xScale(yr)).attr("y1", 20).attr("y2", 26).attr("stroke", "#1b2b3d");
+  }
+
+  svg.on("click", () => { if (!traceMode) clearSelection(); });
+
+  applyHighlight();
+}
+
+// ── SEARCH RESULTS LIST ─────────────────────────────────────────────────────
+function renderSearchResults(visNodes) {
+  const wrap = document.getElementById("search-results");
+  document.getElementById("result-count").textContent = visNodes.length;
+  const sorted = visNodes.slice().sort((a, b) => a.label.localeCompare(b.label));
+  wrap.innerHTML = sorted.map(n =>
+    `<div class="search-item${n.id === selectedId ? " selected" : ""}" data-id="${n.id}">
+      <div class="si-name">${n.label}${statusBadge(n.status)}</div>
+      <div class="si-meta">${typeLabel(n.type)} · ${netLabel(n.network)} · ${dispDate(n.first, n.approx)} to ${dispDate(n.last)}</div>
+    </div>`).join("");
+  wrap.querySelectorAll(".search-item").forEach(el => {
+    el.addEventListener("click", () => { const n = nodeById.get(el.dataset.id); if (n) { selectNode(n); scrollToNode(n.id); } });
+  });
+}
+
+// ── SELECTION / DETAIL ──────────────────────────────────────────────────────
+function selectNode(n) {
+  if (traceMode) { runTrace(n.id); }
+  selectedId = n.id;
+  try { history.replaceState(null, "", "#actor=" + n.id); } catch (err) {}
+  renderDetail(n);
+  applyHighlight();
+  document.querySelectorAll(".search-item").forEach(el => el.classList.toggle("selected", el.dataset.id === n.id));
+}
+function clearSelection() {
+  selectedId = null;
+  exitTrace();
+  document.getElementById("detail-empty").style.display = "";
+  document.getElementById("detail-content").style.display = "none";
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (err) {}
+  applyHighlight();
+  document.querySelectorAll(".search-item").forEach(el => el.classList.remove("selected"));
+}
+function scrollToNode(id) {
+  const p = rowPos.get(id);
+  if (!p) return;
+  const wrap = document.getElementById("scroll-wrap");
+  wrap.scrollTo({ top: Math.max(0, p.y - wrap.clientHeight / 2), behavior: "smooth" });
+}
+function renderDetail(n) {
+  document.getElementById("detail-empty").style.display = "none";
+  const c = document.getElementById("detail-content");
+  c.style.display = "";
+  const rels = allEdges.filter(e => e.source === n.id || e.target === n.id);
+  const relHtml = rels.length ? rels.map(e => {
+    const outbound = e.source === n.id;
+    const otherId = outbound ? e.target : e.source;
+    const other = nodeById.get(otherId);
+    const tc = (VOCAB.edgeTypes[e.type] || {}).color || "#64748b";
+    return `<div class="rel-item">
+      <span class="rel-arrow">${outbound ? "→" : "←"}</span>
+      <div><span class="rel-name" data-id="${otherId}">${other ? other.label : otherId}</span><span class="conf-tag">${e.confidence}</span>
+      <span class="rel-type" style="color:${tc}">${(VOCAB.edgeTypes[e.type] || {}).label || e.type}${e.label ? " · " + e.label : ""}</span></div>
+    </div>`;
+  }).join("") : `<div style="font-size:12px;color:var(--muted)">No recorded lineage links</div>`;
+  const evs = allEvents.filter(ev => ev.actor_ids.includes(n.id)).sort((a, b) => parseDate(a.date) - parseDate(b.date));
+  const evHtml = evs.length ? evs.map(ev => `<div class="event-item"><span class="event-year">${ev.date}</span> ${ev.label}</div>`).join("") : "";
+  c.innerHTML = `
+    <div class="detail-header">
+      <h2>${n.label}</h2>
+      <div class="dtype">${typeLabel(n.type)}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Profile</h3>
+      <div class="kv-row"><span class="k">Status</span><span class="v">${statusBadge(n.status)}</span></div>
+      <div class="kv-row"><span class="k">Network</span><span class="v">${netLabel(n.network)}</span></div>
+      <div class="kv-row"><span class="k">First seen</span><span class="v">${dispDate(n.first, n.approx)}</span></div>
+      <div class="kv-row"><span class="k">Last seen</span><span class="v">${dispDate(n.last)}</span></div>
+      ${n.seed ? `<div class="kv-row"><span class="k">S12 seed key</span><span class="v">${n.seed}</span></div>` : ""}
+      ${n.notes ? `<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">${n.notes}</div>` : ""}
+    </div>
+    <div class="detail-section">
+      <h3>Lineage Links (${rels.length})</h3>
+      ${relHtml}
+    </div>
+    ${evHtml ? `<div class="detail-section"><h3>Key Events</h3>${evHtml}</div>` : ""}
+    <div class="detail-section" style="border-bottom:none">
+      <button class="ctrl-btn" id="btn-detail-trace" style="width:100%">Trace Full Lineage</button>
+    </div>`;
+  c.querySelectorAll(".rel-name").forEach(el => {
+    el.addEventListener("click", () => { const o = nodeById.get(el.dataset.id); if (o) { selectNode(o); scrollToNode(o.id); } });
+  });
+  const bt = document.getElementById("btn-detail-trace");
+  if (bt) bt.addEventListener("click", () => { runTrace(n.id); });
+}
+
+// ── TRACE ───────────────────────────────────────────────────────────────────
+function runTrace(startId) {
+  traceMode = true;
+  traceIds = new Set([startId]);
+  traceEdgeKeys = new Set();
+  const active = allEdges.filter(e => state.edgeFilters.has(e.type) && state.confFilters.has(e.confidence));
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const e of active) {
+      if (traceIds.has(e.source) || traceIds.has(e.target)) {
+        if (!traceIds.has(e.source)) { traceIds.add(e.source); grew = true; }
+        if (!traceIds.has(e.target)) { traceIds.add(e.target); grew = true; }
+        traceEdgeKeys.add(edgeKey(e));
+      }
+    }
+  }
+  document.getElementById("trace-banner").style.display = "block";
+  document.getElementById("btn-trace").classList.add("active");
+  applyHighlight();
+}
+function exitTrace() {
+  traceMode = false;
+  traceIds = new Set();
+  traceEdgeKeys = new Set();
+  document.getElementById("trace-banner").style.display = "none";
+  document.getElementById("btn-trace").classList.remove("active");
+  applyHighlight();
+}
+
+// ── HIGHLIGHT STATE ─────────────────────────────────────────────────────────
+function applyHighlight() {
+  const tracing = traceMode && traceIds.size > 0;
+  d3.selectAll(".bar").each(function () {
+    const id = this.dataset.id;
+    const dim = tracing ? !traceIds.has(id) : false;
+    this.classList.toggle("dimmed", dim);
+    this.classList.toggle("selected", id === selectedId);
+  });
+  d3.selectAll(".edge-path").each(function () {
+    const key = this.dataset.key;
+    const touches = this.dataset.src === selectedId || this.dataset.tgt === selectedId;
+    const dim = tracing ? !traceEdgeKeys.has(key) : false;
+    this.classList.toggle("dimmed", dim);
+    this.classList.toggle("highlight", !dim && (touches || (tracing && traceEdgeKeys.has(key))));
+  });
+  d3.selectAll(".event-mark").each(function () {
+    this.classList.toggle("dimmed", tracing ? !traceIds.has(this.dataset.id) : false);
+  });
+  d3.selectAll(".edge-interval").each(function () {
+    this.classList.toggle("dimmed", tracing ? !traceEdgeKeys.has(this.dataset.key) : false);
+  });
+}
+
+// ── TOOLTIP ─────────────────────────────────────────────────────────────────
+const tooltip = document.getElementById("tooltip");
+function showTooltip(event, n) {
+  showTooltipRaw(event, n.label, `${typeLabel(n.type)} · ${netLabel(n.network)} · ${dispDate(n.first, n.approx)} to ${dispDate(n.last)}`);
+}
+function showTooltipRaw(event, name, meta) {
+  document.getElementById("tt-name").textContent = name;
+  document.getElementById("tt-meta").textContent = meta;
+  tooltip.style.display = "block";
+  moveTooltip(event);
+}
+function moveTooltip(event) {
+  const px = event.clientX, py = event.clientY;
+  tooltip.style.left = Math.min(px + 14, window.innerWidth - 280) + "px";
+  tooltip.style.top = Math.min(py + 12, window.innerHeight - 90) + "px";
+}
+function hideTooltip() { tooltip.style.display = "none"; }
+
+// ── DYNAMIC UI FROM VOCAB ───────────────────────────────────────────────────
+(function initHeader() {
+  document.getElementById("page-title").textContent = META.title;
+  document.title = META.title + " | The Observatory";
+  let sub = META.sub || "";
+  const el = document.getElementById("page-sub");
+  el.textContent = sub;
+  if (META.sister) {
+    const a = document.createElement("a");
+    a.href = META.sister.href; a.textContent = META.sister.label;
+    el.appendChild(document.createTextNode(" · sister page: "));
+    el.appendChild(a);
+  }
+})();
+
+(function initFilters() {
+  const sf = document.getElementById("status-filters");
+  Object.entries(VOCAB.statuses).forEach(([k, v]) => {
+    const l = document.createElement("label");
+    l.className = "filter-row";
+    l.innerHTML = `<input type="checkbox" class="status-filter" value="${k}" checked><div class="dot" style="background:${v.color}"></div>${v.label}`;
+    sf.appendChild(l);
+  });
+  const ef = document.getElementById("edge-filters");
+  Object.entries(VOCAB.edgeTypes).forEach(([k, v]) => {
+    const l = document.createElement("label");
+    l.className = "filter-row";
+    l.innerHTML = `<input type="checkbox" class="edge-filter" value="${k}" checked><div class="dot" style="background:${v.color}"></div>${v.label}`;
+    ef.appendChild(l);
+  });
+  const cf = document.getElementById("conf-filters");
+  Object.entries(VOCAB.confidence).forEach(([k, v]) => {
+    const l = document.createElement("label");
+    l.className = "filter-row";
+    l.innerHTML = `<input type="checkbox" class="conf-filter" value="${k}" checked><div class="dash-sample" style="border-top-style:${v.dash ? (v.dash === "2,3" ? "dotted" : "dashed") : "solid"}"></div>${v.label}`;
+    cf.appendChild(l);
+  });
+  const nf = document.getElementById("net-filter");
+  const counts = d3.rollup(allNodes, v => v.length, n => n.network || "standalone");
+  Object.keys(NETWORKS).forEach(k => {
+    if (!counts.has(k)) return;
+    const o = document.createElement("option");
+    o.value = k; o.textContent = `${netLabel(k)} (${counts.get(k)})`;
+    nf.appendChild(o);
+  });
+
+  ["year-start", "year-end"].forEach(id => {
+    const el = document.getElementById(id);
+    el.min = YEAR_MIN; el.max = YEAR_MAX;
+    el.value = id === "year-start" ? YEAR_MIN : YEAR_MAX;
+  });
+})();
+
+(function initLegend() {
+  const lg = document.getElementById("legend");
+  let html = "<h4>Bar Fill = Entity Type</h4>";
+  Object.values(VOCAB.nodeTypes).forEach(v => {
+    html += `<div class="legend-row"><div class="legend-node" style="background:${v.fill}"></div>${v.label}</div>`;
+  });
+  html += `<h4 style="margin-top:8px">Bar Outline = Status</h4>`;
+  Object.values(VOCAB.statuses).forEach(v => {
+    html += `<div class="legend-row"><div class="legend-node" style="background:transparent;border:2px solid ${v.color}"></div>${v.label}</div>`;
+  });
+  html += `<h4 style="margin-top:8px">Connector = Link Type</h4>`;
+  Object.values(VOCAB.edgeTypes).forEach(v => {
+    html += `<div class="legend-row"><div class="legend-line" style="background:${v.color}"></div>${v.label}</div>`;
+  });
+  html += `<h4 style="margin-top:8px">Line Style = Evidence</h4>`;
+  Object.values(VOCAB.confidence).forEach(v => {
+    const style = v.dash ? (v.dash === "2,3" ? "dotted" : "dashed") : "solid";
+    html += `<div class="legend-row"><div class="legend-line" style="height:0;background:none;border-top:2px ${style} var(--muted)"></div>${v.label}</div>`;
+  });
+  html += `<h4 style="margin-top:8px">Marker</h4>`;
+  Object.values(VOCAB.eventTypes).forEach(v => {
+    html += `<div class="legend-row"><span style="color:${v.color};font-size:12px">◆</span>${v.label}</div>`;
+  });
+  lg.innerHTML = html;
+})();
+
+// ── CONTROLS ────────────────────────────────────────────────────────────────
+function paintRange() {
+  const span = YEAR_MAX - YEAR_MIN || 1;
+  const l = (state.yearStart - YEAR_MIN) / span * 100;
+  const r = (state.yearEnd - YEAR_MIN) / span * 100;
+  const f = document.getElementById("range-fill");
+  f.style.left = l + "%";
+  f.style.width = Math.max(r - l, 0) + "%";
+  document.getElementById("yr-start-val").textContent = state.yearStart;
+  document.getElementById("yr-end-val").textContent = state.yearEnd;
+}
+document.getElementById("search-input").addEventListener("input", e => { state.search = e.target.value.trim(); build(); });
+document.getElementById("year-start").addEventListener("input", e => {
+  state.yearStart = +e.target.value;
+  if (state.yearStart > state.yearEnd) { state.yearEnd = state.yearStart; document.getElementById("year-end").value = state.yearEnd; }
+  paintRange();
+  build();
+});
+document.getElementById("year-end").addEventListener("input", e => {
+  state.yearEnd = +e.target.value;
+  if (state.yearEnd < state.yearStart) { state.yearStart = state.yearEnd; document.getElementById("year-start").value = state.yearStart; }
+  paintRange();
+  build();
+});
+document.addEventListener("change", e => {
+  if (e.target.classList.contains("status-filter")) {
+    state.statusFilters = new Set([...document.querySelectorAll(".status-filter:checked")].map(c => c.value)); build();
+  } else if (e.target.classList.contains("edge-filter")) {
+    state.edgeFilters = new Set([...document.querySelectorAll(".edge-filter:checked")].map(c => c.value)); build();
+  } else if (e.target.classList.contains("conf-filter")) {
+    state.confFilters = new Set([...document.querySelectorAll(".conf-filter:checked")].map(c => c.value)); build();
+  }
+});
+document.getElementById("net-filter").addEventListener("change", e => { state.network = e.target.value; build(); });
+document.getElementById("btn-trace").addEventListener("click", () => {
+  if (traceMode) { exitTrace(); return; }
+  if (selectedId) runTrace(selectedId);
+  else { traceMode = true; document.getElementById("trace-banner").style.display = "block"; document.getElementById("btn-trace").classList.add("active"); }
+});
+document.getElementById("btn-reset-view").addEventListener("click", () => {
+  document.getElementById("scroll-wrap").scrollTo({ top: 0, behavior: "smooth" });
+  clearSelection();
+});
+document.getElementById("btn-reset-filters").addEventListener("click", () => {
+  state = { search: "", yearStart: YEAR_MIN, yearEnd: YEAR_MAX,
+    statusFilters: new Set(Object.keys(VOCAB.statuses)),
+    edgeFilters: new Set(Object.keys(VOCAB.edgeTypes)),
+    confFilters: new Set(Object.keys(VOCAB.confidence)),
+    network: "" };
+  document.getElementById("search-input").value = "";
+  document.getElementById("year-start").value = YEAR_MIN;
+  document.getElementById("year-end").value = YEAR_MAX;
+  paintRange();
+  document.querySelectorAll(".status-filter, .edge-filter, .conf-filter").forEach(cb => cb.checked = true);
+  document.getElementById("net-filter").value = "";
+  build();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") { exitTrace(); } });
+document.getElementById("legend-btn").addEventListener("click", () => {
+  const lg = document.getElementById("legend");
+  lg.classList.toggle("open");
+  document.getElementById("legend-btn").classList.toggle("active", lg.classList.contains("open"));
+});
+document.getElementById("scroll-wrap").addEventListener("scroll", function () {
+  document.getElementById("axis-wrap").scrollLeft = this.scrollLeft;
+});
+window.addEventListener("resize", () => build());
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+paintRange();
+build();
+(function () {
+  const m = location.hash.match(/actor=([a-z0-9_]+)/i);
+  if (m && nodeById.has(m[1])) {
+    const n = nodeById.get(m[1]);
+    selectNode(n);
+    setTimeout(() => scrollToNode(n.id), 150);
+  }
+})();
+</script>
+</body>
+</html>
