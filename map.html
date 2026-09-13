@@ -465,7 +465,7 @@ body.present #delta-feed { display:none !important; }
 <!-- EDITION LOADER: reads data/map-manifests.js, picks the edition from
      ?edition=<name> (or data-edition on <html> for self-contained builds),
      then loads that edition's packs from data/packs/ in order. -->
-<script src="data/map-manifests.js?v=7"></script>
+<script src="data/map-manifests.js?v=8"></script>
 <script>
 (function(){
   var M = window.MAP_MANIFESTS || { version:'0', defaultEdition:'public', editions:{} };
@@ -2432,8 +2432,8 @@ function drawMeasureOverlay(){
         .text((V[v] || V.UNMAPPED).short + (r && r.freshest_days != null && v !== 'UNMAPPED' ? ' · ' + r.freshest_days + 'd' : ''));
     });
   }
-  measureG.append('text').attr('x', PADL).attr('y', PADT - 40).attr('text-anchor','start').attr('font-size', 10)
-    .attr('font-family','Segoe UI,sans-serif').attr('fill', '#3a9850').attr('font-weight','700').attr('letter-spacing','0.5').text(legend);
+  /* no on-canvas legend: the register facts live on the Measurement button's tooltip */
+  const mb = document.getElementById('btn-measure'); if (mb) mb.dataset.tip = legend;
 }
 if (MEASURE) {
   document.getElementById('btn-measure').onclick = () => {
@@ -2481,8 +2481,7 @@ function drawCoverageOverlay(){
       .attr('font-family','Segoe UI,sans-serif').attr('fill', c).attr('font-weight','700').attr('letter-spacing','0.8').text(S[rec.status].short);
   });
   const legend = 'Open collection coverage (' + (SOURCES.meta.asOf || '') + '): ' + Object.keys(S).filter(k => counts[k]).map(k => counts[k] + ' ' + k.toLowerCase()).join(', ') + ' of ' + NODES.length + ' nodes. Open sources only.';
-  coverageG.append('text').attr('x', PADL).attr('y', PADT - 40).attr('text-anchor','start').attr('font-size', 10)
-    .attr('font-family','Segoe UI,sans-serif').attr('fill', '#3a9850').attr('font-weight','700').attr('letter-spacing','0.5').text(legend);
+  const cb = document.getElementById('btn-coverage'); if (cb) cb.dataset.tip = legend;
 }
 if (SOURCES) {
   document.getElementById('btn-coverage').onclick = () => {
@@ -2493,10 +2492,166 @@ if (SOURCES) {
   };
 }
 
+
+/* ── LATEST READINGS (analyst pack; the collectors' own numbers) ── */
+/* The register names the collector files that feed a node. When a node
+   is selected, those files are fetched (once, cached) and their latest
+   values rendered in plain language. Nothing here is typed in: every
+   number comes from a file the daily collectors wrote. */
+const feedCache = {}, feedState = {};
+function feedsForNode(id){
+  const r = measurementVerdict(id);
+  if (!r) return [];
+  const names = [];
+  (r.feeds || []).forEach(f => { if (f.present && MEASURE.feeds[f.file]) names.push(f.file); });
+  (r.watched_by || []).forEach(f => { if (f.present && MEASURE.feeds[f.file]) names.push(f.file); });
+  return Array.from(new Set(names));
+}
+function ensureFeeds(id){
+  if (!MEASURE) return;
+  if (!measureData) {
+    if (measureState !== 'loading') {
+      measureState = 'loading';
+      loadJson(MEASURE.registerUrl).then(d => { measureData = d; measureState = 'ready'; if (selectedNode) renderSelection(nodeById[selectedNode]); }).catch(() => { measureState = 'error'; });
+    }
+    return;
+  }
+  feedsForNode(id).forEach(name => {
+    if (feedCache[name] || feedState[name] === 'loading' || feedState[name] === 'error') return;
+    feedState[name] = 'loading';
+    loadJson(MEASURE.feeds[name].url).then(d => { feedCache[name] = d; feedState[name] = 'ready'; if (selectedNode === id) renderSelection(nodeById[id]); })
+      .catch(() => { feedState[name] = 'error'; if (selectedNode === id) renderSelection(nodeById[id]); });
+  });
+}
+const fmtN = n => (n == null || isNaN(n)) ? '?' : Number(n).toLocaleString('en-US');
+const lastMonths = (obj, k) => Object.keys(obj || {}).sort().slice(-k);
+const monthName = m => { const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const p = m.split('-'); return MON[parseInt(p[1],10)-1] + ' ' + p[0]; };
+const topPairs = (x, k) => { const arr = Array.isArray(x) ? x.map(p => Array.isArray(p) ? p : [p.name || p[0], p.count || p[1]]) : Object.entries(x || {}); return arr.sort((a,b) => b[1]-a[1]).slice(0, k); };
+const providerRows = (providers, fn) => Object.keys(providers || {}).map(k => providers[k]).sort((a,b) => (b.designated?1:0)-(a.designated?1:0)).map(fn);
+
+/* Each extractor returns [{label, value}] for one node from one feed. */
+const READERS = {
+  'victims-monthly.json': (d, id) => {
+    const ms = lastMonths(d.months, 13); if (ms.length < 2) return [];
+    const now = new Date(); const cur = now.toISOString().slice(0,7);
+    const complete = ms.filter(m => m < cur); const last = complete[complete.length-1], prev = complete[complete.length-2];
+    const L = d.months[last], P = d.months[prev]; const out = [];
+    out.push({ label: monthName(last) + ' (last complete month)', value: fmtN(L.total) + ' victims posted by ' + fmtN(L.distinct_groups) + ' brands' + (P ? ' (' + monthName(prev) + ': ' + fmtN(P.total) + ' by ' + fmtN(P.distinct_groups) + ')' : '') });
+    if (d.months[cur]) out.push({ label: monthName(cur) + ' so far', value: fmtN(d.months[cur].total) + ' victims, ' + fmtN(d.months[cur].distinct_groups) + ' brands (partial month)' });
+    if (id === 'raas' && L.by_group) out.push({ label: 'Most active brands, ' + monthName(last), value: topPairs(L.by_group, 6).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+    if (id === 'leaksite' && L.by_country) out.push({ label: 'Top victim countries, ' + monthName(last), value: topPairs(L.by_country, 5).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+    if (id === 'leaksite' && L.by_sector) out.push({ label: 'Top sectors, ' + monthName(last), value: topPairs(L.by_sector, 5).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+    out.push({ label: 'Twelve-month trend', value: ms.filter(m => m < cur).slice(-12).map(m => monthName(m).slice(0,3) + ' ' + fmtN(d.months[m].total)).join(' · ') });
+    return out;
+  },
+  'exploit-lag.json': (d) => {
+    const ms = lastMonths(d.months, 3); const out = [];
+    const m = ms[ms.length-1], M = d.months[m] || {};
+    out.push({ label: monthName(m) + ' additions to the KEV catalogue', value: fmtN(M.added) + ' entries, ' + fmtN(M.ransomware_linked) + ' ransomware-linked, ' + fmtN(M.zero_day) + ' exploited before disclosure; median disclosure-to-exploitation lag ' + fmtN(M.median_lag_days) + ' days (sample ' + fmtN(M.lag_sample) + ')' });
+    if (ms.length > 1) { const p = ms[ms.length-2], PM = d.months[p]; out.push({ label: monthName(p), value: fmtN(PM.added) + ' entries, ' + fmtN(PM.ransomware_linked) + ' ransomware-linked, median lag ' + fmtN(PM.median_lag_days) + ' days' }); }
+    out.push({ label: 'All time', value: fmtN(d.meta.total_catalogued) + ' catalogued, ' + fmtN(d.meta.ransomware_linked) + ' ransomware-linked, ' + fmtN(d.meta.zero_day_cases) + ' zero-day cases, median lag ' + fmtN(d.meta.median_lag_days_all_time) + ' days' });
+    if (d.top_ransomware_linked_vendors) out.push({ label: 'Vendors most often in ransomware-linked entries', value: topPairs(d.top_ransomware_linked_vendors, 6).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+    return out;
+  },
+  'crypter-usage.json': (d, id) => {
+    const out = [];
+    const wrap = d.criminal_wrappers || {}, comm = d.commodity_protectors || {};
+    if (id === 'stealers') {
+      const fam = {};
+      [wrap, comm].forEach(g => Object.values(g).forEach(t => { const tf = t.top_families; (Array.isArray(tf) ? tf : Object.entries(tf || {})).forEach(p => { const n = Array.isArray(p) ? p[0] : (p.name || p.family); const c = Array.isArray(p) ? p[1] : (p.count || 0); if (n) fam[n] = (fam[n]||0) + c; }); }));
+      out.push({ label: 'Families most often seen wrapped or packed', value: topPairs(fam, 8).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') || 'none returned' });
+    } else {
+      out.push({ label: 'Criminal wrapper tags, samples returned', value: topPairs(Object.fromEntries(Object.entries(wrap).map(([k,v]) => [k, v.samples||0])), 8).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+      out.push({ label: 'Commodity protectors, samples returned', value: topPairs(Object.fromEntries(Object.entries(comm).map(([k,v]) => [k, v.samples||0])), 5).map(p => p[0] + ' ' + fmtN(p[1]) + (comm[p[0]].truncated ? '+' : '')).join(', ') });
+    }
+    out.push({ label: 'Query scope', value: fmtN(d.meta.tags_queried) + ' tags queried, ' + fmtN(d.meta.tags_returning_data) + ' returned data, sample cap ' + fmtN(d.meta.sample_cap) + ' per tag' });
+    return out;
+  },
+  'hosted-threats.json': (d, id) => {
+    const out = [];
+    if (id === 'loaders') {
+      out.push({ label: 'Live botnet command servers by family (ecosystem-wide)', value: topPairs(d.ecosystem_botnet_c2_by_family, 8).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+      const t = d.indicator_types_on_tracked_space || {};
+      out.push({ label: 'Indicators on tracked provider space', value: Object.keys(t).map(k => k.replace(/_/g,' ') + ' ' + fmtN(t[k])).join(', ') });
+    } else {
+      out.push({ label: 'Indicators on each provider\'s own confirmed networks', value: providerRows(d.providers, p => p.name + ' ' + fmtN(p.indicators_confirmed_own) + (p.indicators_on_successor ? ' (+' + p.indicators_on_successor + ' on successor)' : '') + (p.indicators_on_sibling ? ' (+' + p.indicators_on_sibling + ' sibling)' : '')).join('; ') });
+      out.push({ label: 'Families on tracked space', value: topPairs(d.malware_families_on_tracked_space, 6).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') });
+    }
+    out.push({ label: 'Scope', value: fmtN(d.meta.prefixes_checked) + ' prefixes checked over ' + fmtN(d.meta.runs) + ' runs, ' + fmtN(d.meta.indicators_examined) + ' indicators examined, ' + fmtN(d.meta.indicators_on_confirmed_networks) + ' on confirmed networks' });
+    return out;
+  },
+  'transit-carriers.json': (d) => [
+    { label: 'Networks visible in routing now (dark = withdrawn), distinct upstream carriers', value: providerRows(d.providers, p => p.name + (p.designated ? ' [designated]' : '') + ': ' + fmtN(p.networks_visible) + ' of ' + fmtN(p.networks_tracked) + ' visible, ' + fmtN(p.networks_dark) + ' dark, ' + fmtN(p.distinct_upstreams_now) + ' upstreams').join('; ') },
+    { label: 'Scope', value: fmtN(d.meta.networks_tracked) + ' networks across ' + fmtN(d.meta.providers) + ' providers, ' + fmtN(d.meta.networks_visible) + ' visible; history from ' + (d.meta.history_from || '?') }
+  ],
+  'registry-sponsors.json': (d) => [
+    { label: 'Registry standing per provider', value: providerRows(d.providers, p => p.name + ': ' + fmtN(p.registered) + ' of ' + fmtN(p.networks) + ' registered, ' + fmtN(p.gone_or_out_of_region) + ' gone or out of region, ' + fmtN(p.distinct_sponsors) + ' sponsors').join('; ') },
+    { label: 'Sponsor concentration (maintainers holding most tracked networks)', value: topPairs(d.sponsor_concentration, 5).map(p => p[0] + ' ' + fmtN(p[1])).join(', ') },
+    { label: 'Scope', value: fmtN(d.meta.networks_checked) + ' networks checked, ' + fmtN(d.meta.registered) + ' registered, ' + fmtN(d.meta.distinct_sponsors) + ' distinct sponsors' }
+  ],
+  'formation-agents.json': (d) => {
+    const out = [{ label: 'UK companies behind tracked providers', value: fmtN(d.meta.companies_resolved) + ' of ' + fmtN(d.meta.companies_queried) + ' resolved at Companies House; ' + fmtN(d.meta.shared_addresses) + ' shared registered office(s), ' + fmtN(d.meta.shared_officers) + ' shared officer(s)' }];
+    Object.keys(d.shared_registered_offices || {}).forEach(a => { const r = d.shared_registered_offices[a]; out.push({ label: 'Shared office: ' + a, value: (r.companies || []).join(', ') + (r.companies_at_this_address ? ' (address hosts ' + fmtN(r.companies_at_this_address) + ' companies in total, a formation-agent address)' : '') }); });
+    Object.keys(d.shared_officers || {}).forEach(o => { const r = d.shared_officers[o]; out.push({ label: 'Shared officer: ' + o, value: (r.companies || []).join(', ') }); });
+    return out;
+  },
+  'sanctioned-wallets.json': (d) => {
+    const m = d.meta || {}; const ents = d.entities || {};
+    const active = Object.keys(ents).filter(k => ents[k].days_since_activity != null && ents[k].days_since_activity <= 90).map(k => k + ' (' + ents[k].days_since_activity + 'd ago)');
+    const after = Object.keys(ents).filter(k => ents[k].days_activity_after_designation != null && ents[k].days_activity_after_designation > 0).map(k => k + ' (' + fmtN(ents[k].days_activity_after_designation) + ' days after designation)');
+    return [
+      { label: 'Listed addresses read', value: fmtN(m.addresses_read) + ' of ' + fmtN(m.addresses_listed) + ' across ' + fmtN(m.entities) + ' designated entities (coverage ' + Math.round((m.coverage||0)*100) + '%); Bitcoin and Tron read, other chains reported unread' },
+      { label: 'Listed addresses active in the last 90 days', value: active.length ? active.join(', ') : 'none' },
+      { label: 'Activity after the designation date', value: after.length ? after.join(', ') : 'none detected' }
+    ];
+  },
+  'staleness.json': (d, id) => {
+    const n = nodeById[id]; const label = n ? n.label.join(' ') : '';
+    const rows = (d.files || []).filter(f => (f.nodes || []).some(x => label.toLowerCase().indexOf(String(x).toLowerCase().replace(' and ', ' & ')) >= 0 || String(x).toLowerCase().indexOf(label.toLowerCase()) >= 0));
+    const out = rows.map(f => ({ label: f.label, value: f.as_of ? 'as of ' + f.as_of + ' (' + fmtN(f.as_of_age_days) + ' days old)' : 'no as-of stamp' }));
+    if (d.meta && d.meta.newest_domestic_check) out.push({ label: 'Newest domestic-prosecution check', value: d.meta.newest_domestic_check + ' (' + fmtN(d.meta.newest_check_age_days) + ' days ago)' });
+    return out;
+  },
+  'sanctions-drift.json': (d) => [
+    { label: 'Tracker vs the OFAC list', value: fmtN(d.meta.tracker_records) + ' tracker records against ' + fmtN(d.meta.ofac_cyber_entries) + ' cyber-programme SDN entries; ' + fmtN(d.meta.candidates_unlogged) + ' SDN candidates not in the tracker, ' + fmtN(d.meta.candidates_absent) + ' tracker entries not found on the SDN; tracker as of ' + d.meta.tracker_as_of },
+    { label: 'Tracker entries claiming sanctions but absent from the SDN', value: (d.tracker_entries_not_on_sdn || []).map(e => e.name).join(', ') || 'none' }
+  ],
+  'scoreboard-drift.json': (d) => [
+    { label: 'Claimed outcomes checked against the victim series', value: fmtN(d.meta.operations_checked) + ' operations checked, ' + fmtN(d.meta.worth_checking) + ' flagged for review; scoreboard as of ' + d.meta.scoreboard_as_of },
+    { label: 'Verdicts', value: (d.operations || []).map(o => o.operation + ': ' + o.verdict.toLowerCase()).join('; ') }
+  ]
+};
+
+function readingsSection(d){
+  if (!MEASURE || !measureData) return '';
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const names = feedsForNode(d.id);
+  if (!names.length) return '';
+  let html = '';
+  names.forEach(name => {
+    const cfg = MEASURE.feeds[name]; const data = feedCache[name];
+    let body;
+    if (feedState[name] === 'error') body = '<span style="color:#8a6a6a">Feed not reachable from this copy.</span>';
+    else if (!data) body = '<span style="color:#4a6888">Loading…</span>';
+    else {
+      let rows = [];
+      try { rows = (READERS[name] || (() => []))(data, d.id) || []; } catch (e) { rows = [{ label:'Could not read this feed', value: String(e.message || e) }]; }
+      body = rows.map(r => `<div style="margin:4px 0;"><span style="color:#6a8aaa">${esc(r.label)}:</span> ${esc(r.value)}</div>`).join('') || '<span style="color:#4a6888">No values for this node in the feed.</span>';
+      const built = (data.meta && data.meta.built) || data.checked || data.built;
+      const caveat = data.meta && data.meta.why_this_can_mislead;
+      body += `<div style="margin-top:5px;font-size:9.5px;color:#4a6888;">Source: ${esc(cfg.source)}${built ? ' · collected ' + esc(String(built).replace('T',' ').replace('Z',' UTC')) : ''}</div>`;
+      if (caveat) body += `<div style="margin-top:3px;font-size:9.5px;color:#5a6a80;line-height:1.35;" title="${esc(caveat)}">Caveat: ${esc(caveat.length > 240 ? caveat.slice(0, 240).replace(/\s+\S*$/, '') + '…' : caveat)}</div>`;
+    }
+    html += `<div class="info-section"><div class="info-label">Reading: ${esc(cfg.label)}</div><div class="info-text">${body}</div></div>`;
+  });
+  return html;
+}
+
 /* ── EXTRA PANEL SECTIONS (called from renderNodePanel / renderStatePanel) ── */
 function extraPanelSections(d){
   let html = '';
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  if (MEASURE) { ensureFeeds(d.id); html += readingsSection(d); }
   if (SOURCES && coverageOn) {
     const rec = SOURCES.byNode[d.id];
     if (rec && SOURCES.statuses[rec.status]) {
