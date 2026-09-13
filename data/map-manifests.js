@@ -20,10 +20,12 @@
      startWith   overlays switched on when the page opens
      extends     copy another edition first, then apply this one
 
-   CACHE: bump `version` whenever any pack changes so browsers refetch.
+   CACHE: the monthly bumps the ?v= number on the manifest script tag in
+   map.html; that number versions every pack. Keep `version` here in step
+   with it (it is the fallback for self-contained copies).
    ================================================================== */
 window.MAP_MANIFESTS = {
-  version: '8',
+  version: '9',
   defaultEdition: 'public',
   editions: {
 

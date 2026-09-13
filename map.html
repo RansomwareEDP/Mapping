@@ -465,7 +465,7 @@ body.present #delta-feed { display:none !important; }
 <!-- EDITION LOADER: reads data/map-manifests.js, picks the edition from
      ?edition=<name> (or data-edition on <html> for self-contained builds),
      then loads that edition's packs from data/packs/ in order. -->
-<script src="data/map-manifests.js?v=8"></script>
+<script src="data/map-manifests.js?v=9"></script>
 <script>
 (function(){
   var M = window.MAP_MANIFESTS || { version:'0', defaultEdition:'public', editions:{} };
@@ -488,8 +488,14 @@ body.present #delta-feed { display:none !important; }
   ed.packs = ed.packs || ['structure']; ed.controls = ed.controls || {}; ed.menus = ed.menus || {}; ed.startWith = ed.startWith || [];
   window.MAP_EDITION = ed;
   if (document.documentElement.getAttribute('data-inlined') !== 'true') {
+    /* Cache-buster: the ?v= on the manifest script tag above is the one number
+       the monthly incorporation bumps; it versions every pack as well. The
+       manifest's own version field is the fallback for copies without a tag. */
+    var tag = document.querySelector('script[src*="map-manifests.js"]');
+    var tagV = tag && /[?&]v=([^&]+)/.exec(tag.getAttribute('src') || '');
+    var v = tagV ? tagV[1] : M.version;
     ed.packs.forEach(function(p){
-      document.write('<script src="data/packs/' + p + '.js?v=' + encodeURIComponent(M.version) + '"><\/script>');
+      document.write('<script src="data/packs/' + p + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
     });
   }
 })();
