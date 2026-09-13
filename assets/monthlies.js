@@ -29,6 +29,12 @@
 
 const EDP_MONTHLIES = [
   {
+    ym: "2026-08", month: "AUG", name: "August 2026",
+    title: "August 2026 Activity Summary",
+    desc: "The record leak-site month across a splintering field, the Iran sector-determination and wallet-tagging template, the ChainDrop npm worm, and the third-country interdiction pipeline",
+    html: "briefs/edp-monthly-2026-08.html"
+  },
+  {
     ym: "2026-07", month: "JUL", name: "July 2026",
     title: "July 2026 Activity Summary",
     desc: "Tri-lateral sanctions package, the shift to enabler targeting, issuer-level asset freezing, and payment concentration",
