@@ -650,8 +650,13 @@
 <script src="assets/glossary.js?v=1"></script>
 <script src="assets/bph-upstreams.js?v=1"></script>
 
-<!-- Ecosystem map data: single source of truth for nodes, edges, confidence and tier values -->
-<script src="data/ecosystem-map-data.js"></script>
+<!-- Ecosystem map structure pack: single source of truth for nodes, edges, confidence and tier values -->
+<script src="data/packs/structure.js?v=7"></script>
+<script>
+  /* the pack is namespaced; this page keeps reading the NODES and EDGES names it always used */
+  var NODES = (window.MAP_PACKS && MAP_PACKS.structure) ? MAP_PACKS.structure.nodes : undefined;
+  var EDGES = (window.MAP_PACKS && MAP_PACKS.structure) ? MAP_PACKS.structure.edges : undefined;
+</script>
 <script>
 (function () {
   'use strict';
