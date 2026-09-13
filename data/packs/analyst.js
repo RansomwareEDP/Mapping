@@ -23,6 +23,23 @@ MAP_PACKS.analyst = {
   registerUrl: 'data/measurement/node-coverage.json',
   enforcementUrl: 'data/enforcement.json',
   scoreboardUrl: 'data/scoreboard.json',
+  /* 3. LATEST READINGS. The register says which collector file feeds a
+        node; the map fetches that file when the node is selected and
+        shows its latest values in plain language. One entry per feed the
+        collectors write. Every reading carries the feed's own caveat. */
+  feeds: {
+    'victims-monthly.json':   { url:'data/measurement/victims-monthly.json',   label:'Leak-site victim postings',        source:'ransomware.live' },
+    'exploit-lag.json':       { url:'data/measurement/exploit-lag.json',       label:'Exploitation lag (CISA KEV)',      source:'CISA Known Exploited Vulnerabilities' },
+    'crypter-usage.json':     { url:'data/measurement/crypter-usage.json',     label:'Packer and crypter prevalence',    source:'MalwareBazaar (abuse.ch)' },
+    'hosted-threats.json':    { url:'data/measurement/hosted-threats.json',    label:'Live malware infrastructure',      source:'ThreatFox, URLhaus, Feodo (abuse.ch)' },
+    'transit-carriers.json':  { url:'data/measurement/transit-carriers.json',  label:'Routing and upstream carriers',    source:'RIPEstat' },
+    'registry-sponsors.json': { url:'data/measurement/registry-sponsors.json', label:'Registry standing and sponsors',   source:'RIPE Database' },
+    'formation-agents.json':  { url:'data/measurement/formation-agents.json',  label:'UK shell companies',               source:'Companies House' },
+    'sanctioned-wallets.json':{ url:'data/measurement/sanctioned-wallets.json',label:'Designated wallet activity',       source:'OFAC SDN list joined to public chains' },
+    'staleness.json':         { url:'data/measurement/staleness.json',         label:'Age of hand-maintained evidence',  source:'this site' },
+    'sanctions-drift.json':   { url:'data/measurement/sanctions-drift.json',   label:'Sanctions tracker drift',          source:'OFAC SDN list vs the enforcement tracker' },
+    'scoreboard-drift.json':  { url:'data/measurement/scoreboard-drift.json',  label:'Scoreboard outcome check',         source:'victim series vs the takedown scoreboard' }
+  },
   verdicts: {
     MEASURED:       { color:'#3a9850', short:'MEASURED',   text:'A daily collector currently produces a series for this node.' },
     PARTIAL:        { color:'#c8a020', short:'PARTIAL',    text:'A collector touches the node but a major channel is missing or not yet running.' },

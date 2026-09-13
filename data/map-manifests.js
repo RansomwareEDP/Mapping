@@ -23,7 +23,7 @@
    CACHE: bump `version` whenever any pack changes so browsers refetch.
    ================================================================== */
 window.MAP_MANIFESTS = {
-  version: '7',
+  version: '8',
   defaultEdition: 'public',
   editions: {
 
@@ -39,7 +39,7 @@ window.MAP_MANIFESTS = {
     analyst: {
       extends: 'public',
       title: 'Ransomware Ecosystem v3.0 · Analyst',
-      subtitle: 'Public data plus the measurement layer: which nodes the daily collectors actually instrument, and which enforcement records touch each node.',
+      subtitle: 'Public data plus the measurement layer: which nodes the daily collectors instrument, their latest readings, and the enforcement records that touch each node.',
       packs: ['structure', 'events', 'coverage', 'cases', 'teaching', 'analyst'],
       startWith: ['measurement']
     },

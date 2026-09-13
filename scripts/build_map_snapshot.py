@@ -77,7 +77,7 @@ def main():
     inline_json = {}
     for p in ed["packs"]:
         src = (PACKS / f"{p}.js").read_text()
-        for url in re.findall(r"""(?:registerUrl|enforcementUrl|scoreboardUrl):\s*['"]([^'"]+)['"]""", src):
+        for url in sorted(set(re.findall(r"""['"](data/[A-Za-z0-9_./-]+\.json)['"]""", src))):
             f = ROOT / url
             if f.exists():
                 inline_json[url] = json.loads(f.read_text())
