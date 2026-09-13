@@ -58,7 +58,7 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 
 OUT = pathlib.Path("data/measurement")
-MAPDATA = pathlib.Path("data/ecosystem-map-data.js")
+MAPDATA = pathlib.Path("data/packs/structure.js")
 COVERAGE_MAP = OUT / "node-coverage-map.json"
 
 # A collector that has not run in this long is not measuring anything today.
