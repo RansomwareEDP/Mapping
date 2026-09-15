@@ -10,6 +10,7 @@
      /map                     public edition (default, unchanged)
      /map?edition=analyst     public data plus the measurement layer
      /map?edition=sources     public data plus the coverage layer
+     /map?edition=briefing    presentation mode plus the nine-step briefing walkthrough
 
    Fields:
      title       header title
@@ -18,6 +19,7 @@
      menus       which of the three menus render (view, overlays, stories)
      controls    per-control visibility; a control not listed is shown
      startWith   overlays switched on when the page opens
+     startPresent open in presentation mode (controls hidden, labels enlarged)
      extends     copy another edition first, then apply this one
 
    CACHE: the monthly bumps the ?v= number on the manifest script tag in
@@ -25,7 +27,7 @@
    with it (it is the fallback for self-contained copies).
    ================================================================== */
 window.MAP_MANIFESTS = {
-  version: '9',
+  version: '10',
   defaultEdition: 'public',
   editions: {
 
@@ -44,6 +46,15 @@ window.MAP_MANIFESTS = {
       subtitle: 'Public data plus the measurement layer: which nodes the daily collectors instrument, their latest readings, and the enforcement records that touch each node.',
       packs: ['structure', 'events', 'coverage', 'cases', 'teaching', 'analyst'],
       startWith: ['measurement']
+    },
+
+    briefing: {
+      extends: 'public',
+      title: 'Ransomware Ecosystem v3.0 · Briefing',
+      subtitle: 'The map in presentation mode with a nine-step walkthrough for a senior audience. Press Teaching to start; Present returns to the full map.',
+      packs: ['structure', 'events', 'coverage', 'cases', 'briefing'],
+      startPresent: true,
+      startWith: []
     },
 
     sources: {

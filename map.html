@@ -465,7 +465,7 @@ body.present #delta-feed { display:none !important; }
 <!-- EDITION LOADER: reads data/map-manifests.js, picks the edition from
      ?edition=<name> (or data-edition on <html> for self-contained builds),
      then loads that edition's packs from data/packs/ in order. -->
-<script src="data/map-manifests.js?v=9"></script>
+<script src="data/map-manifests.js?v=10"></script>
 <script>
 (function(){
   var M = window.MAP_MANIFESTS || { version:'0', defaultEdition:'public', editions:{} };
@@ -2711,6 +2711,16 @@ function extraPanelSections(d){
                 phaseA:'btn-phaseA', phaseB:'btn-phaseB', phaseC:'btn-phaseC' };
   const restoringShared = /state=/.test(location.hash);
   if (restoringShared) return;   /* a shared permalink wins over edition defaults */
+  if (EDITION.startPresent) {
+    const pb = document.getElementById('mode-present'); if (pb) pb.click();
+    /* leaving the walkthrough returns to presentation mode in this edition */
+    const origExit = exitTeachingMode;
+    exitTeachingMode = function(){
+      origExit();
+      const b = document.getElementById('mode-present');
+      if (b && !document.body.classList.contains('present')) { b.click(); if (!document.body.classList.contains('present')) b.click(); }
+    };
+  }
   (EDITION.startWith || []).forEach(k => {
     const el = document.getElementById(map[k] || k);
     if (el && !el.classList.contains('hidden-control') && !el.classList.contains('on')) el.click();
