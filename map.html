@@ -1029,11 +1029,37 @@ function infoSection(label, text){
 /* ── INTEL ANNEX TAB SYSTEM ─────────────────────────────────────────── */
 let currentTab = 'disrupt';
 
+/* Extra panel tabs registered by editions built on top of the shell:
+   window.MAP_PANEL_TABS.push({ id:'money', label:'Money', has:(node)=>bool, render:(node)=>html }).
+   A tab shows only on nodes where has() is true; render() fills the panel body. */
+window.MAP_PANEL_TABS = window.MAP_PANEL_TABS || [];
+function extraTabsFor(d){ return window.MAP_PANEL_TABS.filter(t => { try { return !!t.has(d); } catch(e){ return false; } }); }
+function syncExtraTabs(d){
+  const tabsEl = document.getElementById('panel-tabs');
+  const avail = extraTabsFor(d);
+  window.MAP_PANEL_TABS.forEach(t => {
+    let b = document.getElementById('tab-' + t.id);
+    if(!b){ b = document.createElement('button'); b.className = 'panel-tab'; b.id = 'tab-' + t.id; b.textContent = t.label; b.onclick = () => switchTab(t.id); tabsEl.appendChild(b); }
+    b.style.display = avail.includes(t) ? '' : 'none';
+    b.classList.toggle('active', currentTab === t.id);
+  });
+  if(currentTab !== 'disrupt' && currentTab !== 'intel' && currentTab !== 'history' && !avail.some(t => t.id === currentTab)) currentTab = 'disrupt';
+  return avail;
+}
+function renderExtraTab(d){
+  const t = extraTabsFor(d).find(t => t.id === currentTab); if(!t) return false;
+  document.getElementById('selectionBadges').innerHTML = '';
+  let html = ''; try { html = t.render(d) || ''; } catch(e){ html = '<div class="info-text">This tab could not render: ' + String(e.message || e) + '</div>'; }
+  document.getElementById('selectionBody').innerHTML = html;
+  return true;
+}
+
 function switchTab(tab){
   currentTab = tab;
   document.getElementById('tab-disrupt').classList.toggle('active', tab==='disrupt');
   document.getElementById('tab-intel').classList.toggle('active', tab==='intel');
   const hTab=document.getElementById('tab-history'); if(hTab) hTab.classList.toggle('active', tab==='history');
+  window.MAP_PANEL_TABS.forEach(t => { const b=document.getElementById('tab-'+t.id); if(b) b.classList.toggle('active', tab===t.id); });
   if(selectedNode){ renderSelection(nodeById[selectedNode]); }
 }
 
@@ -1120,10 +1146,12 @@ function renderNodePanel(d){
   const hasAnnex = !!ANNEX_DATA[d.id];
   const hasHistory = !!(d.monthlyEvents && d.monthlyEvents.length>0);
   const tabsEl = document.getElementById('panel-tabs');
-  tabsEl.style.display = (hasAnnex||hasHistory) ? 'flex' : 'none';
+  const extraTabs = syncExtraTabs(d);
+  tabsEl.style.display = (hasAnnex||hasHistory||extraTabs.length) ? 'flex' : 'none';
   const hTabEl=document.getElementById('tab-history'); if(hTabEl) hTabEl.style.display=hasHistory?'':'none';
   const iTabEl=document.getElementById('tab-intel');   if(iTabEl) iTabEl.style.display=hasAnnex?'':'none';
   /* render appropriate tab */
+  if(renderExtraTab(d)) return;
   if(currentTab==='history' && hasHistory){ document.getElementById('selectionBadges').innerHTML=''; renderHistoryTab(d); return; }
   if(hasAnnex && currentTab === 'intel'){
     document.getElementById('selectionBadges').innerHTML = '';
@@ -1131,7 +1159,7 @@ function renderNodePanel(d){
     return;
   }
   /* reset tab indicator when no annex */
-  if(!hasAnnex && !hasHistory) currentTab='disrupt';
+  if(!hasAnnex && !hasHistory && !extraTabs.length) currentTab='disrupt';
   else if(currentTab==='history' && !hasHistory) currentTab='disrupt';
   else if(currentTab==='intel' && !hasAnnex) currentTab='disrupt';
 
@@ -1225,12 +1253,14 @@ function renderStatePanel(d){
   const hasAnnex = !!ANNEX_DATA[d.id];
   const hasHistory = !!(d.monthlyEvents && d.monthlyEvents.length>0);
   const tabsEl = document.getElementById('panel-tabs');
-  tabsEl.style.display = (hasAnnex||hasHistory) ? 'flex' : 'none';
+  const extraTabs = syncExtraTabs(d);
+  tabsEl.style.display = (hasAnnex||hasHistory||extraTabs.length) ? 'flex' : 'none';
   const hTabEl=document.getElementById('tab-history'); if(hTabEl) hTabEl.style.display=hasHistory?'':'none';
   const iTabEl=document.getElementById('tab-intel');   if(iTabEl) iTabEl.style.display=hasAnnex?'':'none';
-  if(!hasAnnex && !hasHistory) currentTab='disrupt';
+  if(!hasAnnex && !hasHistory && !extraTabs.length) currentTab='disrupt';
   else if(currentTab==='history' && !hasHistory) currentTab='disrupt';
   else if(currentTab==='intel' && !hasAnnex) currentTab='disrupt';
+  if(renderExtraTab(d)) return;
   if(currentTab==='history' && hasHistory){ document.getElementById('selectionBadges').innerHTML=''; renderHistoryTab(d); return; }
   if(currentTab==='intel' && hasAnnex){ document.getElementById('selectionBadges').innerHTML=''; renderIntelTab(d); return; }
   document.getElementById('selectionBadges').innerHTML =
