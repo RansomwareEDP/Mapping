@@ -95,6 +95,8 @@ svg.panning { cursor: grabbing; }
 .tp-nav-btn { padding:5px 16px; border-radius:4px; border:1px solid #1a3050; background:transparent; font-size:10px; font-family:inherit; color:#6a8aaa; cursor:pointer; }
 .tp-nav-btn:hover { background:rgba(255,255,255,0.05); border-color:#2a5070; color:#9ac8e8; }
 .tp-nav-btn:disabled { opacity:0.25; cursor:default; }
+#tp-exit-btn { margin-left:auto; border-color:#3a2a2a; color:#a07070; }
+#tp-exit-btn:hover { border-color:#6a3a3a; color:#d09090; }
 #tp-next-btn { background:rgba(50,100,160,0.15); border-color:#2a5a88; color:#7ab0d8; }
 #tp-next-btn:hover:not(:disabled) { background:rgba(50,100,160,0.25); }
 #tp-kbd-hint { font-size:9px; color:#4a6888; text-align:center; padding:4px 0 2px; flex-shrink:0; }
@@ -438,11 +440,12 @@ body.present #delta-feed { display:none !important; }
       <div id="tp-body"></div>
       <div id="tp-callout"><div id="tp-callout-label">What to notice</div><span id="tp-callout-text"></span></div>
     </div>
-    <div id="tp-kbd-hint">Use arrow keys to navigate</div>
+    <div id="tp-kbd-hint">Arrow keys to navigate, Esc to exit</div>
     <div id="tp-footer">
       <button class="tp-nav-btn" id="tp-prev-btn" disabled>Prev</button>
       <span id="tp-step-counter">1 / 22</span>
       <button class="tp-nav-btn" id="tp-next-btn">Next</button>
+      <button class="tp-nav-btn" id="tp-exit-btn" title="Leave the walkthrough and return to the map (Esc)">Exit</button>
     </div>
   </div>
   <section class="panel hidden" id="selectionPanel">
@@ -1263,6 +1266,7 @@ function renderCasePanel(cs){
   if(CASE_PROFILE[cs.id]){
     body += `<div class="info-section"><div class="info-label">Profile</div><a href="${CASE_PROFILE[cs.id]}" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#7ab0d8;text-decoration:none;padding:6px 11px;border:1px solid #1e3a5c;border-radius:3px;background:rgba(30,60,100,0.15);margin-top:3px;" onmouseover="this.style.background='rgba(50,100,160,0.28)'" onmouseout="this.style.background='rgba(30,60,100,0.15)'">${cs.label} profile &#8599;</a></div>`;
   }
+  window.MAP_CASE_EXTRAS.forEach(fn => { try { body += fn(cs) || ''; } catch (e) { console.warn('case extra failed', e); } });
   document.getElementById('selectionBody').innerHTML = body;
 }
 
@@ -1952,9 +1956,11 @@ document.getElementById('tp-prev-btn').onclick = () => {
 document.getElementById('tp-next-btn').onclick = () => {
   if (currentStepIndex < TOTAL_STEPS - 1) { currentStepIndex++; renderTeachingStep(currentStepIndex); }
 };
+document.getElementById('tp-exit-btn').onclick = () => { if (teachingModeActive) exitTeachingMode(); };
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !teachingModeActive) { clearSelection(true); return; }
   if (!teachingModeActive) return;
+  if (e.key === 'Escape') { exitTeachingMode(); return; }
   if (e.key === 'ArrowRight' && currentStepIndex < TOTAL_STEPS - 1) { currentStepIndex++; renderTeachingStep(currentStepIndex); }
   else if (e.key === 'ArrowLeft' && currentStepIndex > 0) { currentStepIndex--; renderTeachingStep(currentStepIndex); }
 });
@@ -2654,8 +2660,11 @@ function readingsSection(d){
 }
 
 /* ── EXTRA PANEL SECTIONS (called from renderNodePanel / renderStatePanel) ── */
+window.MAP_PANEL_EXTRAS = window.MAP_PANEL_EXTRAS || [];   /* fn(node) -> html, appended to the node and state panels */
+window.MAP_CASE_EXTRAS  = window.MAP_CASE_EXTRAS  || [];   /* fn(case) -> html, appended to the case panel */
 function extraPanelSections(d){
   let html = '';
+  window.MAP_PANEL_EXTRAS.forEach(fn => { try { html += fn(d) || ''; } catch (e) { console.warn('panel extra failed', e); } });
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   if (MEASURE) { ensureFeeds(d.id); html += readingsSection(d); }
   if (SOURCES && coverageOn) {
