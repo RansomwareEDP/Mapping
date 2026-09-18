@@ -149,18 +149,26 @@ details.meth .mb b{color:var(--text)}
  overflow:hidden;vertical-align:2px;margin-right:8px}
 .meter i{display:block;height:100%;border-radius:3px}
 .dim{color:var(--text-dim)}
+.edition{font-size:12px;letter-spacing:.14em;font-weight:700;vertical-align:middle;
+  color:#ffb4a2;border:1px solid #ffb4a2;border-radius:4px;padding:3px 9px;margin-left:10px}
+.handling{margin:6px 0 0;font-size:12.5px;color:#ffb4a2}
+.warnbox{border:1px solid var(--amber);border-radius:6px;padding:12px 14px;margin:0 0 16px;
+  background:rgba(210,153,34,.07)}
+.warnbox h4{margin:0 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber)}
+.warnbox p{margin:0 0 8px;font-size:13px;line-height:1.55}
+.warnbox p:last-child{margin-bottom:0}
 </style></head><body>
 
 <header class="top"><div class="hd">
  <h1>The Observatory</h1>
- <p class="sub"><b>30,797</b> victim claims &middot; <b>335</b> groups &middot;
-   2020-01-01 to 2026-08-22 &middot; generated 22 Aug 2026</p>
+ <p class="sub"><b>31,566</b> victim claims &middot; <b>339</b> groups &middot;
+   2020-01-01 to 2026-09-16 &middot; generated 16 Sep 2026</p>
  <div class="tabbar">
   <button class="tab on" data-p="overview">Overview</button>
-  <button class="tab" data-p="compare">Compare Groups</button>
-  <button class="tab" data-p="timeline">Timeline</button>
-  <button class="tab" data-p="profiles">Group Profiles</button>
   <button class="tab" data-p="search">Victim Search</button>
+  <button class="tab" data-p="profiles">Group Profiles</button>
+  <button class="tab" data-p="timeline">Timeline</button>
+  <button class="tab" data-p="compare">Compare Groups</button>
   <button class="tab" data-p="succession">Succession Lab</button>
   <button class="tab" data-p="live">Live Feed</button>
  </div>
@@ -169,24 +177,40 @@ details.meth .mb b{color:var(--text)}
 <div class="wrap">
 
 <section class="pane on" id="p-overview">
+ <div class="card" id="ov-winbar" style="margin-bottom:16px">
+  <div class="controls" style="margin:0">
+   <b style="font-size:13px">Window</b>
+   <span id="ov-presets"></span>
+   <label>From</label><input type="date" id="ov-from">
+   <label>To</label><input type="date" id="ov-to">
+   <span id="ov-winlab" style="font-size:12.5px;color:var(--text-dim)"></span>
+  </div>
+  <p class="note" style="margin:8px 0 0">Every figure on this tab, including the
+   concentration table, is computed inside this window. Leak-site publication dates.</p>
+ </div>
+
  <div class="kpis" id="ov-kpis"></div>
  <div class="card">
   <h2>Victim claims per month</h2>
   <p class="note">Leak-site publication dates, not intrusion dates. A spike is a disclosure event,
    not necessarily an attack wave. The final point is a partial month and will read low.</p>
   <div class="controls"><label>Group</label><select id="ov-gsel"></select>
-   <label>From</label><select id="ov-year"></select></div>
+   <label>Grain</label><select id="ov-grain">
+    <option value="auto">Auto</option><option value="d">Day</option><option value="w">Week</option>
+    <option value="m">Month</option><option value="q">Quarter</option><option value="y">Year</option>
+   </select>
+   <span id="ov-grainlab" style="font-size:12.5px;color:var(--text-dim)"></span></div>
   <div id="ov-vol"></div>
  </div>
  <div class="grid g2">
   <div class="card"><h3>Most active groups</h3>
-   <div class="controls" id="ov-range"></div>
    <div class="bars" id="ov-groups"></div></div>
   <div class="card"><h3>Most targeted countries</h3><div class="bars" id="ov-countries"></div></div>
  </div>
  <div class="grid g2">
   <div class="card"><h3>Most targeted sectors</h3><div class="bars" id="ov-sectors"></div></div>
-  <div class="card"><h3>Concentration</h3><div id="ov-conc"></div></div>
+  <div class="card"><h3>Concentration <span id="ov-conc-win" class="dim"
+    style="font-size:12px;font-weight:400"></span></h3><div id="ov-conc"></div></div>
  </div>
 </section>
 
@@ -369,10 +393,12 @@ details.meth .mb b{color:var(--text)}
 </section>
 
 
+
+
 <section class="pane" id="p-live">
  <h2>Live feed</h2>
  <p class="note">Fetched from ransomware.live now, through this site's own relay. Everything else in this
-  console is a fixed snapshot built on 22 Aug 2026; this tab is the only part that changes on its own.</p>
+  console is a fixed snapshot built on 16 Sep 2026; this tab is the only part that changes on its own.</p>
  <div class="controls">
   <button class="btn on" id="lv-t-victims">Recent claims</button>
   <button class="btn" id="lv-t-attacks">Recent cyberattacks</button>
@@ -407,7 +433,7 @@ details.meth .mb b{color:var(--text)}
 
 <div class="tip" id="tip"></div>
 
-<script src="assets/observatory-data.js?v=20260822"></script>
+<script src="assets/observatory-data.js?v=20260916"></script>
 <script>
 const CNAME = {"US":"United States","GB":"United Kingdom","UK":"United Kingdom","CA":"Canada","DE":"Germany","FR":"France","IT":"Italy","ES":"Spain","AU":"Australia","BR":"Brazil","IN":"India","JP":"Japan","NL":"Netherlands","SE":"Sweden","NO":"Norway","MX":"Mexico","TH":"Thailand","TW":"Taiwan","SG":"Singapore","CN":"China","RU":"Russia","UA":"Ukraine","PL":"Poland","BE":"Belgium","CH":"Switzerland","AT":"Austria","PT":"Portugal","ZA":"South Africa","AE":"UAE","IL":"Israel","KR":"South Korea","MY":"Malaysia","ID":"Indonesia","PH":"Philippines","TR":"Turkey","AR":"Argentina","CL":"Chile","CO":"Colombia","NZ":"New Zealand","IE":"Ireland","DK":"Denmark","FI":"Finland","CZ":"Czechia","RO":"Romania","GR":"Greece","HU":"Hungary","SA":"Saudi Arabia","VN":"Vietnam","HK":"Hong Kong","BY":"Belarus","KZ":"Kazakhstan","PE":"Peru","EC":"Ecuador"};
 const PRESETS = [["LockBit end vs Qilin rise",["lockbit3","qilin"]],["BlackSuit to Chaos",["blacksuit","chaos"]],["Conti to BlackBasta",["conti","blackbasta"]],["Conti to Royal to BlackSuit",["conti","royal","blacksuit","chaos"]],["ALPHV exit vs RansomHub",["alphv","ransomhub"]],["LockBit versions",["lockbit2","lockbit3","lockbit5"]],["Current top four",["qilin","akira","incransom","play"]]];
@@ -441,13 +467,29 @@ function topN(map, n, skip){
   return Array.from(map.entries()).filter(([k]) => !skip || (k !== "" && k != null))
     .sort((a,b) => b[1]-a[1] || String(a[0]).localeCompare(String(b[0]))).slice(0,n);
 }
+/* Day and week were added Sep 2026 alongside the Overview window. A monthly
+   series over a 30-day window is one or two bars, which is not a chart. */
+const MONDAY = p => {
+  const d = new Date(p + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));   // ISO week starts Monday
+  return d.toISOString().slice(0,10);
+};
 function periodKey(p, grain){
+  if(grain === 'd') return p;
+  if(grain === 'w') return MONDAY(p);
   if(grain === 'y') return p.slice(0,4);
   if(grain === 'm') return p.slice(0,7);
   return p.slice(0,4) + ' Q' + (Math.floor((+p.slice(5,7)-1)/3)+1);
 }
 function spanKeys(from, to, grain){
   const out = [];
+  if(grain === 'd' || grain === 'w'){
+    const step = grain === 'd' ? 1 : 7;
+    let d = new Date((grain === 'w' ? MONDAY(from) : from) + 'T00:00:00Z');
+    const end = new Date(to + 'T00:00:00Z');
+    while(d <= end){ out.push(d.toISOString().slice(0,10)); d.setUTCDate(d.getUTCDate()+step); }
+    return out;
+  }
   if(grain === 'y'){ for(let y = +from.slice(0,4); y <= +to.slice(0,4); y++) out.push(''+y); return out; }
   if(grain === 'm'){
     let y = +from.slice(0,4), m = +from.slice(5,7);
@@ -461,6 +503,7 @@ function spanKeys(from, to, grain){
   return out;
 }
 const shortLab = (k, grain) => grain === 'y' ? k
+  : grain === 'd' || grain === 'w' ? k.slice(5).replace('-','/')
   : grain === 'm' ? k.slice(2).replace('-','/') : k.replace(/^\d\d/,'');
 
 /* ------------------------------------------------------------- charts */
@@ -497,9 +540,25 @@ function lineChart(el, series, labels, o){
     g += '<line class="ax" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/>'
        + '<text class="axt" x="'+(L-8)+'" y="'+(y+3.5)+'" text-anchor="end">'+fmt(Math.round(v))+'</text>';
   }
-  const step = Math.max(1, Math.ceil(pts/14));
-  for(let i = 0; i < pts; i += step)
+  /* Ticks. Left to itself this labelled every Nth point, which on a weekly
+     series put dates three weeks apart on the axis: 12/29, 01/19, 02/09.
+     Those are not dates a reader recognises, they are wherever the arithmetic
+     landed. o.ticks lets the caller say which points mean something, so a
+     daily or weekly series can be labelled on month boundaries instead. */
+  let ticks;
+  if(o.ticks && o.ticks.length){
+    ticks = o.ticks;
+    const cap = Math.max(1, Math.ceil(ticks.length/16));
+    if(cap > 1) ticks = ticks.filter((_,n) => n % cap === 0);
+  } else {
+    ticks = [];
+    const step = Math.max(1, Math.ceil(pts/14));
+    for(let i = 0; i < pts; i += step) ticks.push(i);
+  }
+  for(const i of ticks){
+    if(!labels[i]) continue;
     g += '<text class="axt" x="'+X(i)+'" y="'+(H-B+17)+'" text-anchor="middle">'+esc(labels[i])+'</text>';
+  }
   series.forEach((s,si) => {
     const col = s.color || PAL[si%PAL.length];
     const d = s.data.map((v,i) => (i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
@@ -507,7 +566,7 @@ function lineChart(el, series, labels, o){
     g += '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>';
     s.data.forEach((v,i) => {
       g += '<circle class="dot" cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="9" fill="transparent"'
-         + ' data-t="'+esc(s.name)+'|'+esc(labels[i])+'|'+v+'"/>'
+         + ' data-t="'+esc(s.name)+'|'+esc((o.full && o.full[i]) || labels[i] || '')+'|'+v+'"/>'
          + '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.4" fill="'+col+'"/>';
     });
   });
@@ -523,100 +582,268 @@ function lineChart(el, series, labels, o){
 }
 
 /* ------------------------------------------------------------ OVERVIEW */
+/* One window drives every panel on this tab. Before Sep 2026 the monthly chart
+   had its own year selector and the group bars had their own range buttons,
+   so two panels on one screen could be showing different periods with nothing
+   saying so. A reader comparing them was comparing different things. */
+
+const DAY = 86400000;
+const iso = d => d.toISOString().slice(0,10);
+const backFrom = (end, days) => iso(new Date(new Date(end+'T00:00:00Z') - (days-1)*DAY));
+
+const OVP = [
+  ['all', 'All time'],
+  ['30',  'Last 30 days'],
+  ['90',  'Last 90 days'],
+  ['365', 'Last 12 months'],
+  ['ytd', 'Year to date'],
+];
+let ovWin = {from: MINP, to: MAXP, preset: 'all'};
+
+$('#ov-presets').innerHTML = OVP.map(([v,l],i) =>
+  '<button class="btn'+(i===0?' on':'')+'" data-ov="'+v+'">'+l+'</button>').join('');
+$('#ov-from').min = $('#ov-to').min = MINP;
+$('#ov-from').max = $('#ov-to').max = MAXP;
+
+function ovSet(preset){
+  let from = MINP;
+  if(preset === 'ytd')      from = MAXP.slice(0,4) + '-01-01';
+  else if(preset !== 'all') from = backFrom(MAXP, +preset);
+  if(from < MINP) from = MINP;
+  ovWin = {from: from, to: MAXP, preset: preset};
+  $('#ov-from').value = from; $('#ov-to').value = MAXP;
+  $$('#ov-presets .btn').forEach(b => b.classList.toggle('on', b.dataset.ov === preset));
+  ovDraw();
+}
+function ovCustom(){
+  let a = $('#ov-from').value || MINP, b = $('#ov-to').value || MAXP;
+  if(a > b){ const t = a; a = b; b = t; $('#ov-from').value = a; $('#ov-to').value = b; }
+  ovWin = {from: a < MINP ? MINP : a, to: b > MAXP ? MAXP : b, preset: ''};
+  $$('#ov-presets .btn').forEach(x => x.classList.remove('on'));
+  ovDraw();
+}
+$$('#ov-presets .btn').forEach(b => b.onclick = () => ovSet(b.dataset.ov));
+$('#ov-from').onchange = ovCustom;
+$('#ov-to').onchange = ovCustom;
+
+/* Indices of the claims inside the window. D.P is sorted, so this is a scan
+   once per redraw rather than a filter inside every panel. */
+function ovIdx(){
+  const out = [];
+  for(let i = 0; i < N; i++){ const p = D.P[i]; if(p >= ovWin.from && p <= ovWin.to) out.push(i); }
+  return out;
+}
+
 $('#ov-gsel').innerHTML = '<option value="">All groups</option>'
   + GRP.map(g => '<option value="'+esc(g.key)+'">'+esc(g.n)+' ('+fmt(g.v)+')</option>').join('');
-$('#ov-year').innerHTML = YEARS.map(y => '<option value="'+y+'">'+y+'</option>').join('');
-$('#ov-year').value = YEARS[0];
-let ovRange = 0;   // 0 = all time, else months back
-$('#ov-range').innerHTML = [[0,'All time'],[12,'Last 12 months'],[3,'Last 90 days']]
-  .map(([v,l],i) => '<button class="btn'+(i===0?' on':'')+'" data-v="'+v+'">'+l+'</button>').join('');
 
-function ovVol(){
-  const gk = $('#ov-gsel').value, y0 = $('#ov-year').value;
-  const from = y0 + '-01-01';
-  const keys = spanKeys(from > MINP ? from : MINP, MAXP, 'm');
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* Axis labels a person recognises, and the points worth labelling.
+   A daily or weekly series is labelled where the MONTH turns over, not every
+   Nth point. The year is shown only when it changes, so a window inside one
+   year is not repeating "25" fourteen times. */
+function axisTicks(keys, grain){
+  const labs = keys.map(() => ''), ticks = [];
+  let lastM = '', lastY = '';
+  /* Over a short window there are only one or two month boundaries, which
+     leaves the axis nearly bare. Below about ten weeks, tick every Monday and
+     carry the day number, so "8 Sep" rather than a lone "Sep". */
+  const daily = (grain === 'd' || grain === 'w');
+  const weekly = daily && keys.length <= (grain === 'd' ? 70 : 10);
+  if(weekly){
+    keys.forEach((k, i) => {
+      const dt = new Date(k + 'T00:00:00Z');
+      if(grain === 'w' || dt.getUTCDay() === 1 || i === 0){
+        const y = k.slice(0,4), m = k.slice(5,7);
+        labs[i] = (+k.slice(8,10)) + ' ' + MON[+m-1] + (y !== lastY ? " '" + y.slice(2) : '');
+        ticks.push(i); lastY = y;
+      }
+    });
+    return {labs: labs, ticks: ticks};
+  }
+  keys.forEach((k, i) => {
+    if(daily){
+      const y = k.slice(0,4), m = k.slice(5,7);
+      if(m !== lastM){
+        labs[i] = MON[+m-1] + (y !== lastY ? " '" + y.slice(2) : '');
+        ticks.push(i); lastM = m; lastY = y;
+      }
+    } else if(grain === 'm'){
+      const y = k.slice(0,4), m = k.slice(5,7);
+      labs[i] = MON[+m-1] + (y !== lastY ? " '" + y.slice(2) : '');
+      if(y !== lastY) lastY = y;
+      ticks.push(i);
+    } else if(grain === 'q'){
+      const y = k.slice(0,4);
+      labs[i] = k.slice(5) + (y !== lastY ? " '" + y.slice(2) : '');
+      if(y !== lastY) lastY = y;
+      ticks.push(i);
+    } else {
+      labs[i] = k; ticks.push(i);
+    }
+  });
+  if(ticks.length && ticks[0] !== 0 && !labs[0]) {
+    /* Always anchor the left edge, otherwise a window starting mid-month has
+       no label until the first of the next one. */
+    const k = keys[0];
+    labs[0] = (grain === 'd' || grain === 'w')
+      ? MON[+k.slice(5,7)-1] + " '" + k.slice(2,4) : k;
+    ticks.unshift(0);
+  }
+  return {labs: labs, ticks: ticks};
+}
+
+/* How many points each grain would produce for the current window. A grain
+   that yields one point draws a dot and a grain that yields two draws a flat
+   line; neither is a chart, so those options are disabled rather than offered
+   and then quietly obeyed. */
+function grainFor(span){
+  return {d: span, w: span/7, m: span/30.44, q: span/91.3, y: span/365};
+}
+function ovGrainOpts(){
+  const span = (new Date(ovWin.to) - new Date(ovWin.from)) / DAY + 1;
+  const n = grainFor(span);
+  const sel = $('#ov-grain');
+  let changed = false;
+  $$('#ov-grain option').forEach(o => {
+    if(o.value === 'auto') return;
+    const bad = n[o.value] < 4 || n[o.value] > 800;
+    o.disabled = bad;
+    o.textContent = o.textContent.replace(/ \(.*\)$/, '')
+      + (bad ? (n[o.value] < 4 ? ' (too few points)' : ' (too many points)') : '');
+    if(bad && sel.value === o.value){ sel.value = 'auto'; changed = true; }
+  });
+  return changed;
+}
+
+function ovVol(idx){
+  const gk = $('#ov-gsel').value;
+  let grain = $('#ov-grain').value;
+  const span = (new Date(ovWin.to) - new Date(ovWin.from)) / DAY + 1;
+  /* Auto picks a grain that yields a readable number of points. */
+  if(grain === 'auto'){
+    grain = span <= 120 ? 'd' : span <= 400 ? 'w' : span <= 1500 ? 'm' : 'q';
+  }
+  const keys = spanKeys(ovWin.from, ovWin.to, grain);
   const gid = gk ? gidOf[gk] : -2;
   const all = new Map(), sel = new Map();
-  for(let i = 0; i < N; i++){
-    const p = D.P[i]; if(p < from) continue;
-    const k = p.slice(0,7);
+  for(const i of idx){
+    const k = periodKey(D.P[i], grain);
     all.set(k,(all.get(k)||0)+1);
     if(gid >= 0 && D.G[i] === gid) sel.set(k,(sel.get(k)||0)+1);
   }
   const series = [{name:'All groups', data: keys.map(k => all.get(k)||0), fill:true, color:'#58a6ff'}];
   if(gid >= 0) series.push({name: gByKey[gk].n, data: keys.map(k => sel.get(k)||0), color:'#f0883e'});
-  lineChart($('#ov-vol'), series, keys.map(k => shortLab(k,'m')), {h:290, legend:true});
+  const ax = axisTicks(keys, grain);
+  /* The tooltip carries the full key, so a bare "Mar" on the axis is never the
+     only thing telling you which March it is. */
+  lineChart($('#ov-vol'), series, ax.labs, {h:290, legend:true, ticks: ax.ticks,
+    full: keys.map(k => grain === 'd' ? k : grain === 'w' ? 'week of ' + k : k)});
+  const GLAB = {d:'day', w:'week', m:'month', q:'quarter', y:'year'};
+  $('#ov-grainlab').textContent = keys.length + ' points, one per ' + GLAB[grain]
+    + ($('#ov-grain').value === 'auto' ? ' (auto)' : '');
 }
-function ovBars(){
-  let from = MINP;
-  if(ovRange){ const d = new Date(MAXD); d.setUTCMonth(d.getUTCMonth()-ovRange);
-    from = d.toISOString().slice(0,10); }
+
+function ovBars(idx){
   const gc = new Map(), cc = new Map(), sc = new Map();
-  let tot = 0, withC = 0, withS = 0;
-  for(let i = 0; i < N; i++){
-    if(D.P[i] < from) continue;
-    tot++;
+  let withC = 0, withS = 0;
+  for(const i of idx){
     const g = GN[D.G[i]]; gc.set(g,(gc.get(g)||0)+1);
     const c = CN[D.C[i]]; if(c){ withC++; cc.set(c,(cc.get(c)||0)+1); }
     const s = SN[D.S[i]]; if(s){ withS++; sc.set(s,(sc.get(s)||0)+1); }
   }
-  barlist($('#ov-groups'), topN(gc,15,true), {pctOf:tot,
+  barlist($('#ov-groups'), topN(gc,15,true), {pctOf: idx.length,
     label: k => gByKey[k] ? gByKey[k].n : k, click: k => { openProfile(k); go('profiles'); }});
   barlist($('#ov-countries'), topN(cc,15,true),
     {label:cname, color:'linear-gradient(90deg,#6e40c9,#bc8cff)', pctOf:withC});
   barlist($('#ov-sectors'), topN(sc,15,true),
     {color:'linear-gradient(90deg,#238636,#3fb950)', pctOf:withS});
+  return gc;
 }
-$('#ov-gsel').onchange = ovVol; $('#ov-year').onchange = ovVol;
-$$('#ov-range .btn').forEach(b => b.onclick = () => {
-  ovRange = +b.dataset.v; $$('#ov-range .btn').forEach(x => x.classList.toggle('on', x === b)); ovBars(); });
 
-(function ovKpis(){
-  const cut = n => { const d = new Date(MAXD); d.setUTCDate(d.getUTCDate()-n); return d.toISOString().slice(0,10); };
-  const c30 = cut(30), c60 = cut(60), c90 = cut(90);
-  let l30 = 0, p30 = 0;
-  for(const p of D.P){ if(p > c30) l30++; else if(p > c60) p30++; }
-  const activeNow = GRP.filter(g => g.st === 'Active').length;
-  const newIn90 = GRP.filter(g => g.f > c90).length;
-  const nC = new Set(D.C.filter(i => CN[i] !== "")).size;
-  const noC = D.C.filter(i => CN[i] === "").length;
-  const noS = D.S.filter(i => SN[i] === "").length;
-  const delta = p30 ? Math.round(100*(l30-p30)/p30) : 0;
+function ovKpis(idx, gc){
+  const days = Math.max(1, Math.round((new Date(ovWin.to) - new Date(ovWin.from))/DAY) + 1);
+  const whole = ovWin.from === MINP && ovWin.to === MAXP;
+
+  /* Compare against the equally long window immediately before this one. A
+     percentage against a shorter or longer period is not a comparison. */
+  const pFrom = backFrom(ovWin.from, days + 1), pTo = backFrom(ovWin.from, 2);
+  let prev = 0;
+  for(let i = 0; i < N; i++){ const p = D.P[i]; if(p >= pFrom && p <= pTo) prev++; }
+  const havePrev = pFrom >= MINP;
+  const delta = havePrev && prev ? Math.round(100*(idx.length-prev)/prev) : null;
   const dcol = delta > 0 ? 'var(--red)' : delta < 0 ? 'var(--green)' : 'var(--text-muted)';
-  const months = (new Date(MAXP)-new Date(MINP))/2629800000;
-  $('#ov-kpis').innerHTML = [
-    [fmt(N), 'Victim claims', MINP+' to '+MAXP],
-    [fmt(GRP.length), 'Group brands', activeNow+' posted in the last 30 days'],
-    [fmt(l30), 'Claims, last 30 days', '<span style="color:'+dcol+'">'+(delta>0?'+':'')+delta+'% vs prior 30</span>'],
-    [fmt(newIn90), 'New brands, 90 days', 'First claim inside the window'],
-    [fmt(nC), 'Countries', fmt(noC)+' claims carry no country'],
-    [fmt(Math.round(N/Math.max(1,months))), 'Claims per month', 'Average across the whole series'],
-  ].map(([n,k,x]) => '<div class="kpi"><div class="n">'+n+'</div><div class="k">'+k+'</div><div class="x">'+x+'</div></div>').join('');
 
-  const sorted = GRP.map(g => g.v).sort((a,b) => b-a);
-  const tot = sorted.reduce((a,b) => a+b, 0);
+  /* A brand is "new" only if its FIRST EVER claim is inside the window. Using
+     its first claim within the window would make every brand new every time. */
+  const inWin = new Set([...gc.keys()]);
+  const fresh = GRP.filter(g => inWin.has(g.key) && g.f >= ovWin.from && g.f <= ovWin.to).length;
+
+  const nC = new Set(idx.map(i => CN[D.C[i]]).filter(Boolean)).size;
+  const noC = idx.filter(i => CN[D.C[i]] === "").length;
+  const months = Math.max(1, days/30.44);
+
+  $('#ov-kpis').innerHTML = [
+    [fmt(idx.length), whole ? 'Victim claims' : 'Claims in window', ovWin.from+' to '+ovWin.to],
+    [fmt(inWin.size), 'Brands posting', whole ? 'Across the whole series'
+       : fmt(GRP.length)+' brands exist in the corpus'],
+    [delta === null ? '&mdash;' : (delta>0?'+':'')+delta+'%', 'Against prior '+fmt(days)+' days',
+       havePrev ? (prev ? fmt(prev)+' claims in the window before this one'
+                        : 'no claims in the window before this one')
+                : 'the corpus does not reach back that far'],
+    [fmt(fresh), 'Brands first seen here', 'First claim in the corpus falls inside the window'],
+    [fmt(nC), 'Countries', fmt(noC)+' claims in window carry no country'],
+    [fmt(Math.round(idx.length/months)), 'Claims per month', 'Averaged across the window'],
+  ].map(([n,k,x]) => '<div class="kpi"><div class="n">'+n+'</div><div class="k">'+k+'</div><div class="x">'+x+'</div></div>').join('');
+}
+
+function ovConc(idx, gc){
+  const sorted = [...gc.values()].sort((a,b) => b-a);
+  const tot = idx.length;
+  const whole = ovWin.from === MINP && ovWin.to === MAXP;
+  $('#ov-conc-win').textContent = whole ? '' : '(in window)';
+  if(!tot){ $('#ov-conc').innerHTML = '<p class="empty">No claims in this window.</p>'; return; }
   const shareOf = k => (100*sorted.slice(0,k).reduce((a,b) => a+b,0)/tot).toFixed(1);
-  const one = GRP.filter(g => g.v === 1).length, u10 = GRP.filter(g => g.v < 10).length;
-  const raas = GRP.filter(g => g.raas).length, lin = GRP.filter(g => g.linKey || g.linTo.length).length;
+  const one = sorted.filter(x => x === 1).length, u10 = sorted.filter(x => x < 10).length;
+  const inWin = new Set([...gc.keys()]);
+  const raas = GRP.filter(g => g.raas && inWin.has(g.key)).length;
+  const lin  = GRP.filter(g => (g.linKey || g.linTo.length) && inWin.has(g.key)).length;
+  const iso_ = GRP.filter(g => g.iso && inWin.has(g.key)).length;
   $('#ov-conc').innerHTML = '<dl class="kv">'
-    + '<dt>Top 5 brands</dt><dd>'+shareOf(5)+'% of all claims</dd>'
+    + '<dt>Top 5 brands</dt><dd>'+shareOf(5)+'% of claims in window</dd>'
     + '<dt>Top 10</dt><dd>'+shareOf(10)+'%</dd>'
     + '<dt>Top 25</dt><dd>'+shareOf(25)+'%</dd>'
     + '<dt>Top 50</dt><dd>'+shareOf(50)+'%</dd>'
     + '<dt>Median brand</dt><dd>'+sorted[Math.floor(sorted.length/2)]+' claims</dd>'
-    + '<dt>Single claim</dt><dd>'+one+' brands ('+(100*one/GRP.length).toFixed(0)+'%) posted exactly once</dd>'
+    + '<dt>Single claim</dt><dd>'+one+' brands ('+(100*one/sorted.length).toFixed(0)
+      +'%) posted exactly once in this window</dd>'
     + '<dt>Under 10 claims</dt><dd>'+u10+' brands, carrying '
       + (100*sorted.filter(x => x<10).reduce((a,b) => a+b,0)/tot).toFixed(1)+'% of the volume</dd>'
-    + '<dt>Labelled RaaS</dt><dd>'+raas+' brands</dd>'
-    + '<dt>Lineage recorded</dt><dd>'+lin+' brands link to a predecessor or successor</dd>'
-    + '<dt>Backdated archives</dt><dd>'+GRP.filter(g => g.iso).length
-      + ' brands mostly published historical victims under their original dates</dd>'
+    + '<dt>Labelled RaaS</dt><dd>'+raas+' of the '+sorted.length+' brands posting here</dd>'
+    + '<dt>Lineage recorded</dt><dd>'+lin+' link to a predecessor or successor</dd>'
+    + '<dt>Backdated archives</dt><dd>'+iso_+' mostly published historical victims under their '
+      + 'original dates. This is a property of the whole brand, not of this window.</dd>'
     + '</dl>'
     + '<p class="note" style="margin-top:12px">Brand count is a weak proxy for the number of active crews.'
     + ' Rebrands enter this data as new names and a leak site that posts once and stops still counts.'
     + ' Read the top of the distribution for capability and the tail for churn, never for scale.</p>';
-})();
-ovVol(); ovBars();
+}
+
+function ovDraw(){
+  const idx = ovIdx();
+  const days = Math.round((new Date(ovWin.to) - new Date(ovWin.from))/DAY) + 1;
+  $('#ov-winlab').textContent = fmt(idx.length) + (idx.length === 1 ? ' claim' : ' claims')
+    + ' across ' + fmt(days) + (days === 1 ? ' day' : ' days');
+  const gc = ovBars(idx);
+  ovKpis(idx, gc);
+  ovGrainOpts();          // must run before ovVol: it may reset an impossible grain
+  ovVol(idx);
+  ovConc(idx, gc);
+}
+$('#ov-gsel').onchange = () => ovVol(ovIdx());
+$('#ov-grain').onchange = () => ovVol(ovIdx());
+ovSet('all');
 
 /* ------------------------------------------------------------- COMPARE */
 let cmpSel = [];
@@ -800,6 +1027,11 @@ const TK = D.tk || {};
 const CONF = {confirmed:'var(--green)', reported:'var(--amber)', assessed:'var(--orange)',
               suspected:'var(--orange)', alleged:'var(--orange)'};
 
+/* Replaced by the payments layer in a --closed build. In every other build the
+   layer does not exist, so this stub is what the profile renderer calls and it
+   contributes nothing. */
+let payPanel = () => '';
+
 function ttpPanel(k){
   const t = TK[k]; if(!t) return '';
   const item = it => '<div style="padding:7px 0;border-bottom:1px solid rgba(48,54,61,.5)">'
@@ -913,6 +1145,7 @@ function openProfile(k){
     + '<div style="margin-top:12px"><button class="btn" id="pf-succ">Who took over from '
       + esc(g.n)+'? &rarr;</button></div></div>'
     + ttpPanel(k)
+    + payPanel(k)
     + '<div class="card"><h3>Claim history</h3><div id="pf-spark"></div></div>'
     + '<div class="grid g2" style="margin:0">'
     + '<div class="card"><h3>Countries</h3><div class="bars" id="pf-cc"></div></div>'
@@ -1311,6 +1544,12 @@ sRun();
   const btn = document.querySelector('.tab[data-p="live"]');
   if(btn) btn.addEventListener('click', () => { if(!started){ started = true; load(); } });
 })();
+
+
+/* ------------------------------------------------------------ PAYMENTS */
+/* Restricted layer. Everything between the CLOSED markers is cut out of any
+   build not made with --closed, so this code does not exist in the public or
+   airgap copies rather than merely being hidden in them. */
 
 
 /* ----------------------------------------------------------------- nav */
