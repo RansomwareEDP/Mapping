@@ -1280,6 +1280,8 @@ function renderStatePanel(d){
 }
 
 function renderCasePanel(cs){
+  /* Case studies carry one body (summary, lesson, effects, extras); the node tab strip has nothing to switch, so hide it. */
+  document.getElementById('panel-tabs').style.display = 'none';
   document.getElementById('panelHeader').textContent = 'Case study';
   document.getElementById('selectionTitle').innerHTML = `<span style="color:#8aaac0">${cs.label} (${cs.year})</span>`;
   document.getElementById('selectionBadges').innerHTML = `<span class="badge">${cs.type}</span>`;
