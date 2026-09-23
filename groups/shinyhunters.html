@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShinyHunters | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-extortion { background: #6c3483; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr {
+  background: var(--navy);
+}
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* PHASE LIST */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* FEED CARDS */
+.feed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+.feed-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px; padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+
+/* SCROLL */
+html { scroll-behavior: smooth; }
+
+/* DARK MODE TOGGLE */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-num { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] .metric-label { color: #8b949e; }
+[data-theme="dark"] .metric-note { color: #6b7280; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* LIVE DATA ELEMENTS */
+.topbar-live {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400); letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative; display: inline-block;
+  width: 7px; height: 7px; flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent; border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+.victim-strip { margin: 20px 40px 0; background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.victim-strip-header { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-bottom: 1px solid var(--gray-200); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+.victim-strip-sub { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-400); font-size: 10px; margin-left: 4px; }
+.victim-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--gray-200); font-size: 12px; }
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-date { color: var(--gray-400); }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed&hellip;</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="node-library"></div>
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">Overview</a>
+    <a href="#lineage">Lineage &amp; Heritage</a>
+    <a href="#operations">Operational Model</a>
+    <a href="#technical">Technical Profile</a>
+    <a href="#defensive">Defensive Mapping</a>
+    <a href="#financial">Financial Infrastructure</a>
+    <a href="#targeting">Victim Profile</a>
+    <a href="#enforcement">LE Response</a>
+    <a href="#attribution">Attribution &amp; State Nexus</a>
+    <a href="#trajectory">Trajectory</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile &bull; Last updated September 2026</div>
+    <div class="hero-title">ShinyHunters</div>
+    <div class="hero-subtitle">Data Theft and Extortion Brand &bull; SaaS and Identity Intrusion &bull; BreachForums Lineage &bull; French-Origin, Com-Linked</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">Active</span>
+      <span class="badge badge-extortion">Data Extortion, No Encryption</span>
+      <span class="badge badge-raas">Brand Over Membership</span>
+      <span class="badge badge-raas">Arrests Did Not Stop It</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">First Observed</div>
+        <div class="kpi-value">Apr 2020</div>
+        <div class="kpi-sub">Bulk database sales; name from shiny Pokemon hunting</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">DLS Posts Tracked</div>
+        <div class="kpi-value">159</div>
+        <div class="kpi-sub">ransomware.live; 130 RansomLook, 193 breach.house</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Largest Demand</div>
+        <div class="kpi-value">$55.2M</div>
+        <div class="kpi-sub">McKesson, Aug 2026 (actor claim)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Confirmed Payments</div>
+        <div class="kpi-value">2 public</div>
+        <div class="kpi-sub">AT&amp;T 5.72 BTC (contested); Instructure (undisclosed)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">LE Actions</div>
+        <div class="kpi-value">4 waves</div>
+        <div class="kpi-sub">US 2021, France 2022 and 2025, FBI seizure Oct 2025</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Sanctions</div>
+        <div class="kpi-value">None</div>
+        <div class="kpi-sub">No OFAC, EU or UK designation</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Encryptor</div>
+        <div class="kpi-value">None deployed</div>
+        <div class="kpi-sub">ShinySp1d3r RaaS in development only</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">On-Chain Analysis</div>
+        <div class="kpi-value">TRM only</div>
+        <div class="kpi-sub">AT&amp;T flow, 2024; no Chainalysis or Elliptic cluster</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Hosting</div>
+        <div class="kpi-value">RU BPH</div>
+        <div class="kpi-sub">PROSPERO and Proton66, St Petersburg</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Victims (Live)</div>
+        <div class="kpi-value" id="kpi-victim-count">--</div>
+        <div class="kpi-sub">via ransomware.live</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01 -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+<p>ShinyHunters is a financially motivated data-theft and extortion brand active since April 2020. It began as a French-origin crew selling stolen databases in bulk (Tokopedia, Wattpad, Microsoft private GitHub repositories), became the administrator of the BreachForums marketplace in 2023 to 2025, and since mid-2025 has operated as the extortion and publication front for identity-first intrusions against SaaS and enterprise platforms: Salesforce, Snowflake-adjacent tenants, Microsoft 365, Instructure Canvas and Oracle PeopleSoft.</p>
+<p>The group does not encrypt. It steals data from cloud applications, usually after voice phishing (vishing) a help desk or employee, and demands payment in Bitcoin within 72 hours under threat of publication on a Tor leak site. Four waves of law enforcement action (a 2021 US indictment, French arrests in 2022 and June 2025, and a joint FBI and French seizure of its Salesforce leak site in October 2025) removed identifiable operators and forum infrastructure without stopping the brand. It posted new victims through 22 September 2026.</p>
+<div class="callout callout-alert"><strong>Analyst Assessment.</strong> ShinyHunters is best treated as a brand, not a fixed crew. The name has covered at least three separately evidenced cohorts: the 2020 to 2021 conspiracy charged in Seattle, the BreachForums administrators arrested in France in June 2025, and the 2025 to 2026 cloud intrusion operators that Google tracks as UNC6240. Continuity across cohorts is demonstrated for the brand, the extortion model and parts of the infrastructure; it is not demonstrated for the people. The structural leverage points are the ones that survived every disruption: Russian bulletproof hosting for the leak site, a small number of access-provider handoffs, and Bitcoin cash-out through bridges and instant exchanges.</div>
+<div class="callout callout-warning"><strong>Naming discipline.</strong> Three traps recur in secondary reporting. (1) CrowdStrike's SHINING SPIDER is the Lorenz ransomware operator, not ShinyHunters. (2) Google's UNC6671 (the BlackFile, Falcon and Helix brands) uses ShinyHunters tradecraft but is assessed as operating independently. (3) The ShinyHunters name on a ransom letter is not attribution: the PowerSchool attacker used it without any court-established link to the group.</div>
+<div class="conf-block confirmed"><strong>CONFIRMED.</strong> ShinyHunters is an active, financially motivated extortion brand. Google, Microsoft, Unit 42, Europol and MITRE ATT&amp;CK (group G1057, created 29 July 2026) all document it independently.</div>
+<div class="subsection"><div class="subsection-title">Quick Reference</div>
+<div class="table-wrap"><table><thead><tr><th>Attribute</th><th>Assessment</th></tr></thead><tbody><tr><td>Model</td><td>Data theft and extortion without encryption; historically also bulk data resale and forum administration</td></tr><tr><td>Active since</td><td>April 2020 (public brand). Some vendors date precursor activity to 2019</td></tr><tr><td>Initial access</td><td>Vishing of help desks and employees; OAuth consent abuse; stolen integration tokens; zero-day exploitation (CVE-2026-35273, PeopleSoft)</td></tr><tr><td>Extortion mechanics</td><td>Bitcoin demand, 72-hour deadline, samples hosted on file-sharing services, Tor leak site; defacement as pressure (Canvas, Clop, FBI Jobs)</td></tr><tr><td>Encryptor</td><td>None in use. ShinySp1d3r ransomware-as-a-service announced November 2025; no confirmed deployment</td></tr><tr><td>Payment rail</td><td>Bitcoin</td></tr><tr><td>Assessed jurisdiction</td><td>French-origin founders; later operators in the English-speaking Com network (North America, UK, Turkey)</td></tr><tr><td>Leak site hosting</td><td>Russian bulletproof hosting: PROSPERO (AS200593) and Proton66 (AS198953), St Petersburg</td></tr><tr><td>Alliance</td><td>Scattered LAPSUS$ Hunters (SLSH), announced August 2025 with Scattered Spider and LAPSUS$</td></tr><tr><td>Decryptor</td><td>Not applicable (no encryption)</td></tr><tr><td>Law enforcement</td><td>US indictment 2021 (one conviction); French arrests June 2025; FBI and French seizure of breachforums[.]hn October 2025</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">Vendor Tracking Designations</div>
+<p>No two vendors draw the boundary in the same place. Several labels commonly listed as ShinyHunters aliases describe a separate intrusion cluster that hands data to the ShinyHunters extortion stage, or an unrelated crew that copies its tradecraft. Each designation is listed with what its own vendor says it covers.</p>
+<div class="table-wrap"><table><thead><tr><th>Vendor</th><th>Designation</th><th>What it tracks</th><th>Relation to ShinyHunters (per vendor)</th></tr></thead><tbody><tr><td>Google (GTIG / Mandiant)</td><td>UNC6240</td><td>Extortion stage following UNC6040 and UNC6661 intrusions; 2026 PeopleSoft exploitation</td><td>June 2025: the cluster "claimed" the ShinyHunters name, likely as a pressure tactic. June 2026: written as "UNC6240 (ShinyHunters)", a direct equivalence</td></tr><tr><td>Google (GTIG / Mandiant)</td><td>UNC6040</td><td>Vishing cluster targeting Salesforce via a modified Data Loader app (2025)</td><td>Intrusion stage only; extortion tracked separately as UNC6240</td></tr><tr><td>Google (GTIG / Mandiant)</td><td>UNC6661</td><td>January 2026 vishing and SSO credential harvesting against SaaS platforms</td><td>Extortion after its intrusions tracked as UNC6240</td></tr><tr><td>Google (GTIG / Mandiant)</td><td>UNC6395</td><td>Salesloft Drift OAuth token theft, August 2025</td><td>Google has not linked it to ShinyHunters; the link rests on the actor's own claims</td></tr><tr><td>Google (GTIG / Mandiant)</td><td>UNC5537</td><td>Snowflake customer tenant theft, 2024</td><td>Not equated with ShinyHunters by Mandiant</td></tr><tr><td>Google (GTIG / Mandiant)</td><td>UNC6671</td><td>BlackFile, REDACT, Falcon, Helix, Pink brands</td><td>Not ShinyHunters. Same tradecraft, assessed as acting independently</td></tr><tr><td>Palo Alto Unit 42</td><td>Bling Libra</td><td>The actor behind ShinyHunters extortion since 2020</td><td>"Bling Libra (also known as ShinyHunters)"</td></tr><tr><td>Microsoft</td><td>No Storm name</td><td>Microsoft has not assigned ShinyHunters its own designation</td><td>Storm-3121 is an access provider "leading to ShinyHunters and Falcon extortion"; Storm-3138 (Klue, June 2026) is adjacent</td></tr><tr><td>MITRE ATT&amp;CK</td><td>G1057 ShinyHunters; campaign C0059</td><td>Group created 29 July 2026</td><td>Lists UNC6240 and Bling Libra as associated names</td></tr><tr><td>CrowdStrike</td><td>None found</td><td>CORDIAL SPIDER and SNARKY SPIDER are distinct vishing extortion crews</td><td>Not ShinyHunters. SHINING SPIDER is Lorenz</td></tr><tr><td>Secureworks, Recorded Future, Proofpoint</td><td>None published</td><td>No group-specific label located</td><td>Not assessed</td></tr></tbody></table></div>
+<div class="conf-block inference"><strong>ANALYST INFERENCE.</strong> Google's move from "claims to be ShinyHunters" (June 2025) to "UNC6240 (ShinyHunters)" (June 2026) is the strongest vendor signal that the current extortion operation is the brand holder rather than an impersonator. It does not establish that UNC6240 is the same people as the 2020 crew or the June 2025 arrestees. Mandiant and Recorded Future have not published a formal assessment linking the cohorts.</div>
+</div>
+<div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div><div class="img-gallery"><div class="img-panel tall"><img src="https://storage.googleapis.com/gweb-cloudblog-publish/images/peoplesoft-shinyhunters.max-1700x1700.png" alt="ShinyHunters data leak site post listing a PeopleSoft victim" onerror="this.style.display='none'"><div class="img-caption"><strong>Leak Site: Victim Listing</strong>ShinyHunters leak-site post adding a PeopleSoft victim on 9 June 2026, the day the zero-day campaign ended. Google published it as Figure 1 of its campaign report, alongside a staging server's SSH connection to the site's clear-web mirror.<span class="img-source">Source: Google Threat Intelligence Group, 2026</span></div></div><div class="img-panel tall"><img src="https://www.bleepstatic.com/images/news/u/1109292/2025/ShinyHunters_Salesforce_leaks.png" alt="Scattered LAPSUS$ Hunters Salesforce extortion leak site" onerror="this.style.display='none'"><div class="img-caption"><strong>SLSH Salesforce Leak Site</strong>The October 2025 leak site listing 39 Salesforce customers under the Scattered LAPSUS$ Hunters banner. The FBI and French authorities seized the domain on 10 October 2025.<span class="img-source">Source: BleepingComputer, 2025</span></div></div></div><div class="img-gallery three-col"><div class="img-panel"><img src="https://hackread.com/wp-content/uploads/2026/05/canvas-hackers-shinyhunters-official-domain-suspended-dark-web-1024x891.png" alt="Homepage of the shinyhunte.rs domain" onerror="this.style.display='none'"><div class="img-caption"><strong>shinyhunte.rs Identity Site</strong>The clear-web identity and negotiation page, suspended on 11 May 2026 after the Canvas attacks. The group moved to onion-only communications.<span class="img-source">Source: Hackread, 2026</span></div></div><div class="img-panel"><img src="https://www.malwarebytes.com/wp-content/uploads/sites/2/2026/09/Complete_note_to_Clop.png" alt="ShinyHunters note posted on the hijacked Clop leak site" onerror="this.style.display='none'"><div class="img-caption"><strong>Note to Clop</strong>The extortion note ShinyHunters posted after taking over Clop's Tor leak site on 18 September 2026.<span class="img-source">Source: Malwarebytes, 2026</span></div></div><div class="img-panel myth"><img src="https://www.bleepstatic.com/images/news/security/attacks/f/fbi/shinyhunters-defacement-data-breach-allegedly/fbijobs-defacement.jpg" alt="FBI Jobs site defacement with the Umbreon logo" onerror="this.style.display='none'"><div class="img-caption"><strong>Branding: Umbreon</strong>The name comes from hunting rare "shiny" Pokemon; the group's avatar is a shiny Umbreon. The logo appeared on the alleged FBI Jobs defacement of 22 September 2026 (FBI has not confirmed).<span class="img-source">Source: BleepingComputer, 2026</span></div></div></div>
+    </section>
+    <!-- SECTION 02 -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+<p>ShinyHunters has three documented generations. The evidence for each is strong; the evidence connecting them is weaker, and the profile keeps the two tiers separate.</p>
+<div class="subsection"><div class="subsection-title">Evidentiary Pillars</div>
+<div class="table-wrap"><table><thead><tr><th>Pillar</th><th>Evidence</th><th>Confidence</th></tr></thead><tbody><tr><td>Generation 1: 2020 to 2021 crew</td><td>US indictment of 23 June 2021 (W.D. Wash.) names Sebastien Raoult, Gabriel Kimiaie-Asadi Bildstein and Abdel-Hakim El Ahmadi. DOJ: data of more than 60 companies offered for sale, losses above $6 million</td><td>CONFIRMED</td></tr><tr><td>Generation 2: BreachForums administration</td><td>ShinyHunters and Baphomet relaunched BreachForums in June 2023, three months after the March 2023 arrest of Conor Fitzpatrick; restored it again after the May 2024 FBI seizure</td><td>CONFIRMED</td></tr><tr><td>Generation 3: cloud extortion operators</td><td>Google, Microsoft and Unit 42 document ShinyHunters-branded extortion of Salesforce, Microsoft 365, Canvas and PeopleSoft victims, 2025 to 2026</td><td>CONFIRMED</td></tr><tr><td>Personnel continuity, Gen 1 to Gen 2</td><td>No public evidence that the 2025 French arrestees were members of the 2020 to 2021 crew</td><td>NOT EVIDENCED</td></tr><tr><td>Personnel continuity, Gen 2 to Gen 3</td><td>The brand, leak site style and extortion model continued after the June 2025 arrests; ShinyHunters stated in October 2025 that none of its members had been arrested</td><td>CREDIBLE (brand); personnel UNRESOLVED</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">GnosticPlayers</div>
+<p>The DOJ lists "Gnostic Players" as an alias of defendant Bildstein. GnosticPlayers was a prolific seller of breached databases in 2019. That alias is the strongest documentary link between the two brands.</p>
+<div class="conf-block credible"><strong>CREDIBLE.</strong> GnosticPlayers is a probable predecessor through shared personnel (Bildstein). The scope of the overlap beyond one individual is not established.</div>
+</div>
+<div class="subsection"><div class="subsection-title">BreachForums Control Chain</div>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Event</th></tr></thead><tbody><tr><td>Mar 2023</td><td>Conor Fitzpatrick (pompompurin) arrested; original BreachForums closed</td></tr><tr><td>Jun 2023</td><td>ShinyHunters and Baphomet relaunch the forum</td></tr><tr><td>May 2024</td><td>FBI seizes the forum (15 May); ShinyHunters restores it by 29 May</td></tr><tr><td>Jun 2024</td><td>ShinyHunters announces retirement; "Anastasia" takes ownership (14 June)</td></tr><tr><td>Aug 2024 to Jan 2025</td><td>IntelBroker (Kai West) owns the forum; West arrested in France February 2025, US charges unsealed 25 June 2025</td></tr><tr><td>Jun 2025</td><td>ShinyHunters relaunches another version; French arrests of four administrators on 23 June</td></tr><tr><td>Oct 2025</td><td>FBI and French authorities seize breachforums[.]hn, then serving as the SLSH Salesforce leak site</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">Scattered LAPSUS$ Hunters (SLSH)</div>
+<p>In August 2025 ShinyHunters, Scattered Spider and LAPSUS$ personas announced a joint identity, Scattered LAPSUS$ Hunters, on Telegram. Europol's IOCTA 2026 describes it as an "alleged" alliance. Unit 42 treats SLSH as a coalition of Muddled Libra (Scattered Spider), Bling Libra (ShinyHunters) and LAPSUS$. See the <a href="scatteredspider.html">Scattered Spider profile</a> for the partner side.</p>
+<div class="conf-block credible"><strong>CREDIBLE (anchor).</strong> Collaboration between ShinyHunters and Scattered Spider under the SLSH banner is documented by Europol and Unit 42.</div>
+<div class="conf-block inference"><strong>ANALYST INFERENCE (extension).</strong> Claims that SLSH is one organization with a single command, or that its members are the same individuals as the 2020 ShinyHunters crew, go beyond the evidence. Role specialization (access providers, intrusion operators, extortion front) fits the vendor record better than a unified hierarchy.</div>
+</div>
+    </section>
+    <!-- SECTION 03 -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+<p>ShinyHunters has used four monetization channels, in roughly this order over time. Each channel is documented; their relative revenue is not.</p>
+<ul class="content-list"><li><strong>Bulk data resale (2020 to 2021).</strong> Plea records show one victim's data was sold 13 times at $5,000. Sales ran through RaidForums, Empire Market and Exploit.</li><li><strong>Direct extortion.</strong> The largest ransom in the 2020 to 2021 case was $425,000. Current demands run from hundreds of thousands to $55.2 million, with a 72-hour Bitcoin deadline.</li><li><strong>Forum administration.</strong> Control of BreachForums gave the brand reach, reputation and a buyer base.</li><li><strong>Extortion as a service.</strong> Unit 42 reports that Bling Libra runs extortion for partner intrusion crews for a 25 to 30 percent revenue share.</li></ul>
+<div class="subsection"><div class="subsection-title">Division of Labor</div>
+<p>Current campaigns separate access, intrusion and extortion. Microsoft's Storm-3121 performs initial access that leads to both ShinyHunters and Falcon extortion. Google tracks the UNC6040 and UNC6661 intrusion clusters separately from the UNC6240 extortion stage. The extortion front is the part that carries the ShinyHunters name.</p>
+<div class="conf-block inference"><strong>ANALYST INFERENCE.</strong> Because access providers such as Storm-3121 serve more than one extortion brand, disrupting the ShinyHunters leak site alone does not remove the intrusion supply. Access providers are the higher-yield target.</div>
+</div>
+<div class="subsection"><div class="subsection-title">Negotiation and Pressure</div>
+<ul class="content-list"><li>Demands arrive by email from ShinyHunters-branded addresses, with Tox as the negotiation channel and samples on file-sharing services.</li><li>Pressure escalates through public leak-site listings, harassment and defacement. The Canvas ransom note was injected into a custom theme and was visible to roughly 300 organizations.</li><li>Instructure (Canvas) confirmed it reached an agreement and had the data returned on 11 May 2026. The amount was not disclosed.</li><li>Salesforce publicly refused to pay for the October 2025 leak-site campaign.</li></ul>
+<div class="callout callout-warning"><strong>Attribution caution: impersonation.</strong> The brand is used by others. The PowerSchool attacker (Matthew Lane, sentenced October 2025) signed ransom letters as ShinyHunters; no court record connects him to the group. ShinyHunters itself has publicly disowned activity under its name, including after its shinyhunte.rs domain was suspended in May 2026. A ransom letter, email signature or leak-site post is a brand claim, not attribution.</div>
+</div>
+    </section>
+    <!-- SECTION 04 -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+<p>The technical profile has moved from phishing pages and exposed cloud keys (2020 to 2024) to identity-first compromise of SaaS tenants (2025) and, in 2026, zero-day exploitation of an enterprise application.</p>
+<div class="table-wrap"><table><thead><tr><th>Period</th><th>Primary methods</th><th>Source</th></tr></thead><tbody><tr><td>2020 to 2021</td><td>Spoofed corporate login pages, credential theft from employees and contractors, private GitHub and cloud access</td><td>DOJ</td></tr><tr><td>2024</td><td>AWS S3 buckets accessed with keys taken from public code repositories; data stolen without encryption</td><td>Unit 42</td></tr><tr><td>2025</td><td>Vishing to install a modified Salesforce Data Loader app; theft of Salesloft Drift and Gainsight OAuth tokens</td><td>Google, Microsoft</td></tr><tr><td>2026</td><td>Vishing and adversary-in-the-middle pages to capture SSO and MFA; attacker-registered MFA and passkeys; Microsoft Graph reconnaissance; bulk SharePoint, OneDrive and Exchange collection</td><td>Microsoft, Google</td></tr><tr><td>May to Jun 2026</td><td>Zero-day exploitation of Oracle PeopleSoft (CVE-2026-35273)</td><td>Google</td></tr></tbody></table></div>
+<div class="subsection"><div class="subsection-title">Exploited Vulnerability: Verified Against NVD</div>
+<div class="table-wrap"><table><thead><tr><th>CVE</th><th>Product</th><th>NVD record</th><th>ShinyHunters use</th></tr></thead><tbody><tr><td><span class="mono">CVE-2026-35273</span></td><td>Oracle PeopleSoft PeopleTools 8.61 and 8.62 (Updates Environment Management)</td><td>Unauthenticated remote code execution over HTTP; CVSS 3.1 9.8; published 11 Jun 2026; added to CISA KEV 12 Jun 2026</td><td>Exploited 27 May to 9 Jun 2026, before Oracle's alert of 10 Jun 2026. Google notified more than 100 organizations, 68 percent in higher education</td></tr></tbody></table></div>
+<p>Google documented the post-exploitation chain: customized MeshCentral agents disguised as Azure tooling, Python staging servers, the <span class="mono">/PSEMHUB/hub</span> and <span class="mono">/PSIGW/HttpListeningConnector</span> endpoints, per-victim <span class="mono">_fanout.sh</span> scripts using sshpass for lateral movement, zstd-compressed exfiltration, and an outbound SSH connection to <span class="mono">176.120.22.24</span>, a public mirror of the ShinyHunters leak site.</p>
+<div class="conf-block confirmed"><strong>CONFIRMED.</strong> The PeopleSoft campaign ties ShinyHunters to zero-day exploitation, not only social engineering. Google attributes it to UNC6240 (ShinyHunters).</div>
+</div>
+<div class="subsection"><div class="subsection-title">Case Study: Instructure Canvas, April to May 2026</div>
+<p>Instructure reported that the first intrusion began with malicious code submitted through a support ticket from a Free-For-Teacher account. When staff opened it, a cross-site scripting flaw yielded an authorization token and elevated access (access window 25 to 30 April, detected 29 April). On 7 May the actor re-entered through a second cross-site scripting path in the discussion feature and OAuth flow; it was contained in about ten minutes. Data taken included usernames, email addresses, course names, enrollment data and messages, but not course content, submissions or credentials. Instructure said the incidents "appear to have been perpetrated by" ShinyHunters.</p>
+</div>
+<div class="subsection"><div class="subsection-title">Encryption: ShinySp1d3r</div>
+<p>In November 2025 Unit 42 reported ShinySp1d3r, a ransomware-as-a-service product under development by SLSH, with a working Windows build and Linux and ESXi versions pending. No confirmed deployment against a victim has been reported through September 2026, and no decryptor exists or is needed.</p>
+<div class="conf-block credible"><strong>CREDIBLE.</strong> ShinyHunters has the intent to add encryption. The capability is unproven in the field.</div>
+</div>
+<div class="subsection"><div class="subsection-title">CIS Exclusion</div>
+<p>No Russian-language exclusion logic, keyboard-layout check or stated ban on post-Soviet victims has been reported. This group does not follow the Russian-speaking ransomware norm, which is consistent with its French and English-speaking origins.</p>
+</div>
+    </section>
+    <!-- SECTION 05 -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+<p>Priority techniques below are drawn from Google, Microsoft and MITRE ATT&amp;CK reporting on ShinyHunters (G1057) and the Salesforce campaign (C0059). The emphasis is identity and SaaS, not endpoints: most intrusions never touch a victim's servers.</p>
+<div class="subsection"><div class="subsection-title">Priority ATT&amp;CK Techniques</div>
+<div class="table-wrap"><table><thead><tr><th>Technique</th><th>ID</th><th>Tactic</th><th>ShinyHunters usage</th><th>Defender action</th></tr></thead><tbody><tr><td>Phishing for Information: Spearphishing Voice</td><td><span class="mono">T1598.004</span></td><td>Reconnaissance</td><td>Help-desk and employee vishing to obtain credentials or push OAuth consent</td><td>Call-back verification for help-desk resets; no MFA resets by phone alone</td></tr><tr><td>Cloud Application Integration</td><td><span class="mono">T1671</span></td><td>Persistence</td><td>Victim authorizes a malicious or modified Salesforce Data Loader connected app</td><td>Restrict connected-app installation to admins; allow-list OAuth apps</td></tr><tr><td>Valid Accounts: Cloud Accounts</td><td><span class="mono">T1078.004</span></td><td>Initial Access</td><td>Stolen SSO credentials; infostealer credentials in the Snowflake wave</td><td>Phishing-resistant MFA; conditional access on device and location</td></tr><tr><td>Modify Authentication Process: Multi-Factor Authentication</td><td><span class="mono">T1556.006</span></td><td>Persistence</td><td>Attacker registers its own MFA method or passkey</td><td>Alert on new MFA or passkey registration, especially soon after a password reset</td></tr><tr><td>Steal Application Access Token</td><td><span class="mono">T1528</span></td><td>Credential Access</td><td>Theft of Salesloft Drift and Gainsight OAuth tokens</td><td>Inventory and rotate third-party integration tokens; scope them narrowly</td></tr><tr><td>Use Alternate Authentication Material: Application Access Token</td><td><span class="mono">T1550.001</span></td><td>Lateral Movement</td><td>Stolen tokens used to reach downstream Salesforce tenants without MFA</td><td>Monitor API use by integration identities from new IPs</td></tr><tr><td>Account Discovery: Cloud Account</td><td><span class="mono">T1087.004</span></td><td>Discovery</td><td>Microsoft Graph enumeration of users, groups and roles</td><td>Baseline Graph API volume per user; alert on bulk enumeration</td></tr><tr><td>Data from Information Repositories: CRM Software</td><td><span class="mono">T1213.004</span></td><td>Collection</td><td>Bulk SOQL and Data Loader export of Salesforce objects</td><td>Enable Salesforce event monitoring; rate-limit bulk API exports</td></tr><tr><td>Data from Cloud Storage</td><td><span class="mono">T1530</span></td><td>Collection</td><td>SharePoint, OneDrive and S3 bulk download</td><td>Alert on mass download; data-loss prevention on high-value sites</td></tr><tr><td>Exploit Public-Facing Application</td><td><span class="mono">T1190</span></td><td>Initial Access</td><td>CVE-2026-35273 PeopleSoft remote code execution</td><td>Patch per Oracle's 10 Jun 2026 alert; block external access to PSEMHUB</td></tr><tr><td>Remote Access Tools</td><td><span class="mono">T1219</span></td><td>Command and Control</td><td>Customized MeshCentral agents disguised as Azure operations tooling</td><td>Block unapproved remote-management agents; hunt for MeshCentral</td></tr><tr><td>Exfiltration Over Web Service</td><td><span class="mono">T1567</span></td><td>Exfiltration</td><td>High-volume automated API extraction; samples hosted on file-sharing services</td><td>Egress monitoring for API volumes and file-sharing uploads</td></tr></tbody></table></div>
+<p class="navigator-link"><strong>Full technique matrix (external):</strong> <a href="https://attack.mitre.org/groups/G1057/" target="_blank" rel="noopener">MITRE ATT&amp;CK group G1057 ShinyHunters</a>, 43 techniques as of its 29 July 2026 creation.</p>
+</div>
+<div class="subsection"><div class="subsection-title">Linked Advisories</div>
+<div class="table-wrap"><table><thead><tr><th>Issuer</th><th>Advisory</th><th>Date</th></tr></thead><tbody><tr><td>FBI</td><td>FLASH-20250912-001: UNC6040 and UNC6395 compromising Salesforce instances; victims received extortion emails "allegedly from the ShinyHunters group"</td><td>12 Sep 2025</td></tr><tr><td>Oracle</td><td>Security Alert CVE-2026-35273</td><td>10 Jun 2026</td></tr><tr><td>CISA</td><td>Known Exploited Vulnerabilities catalog entry for CVE-2026-35273 (per NVD)</td><td>12 Jun 2026</td></tr><tr><td>Google GTIG</td><td>Vishing and data extortion (UNC6040, UNC6240); Salesloft Drift (UNC6395); SaaS expansion (UNC6661); PeopleSoft (UNC6240)</td><td>Jun 2025 to Jun 2026</td></tr><tr><td>Microsoft</td><td>SaaS OAuth abuse; passkey-themed social engineering (Storm-3121)</td><td>Jul and Sep 2026</td></tr></tbody></table></div>
+<div class="callout callout-success"><strong>Top Defensive Priorities.</strong> (1) Harden the help desk: no password or MFA reset on a phone call alone. (2) Lock down OAuth: admin-only connected-app approval and an inventory of every third-party token touching CRM data. (3) Alert on new MFA and passkey registrations. (4) Patch PeopleSoft for CVE-2026-35273 and remove internet exposure of PSEMHUB. (5) Watch for bulk API export from CRM and document stores, which is the step where theft becomes visible.</div>
+</div>
+    </section>
+    <!-- SECTION 06 -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+<p>Bitcoin is the only documented settlement asset. Published figures measure different things (losses, restitution, demands, payments) and must not be added together.</p>
+<div class="subsection"><div class="subsection-title">Payment and Loss Figures</div>
+<div class="table-wrap"><table><thead><tr><th>Figure</th><th>What it measures</th><th>Source</th><th>Confidence</th></tr></thead><tbody><tr><td>More than $6 million</td><td>Victim losses from the 2020 to 2021 conspiracy</td><td>DOJ</td><td>CONFIRMED</td></tr><tr><td>$5,058,419.73</td><td>Restitution ordered against Raoult</td><td>Court judgment via DataBreaches.net</td><td>CONFIRMED</td></tr><tr><td>Up to $425,000</td><td>Largest ransom in the 2020 to 2021 case</td><td>Plea records via BleepingComputer</td><td>CONFIRMED</td></tr><tr><td>5.72 BTC ($373,646)</td><td>AT&amp;T payment, 17 May 2024</td><td>TRM Labs confirmation</td><td>CONFIRMED payment; ShinyHunters link CREDIBLE</td></tr><tr><td>Undisclosed</td><td>Instructure (Canvas) payment, 11 May 2026</td><td>Instructure</td><td>CONFIRMED</td></tr><tr><td>$300,000 to $5 million</td><td>Demands to up to ten Snowflake customers, 2024</td><td>Mandiant via Bloomberg</td><td>Demands, not payments</td></tr><tr><td>$55,236,150</td><td>Demand to McKesson, August 2026, against 284 million claimed records</td><td>Bitdefender, Help Net Security</td><td>Actor claim; no payment reported</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">The AT&amp;T Flow and Its Attribution Problem</div>
+<p><strong>Receipt.</strong> On 17 May 2024 AT&amp;T paid about 5.72 BTC for deletion of call records stolen from its Snowflake tenant, negotiated through a researcher known as "Reddington". TRM Labs confirmed the transaction.</p>
+<p><strong>Layering.</strong> TRM traced about $150,000 to two centralized exchanges, under $10,000 to a non-custodial exchange, a small amount to a gambling service, and most of the rest through swap services. TRM said there was "no indication of who controlled the wallets." The Record's headline mentions mixers, but the article does not say mixers were used in this flow.</p>
+<p><strong>Extraction.</strong> No public source names the exchanges, account holders or final off-ramps.</p>
+<div class="callout callout-warning"><strong>Attribution caution.</strong> The AT&amp;T payment is usually cited as ShinyHunters' best on-chain case. The ShinyHunters label comes from a single media source (Wired, repeated by TRM). The Justice Department charged the Snowflake extortion, including AT&amp;T, to Connor Moucka ("Judische", "Waifu") and John Binns; Moucka pleaded guilty in August 2026 and is due for sentencing on 27 October 2026. Neither the charging documents nor Mandiant's UNC5537 report use the ShinyHunters name. This profile treats the payment as CONFIRMED and its attribution to ShinyHunters as CREDIBLE.</div>
+</div>
+<div class="subsection"><div class="subsection-title">Other Wallet Indicators</div>
+<div class="table-wrap"><table><thead><tr><th>Address</th><th>Context</th><th>Assessment</th></tr></thead><tbody><tr><td><span class="mono">bc1qpzt8et39w3texfn0r7jt6fjkz2khdarnwskqpk</span></td><td>Named in a May 2025 demand for 25 BTC sent to school districts after the PowerSchool breach. DataBreaches.net later reported 10.14 BTC in and out on 4 June 2025, origin unknown</td><td>Brand-claimed demand wallet; not a confirmed ShinyHunters wallet</td></tr><tr><td><span class="mono">bc1q5530apqz86eywm2f84mpcyuux3dv9mmztsdxt2</span></td><td>Offered by the "shinycorp" persona during a September 2025 negotiation, per EclecticIQ; received funds 15 September 2025 (amount not verified)</td><td>CREDIBLE negotiation wallet</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">Forensics Vendor Coverage</div>
+<div class="table-wrap"><table><thead><tr><th>Vendor</th><th>Published work</th><th>Finding</th></tr></thead><tbody><tr><td>TRM Labs</td><td>July 2024</td><td>AT&amp;T payment confirmed and laundering classes traced; controllers not identified</td></tr><tr><td>Chainalysis</td><td>July 2025 IntelBroker post</td><td>Traced IntelBroker (Kai West), a BreachForums owner, through KYC exchanges. No ShinyHunters cluster published; 2025 and 2026 ransomware reports do not name the group</td></tr><tr><td>Elliptic</td><td>None found</td><td>Gap</td></tr></tbody></table></div>
+<div class="conf-block inference"><strong>ANALYST INFERENCE.</strong> The absence of a published ShinyHunters wallet cluster is a collection gap, not evidence that one does not exist. The AT&amp;T flow shows the laundering pattern this profile expects: fast dispersal into swap services and bridges, with a minority reaching KYC exchanges where legal process can reach it.</div>
+</div>
+<div class="subsection"><div class="subsection-title">Sanctions Exposure</div>
+<p>No OFAC, EU or UK designation of ShinyHunters, any named operator or any wallet has been identified through 23 September 2026. No FinCEN Section 311 action or group-specific advisory exists. Unlike the Russian ransomware services profiled elsewhere in this library, the response to ShinyHunters has been criminal prosecution and infrastructure seizure, not financial designation.</p>
+</div>
+    </section>
+    <!-- SECTION 07 -->
+    <section class="section" id="targeting">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+<p>ShinyHunters targets choke points: one identity, integration or widely deployed application that exposes many downstream organizations at once. That model explains why a group with modest leak-site volume produces some of the largest record counts in the ecosystem.</p>
+<div class="subsection"><div class="subsection-title">Sector and Geography</div>
+<p>Tracker counts diverge, so each is cited with its source and date. ransomware.live lists 159 posts (technology 35, retail 27, financial services 22, education 15; United States 114). RansomLook lists 130 and breach.house 193, with the United States at about two-thirds of victims in every tracker. These are leak-site claims, not verified breaches, and include supply-chain victims counted once per tenant.</p>
+</div>
+<div class="subsection"><div class="subsection-title">Notable Named Victims</div>
+<div class="table-wrap"><table><thead><tr><th>Victim</th><th>Sector</th><th>Date</th><th>Impact</th></tr></thead><tbody><tr><td>AT&amp;T (via Snowflake)</td><td>Telecommunications</td><td>Apr to May 2024</td><td>Call records of nearly all customers; 5.72 BTC paid. Breach CONFIRMED; ShinyHunters role CREDIBLE (see Section 06)</td></tr><tr><td>Google (corporate Salesforce)</td><td>Technology</td><td>Jun 2025</td><td>Contact data for small businesses. Google attributes the intrusion to UNC6040, with extortion under the ShinyHunters name. CONFIRMED</td></tr><tr><td>39 Salesforce customers (Toyota, FedEx, Disney/Hulu, Qantas and others)</td><td>Multiple</td><td>Oct 2025</td><td>SLSH leak site claimed about one billion records; Salesforce refused to pay; site seized 10 Oct 2025. Leak-site claims CREDIBLE; several listed companies had separately disclosed Salesforce-related breaches</td></tr><tr><td>Instructure (Canvas)</td><td>Education technology</td><td>Apr to May 2026</td><td>Ransom note visible to about 300 organizations; data returned after an undisclosed payment. CONFIRMED by victim</td></tr><tr><td>PeopleSoft customers (100+ organizations)</td><td>Higher education</td><td>May to Jun 2026</td><td>Zero-day mass exploitation; 68 percent of notified organizations in higher education. CONFIRMED by Google</td></tr><tr><td>McKesson</td><td>Healthcare</td><td>Aug 2026</td><td>SEC filing confirms data theft without naming an actor; ShinyHunters claims 284 million records and demands $55.2 million. Breach CONFIRMED; attribution CREDIBLE</td></tr><tr><td>FBI (apply.fbijobs.gov)</td><td>Government</td><td>Sep 2026</td><td>ShinyHunters claims 2 to 3 TB taken via the PeopleSoft zero-day and defaced the jobs site with its Umbreon logo; FBI investigating, not confirmed. CREDIBLE</td></tr></tbody></table></div>
+<div class="callout callout-info"><strong>Why the FBI claim matters.</strong> If confirmed, the 22 September 2026 FBI intrusion would be the group's first known compromise of a US law enforcement agency and a direct retaliation for enforcement (the actor cites the FBI's May 2026 warning). It would mark a shift from profit-only extortion toward open retaliation against law enforcement. This reading is ANALYST INFERENCE pending FBI confirmation.</div>
+</div>
+    </section>
+    <!-- SECTION 08 -->
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+<div class="subsection"><div class="subsection-title">United States: the 2021 Indictment</div>
+<p>A grand jury in the Western District of Washington indicted three French nationals on 23 June 2021 on nine counts: conspiracy to commit computer fraud, conspiracy to commit wire fraud, four counts of wire fraud and three of aggravated identity theft.</p>
+<div class="table-wrap"><table><thead><tr><th>Defendant</th><th>Aliases</th><th>Status</th></tr></thead><tbody><tr><td>Sebastien Raoult (Epinal)</td><td>Sezyo Kaizen</td><td>Arrested in Morocco 31 May 2022; extradited January 2023; pleaded guilty September 2023 to wire fraud conspiracy and aggravated identity theft; sentenced 9 January 2024 to 36 months and more than $5 million restitution</td></tr><tr><td>Gabriel Kimiaie-Asadi Bildstein (Tarbes)</td><td>Kuroi, Gnostic Players</td><td>No US arrest. France does not extradite its nationals; French press reports separate French proceedings over the 2018 Coinrail theft</td></tr><tr><td>Abdel-Hakim El Ahmadi (Lyon)</td><td>Zac, Jordan Keso</td><td>No US arrest or public case activity found</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">France: June 2025 Arrests</div>
+<p>On 23 June 2025 the Paris prosecutor's cybercrime section and the Paris Police Prefecture's cybercrime brigade (BL2C) arrested four suspected BreachForums administrators known as ShinyHunters, Hollow, Noct and Depressed, in Hauts-de-Seine, Seine-Maritime and Reunion, under an investigating judge and with FBI cooperation. Reports of five arrests count IntelBroker (Kai West), who was arrested separately in February 2025. No charges, trial or verdict have been made public.</p>
+<div class="conf-block credible"><strong>CREDIBLE.</strong> Press reports have attached real first names to two of the arrested aliases, but the reports conflict and could not be verified against primary sources. This profile does not publish them.</div>
+</div>
+<div class="subsection"><div class="subsection-title">October 2025: BreachForums Seizure</div>
+<p>On 10 October 2025 the FBI and French authorities seized breachforums[.]hn, then used as the SLSH Salesforce leak site. ShinyHunters responded in a PGP-signed statement that no members had been arrested and that "the era of forums are over."</p>
+</div>
+<div class="subsection"><div class="subsection-title">Related Prosecutions (Not ShinyHunters Cases)</div>
+<ul class="content-list"><li><strong>Connor Moucka and John Binns</strong> (Snowflake and AT&amp;T extortion). Moucka pleaded guilty in August 2026; Binns is reported to be beyond extradition in Turkey. Charging documents do not name ShinyHunters.</li><li><strong>Matthew Lane</strong> (PowerSchool). Sentenced October 2025 to four years; used the ShinyHunters name in ransom letters without any established link.</li><li><strong>Kai West (IntelBroker)</strong>. Former BreachForums owner; charged in New York, extradition pending.</li></ul>
+</div>
+<div class="subsection"><div class="subsection-title">Post-Disruption Reconstitution</div>
+<div class="table-wrap"><table><thead><tr><th>Disruption</th><th>Response</th><th>Impact</th></tr></thead><tbody><tr><td>2021 indictment; 2022 Raoult arrest</td><td>Brand continued through other members</td><td>One conviction; no brand disruption</td></tr><tr><td>May 2024 forum seizure</td><td>Forum restored within two weeks</td><td>Displacement only</td></tr><tr><td>June 2025 French arrests</td><td>SLSH alliance launched August 2025; Salesforce leak site October 2025</td><td>Leadership disruption without brand disruption</td></tr><tr><td>Oct 2025 leak site seizure</td><td>Moved to its own Tor leak sites on Russian bulletproof hosting</td><td>Channel shift from forum to dedicated leak site</td></tr><tr><td>May 2026 shinyhunte.rs suspension</td><td>Moved to onion-only communications</td><td>Lower visibility; no drop in operations</td></tr></tbody></table></div>
+<div class="conf-block inference"><strong>ANALYST INFERENCE.</strong> Each action has removed people or a channel, not the capability. The layers that have never been hit are the leak-site hosting (PROSPERO and Proton66 in St Petersburg) and the Bitcoin off-ramps. Both sit outside French and US reach without financial designation or provider pressure.</div>
+</div>
+    </section>
+    <!-- SECTION 09 -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+<div class="subsection"><div class="subsection-title">Assessed Jurisdiction</div>
+<div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Assessment</th><th>Confidence</th></tr></thead><tbody><tr><td>Founding operators</td><td>France (Epinal, Tarbes, Lyon)</td><td>CONFIRMED</td></tr><tr><td>2025 forum administrators</td><td>France, including Reunion</td><td>CONFIRMED</td></tr><tr><td>Current intrusion operators</td><td>English-speaking Com network; Mandiant places Snowflake-era actors in North America and Turkey</td><td>CREDIBLE</td></tr><tr><td>Leak-site infrastructure</td><td>Russia: PROSPERO OOO (AS200593) and Proton66 OOO (AS198953), St Petersburg bulletproof hosting</td><td>CONFIRMED</td></tr></tbody></table></div>
+</div>
+<div class="subsection"><div class="subsection-title">Russian Intelligence Services Nexus</div>
+<p>None identified. No government, court or vendor source ties ShinyHunters to tasking, protection or direction by any state. Its targeting, which includes French victims and a claimed intrusion into the FBI, is inconsistent with the Russian safe-harbor model.</p>
+<div class="callout callout-warning"><strong>The Russia point that does exist is infrastructure, not people.</strong> The leak site's clear-web mirrors run on PROSPERO and Proton66, two related St Petersburg bulletproof networks. PROSPERO also appears in the upstream chains of bulletproof hosts in this library's <a href="../bphs/index.html">BPH layer</a>. A Western, non-Russian crew renting Russian bulletproof hosting shows those providers serve paying customers regardless of origin. It is a leverage point on the provider, not evidence of state involvement.</div>
+</div>
+<div class="subsection"><div class="subsection-title">Summary Assessment</div>
+<div class="conf-block confirmed"><strong>CONFIRMED.</strong> No state nexus. ShinyHunters is a financially motivated criminal brand whose known operators are French and whose current collaborators sit in the English-speaking Com.</div>
+<p>Attribution for any ShinyHunters incident should be stated at three separate levels: the technical intrusion cluster (for example UNC6040 or Storm-3121), the extortion and publication persona (ShinyHunters), and the identified human operator. A case can be strong at one level and weak at another.</p>
+</div>
+    </section>
+    <!-- SECTION 10 -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+<p><strong>Status: active, expanding in scope, and escalating in risk-taking.</strong> In the four weeks to 22 September 2026 the group claimed McKesson ($55.2 million demand), defaced Clop's leak site, and claimed an intrusion into the FBI.</p>
+<div class="subsection"><div class="subsection-title">The Clop Conflict</div>
+<p>On the night of 18 September 2026 ShinyHunters took over Clop's Tor leak site through a file-upload flaw in the Grav CMS software that ran it. It claimed Clop's source code, logs and Tor private keys, demanded an eight-figure payment and threatened to publish which companies paid Clop and to which Bitcoin addresses. The defacement is CONFIRMED; the data theft is unverified.</p>
+<div class="conf-block inference"><strong>ANALYST INFERENCE.</strong> If ShinyHunters publishes Clop's payer list and addresses, it would be the first criminal-sourced dataset of a Russian-speaking group's payments since the 2022 Conti leaks. Law enforcement should be ready to verify and exploit it.</div>
+</div>
+<div class="subsection"><div class="subsection-title">Connected Group Cluster</div>
+<div class="table-wrap"><table><thead><tr><th>Entity</th><th>Relationship</th><th>Confidence</th></tr></thead><tbody><tr><td>Scattered Spider</td><td>SLSH alliance partner</td><td>CREDIBLE (Europol, Unit 42)</td></tr><tr><td>LAPSUS$</td><td>SLSH alliance partner</td><td>CREDIBLE</td></tr><tr><td>GnosticPlayers</td><td>Probable predecessor through Bildstein</td><td>CREDIBLE</td></tr><tr><td>UNC6671 / BlackFile, Falcon, Helix</td><td>Parallel crew with the same tradecraft and shared access provider (Storm-3121)</td><td>CONFIRMED separate; relationship ADJACENT</td></tr><tr><td>Clop</td><td>Adversary; site hijacked September 2026</td><td>CONFIRMED (defacement)</td></tr></tbody></table></div>
+<p>Mandiant and Recorded Future have not published a formal assessment of the SLSH cluster.</p>
+</div>
+<div class="subsection"><div class="subsection-title">Indicators to Watch</div>
+<ul class="content-list"><li>Publication of Clop payer data or Bitcoin addresses on the ShinyHunters leak site.</li><li>FBI confirmation or denial of the September 2026 intrusion, and any resulting US action.</li><li>First confirmed ShinySp1d3r encryption deployment, which would change the group's category and defensive profile.</li><li>New leak-site mirrors on PROSPERO or Proton66 address space, or movement off them after provider pressure.</li><li>French charging decisions for the June 2025 arrestees, and Moucka's sentencing on 27 October 2026.</li><li>Further PeopleSoft exploitation (the actor claims continued use against Fortune 500 companies).</li></ul>
+</div>
+    </section>
+    <!-- RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Recent Reporting</h2>
+      </div>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent intelligence reporting&hellip;</div>
+      </div>
+    </section>
+    <!-- SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9654; Toggle Source List
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government, Legal and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><span><a href="https://www.justice.gov/usao-wdwa/pr/alleged-french-cybercriminal-appear-seattle-indictment-conspiracy-computer-intrusion" target="_blank">US DOJ (W.D. Wash.): Alleged French cybercriminal to appear in Seattle on indictment, January 2023. Indictment date, counts, defendants and aliases</a></span></div>
+        <div class="source-item"><span class="source-num">[2]</span><span><a href="https://www.justice.gov/usao-wdwa/pr/french-cybercriminal-pleads-guilty-fraud-and-aggravated-identity-theft-hacking-private" target="_blank">US DOJ (W.D. Wash.): Raoult guilty plea, September 2023. More than 60 companies; losses above $6 million; RaidForums, Empire Market, Exploit</a></span></div>
+        <div class="source-item"><span class="source-num">[3]</span><span><a href="https://www.justice.gov/usao-wdwa/pr/member-notorious-international-hacking-crew-sentenced-prison" target="_blank">US DOJ (W.D. Wash.): Raoult sentenced to three years, 9 January 2024</a></span></div>
+        <div class="source-item"><span class="source-num">[4]</span><span><a href="https://databreaches.net/2024/01/09/sebastien-raoult-sentenced-in-federal-court-could-be-out-in-less-than-11-months/" target="_blank">DataBreaches.net: Raoult sentencing detail, exact restitution and supervised release, January 2024</a></span></div>
+        <div class="source-item"><span class="source-num">[5]</span><span><a href="https://www.bleepingcomputer.com/news/security/shinyhunters-member-pleads-guilty-to-6-million-in-data-theft-damages/" target="_blank">BleepingComputer: plea documents; dataset sold 13 times at $5,000; ransoms up to $425,000, September 2023</a></span></div>
+        <div class="source-item"><span class="source-num">[6]</span><span><a href="https://www.france24.com/en/africa/20220808-morocco-court-in-favour-of-us-extradition-of-french-cybercrime-suspect" target="_blank">France 24 / AFP: Moroccan court backs US extradition; arrest at Rabat-Sale airport 31 May 2022</a></span></div>
+        <div class="source-item"><span class="source-num">[7]</span><span><a href="https://www.zataz.com/quatre-hackers-francais-arretes-pour-gestion-de-breachforums/" target="_blank">ZATAZ: four French hackers arrested for running BreachForums, June 2025 (Paris prosecutor and BL2C)</a></span></div>
+        <div class="source-item"><span class="source-num">[8]</span><span><a href="https://techcrunch.com/2025/06/26/us-french-authorities-confirm-arrest-of-breachforums-hackers" target="_blank">TechCrunch: US and French authorities confirm arrest of BreachForums hackers, 26 June 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[9]</span><span><a href="https://www.justice.gov/usao-sdny/pr/serial-hacker-intelbroker-charged-causing-25-million-damages-victims" target="_blank">US DOJ (S.D.N.Y.): IntelBroker (Kai West) charged, 25 June 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[10]</span><span><a href="https://www.bleepingcomputer.com/news/security/fbi-takes-down-breachforums-portal-used-for-salesforce-extortion/" target="_blank">BleepingComputer: FBI takes down BreachForums portal used for Salesforce extortion, 10 October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[11]</span><span><a href="https://www.europol.europa.eu/cms/sites/default/files/documents/IOCTA-2026.pdf" target="_blank">Europol: Internet Organised Crime Threat Assessment (IOCTA) 2026, 28 April 2026, p.27 (ShinyHunters, SLSH)</a></span></div>
+        <div class="source-item"><span class="source-num">[12]</span><span><a href="https://www.europol.europa.eu/cms/sites/default/files/documents/Internet%20Organised%20Crime%20Threat%20Assessment%20IOCTA%202024.pdf" target="_blank">Europol: IOCTA 2024. ShinyHunters resurrected BreachForums three months after the March 2023 takedown</a></span></div>
+        <div class="source-item"><span class="source-num">[13]</span><span><a href="https://www.ic3.gov/CSA/2025/250912.pdf" target="_blank">FBI FLASH-20250912-001: UNC6040 and UNC6395 compromising Salesforce instances, 12 September 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[14]</span><span><a href="https://www.justice.gov/opa/pr/canadian-man-pleads-guilty-hacking-us-cloud-storage-provider-and-extorting-its-customers" target="_blank">US DOJ: Connor Moucka pleads guilty to Snowflake customer extortion, August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[15]</span><span><a href="https://www.zataz.com/gabriel-kimiaie-asadi-bildstein-linsaisissable-hacker-francais-aux-millions-evapores/" target="_blank">ZATAZ: profile of Gabriel Kimiaie-Asadi Bildstein and French proceedings, May 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[16]</span><span><a href="https://www.oracle.com/security-alerts/alert-cve-2026-35273.html" target="_blank">Oracle Security Alert CVE-2026-35273, Rev 1, 10 June 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[17]</span><span><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-35273" target="_blank">NIST NVD: CVE-2026-35273 (CVSS 3.1 9.8; CISA KEV 12 June 2026)</a></span></div>
+        <div class="source-category">Vendor Threat Intelligence</div>
+        <div class="source-item"><span class="source-num">[18]</span><span><a href="https://cloud.google.com/blog/topics/threat-intelligence/voice-phishing-data-extortion" target="_blank">Google GTIG: The cost of a call, vishing and data extortion (UNC6040, UNC6240), June 2025, updated August 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[19]</span><span><a href="https://cloud.google.com/blog/topics/threat-intelligence/data-theft-salesforce-instances-via-salesloft-drift" target="_blank">Google GTIG: Salesforce data theft via Salesloft Drift (UNC6395), August 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[20]</span><span><a href="https://cloud.google.com/blog/topics/threat-intelligence/expansion-shinyhunters-saas-data-theft" target="_blank">Google GTIG: expansion of ShinyHunters-branded SaaS data theft (UNC6661, UNC6671, UNC6240), 30 January 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[21]</span><span><a href="https://cloud.google.com/blog/topics/threat-intelligence/shinyhunters-targets-education-sector-oracle-exploit" target="_blank">Google GTIG: ShinyHunters targets education sector with Oracle PeopleSoft exploit, 11 June 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[22]</span><span><a href="https://cloud.google.com/blog/topics/threat-intelligence/unc6671-targets-financial-services-and-enterprise-cloud-environments" target="_blank">Google GTIG: UNC6671 (BlackFile, Falcon, Helix brands), August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[23]</span><span><a href="https://cloud.google.com/blog/topics/threat-intelligence/unc5537-snowflake-data-theft-extortion" target="_blank">Mandiant: UNC5537 targets Snowflake customer instances, June 2024</a></span></div>
+        <div class="source-item"><span class="source-num">[24]</span><span><a href="https://www.microsoft.com/en-us/security/blog/2026/07/13/defending-saas-based-applications-against-shinyhunters-oauth-abuse/" target="_blank">Microsoft Threat Intelligence: Defending SaaS applications against ShinyHunters OAuth abuse, 13 July 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[25]</span><span><a href="https://www.microsoft.com/en-us/security/blog/2026/09/09/passkey-themed-social-engineering-leads-identity-cloud-compromise/" target="_blank">Microsoft Threat Intelligence: Passkey-themed social engineering (Storm-3121, Storm-3032), 9 September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[26]</span><span><a href="https://unit42.paloaltonetworks.com/shinyhunters-ransomware-extortion/" target="_blank">Unit 42: Bling Libra (ShinyHunters) shifts to extortion, August 2024</a></span></div>
+        <div class="source-item"><span class="source-num">[27]</span><span><a href="https://unit42.paloaltonetworks.com/scattered-lapsus-hunters/" target="_blank">Unit 42: Scattered LAPSUS$ Hunters, October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[28]</span><span><a href="https://unit42.paloaltonetworks.com/new-shinysp1d3r-ransomware/" target="_blank">Unit 42: ShinySp1d3r ransomware-as-a-service, November 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[29]</span><span><a href="https://attack.mitre.org/groups/G1057/" target="_blank">MITRE ATT&amp;CK: ShinyHunters, G1057 (created 29 July 2026)</a></span></div>
+        <div class="source-item"><span class="source-num">[30]</span><span><a href="https://attack.mitre.org/campaigns/C0059/" target="_blank">MITRE ATT&amp;CK: Salesforce Data Exfiltration campaign, C0059</a></span></div>
+        <div class="source-item"><span class="source-num">[31]</span><span><a href="https://www.crowdstrike.com/en-us/blog/defending-against-cordial-spider-and-snarky-spider-with-falcon-shield/" target="_blank">CrowdStrike: CORDIAL SPIDER and SNARKY SPIDER, 2026 (distinct from ShinyHunters)</a></span></div>
+        <div class="source-item"><span class="source-num">[32]</span><span><a href="https://blog.eclecticiq.com/shinyhunters-calling-financially-motivated-data-extortion-group-targeting-enterprise-cloud-applications" target="_blank">EclecticIQ: ShinyHunters calling, September 2025 (shinycorp wallet IOC)</a></span></div>
+        <div class="source-item"><span class="source-num">[33]</span><span><a href="https://www.sophos.com/en-gb/blog/taking-the-shine-off-breachforums" target="_blank">Sophos: Taking the shine off BreachForums (control chain 2023 to 2025)</a></span></div>
+        <div class="source-category">Financial and On-Chain</div>
+        <div class="source-item"><span class="source-num">[34]</span><span><a href="https://www.trmlabs.com/resources/blog/ransomware-summer-attacks-heated-up-but-so-has-the-global-response" target="_blank">TRM Labs: summer 2024 ransomware review; AT&amp;T 5.72 BTC confirmation</a></span></div>
+        <div class="source-item"><span class="source-num">[35]</span><span><a href="https://therecord.media/att-ransom-laundered-mixers-research" target="_blank">The Record: AT&amp;T ransom laundering breakdown per TRM, 16 July 2024</a></span></div>
+        <div class="source-item"><span class="source-num">[36]</span><span><a href="https://www.securityweek.com/att-breach-linked-to-american-hacker-telecom-giant-paid-370k-ransom-reports/" target="_blank">SecurityWeek: AT&amp;T paid $370,000 ransom (relaying Wired), July 2024</a></span></div>
+        <div class="source-item"><span class="source-num">[37]</span><span><a href="https://databreaches.net/2025/05/07/powerschool-paid-a-hackers-extortion-demand-but-now-school-district-clients-are-being-extorted-anyway/" target="_blank">DataBreaches.net: PowerSchool districts re-extorted, 25 BTC demand, May 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[38]</span><span><a href="https://databreaches.net/2025/06/12/a-guilty-plea-in-the-powerschool-case-still-leaves-unanswered-questions/" target="_blank">DataBreaches.net: PowerSchool guilty plea and wallet flows, June 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[39]</span><span><a href="https://www.bleepingcomputer.com/news/security/powerschool-hacker-gets-sentenced-to-four-years-in-prison/" target="_blank">BleepingComputer: PowerSchool hacker sentenced to four years, October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[40]</span><span><a href="https://www.chainalysis.com/blog/breachforum-intelbroker-takedown-french-cybercrime-unit-july-2025/" target="_blank">Chainalysis: Following the Bitcoin trail, the IntelBroker takedown, July 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[41]</span><span><a href="https://gulfnews.com/business/retail/hackers-demand-as-much-as-5-million-from-snowflake-clients-1.1718650869113" target="_blank">Bloomberg via Gulf News: Snowflake extortion demands of $300,000 to $5 million, June 2024</a></span></div>
+        <div class="source-category">Incidents and Victims</div>
+        <div class="source-item"><span class="source-num">[42]</span><span><a href="https://www.instructure.com/incident-update/customers" target="_blank">Instructure: Security incident update for customers (Canvas), May 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[43]</span><span><a href="https://www.instructure.com/incident_update" target="_blank">Instructure: Security incident update and FAQs, May 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[44]</span><span><a href="https://hackread.com/canvas-hackers-shinyhunters-official-domain-suspended/" target="_blank">Hackread: ShinyHunters says its official domain was suspended, May 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[45]</span><span><a href="https://www.bleepingcomputer.com/news/security/shinyhunters-hacks-clop-leak-site-threatens-to-extort-ransomware-gang/" target="_blank">BleepingComputer: ShinyHunters hacks Clop leak site, 19 September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[46]</span><span><a href="https://www.malwarebytes.com/blog/news/2026/09/shinyhunters-hacks-rival-extortion-gang-and-takes-over-its-dark-web-site" target="_blank">Malwarebytes: ShinyHunters hacks rival extortion gang, September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[47]</span><span><a href="https://therecord.media/shinyhunters-clop-cyberattack-website" target="_blank">The Record: ShinyHunters attacks Clop website, September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[48]</span><span><a href="https://www.bleepingcomputer.com/news/security/shinyhunters-claims-fbi-hack-data-theft-in-peoplesoft-zero-day-breach/" target="_blank">BleepingComputer: ShinyHunters claims FBI hack via PeopleSoft zero-day, 22 September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[49]</span><span><a href="https://www.bitdefender.com/en-us/blog/businessinsights/bitdefender-ransomware-threat-debrief-september-2026" target="_blank">Bitdefender: Threat Debrief, September 2026 (McKesson demand)</a></span></div>
+        <div class="source-item"><span class="source-num">[50]</span><span><a href="https://www.helpnetsecurity.com/2026/08/31/healthcare-company-mckesson-data-breach/" target="_blank">Help Net Security: McKesson data breach, 31 August 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[51]</span><span><a href="https://www.bleepingcomputer.com/news/security/shinyhunters-starts-leaking-data-stolen-in-salesforce-attacks/" target="_blank">BleepingComputer: ShinyHunters starts leaking data stolen in Salesforce attacks, October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[52]</span><span><a href="https://krebsonsecurity.com/2025/10/shinyhunters-wage-broad-corporate-extortion-spree/" target="_blank">KrebsOnSecurity: ShinyHunters wage broad corporate extortion spree, October 2025</a></span></div>
+        <div class="source-item"><span class="source-num">[53]</span><span><a href="https://cyberscoop.com/salesforce-gainsight-customers-breach/" target="_blank">CyberScoop: Gainsight-connected Salesforce customers breached, November 2025</a></span></div>
+        <div class="source-category">Infrastructure and Leak-Site Trackers</div>
+        <div class="source-item"><span class="source-num">[54]</span><span><a href="https://the-hunters-ledger.com/reports/shinyhunters-dls-91-215-85-22-20260417/" target="_blank">The Hunters Ledger: ShinyHunters leak site at 91.215.85.22, April 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[55]</span><span><a href="https://www.ransomware.live/group/shinyhunters" target="_blank">ransomware.live: shinyhunters group page, 159 posts, retrieved 23 September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[56]</span><span><a href="https://www.ransomlook.io/group/shinyhunters" target="_blank">RansomLook: shinyhunters group page, 130 posts, retrieved 23 September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[57]</span><span><a href="https://breach.house/groups/shinyhunters" target="_blank">breach.house: shinyhunters, 193 posts, retrieved 23 September 2026</a></span></div>
+        <div class="source-item"><span class="source-num">[58]</span><span><a href="https://www.breachsense.com/ransomware-groups/shinyhunters/" target="_blank">Breachsense: shinyhunters (note: lists an INC Ransom onion in error)</a></span></div>
+        <div class="source-item"><span class="source-num">[59]</span><span><a href="https://www.intrinsec.com/en/prospero-proton66-tracing-uncovering-the-links-between-bulletproof-networks/" target="_blank">Intrinsec: PROSPERO and Proton66, links between bulletproof networks</a></span></div>
+        <div class="source-item"><span class="source-num">[60]</span><span><a href="https://en.wikipedia.org/wiki/ShinyHunters" target="_blank">Wikipedia: ShinyHunters (name origin; general chronology, used for context only)</a></span></div>
+        <div class="source-item"><span class="source-num">[61]</span><span><a href="https://krebsonsecurity.com/2026/08/canadian-man-pleads-guilty-in-snowflake-extortions/" target="_blank">KrebsOnSecurity: Canadian man pleads guilty in Snowflake extortions, August 2026</a></span></div>
+      </div>
+    </section>
+
+  </div><!-- .content -->
+
+  <footer class="page-footer">
+    Ransomware EDP Threat Actor Library &bull; ShinyHunters Profile &bull; Last updated September 2026
+    <span class="reno-credit">Developed by Reno &bull; Compiled from open-source intelligence</span>
+  </footer>
+
+</main>
+</div><!-- .layout -->
+<script>
+// Dark mode toggle
+const toggle = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+toggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀ Light' : '☾ Dark';
+});
+if (saved === 'dark') toggle.textContent = '☀ Light';
+
+// Active section nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -65% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// LIVE DATA, victims + TI feed
+(async function loadLiveData() {
+  const BASE = './data/';
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'shinyhunters.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-shinyhunters.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+      if (count !== null) {
+        const el = document.getElementById('kpi-victim-count');
+        if (el) el.textContent = count.toLocaleString() + '+';
+      }
+      if (Array.isArray(victims) && victims.length > 0) {
+        const sorted = [...victims]
+          .filter(v => v.attackdate || v.discovered || v.date)
+          .sort((a, b) => new Date(b.attackdate || b.discovered || b.date) - new Date(a.attackdate || a.discovered || a.date))
+          .slice(0, 5);
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.attackdate || v.discovered || v.date;
+            const dateStr = rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.victim || v.post_title || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1 ? 'Intelligence data refreshed just now' :
+                      diffH === 1 ? 'Intelligence data refreshed 1h ago' :
+                      diffH < 24 ? `Intelligence data refreshed ${diffH}h ago` :
+                      `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const refreshLabel = document.getElementById('topbar-refresh-label');
+        if (refreshLabel) refreshLabel.textContent = label;
+        const topbarLive = document.getElementById('topbar-live');
+        if (topbarLive) topbarLive.style.display = 'flex';
+      }
+    }
+
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta"><span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+</script>
+<script src="groups-data.js"></script>
+<script src="nav.js"></script>
+<script src="../assets/node-library.js?v=7"></script>
+</body>
+</html>

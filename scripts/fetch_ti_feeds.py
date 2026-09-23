@@ -145,6 +145,14 @@ KEYWORDS = {
         "operation checkmate",
         "blacksuit",
     ],
+    "shinyhunters": [
+        "shinyhunters",
+        "shiny hunters",
+        "scattered lapsus$ hunters",
+        "bling libra",
+        "unc6240",
+        "shinysp1d3r",
+    ],
     "silentransom": [
         "silent ransom group",
         "luna moth",
