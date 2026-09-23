@@ -31,6 +31,7 @@
       ['royal', 'Royal / BlackSuit / Chaos'],
       ['ryuk', 'Ryuk'],
       ['scatteredspider', 'Scattered Spider'],
+      ['shinyhunters', 'ShinyHunters'],
       ['thegentlemen', 'The Gentlemen'],
       ['trickbot', 'TrickBot'],
       ['worldleaks', 'World Leaks / Hunters Intl'],
