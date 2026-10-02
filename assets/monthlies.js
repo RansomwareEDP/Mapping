@@ -29,6 +29,12 @@
 
 const EDP_MONTHLIES = [
   {
+    ym: "2026-09", month: "SEP", name: "September 2026",
+    title: "September 2026 Activity Summary",
+    desc: "The US designation of the whole A7 Network, the ShinyHunters claim against the FBI, a quarter fewer leak-site claims, and the police takeover of the KillSec leak site",
+    html: "briefs/edp-monthly-2026-09.html"
+  },
+  {
     ym: "2026-08", month: "AUG", name: "August 2026",
     title: "August 2026 Activity Summary",
     desc: "The record leak-site month across a splintering field, the Iran sector-determination and wallet-tagging template, the ChainDrop npm worm, and the third-country interdiction pipeline",
