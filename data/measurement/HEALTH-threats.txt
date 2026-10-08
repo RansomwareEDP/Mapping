@@ -2,18 +2,18 @@ LIVE THREAT INFRASTRUCTURE - HEALTH REPORT
 
 STATUS: OK
 
-Checked                07 Oct 2026 at 12:55 UTC
-Run number             49
-Prefixes checked       624
-Indicators examined    8,546
-On confirmed networks  57
+Checked                08 Oct 2026 at 13:09 UTC
+Run number             50
+Prefixes checked       623
+Indicators examined    40,775
+On confirmed networks  260
 On adjacent networks   1  (ownership not established)
 
 By provider:
    provider                    confirmed   adjacent   compromised
-    VIRTUALINE                        41          0             0
-    Bearhost / Underground /          12          0             0
-   *AEZA GROUP                         4          1             0
+    VIRTUALINE                       236          0             1
+    Bearhost / Underground /          13          0             0
+   *AEZA GROUP                        11          1             0
     DEDBROPRO                          0          0             0
    *Media Land LLC / Yalishan          0          0             0
    *Stark Industries Solution          0          0             0
@@ -27,33 +27,33 @@ By provider:
    These three are separate measurements. Never add them together.
 
 Malware families on CONFIRMED provider address space only:
-     11  AdaptixC2
+     85  c2-monitor-auto, dropped-by-amadey
+     23  54e64e, dropped-by-amadey
+     12  AdaptixC2
+     10  Aisuru
      10  PureRAT
       9  AsyncRAT
-      4  Stealc
+      8  ascii, Formbook, opendir, powershell, ps1
+      7  9d2ca3, dropped-by-amadey
+      5  Stealc
+      5  unknown
+      5  178-16-54-55, macho, ua-wget
       4  DCRat
-      4  Remcos
-      2  Evilginx
-      2  PoshC2
-      2  Eye Pyramid
-      2  Amadey
-      2  Cobalt Strike
-      1  Potassium
 
 Live botnet command servers reported across the whole internet,
 by family. This stands on its own, independent of the providers above:
-   1221  Cobalt Strike
-    620  PureRAT
-    346  AsyncRAT
-    257  Unknown malware
-    246  AdaptixC2
-    144  Remcos
-    118  Vidar
-    115  DCRat
-     95  Evilginx
+   1222  Cobalt Strike
+    625  PureRAT
+    351  AsyncRAT
+    259  Unknown malware
+    248  AdaptixC2
+    139  Remcos
+    124  Vidar
+    114  DCRat
+     94  Evilginx
      80  Havoc
-     77  Potassium
-     64  Jackskid
+     69  Aisuru
+     67  Jackskid
 
 READ THESE NUMBERS CAREFULLY:
  Absence is not innocence: zero means nothing was REPORTED on that network, and reporting is uneven and volunteer-driven. The source exports cover a recent rolling window, so one run is a snapshot rather than a series. Address space changes hands, so a prefix inside a tracked network today may not be tomorrow. And presence is not proof the provider knew: it is a reason to look at abuse response, which is what separates a bulletproof host from a careless one. Indicators on compromised machines are counted separately and must never be added to the rest, because a hacked server is a victim, not inventory. Hits on sibling and successor networks are also kept apart: those are networks a profile records as adjacent without establishing ownership, so counting them against a provider asserts an attribution the research did not make.
