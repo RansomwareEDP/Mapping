@@ -3,13 +3,13 @@ window.SCOREBOARD = {
   "title": "Takedown Scoreboard",
   "pillar": "Disruption",
   "version": "1.2",
-  "asOf": "2026-10-11",
+  "asOf": "2026-10-13",
   "counts": {
    "operations": 40,
    "avg": 3.18,
    "kills": 16,
    "failures": 9,
-   "tbd": 7
+   "tbd": 6
   }
  },
  "scale": [
@@ -529,15 +529,15 @@ window.SCOREBOARD = {
    "pages": "bphs/medialand.html",
    "components": "Trilateral sanctions incl. pre-emptive designation of evasion shells",
    "authorities": "OFAC + UK OFSI/FCDO + AU DFAT",
-   "outcome": "No effect",
-   "score": 1,
-   "recovery": "0 days (no service interruption)",
-   "successor": "None needed; same networks and storefront",
+   "outcome": "Degraded",
+   "score": 3,
+   "recovery": "No service interruption; routed footprint contracted about 80% over the following 6 months (AS206728: 11 IPv4 blocks on 18 Nov 2025 to 2 by May 2026; AS215376 (ML Cloud): 5 to 1 by Jul 2026)",
+   "successor": "None observed; dropped address space went dark or was sold, not moved to a successor brand",
    "personnel": "Volosovik, Zatolokin, Pankova at large (Russia)",
    "impact": "Clients included LockBit, BlackSuit, Play, Evil Corp, Black Basta; UK attributes up to GBP 14B in business cost to package networks",
-   "status": "Kept routing through the Jul 2026 EU designation and indictment: RIPEstat shows its networks announcing prefixes to 26 Sep 2026; ML Cloud storefront live 26 Sep; ML Cloud LLC still active in the Russian register 27 Sep (Synaptic Security, 30 Sep 2026)",
-   "confidence": "Confirmed (event); outcome Credible",
-   "source": "https://home.treasury.gov/news/press-releases/sb0319 ; https://blog.synapticsystems.de/how-russias-media-land-kept-routing-after-sanctions/"
+   "status": "Rescored 13 Oct 2026 (1 to 3). RIPEstat: routed footprint contracted after designation and has held at the reduced level (AS206728: 2 IPv4 + 2 IPv6 blocks; AS215376: 1 block) through 13 Oct 2026. Still routing, and ML Cloud storefront live through Sep 2026 (Synaptic Security, 30 Sep). Caveat: the decline began before designation (26 blocks Mar 2025, 19 by Nov 2025) and some space was sold (45.141.198.0/24 to a Kazakh company, May 2026), so attributing the contraction to the sanctions is analyst inference.",
+   "confidence": "Confirmed (event and routing data); causal link Analyst inference",
+   "source": "https://home.treasury.gov/news/press-releases/sb0319 ; https://blog.synapticsystems.de/how-russias-media-land-kept-routing-after-sanctions/ ; https://stat.ripe.net/AS206728 ; https://stat.ripe.net/AS215376"
   },
   {
    "n": 27,
@@ -681,15 +681,15 @@ window.SCOREBOARD = {
    "pages": "bphs/medialand.html",
    "components": "Indictment unsealed (N.D. Ohio, filed under seal 2024) + Rewards for Justice up to $10M",
    "authorities": "DOJ + FBI + State RFJ",
-   "outcome": "Too recent",
-   "score": "TBD",
-   "recovery": "n/a",
-   "successor": "Unknown",
+   "outcome": "No effect",
+   "score": 1,
+   "recovery": "0 days (no service interruption)",
+   "successor": "None needed; same networks",
    "personnel": "All three at large (assessed in Russia); charged with computer fraud, wire fraud, and money laundering conspiracy",
    "impact": "Hosting used in attacks on US critical infrastructure in 21 states; >$62M victim losses; RFJ explicitly seeks state-nexus information",
-   "status": "Escalates Nov 2025 sanctions-only designation to criminal charges plus bounty; operational effect still unobserved | 11 Oct 2026: Media Land kept routing and its storefront stayed live through Sep 2026 (Synaptic Security, 30 Sep); window closes 12 Oct",
-   "confidence": "Confirmed",
-   "source": "https://www.justice.gov/opa/pr/three-russian-nationals-and-two-companies-indicted-international-cybercrimes-resulting-more"
+   "status": "Scored 13 Oct 2026 at the 90-day mark. RIPEstat: Media Land (AS206728, 4 blocks) and ML Cloud (AS215376, 1 block) routing unchanged from the day before unsealing through 13 Oct 2026, seen by about 94% of global routing monitors. No infrastructure seized. Media Land still maintaining its RIPE registrations (edits 3 Sep and 1 Oct 2026). ML Cloud storefront live through Sep 2026 (Synaptic Security, 30 Sep).",
+   "confidence": "Confirmed (event and routing data); storefront Credible",
+   "source": "https://www.justice.gov/opa/pr/three-russian-nationals-and-two-companies-indicted-international-cybercrimes-resulting-more ; https://stat.ripe.net/AS206728 ; https://stat.ripe.net/AS215376"
   },
   {
    "n": 35,
@@ -812,9 +812,9 @@ window.SCOREBOARD = {
    "token": "OFAC",
    "actions": 11,
    "kills": 6,
-   "failures": 3,
+   "failures": 2,
    "tbd": 1,
-   "avg": 3.2,
+   "avg": 3.4,
    "signature": "Cryptex/PM2BTC (score 5)",
    "note": "Designation-only actions score 1-2 (Garantex 2022, Stark EU analog); paired with seizures/arrests they anchor 4-5s"
   },
@@ -823,9 +823,9 @@ window.SCOREBOARD = {
    "token": "DOJ",
    "actions": 13,
    "kills": 5,
-   "failures": 2,
-   "tbd": 4,
-   "avg": 3.67,
+   "failures": 3,
+   "tbd": 3,
+   "avg": 3.4,
    "signature": "Phobos Aetor / Ptitsyn prosecution (score 5)",
    "note": "Indictment naming suppresses rebuilds even without custody (DanaBot)"
   },
@@ -834,9 +834,9 @@ window.SCOREBOARD = {
    "token": "FBI",
    "actions": 11,
    "kills": 2,
-   "failures": 1,
-   "tbd": 4,
-   "avg": 3.14,
+   "failures": 2,
+   "tbd": 3,
+   "avg": 2.88,
    "signature": "Hive covert access + Duck Hunt",
    "note": "Strong on infrastructure and covert access; custody depends on partners"
   },
@@ -867,9 +867,9 @@ window.SCOREBOARD = {
    "token": "OFSI",
    "actions": 5,
    "kills": 2,
-   "failures": 2,
+   "failures": 1,
    "tbd": 0,
-   "avg": 2.6,
+   "avg": 3.0,
    "signature": "A7 network packages",
    "note": "Sanctions-led; effect depends on venue compression over time"
   },
@@ -922,9 +922,9 @@ window.SCOREBOARD = {
    "token": "AU DFAT",
    "actions": 3,
    "kills": 1,
-   "failures": 1,
+   "failures": 0,
    "tbd": 0,
-   "avg": 2.67,
+   "avg": 3.33,
    "signature": "Trilateral BPH packages",
    "note": "Follows US/UK packages"
   },
@@ -1051,9 +1051,9 @@ window.SCOREBOARD = {
   {
    "n": 10,
    "finding": "Enforcement is shifting to the enabler layer",
-   "evidence": "Jul 2026 wave: first crypter-vendor designation (Silayev), VPN provider (FirstVPN), MaaS operators personally named (Lumma trio), BPH operators indicted with $10M bounty (Media Land). Personnel exposure now applied to the supply chain, not just brands",
+   "evidence": "Jul 2026 wave: first crypter-vendor designation (Silayev), VPN provider (FirstVPN), MaaS operators personally named (Lumma trio), BPH operators indicted with $10M bounty (Media Land). Personnel exposure now applied to the supply chain, not just brands. Media Land test case (13 Oct 2026): indictment plus bounty produced no observable operational effect at 90 days (scored 1)",
    "confidence": "Confirmed (events); trend Analyst inference",
-   "implication": "Enabler-layer actions raise costs across many groups at once; effectiveness depends on pairing designations with custody, per Findings 1-2. Watch the Media Land window as the test case"
+   "implication": "Enabler-layer actions raise costs across many groups at once; effectiveness depends on pairing designations with custody, per Findings 1-2. Media Land confirms that naming and bounties against operators sheltered in Russia do not by themselves degrade infrastructure"
   }
  ],
  "benchmarks": [
