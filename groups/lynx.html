@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INC / Lynx | Ransomware EDP Threat Actor Library</title>
+<title>INC / Lynx / Sinobi | Ransomware EDP Threat Actor Library</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -544,6 +544,29 @@ html { scroll-behavior: smooth; }
 }
 .feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
 </style>
+
+<style>
+/* ADDED 18 OCT 2026: brand status badge + leverage point cards */
+.badge-dormant { background: var(--gray-600); color: #fff; }
+.lp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+@media (max-width: 900px) { .lp-grid, .pillar-grid { grid-template-columns: 1fr; } }
+.lp-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.lp-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.lp-card.confirmed::before { background: var(--green); }
+.lp-card.credible::before { background: var(--blue); }
+.lp-card.inference::before { background: var(--amber); }
+.lp-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.lp-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.lp-row { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; margin-bottom: 6px; }
+.lp-row strong { color: var(--navy); font-weight: 700; }
+[data-theme="dark"] .lp-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .lp-title, [data-theme="dark"] .lp-row strong { color: #e6edf3; }
+[data-theme="dark"] .lp-row { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] ul.content-list li { color: #c9d1d9; }
+</style>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -572,17 +595,16 @@ html { scroll-behavior: smooth; }
     <a href="#lineage">02 Lineage &amp; Heritage</a>
     <a href="#operations">03 Operational Model</a>
     <a href="#technical">04 Technical Capabilities</a>
-    <a href="#defensive">Defensive Mapping</a>
-    <a href="#financial">05 Financial Infrastructure</a>
-    <a href="#victims">06 Victim Profile</a>
-    <a href="#enforcement">07 LE &amp; Regulatory Response</a>
-    <a href="#attribution">08 Attribution &amp; Nexus</a>
-    <a href="#trajectory">09 Trajectory</a>
+    <a href="#defensive">05 Defensive Mapping</a>
+    <a href="#financial">06 Financial Infrastructure</a>
+    <a href="#victims">07 Victim Profile</a>
+    <a href="#enforcement">08 LE &amp; Regulatory Response</a>
+    <a href="#attribution">09 Attribution &amp; Nexus</a>
+    <a href="#trajectory">10 Trajectory</a>
+    <a href="#leverage">11 Structural Leverage Points</a>
     <a href="#recent-reporting">Recent Reporting</a>
     <a href="#sources">Sources</a>
   </nav>
-
-  
 </aside>
 
 <!-- MAIN -->
@@ -590,51 +612,53 @@ html { scroll-behavior: smooth; }
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-eyebrow">Threat Actor Profile: Last updated <span id="hero-last-updated">4 September 2026</span></div>
-    <div class="hero-title">INC / Lynx</div>
-    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; INC Codebase Successor</div>
+    <div class="hero-eyebrow">Threat Actor Profile: Last updated <span id="hero-last-updated">18 October 2026</span></div>
+    <div class="hero-title">INC / Lynx / Sinobi</div>
+    <div class="hero-subtitle">Ransomware-as-a-Service &nbsp;&bull;&nbsp; Double Extortion &nbsp;&bull;&nbsp; One codebase, three brands</div>
     <div class="hero-badges">
       <span class="badge badge-critical">High Threat</span>
-      <span class="badge badge-operational">Fully Operational</span>
+      <span class="badge badge-operational">INC Operational</span>
+      <span class="badge badge-dormant">Lynx Dormant since Aug 2026</span>
+      <span class="badge badge-dormant">Sinobi Dark since May 2026</span>
       <span class="badge badge-raas">RaaS</span>
       <span class="badge badge-cluster">Cluster Profile</span>
     </div>
     <div class="kpi-row">
       <div class="kpi-card">
-        <div class="kpi-label">INC First Observed</div>
-        <div class="kpi-value">Aug 2023</div>
-        <div class="kpi-sub">Predecessor phase</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Lynx First Observed</div>
-        <div class="kpi-value">Jul 2024</div>
-        <div class="kpi-sub">Active RaaS phase</div>
+        <div class="kpi-label">INC Lifetime Listings</div>
+        <div class="kpi-value">980</div>
+        <div class="kpi-sub">Tracker read 18 Oct 2026; last post 15 Oct 2026</div>
       </div>
       <div class="kpi-card kpi-live">
-        <div class="kpi-label">Total Victims (Lynx) <span class="live-badge">LIVE</span></div>
-        <div class="kpi-value" id="kpi-victim-count">415+</div>
-        <div class="kpi-sub" id="kpi-victim-sub">Lynx DLS; INC DLS separately at 881+, Aug 2026</div>
+        <div class="kpi-label">INC Listings, Last 6 Months <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-victim-count">29 to 46</div>
+        <div class="kpi-sub" id="kpi-victim-sub">A month in 2026; live six-month count after next data refresh</div>
       </div>
       <div class="kpi-card kpi-live">
-        <div class="kpi-label">Countries Targeted <span class="live-badge">LIVE</span></div>
-        <div class="kpi-value" id="kpi-country-count">16+</div>
-        <div class="kpi-sub" id="kpi-country-sub">60%+ US-based</div>
+        <div class="kpi-label">Countries Hit (INC) <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-country-count">73</div>
+        <div class="kpi-sub" id="kpi-country-sub">US majority (543 of 980)</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Affiliate Split</div>
-        <div class="kpi-value">80/20</div>
-        <div class="kpi-sub">Affiliate / core team</div>
+        <div class="kpi-label">Lynx Listings</div>
+        <div class="kpi-value">417</div>
+        <div class="kpi-sub">Last post 29 Aug 2026; dormant</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">LE Disruptions</div>
-        <div class="kpi-value">Zero</div>
-        <div class="kpi-sub">No takedowns or sanctions</div>
+        <div class="kpi-label">Sinobi Listings</div>
+        <div class="kpi-value">274</div>
+        <div class="kpi-sub">All sites offline since 8 May 2026</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Government Response</div>
+        <div class="kpi-value">2 / 0</div>
+        <div class="kpi-sub">Two advisories; zero arrests, sanctions or seizures</div>
       </div>
     </div>
     <div class="victim-strip" id="victim-strip" style="display:none;">
       <div class="victim-strip-header">
         <span class="live-pulse"></span>
-        Recent Victims
+        Recent INC Victims
         <span class="live-badge">LIVE</span>
         <span class="victim-strip-sub">via ransomware.live Pro</span>
       </div>
@@ -651,41 +675,49 @@ html { scroll-behavior: smooth; }
         <h2 class="section-title">Executive Summary and Group Overview</h2>
       </div>
 
-      <p>INC and Lynx are two brands of a single criminal cluster, and the earlier "sequential phases" framing no longer holds. INC ransomware emerged in August 2023 as a targeted, double-extortion operation; by early 2024 its source code was offered for sale on underground forums, and Lynx appeared in July 2024 with substantial code overlap, expanding into a structured Ransomware-as-a-Service program with a formal affiliate panel, tiered roles, and an 80/20 revenue split. Through 2026, however, both leak sites have operated concurrently, and it is the INC site that carries the cluster's volume: 881+ lifetime claims and top-10 monthly volume in every month of 2026 (30 to 52 claims per month, 42 in August), against Lynx's fade to single digits (7 in May, zero in July, 3 in August; 415+ lifetime). The cluster is best read as one operation running two concurrent brands with the center of gravity back on the INC name. [CONFIRMED, internal collection]</p>
+      <p>INC Ransom, Lynx and Sinobi are three brands built on one codebase and run by overlapping Russian-speaking personnel. As of 18 October 2026 only INC is operating at scale: 980 leak-site listings, victims in 73 countries, and daily posts through 15 October 2026. Lynx has not posted since 29 August 2026 (417 listings lifetime). Sinobi has been dark since 8 May 2026 with every tracked Sinobi site offline (274 listings lifetime). No vendor has announced a shutdown of either Lynx or Sinobi; the dormancy is observed from trackers, not declared. The pattern is consistent with consolidation of activity back onto the INC brand, but no source states that directly. [31] <span class="conf conf-confirmed" style="margin:0 0 0 6px;vertical-align:middle;">Confirmed: tracker data</span> <span class="conf conf-inference" style="margin:0 0 0 6px;vertical-align:middle;">Inference: consolidation</span></p>
 
-      <p>The prevailing vendor assessment is that Lynx is a rebrand or successor of INC, grounded in documented code similarity (approximately 48% overall, up to 70% in shared functions per Unit 42), overlapping email infrastructure, and the timing of INC's source code sale. One credible vendor (Rapid7) adopts a more cautious stance, treating the overlap as consistent with source-code acquisition rather than proof of identical operator continuity. The July 2026 FortiBleed investigation strengthened the operator-continuity case: SOCRadar traced the FortiGate credential-theft campaign to both operations and found a single operator actively logged into the negotiation panels of both INC Ransom and Lynx, the most direct evidence yet that the two brands share personnel and are run concurrently rather than sequentially. CREDIBLE (SOCRadar, single-vendor telemetry, widely republished). No CrowdStrike, Mandiant, or Secureworks formal designations have been published for either INC or Lynx as of September 2026. Microsoft tracks the Lynx operator group as Storm-2113; Trend Micro tracks it as Water Lalawag.</p>
+      <p>INC is now a top-five global ransomware brand by listing volume (roughly 29 to 46 new listings a month across 2026), with a documented tilt toward healthcare, professional services, local government and Five Eyes targets. Its 2026 intake runs through two documented supply lines, neither of them INC's own intrusion work: the FortiBleed Fortinet credential-theft operation, whose initial-access brokers feed INC/Lynx and Payload (FBI and US Secret Service, 6 October 2026), and a SonicWall SMA 1000 zero-day exploitation cluster (CVE-2026-15409 and CVE-2026-15410, July 2026). [2][13][15][16][32]</p>
 
+      <p>Government output on this lineage is thin but real. A joint Australian ACSC, New Zealand NCSC and CERT Tonga advisory (6 March 2026) describes the INC franchise model, documents the June 2025 Tonga Ministry of Health attack, and names a Russia-based individual as the controller of the data-exfiltration infrastructure used in that incident. The FBI and US Secret Service advisory of 6 October 2026 writes the two brands as a single entity, "INC/Lynx". There are no arrests, indictments, sanctions, rewards or infrastructure seizures naming any of the three brands. [1][2]</p>
+
+      <div class="callout callout-info">
+        <strong>What changed since the May 2026 profile:</strong> the brand picture inverted (INC active, Lynx and Sinobi dormant); Sinobi is added as the third brand; two government advisories now name the lineage; two initial-access supply lines are documented; the RAMP recruitment venue was seized (28 January 2026); INC's encryptors were rewritten in Rust with multi-architecture Linux builds; and Microsoft tied a Lynx/INC affiliate to the new DeadLock encryptor. Section 11 adds a structural leverage assessment.
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Brand Comparison</div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Attribute</th><th>INC (Phase 1)</th><th>Lynx (Phase 2)</th></tr></thead>
+          <thead><tr><th>Attribute</th><th>INC Ransom</th><th>Lynx</th><th>Sinobi</th></tr></thead>
           <tbody>
-            <tr><td>Active period</td><td>Aug 2023 to present; DLS at top-10 monthly volume through 2026</td><td>Jul 2024 to present; declining, single-digit monthly since May 2026</td></tr>
-            <tr><td>Operational model</td><td>Targeted operation; some RaaS elements</td><td>Structured RaaS with affiliate panel, tiered roles</td></tr>
-            <tr><td>Extortion model</td><td>Double extortion</td><td>Double extortion</td></tr>
-            <tr><td>Platforms</td><td>Windows, ESXi/Linux</td><td>Windows, Linux x64, ARM, MIPS, ESXi</td></tr>
-            <tr><td>Encryption</td><td>AES + Curve25519 (shared with Lynx)</td><td>AES-128 CTR + Curve25519 Donna</td></tr>
-            <tr><td>Microsoft tracking</td><td>Not published</td><td>Storm-2113</td></tr>
-            <tr><td>Trend Micro tracking</td><td>Not published</td><td>Water Lalawag</td></tr>
-            <tr><td>CrowdStrike tracking</td><td>Not published</td><td>Not published</td></tr>
-            <tr><td>Mandiant tracking</td><td>Not published</td><td>Not published</td></tr>
-            <tr><td>Secureworks tracking</td><td>Not published</td><td>Not published</td></tr>
-            <tr><td>Assessed jurisdiction</td><td colspan="2">Russian-speaking, likely CIS-based (CREDIBLE)</td></tr>
-            <tr><td>LE disruption status</td><td colspan="2">None confirmed as of September 2026</td></tr>
-            <tr><td>Sanctions</td><td colspan="2">None; no OFAC designations</td></tr>
-            <tr><td>Decryptor available</td><td colspan="2">No public decryptor</td></tr>
+            <tr><td>First observed</td><td>Mid 2023</td><td>Mid 2024</td><td>Around June 2025</td></tr>
+            <tr><td>Status (18 Oct 2026)</td><td>Active; daily posts, last 15 Oct 2026</td><td>Dormant; last post 29 Aug 2026</td><td>Dark; all sites offline since 8 May 2026</td></tr>
+            <tr><td>Lifetime listings (tracker)</td><td>980</td><td>417</td><td>274</td></tr>
+            <tr><td>2026 peak month</td><td>52 (January)</td><td>About 25 (January), then single digits</td><td>About 56 (January), zero by April</td></tr>
+            <tr><td>Operating model</td><td>Franchise RaaS; operator extorts and collects payment (ACSC)</td><td>Structured RaaS; affiliate controls wallet and negotiation (Group-IB)</td><td>Lynx-style tiered panel; revenue model undocumented</td></tr>
+            <tr><td>Platforms</td><td>Windows, Linux, ESXi; Rust rewrite 2026; multi-architecture Linux builds</td><td>Windows, Linux x64, ARM, MIPS, ESXi (Jan 2025 bundle; no new 2026 build)</td><td>Windows only in public reporting</td></tr>
+            <tr><td>Encryption</td><td colspan="3">AES-128 CTR for file content; Curve25519 (donna) key encapsulation; no public decryptor</td></tr>
+            <tr><td>Code relationship</td><td>Origin codebase</td><td>48% of functions overall, 70.8% of shared functions vs INC (Windows); 87 to 91% (Linux/ESXi)</td><td>63.2% vs Lynx, 55.9% vs INC on binary comparison</td></tr>
+            <tr><td>Secureworks (Sophos) designation</td><td>GOLD IONIC</td><td>Not published</td><td>Not published</td></tr>
+            <tr><td>Microsoft designation</td><td>Not published</td><td>Storm-2113</td><td>Not published</td></tr>
+            <tr><td>Trend Micro designation</td><td>Not published</td><td>Water Lalawag</td><td>Not published</td></tr>
+            <tr><td>CrowdStrike / Mandiant designation</td><td colspan="3">Not published for any brand as of October 2026</td></tr>
+            <tr><td>Assessed jurisdiction</td><td colspan="3">Russian-speaking, CIS-based; ACSC characterises the named infrastructure controller as Russia-based (CONFIRMED for that individual; CREDIBLE for the operation)</td></tr>
+            <tr><td>Government advisories</td><td colspan="3">ACSC / NZ NCSC / CERT Tonga (6 Mar 2026); FBI / USSS JCSA-20261006-01 (6 Oct 2026)</td></tr>
+            <tr><td>Arrests, sanctions, seizures</td><td colspan="3">None naming any brand as of 18 October 2026</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div class="subsection-title" style="margin-top:24px;">Data Leak Site &amp; Branding</div>
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site and Branding</div>
       <div class="img-gallery">
         <div class="img-panel tall">
           <img src="https://socradar.io/wp-content/uploads/2025/08/lynx-data-leak-site.png.webp"
                alt="Lynx ransomware data leak site showing victim announcements"
                onerror="this.style.display='none'">
           <div class="img-caption">
-            <strong>Lynx DLS: Victim Announcements</strong>
-            The Lynx data leak site (lynxblog.net and multiple Tor mirrors) displays victim names, proof-of-breach data snippets, and ransom countdowns. Victims who fail to pay are publicly named with sample data published as pressure. The site combines a clear-web blog and Tor-based negotiation portals, an infrastructure model more sophisticated than INC's.
+            <strong>Lynx DLS: Victim Announcements (now dormant)</strong>
+            The Lynx data leak site (clear-web blog plus Tor mirrors) displayed victim names, proof-of-breach excerpts and ransom countdowns. Most Lynx sites are down as of October 2026, with only an admin and a chat portal intermittently reachable. The last Lynx victim post was 29 August 2026.
             <span class="img-source">Source: SOCRadar, August 2025</span>
           </div>
         </div>
@@ -695,7 +727,7 @@ html { scroll-behavior: smooth; }
                onerror="this.style.display='none'">
           <div class="img-caption">
             <strong>Lynx Branding: Shield Logo</strong>
-            The Lynx group uses a stylized shield bearing a lynx head silhouette in white on black. The branding is deliberately professional and predatory, consistent with Lynx's positioning as a structured RaaS operation. The shield motif is common among RaaS groups seeking to project organizational legitimacy to prospective affiliates.
+            A stylised shield bearing a lynx head in white on black. The professional, predatory branding matched Lynx's positioning as a structured RaaS with a formal affiliate panel. Sinobi replicated the Lynx tier layout (admin, guest, corporate chat, blog) when it appeared in mid 2025.
             <span class="img-source">Source: SOCRadar / Palo Alto Networks Unit 42, 2024</span>
           </div>
         </div>
@@ -707,7 +739,7 @@ html { scroll-behavior: smooth; }
                onerror="this.style.display='none'">
           <div class="img-caption">
             <strong>Lynx DLS: "Press Release" Statement</strong>
-            Lynx published a formal statement on its DLS framing itself as financially motivated and claiming to avoid hospitals, governments, and non-profits. Rapid7 explicitly assessed this as risk management, not genuine ethics. The tactic mirrors similar "ethical" positioning used by other RaaS groups to manage affiliate behavior and reduce law-enforcement attention.
+            Lynx framed itself as financially motivated and claimed to avoid hospitals, governments and non-profits. The policy was risk management, not ethics, and was violated repeatedly: Easterseals Iowa, Lakelands Public Health, and a Maryland county emergency-services department all appeared on lineage leak sites.
             <span class="img-source">Source: SOCRadar / Palo Alto Networks Unit 42, 2024</span>
           </div>
         </div>
@@ -717,7 +749,7 @@ html { scroll-behavior: smooth; }
                onerror="this.style.display='none'">
           <div class="img-caption">
             <strong>INC Source Code: Forum Sale Listing</strong>
-            In May 2024, INC operators listed their encryptor source code for sale on a dark web forum (RAMP, per ransomware.live) for $300,000. This listing is the principal mechanism linking INC to Lynx: Lynx emerged approximately two months after the sale, exhibiting substantial code overlap. The sale event is the operational pivot point of the cluster.
+            In spring 2024 the handle "salfetka" advertised INC source code (Windows and Linux/ESXi) on Exploit and XSS for 300,000 US dollars. Lynx appeared about two months later with heavy code reuse. Whether the buyer was an outsider or the same crew remains the central open question of the lineage.
             <span class="img-source">Source: SOCRadar, 2025</span>
           </div>
         </div>
@@ -727,7 +759,7 @@ html { scroll-behavior: smooth; }
                onerror="this.style.display='none'">
           <div class="img-caption">
             <strong>Naming Reference: Eurasian Lynx</strong>
-            The group name is derived from the Eurasian lynx (Lynx lynx), a solitary, stealthy predator native to Siberia, Central Asia, and parts of Eastern Europe. The choice of a apex predator associated with Russia's geographic range is consistent with the naming conventions of Russian-linked RaaS operations and the group's likely CIS origin (ANALYST INFERENCE).
+            The Lynx name is taken from the Eurasian lynx, a solitary predator whose range spans Siberia, Central Asia and Eastern Europe. The choice of a predator associated with Russia's geography is consistent with the naming habits of Russian-linked RaaS operations (ANALYST INFERENCE).
             <span class="img-source">Source: Wikimedia Commons, CC BY-SA 3.0 (Alain Ottaviani)</span>
           </div>
         </div>
@@ -743,8 +775,9 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Core Assessment</div>
-        <div class="conf conf-credible">Credible, high code overlap; operator continuity unconfirmed</div>
-        <p>The weight of vendor reporting treats Lynx as a successor to or rebrand of INC, grounded primarily in technical code overlap and the timing of INC's source-code sale. The principal unresolved question is whether the same operators migrated to Lynx or whether a separate crew purchased the codebase and established a new operation. BlackBerry's identification of a shared email address in both groups' DLS registration data is the strongest indicator of operator continuity beyond code reuse.</p>
+        <div class="conf conf-confirmed">Confirmed: one technical lineage</div>
+        <div class="conf conf-credible" style="margin-left:8px;">Credible: one core team across all three brands</div>
+        <p>INC Ransom emerged in mid 2023 as a double-extortion operation. Lynx appeared in mid 2024 with heavy INC code reuse and built out a structured RaaS program. Sinobi appeared around June 2025 and is assessed by eSentire, Blackpoint, Barracuda and SOCRadar as a Lynx rebrand or offshoot on the same code. Confidence that the three are one technical lineage is CONFIRMED on code comparison alone. Confidence that the same core team runs all of them is CREDIBLE, resting on a shared registration email, a single operator observed in both the INC and Lynx negotiation panels, and the FBI's decision to write "INC/Lynx" as one entity. Rapid7 is the notable holdout, treating the INC-to-Lynx overlap as consistent with a source-code purchase rather than proof of the same operators. [6][7][8][9][10][13][19][21]</p>
       </div>
 
       <div class="subsection">
@@ -752,56 +785,51 @@ html { scroll-behavior: smooth; }
         <div class="pillar-grid">
           <div class="pillar-card confirmed">
             <div class="pillar-num">Pillar 1: Confirmed</div>
-            <div class="pillar-title">Code Overlap (Windows Variant)</div>
-            <div class="pillar-body">Palo Alto Unit 42 used BinDiff to compare INC and Lynx Windows samples: 48% overall function match, rising to 70.8% when limited to functions common to both families. Fortinet and Nextron corroborate similar encryption methods and behavioral traits. SK Shieldus found the same strings and encryption algorithms. Blackpoint Cyber (Feb 2026) confirms 40% overall code similarity and 70.8% in specific functions for Windows variants. [1][3][6][11]</div>
+            <div class="pillar-title">Code Overlap, INC to Lynx</div>
+            <div class="pillar-body">Windows: 48% of functions overall and 70.8% of shared functions (Unit 42 BinDiff, corroborated by Fortinet, Nextron and Blackpoint). Linux and ESXi: 87% overall and 91% on the Linux encryptor (Group-IB, Blackpoint). The Linux figure is the strongest technical evidence of a shared codebase. [6][7][8][11][12]</div>
           </div>
-          <div class="pillar-card confirmed">
-            <div class="pillar-num">Pillar 2: Confirmed</div>
-            <div class="pillar-title">Code Overlap (Linux/ESXi Variant)</div>
-            <div class="pillar-body">Blackpoint Cyber (Feb 2026) reports the Lynx Linux/ESXi variant has 91% code similarity with INC Linux and 87% overall overlap. This is a substantially higher match than the Windows variant and is the strongest technical evidence of shared codebase. [11]</div>
+          <div class="pillar-card credible">
+            <div class="pillar-num">Pillar 2: Credible</div>
+            <div class="pillar-title">Code Overlap, Lynx to Sinobi</div>
+            <div class="pillar-body">Sinobi shares 63.2% with Lynx and 55.9% with INC on binary comparison (SOCRadar). eSentire's TRU and Blackpoint independently flagged the overlap at Sinobi's emergence; Barracuda and Hive Pro concur. Single primary comparison, several concurring assessments. [19][20][21]</div>
           </div>
           <div class="pillar-card credible">
             <div class="pillar-num">Pillar 3: Credible</div>
-            <div class="pillar-title">Shared Infrastructure Indicator</div>
-            <div class="pillar-body">BlackBerry researchers identified that Lynx and INC used the same email address (gansbronz[at]gmail[.]com) in the registry information of their respective public data leak sites. This is a direct operational indicator of common administration and the strongest non-code link between the two. [12][11]</div>
+            <div class="pillar-title">Shared Personnel Signals</div>
+            <div class="pillar-body">The INC and Lynx clear-web sites shared a registration email (BlackBerry, October 2024). In July 2026 SOCRadar observed a single operator, working from FortiBleed infrastructure, logged into both the INC and Lynx negotiation panels. The FBI and USSS wrote the brands as "INC/Lynx" in October 2026. Read together these point to marketing fronts over one operator and affiliate pool. [2][9][13]</div>
           </div>
           <div class="pillar-card credible">
             <div class="pillar-num">Pillar 4: Credible</div>
-            <div class="pillar-title">Timeline and Forum Evidence</div>
-            <div class="pillar-body">INC source code was advertised for sale as early as March 2024 (Unit 42) and listed in May 2024 at $300,000 (ransomware.live; primarily single-source). Lynx samples appeared in July 2024, approximately two months after the sale. The temporal sequence is consistent with a code acquisition and operational build-out timeline. [1][2][14]</div>
+            <div class="pillar-title">Older Heritage: Nemty, Karma, Nokoyawa</div>
+            <div class="pillar-body">The researcher 3xp0rt linked the INC code seller "salfetka" to the actor "rinc" / "farnetwork", associated with Nokoyawa, JSWORM, Nefilim, Karma and Nemty. ACSC separately assesses that INC tradecraft shows significant overlap with Lynx and the historical Nemty, Nemty X, Karma and Nokoyawa operations. Two independent lines, neither one conclusive on its own. [1][23]</div>
           </div>
         </div>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Vendor Assessment Comparison</div>
+        <div class="subsection-title">Vendor Designations and Positions</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Vendor</th><th>Position</th><th>Confidence</th></tr></thead>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>Position on the lineage</th></tr></thead>
             <tbody>
-              <tr><td>Palo Alto Networks Unit 42</td><td>Lynx is "a rebranding of INC ransomware"; article title is the formal assessment</td><td>High (code analysis + timeline)</td></tr>
-              <tr><td>Fortinet FortiGuard Labs</td><td>Lynx is the "successor" to INC; same encryption methods and behavioral traits</td><td>High (code + behavior)</td></tr>
-              <tr><td>Ransomware.live</td><td>Explicitly tags Lynx as "a rebrand of INC Ransomware"</td><td>Moderate (tracking site, not primary vendor)</td></tr>
-              <tr><td>Nextron Systems / Malpedia</td><td>Lynx "likely used INC source code"; close similarity acknowledged</td><td>High (malware analysis)</td></tr>
-              <tr><td>BlackBerry</td><td>Shared DLS admin email; code similarity</td><td>High (specific IOC corroboration)</td></tr>
-              <tr><td>Blackpoint Cyber</td><td>Lynx "functionally nearly identical to INC Ransom"; notes LockBit-influenced modifications</td><td>High (Feb 2026, most recent formal assessment)</td></tr>
-              <tr><td>Rapid7</td><td>Strong overlaps but "not sufficient to fully prove Lynx was derived from INC's source"; treats as lineage-linked but distinct</td><td>Cautious (code overlap alone, no operator confirmation)</td></tr>
-              <tr><td>Group-IB</td><td>Describes Lynx as a distinct but structured RaaS; affiliate overlap with other ecosystems noted but unnamed groups not specified</td><td>Moderate (operational focus rather than attribution)</td></tr>
-              <tr><td>CrowdStrike</td><td>No published designation or formal assessment for INC or Lynx as of September 2026</td><td>Gap</td></tr>
-              <tr><td>Mandiant (Google)</td><td>No published designation or formal assessment for INC or Lynx as of September 2026</td><td>Gap</td></tr>
-              <tr><td>Secureworks</td><td>No published designation or formal assessment for INC or Lynx as of September 2026</td><td>Gap</td></tr>
+              <tr><td>Secureworks (now Sophos)</td><td>GOLD IONIC (INC Ransom)</td><td>Profiles INC as a distinct RaaS; no published position on Lynx or Sinobi [22]</td></tr>
+              <tr><td>Microsoft</td><td>Storm-2113 (Lynx operator group)</td><td>August 2026: a DeadLock affiliate "previously associated with the Lynx and INC ransomware ecosystems" [8][18]</td></tr>
+              <tr><td>Trend Micro</td><td>Water Lalawag (Lynx)</td><td>Tracks Lynx as its own intrusion set [8]</td></tr>
+              <tr><td>Palo Alto Networks Unit 42</td><td>None published</td><td>"Lynx Ransomware: A Rebranding of INC Ransomware" (October 2024) [6]</td></tr>
+              <tr><td>Group-IB</td><td>None published</td><td>Documented the Lynx affiliate panel; reports 87 to 91% Linux/ESXi code overlap with INC [7]</td></tr>
+              <tr><td>Blackpoint Cyber</td><td>None published</td><td>Lynx "functionally nearly identical to INC Ransom"; Sinobi on the same code (2025 to 2026) [8]</td></tr>
+              <tr><td>BlackBerry</td><td>None published</td><td>Shared DLS registration email between INC and Lynx [9]</td></tr>
+              <tr><td>Rapid7</td><td>None published</td><td>Holdout: overlap "not sufficient to fully prove" shared operators; consistent with a code purchase [10]</td></tr>
+              <tr><td>SOCRadar</td><td>None published</td><td>Dual-panel operator finding (July 2026); Sinobi binary comparison [13][19]</td></tr>
+              <tr><td>eSentire, Barracuda, Hive Pro, Picus, AttackIQ</td><td>None published</td><td>Sinobi assessed as Lynx rebrand or offshoot [20][21]</td></tr>
+              <tr><td>ACSC / NZ NCSC / CERT Tonga</td><td>Lists "Tarnished Scorpion" and "GOLD IONIC" as INC aliases (vendor origin of the first not stated in the advisory)</td><td>INC TTPs overlap significantly with Lynx, Nemty, Nemty X, Karma and Nokoyawa [1]</td></tr>
+              <tr><td>CrowdStrike, Mandiant (Google)</td><td>None published</td><td>No formal assessment of any of the three brands as of October 2026; their silence on a top-five brand is itself notable</td></tr>
             </tbody>
           </table>
         </div>
         <div class="callout callout-info">
-          <strong>Overall lineage assessment:</strong> The INC-to-Lynx relationship is best characterized as a code-lineage cluster with probable operator overlap, not definitively confirmed as a full rebrand by the same core team. The shared DLS email address (BlackBerry) and the 91% Linux code similarity (Blackpoint) are the two most operationally significant data points. Absent confirmed operator identification, the designation "successor with probable continuity" is more defensible than "confirmed rebrand."
+          <strong>Practical consequence for disruption:</strong> the brands are best understood as marketing fronts over a shared operator and affiliate pool, not as separate gangs. Action against any one brand's infrastructure or money is likely to touch the others.
         </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">LockBit Connection</div>
-        <div class="conf conf-credible">Credible, single-source; no corroboration from Mandiant, CrowdStrike, or Secureworks</div>
-        <p>Blackpoint Cyber (Feb 2026) notes that Lynx modifications to the INC codebase "were likely influenced by the LockBit operation," suggesting affiliates or developers with prior LockBit experience contributed to the build. This claim is single-source and has not been independently corroborated by a major TI vendor. It is included as a CREDIBLE but unconfirmed cluster extension. [11]</p>
       </div>
     </section>
 
@@ -813,45 +841,52 @@ html { scroll-behavior: smooth; }
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">RaaS Structure</div>
-        <p>INC operated with some RaaS characteristics but is more accurately described as a targeted operation with limited affiliate involvement. Public reporting on INC's internal structure is thin compared to Lynx. Lynx is consistently described as a structured RaaS with a full affiliate panel, formal onboarding, and tiered internal roles. Group-IB gained access to the Lynx affiliate panel and documented five functional sections: News (updates), Chats (negotiation management), Companies (victim management interface), Stuffers (sub-affiliate management), and Leaks (publication scheduling). [5][11]</p>
-        <p>Recruitment is conducted via the RAMP forum, where a user identified as "silencer" posted advertisements targeting experienced penetration testing teams. The operation is described by Blackpoint Cyber as a "tight, closed model RaaS" with strict affiliate vetting, distinguishing it from open-recruitment operations. [11]</p>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Revenue Model</div>
+        <div class="subsection-title">The Structural Difference: Who Holds the Money</div>
+        <div class="conf conf-confirmed">Confirmed: two primary sources, one per brand</div>
+        <p>INC and Lynx differ on the single point that matters most for financial disruption. The ACSC advisory states that INC affiliates distribute the ransomware while "INC Ransom extorts affected organisations and handles payments": a franchise in which the operator owns the victim relationship and the wallet. Group-IB's January 2025 documentation of the Lynx affiliate panel shows the opposite: the Lynx affiliate controls the wallet and runs the negotiation, with the operator taking a 20% cut. This is the basis of the strongest leverage point in Section 11. [1][7]</p>
         <div class="metric-grid">
           <div class="metric-card highlight">
-            <div class="metric-label">Affiliate Share</div>
-            <div class="metric-val">80%</div>
-            <div class="metric-note">Of ransom payment to affiliate</div>
+            <div class="metric-label">INC payment control</div>
+            <div class="metric-val">Operator</div>
+            <div class="metric-note">Operator extorts and collects (ACSC, Mar 2026)</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">Core Team Share</div>
-            <div class="metric-val">20%</div>
-            <div class="metric-note">Retained by operators</div>
+            <div class="metric-label">Lynx payment control</div>
+            <div class="metric-val">Affiliate</div>
+            <div class="metric-note">Affiliate wallet and negotiation (Group-IB, Jan 2025)</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">Call Center Service</div>
-            <div class="metric-val">Extra %</div>
-            <div class="metric-note">Optional; increases per-incident payout to operators</div>
+            <div class="metric-label">Lynx revenue split</div>
+            <div class="metric-val">80 / 20</div>
+            <div class="metric-note">Affiliate / core team; INC split undocumented</div>
           </div>
         </div>
-        <p>The 80/20 split is consistent across ransomware.live and Blackpoint reporting and is considered credible; it has not been independently confirmed by Unit 42, Fortinet, or Group-IB in detail. The call center service offering adds a negotiation facilitation tier not present in INC's documented model, indicating operational investment by the core team. [2][11]</p>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Affiliate Infrastructure</div>
-        <p>Lynx provides affiliates with a complete binary bundle covering Windows, Linux x64, Linux ARM, MIPS, and ESXi variants, enabling targeting of heterogeneous enterprise environments from a single affiliate relationship. The affiliate panel also distributes infrastructure mirror URLs through the News section to maintain operational continuity if primary domains are disrupted. [5][11]</p>
+        <div class="subsection-title">INC: Franchise RaaS and Affiliate Migration</div>
+        <p>ACSC describes INC as a RaaS in which the operator develops the encryptor and payment portals and sells access, while affiliates perform the intrusion and deployment. Acronis characterises INC as semi-private and affiliate-based, with documented migration into it from Vice Society / Vanilla Tempest (2024) and from LockBit and BlackCat affiliates after those operations were disrupted. INC's revenue split, affiliate count and recruitment channel are not documented in open source. [1][14]</p>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Extortion Model and Negotiation Behavior</div>
-        <p>Both INC and Lynx use double extortion: data is exfiltrated prior to encryption, creating two independent pressure vectors. Lynx's DLS operates on a clear-web blog (lynxblog.net) and multiple Tor mirrors, a dual-surface approach that maximizes victim reputational exposure. Data publication follows a countdown timer model with proof-of-breach excerpts released progressively. [1][3][4][5]</p>
-        <p>Negotiation-specific details are limited in public reporting. Secondary write-ups reference high-six to eight-figure initial demands scaled to victim size, with significant discount offers (50% or more) as publication deadlines approach, consistent with standard RaaS negotiation playbook. No systematic triple extortion (DDoS or direct customer harassment) has been documented for this group. [8][9]</p>
+        <div class="subsection-title">Lynx: The Best-Documented Panel</div>
+        <p>Group-IB's access to the Lynx affiliate panel documented five sections (News, Companies, Chats, Stuffers for sub-affiliates, and Leaks for scheduled publication), an 80/20 split in the affiliate's favour, a paid call-centre service for victim pressure, and affiliate-controlled wallets. Affiliates received a complete binary bundle (Windows, Linux x64, ARM, MIPS, ESXi) and mirror URLs through the News section. Recruitment ran on the RAMP forum under the handle "silencer" from August 2024, seeking experienced intrusion teams. [7][8]</p>
         <div class="callout callout-warning">
-          <strong>Stated exclusion policy:</strong> Lynx publicly claims to avoid targeting government institutions, hospitals, and non-profit organizations. Rapid7 explicitly characterizes this as self-imposed risk management rather than ethics. The policy is analytically significant as an affiliate behavioral constraint, not as a reliable operational boundary. [4]
-        </div>
+          <strong>Stated exclusion policy:</strong> Lynx claimed to avoid government, hospitals and non-profits beyond the standard CIS exclusion. Rapid7 characterised this as self-imposed risk management, and the lineage's own victim list (Easterseals Iowa, Lakelands Public Health, a Maryland county emergency-services department, the Tonga Ministry of Health) shows it was not an operational boundary. [1][10]</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">2026 Cross-Brand Developments</div>
+        <ul class="content-list">
+          <li><strong>RAMP seized (28 January 2026).</strong> The FBI, with the US Attorney's Office for the Southern District of Florida and DOJ CCIPS, seized the RAMP forum's Tor and clear-web sites. RAMP was Lynx's documented recruitment venue; the seizure removed the operation's known front door for hiring without touching the operation itself. [5]</li>
+          <li><strong>DeadLock (August 2026).</strong> Microsoft reported that one affiliate deploying the new Rust-based DeadLock encryptor was "previously associated with the Lynx and INC ransomware ecosystems", evidence that affiliates carry tooling across brands rather than belonging to one. [18]</li>
+          <li><strong>Brokered access replaces own intrusion.</strong> Both documented 2026 supply lines (FortiBleed credentials, SonicWall SMA 1000 exploitation) are brokered, not INC's own work. See Section 04. [2][13][15][16]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion and Negotiation</div>
+        <p>All three brands run double extortion with data exfiltrated before encryption, countdown-timer publication and progressive proof-of-breach releases. Negotiation detail in open source is thin: high-six to eight-figure opening demands scaled to victim size, steep discounts as deadlines approach, and no systematic DDoS or customer-harassment tier documented. In 2026 the INC extortion campaign used a clear-web contact domain and a US telephone number for pressure calls (see Section 11, point 6). [7][10][36]</p>
       </div>
     </section>
 
@@ -863,96 +898,107 @@ html { scroll-behavior: smooth; }
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Encryption Implementation</div>
+        <div class="subsection-title">Encryption Implementation (all three brands)</div>
         <ul class="content-list">
-          <li><strong>Algorithm:</strong> AES-128 in CTR mode for file content; Curve25519 Donna for asymmetric key encapsulation</li>
-          <li><strong>File extension:</strong> .lynx appended to all encrypted files</li>
-          <li><strong>Ransom note:</strong> README.txt dropped in each directory; Base64-encoded inside the binary before deployment</li>
-          <li><strong>Wallpaper:</strong> Desktop wallpaper replaced to direct victims to the Tor negotiation portal</li>
-          <li><strong>Printer delivery:</strong> Ransom note pushed to all identified networked printers via StartDocPrinterW() API; a distinguishing behavior not common to most RaaS families</li>
-          <li><strong>Shadow copy deletion:</strong> VssAdmin used to delete Volume Shadow Copies; VM snapshots deleted on ESXi via vim-cmd</li>
-          <li><strong>Crypto assessment:</strong> No known design flaw; no public free decryptor exists as of September 2026 [6][1][3]</li>
+          <li><strong>Algorithm:</strong> AES-128 in CTR mode for file content; Curve25519 (donna) for key encapsulation</li>
+          <li><strong>Recovery inhibition:</strong> Volume Shadow Copies deleted via VssAdmin; ESXi VM snapshots removed via vim-cmd</li>
+          <li><strong>Wallpaper and printers:</strong> desktop wallpaper replaced; ransom note pushed to networked printers via StartDocPrinterW(), a behaviour uncommon among peer families</li>
+          <li><strong>Extensions:</strong> .lynx (Lynx); INC and Sinobi use brand-specific extensions and note names</li>
+          <li><strong>Crypto assessment:</strong> no disclosed design flaw; no public decryptor as of October 2026 (No More Ransom lists none of the three) [6][11][12]</li>
         </ul>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Platform Support</div>
+        <div class="subsection-title">2026 Capability Investment (INC side)</div>
+        <div class="conf conf-credible">Credible: Acronis primary analysis, exposed-server findings corroborating</div>
+        <p>Acronis (June 2026) documented INC Windows and Linux/ESXi encryptors rewritten in Rust, an updated credential dumper targeting backup software, and bring-your-own-vulnerable-driver tooling to disable endpoint protection. Exposed INC affiliate servers analysed in June and July 2026 contained Linux encryptors compiled for an unusually wide range of architectures, including mainframe and other non-standard targets, indicating deliberate reach into heterogeneous enterprise and legacy environments. Lynx shows no new 2026 build in open source; the reference remains the multi-platform archive Group-IB documented in January 2025. Sinobi is Windows-only in public reporting. [7][14][19]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access in 2026: Two Documented Supply Lines</div>
+        <div class="conf conf-confirmed">Confirmed: government advisory, vendor telemetry, CISA KEV</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Platform</th><th>INC</th><th>Lynx</th><th>Notes</th></tr></thead>
+            <thead><tr><th>Supply line</th><th>What it is</th><th>Link to INC/Lynx</th><th>Sources</th></tr></thead>
             <tbody>
-              <tr><td>Windows</td><td>Yes</td><td>Yes</td><td>Primary; most-documented variant</td></tr>
-              <tr><td>Linux x64</td><td>Yes</td><td>Yes</td><td>91% code similarity between INC and Lynx Linux variants (Blackpoint, Feb 2026)</td></tr>
-              <tr><td>Linux ARM</td><td>Unknown</td><td>Yes</td><td>Documented in Blackpoint Feb 2026 affiliate bundle listing</td></tr>
-              <tr><td>Linux MIPS</td><td>Unknown</td><td>Yes</td><td>Documented in Blackpoint Feb 2026 affiliate bundle listing</td></tr>
-              <tr><td>ESXi</td><td>Yes</td><td>Yes</td><td>ESXi variant kills VMs, removes snapshots; significantly increases blast radius in virtualized environments</td></tr>
+              <tr><td><strong>FortiBleed</strong></td><td>Global Fortinet credential-theft campaign; more than 86,000 compromised FortiGate devices per SOCRadar; FBI warns of administrator lockouts</td><td>Initial-access brokers using the FortiBleed chain supply "INC/Lynx ransomware and Payload ransomware" (FBI/USSS, 6 Oct 2026); SOCRadar observed one operator in both INC and Lynx panels from FortiBleed infrastructure (Jul 2026)</td><td>[2][13]</td></tr>
+              <tr><td><strong>SonicWall SMA 1000 zero-days</strong></td><td>CVE-2026-15409 (CVSS 10.0) and CVE-2026-15410; SonicWall advisory SNWLID-2026-0008 and CISA KEV entry both 14 July 2026, later flagged for known ransomware use</td><td>Rapid7 attributed the exploitation activity to an INC-connected actor within days of disclosure; Resecurity documented the WSProxy-to-root chain; Volexity tracked a pre-disclosure exploitation cluster</td><td>[3][4][15][16][17][37]</td></tr>
             </tbody>
           </table>
         </div>
-        <p><em>Note: Palo Alto Unit 42 (October 2024) stated no Linux samples had been confirmed for Lynx at that time. Blackpoint Cyber (February 2026) documents Linux and ESXi variants in the affiliate bundle. The Blackpoint assessment is more recent and is treated as the current ground truth.</em></p>
+        <p>Both are brokered access rather than INC's own intrusion work, which makes each supplier a dependency of the operation in its own right (Section 11, point 2).</p>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Known Exploited Vulnerabilities</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>CVE</th><th>Description</th><th>Product</th><th>CVSS</th><th>Notes</th></tr></thead>
+            <thead><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td class="mono">CVE-2019-6693</td><td>Hardcoded cryptographic key vulnerability</td><td>Fortinet FortiOS</td><td>7.5</td><td>Older vulnerability; may reflect persistent exposure in unpatched environments</td></tr>
-              <tr><td class="mono">CVE-2024-0769</td><td>Path traversal vulnerability</td><td>D-Link DIR-859 Router</td><td>9.8</td><td>Critical; network device exploitation for initial access</td></tr>
-              <tr><td class="mono">CVE-2024-54085</td><td>Authentication bypass vulnerability</td><td>AMI MegaRAC SPx (BMC firmware)</td><td>10.0</td><td>Critical; targets out-of-band management infrastructure; high-impact for enterprise environments</td></tr>
+              <tr><td class="mono">CVE-2026-15409</td><td>SonicWall SMA 1000</td><td>10.0</td><td>Zero-day; KEV 14 Jul 2026; INC assessed as the dominant actor weaponising the chain after disclosure [3][15][16]</td></tr>
+              <tr><td class="mono">CVE-2026-15410</td><td>SonicWall SMA 1000</td><td>Not stated</td><td>Chained with CVE-2026-15409; KEV 14 Jul 2026 [3][17]</td></tr>
+              <tr><td class="mono">CVE-2024-54085</td><td>AMI MegaRAC SPx (BMC firmware)</td><td>10.0</td><td>Authentication bypass; out-of-band management targeting (Blackpoint, Feb 2026) [8]</td></tr>
+              <tr><td class="mono">CVE-2024-0769</td><td>D-Link DIR-859</td><td>9.8</td><td>Path traversal; network-device initial access (Blackpoint) [8]</td></tr>
+              <tr><td class="mono">CVE-2019-6693</td><td>Fortinet FortiOS</td><td>7.5</td><td>Hardcoded key; persistent exposure in unpatched environments (Blackpoint) [8]</td></tr>
             </tbody>
           </table>
         </div>
-        <p>Source: Blackpoint Cyber, February 2026 [11]. No additional CVE-specific exploits have been confirmed by Unit 42, Fortinet, or other primary vendors beyond generic RaaS access vectors (phishing, credential abuse, RDP exploitation).</p>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Execution and Runtime Options</div>
-        <p>Lynx provides affiliates with granular runtime control via command-line arguments, a feature improvement over INC's more limited configuration set. Documented arguments include: <span class="mono">--file</span> (single file), <span class="mono">--dir</span> (specific directory), <span class="mono">--encrypt-network</span> (network shares), <span class="mono">--load-drives</span> (hidden drives), <span class="mono">--stop-processes</span>, <span class="mono">--hide-cmd</span>, <span class="mono">--no-background</span>, and <span class="mono">--kill</span>. Fortinet and Nextron note this configurable architecture makes Lynx more operationally attractive to affiliates than INC was. [3][6][11]</p>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Tool Inventory</div>
+        <div class="subsection-title">Tool Inventory (Lynx intrusions, retained)</div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Phase</th><th>Tools</th></tr></thead>
             <tbody>
-              <tr><td>Initial Access</td><td>Phishing (Microsoft OneNote weaponized attachments), compromised RDP/VPN credentials, CVE exploitation</td></tr>
+              <tr><td>Initial Access</td><td>Brokered VPN and firewall credentials (FortiBleed), edge-appliance exploitation (SonicWall SMA 1000), compromised RDP/VPN accounts, phishing (OneNote attachments in earlier intrusions)</td></tr>
               <tr><td>Persistence</td><td>AnyDesk, ConnectWise ScreenConnect (RMM abuse), registry run keys, scheduled tasks</td></tr>
-              <tr><td>Lateral Movement</td><td>Impacket, NetExec, RDP, SMB share mounts, WMI, net utility</td></tr>
-              <tr><td>Discovery</td><td>SoftPerfect Network Scanner, nmap, nbtstat, nslookup, ipconfig, systeminfo, Task Manager</td></tr>
-              <tr><td>Credential Access</td><td>Mimikatz (LSASS memory dump)</td></tr>
-              <tr><td>Exfiltration</td><td>Restic backup tool (abused), temp.sh file hosting, Amazon S3 buckets</td></tr>
-              <tr><td>Defense Evasion</td><td>Windows Restart Manager API (unlock files for encryption), UAC bypass via explorer.exe, XOR string obfuscation, firewall rule modification</td></tr>
-              <tr><td>Impact</td><td>7-zip (data staging), VssAdmin (shadow copy deletion), ransomware binary with embedded ransom note</td></tr>
+              <tr><td>Lateral Movement</td><td>Impacket, NetExec, RDP, SMB share mounts, WMI</td></tr>
+              <tr><td>Discovery</td><td>SoftPerfect Network Scanner, nmap, native Windows utilities</td></tr>
+              <tr><td>Credential Access</td><td>Mimikatz (LSASS); INC's updated dumper targets backup software credentials (2026)</td></tr>
+              <tr><td>Defense Evasion</td><td>BYOVD to disable EDR (INC, 2026); Windows Restart Manager to unlock files; UAC bypass; XOR string obfuscation</td></tr>
+              <tr><td>Exfiltration</td><td>Restic (abused), temp.sh, cloud object storage</td></tr>
+              <tr><td>Impact</td><td>7-Zip staging, VssAdmin, encryptor with embedded note; printer note delivery</td></tr>
             </tbody>
           </table>
         </div>
+        <p style="font-size:12px;color:var(--gray-600);">Compiled from Group-IB, Blackpoint, The DFIR Report, Huntress and Acronis intrusion reporting. [7][8][14][24][36]</p>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">CIS / Russian-Language Kill Switch</div>
-        <div class="conf conf-credible">Credible, consistent across Fortinet, Nextron; specific code excerpts not fully published</div>
-        <p>Fortinet and Nextron both identify that Lynx (and INC) include system language/locale checks consistent with CIS exclusion behavior, meaning infected systems in Russia and neighboring CIS countries may be bypassed during encryption. This is a standard behavioral indicator of Russian-speaking criminal operations avoiding domestic victims. Detailed code excerpts confirming the exact check logic have not been published by primary vendors. [3][6]</p>
+        <div class="subsection-title">CIS Exclusion</div>
+        <div class="conf conf-credible">Credible: consistent across Fortinet and Nextron; exact check logic not published</div>
+        <p>Lynx and INC binaries include system locale checks consistent with CIS exclusion. Combined with zero confirmed CIS victims across all three brands, this is a standard marker of a Russian-speaking operation avoiding domestic victims. [11][12]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Infrastructure and Hosting</div>
+        <p>Leak-site and negotiation infrastructure is Tor-based with clear-web mirrors, organised in tiers (public blog, victim negotiation, affiliate panel, file server). INC runs dual leak-site onions plus a payment onion with backend mirrors; the primary INC leak onion was reachable on 18 October 2026. Lynx operated a four-tier layout (admin, guest, corporate chat, blog) with roughly seven to eight mirrors each; most are down. Sinobi replicated the Lynx layout and is entirely offline. Where open source has attributed hosting and transport, it concentrates in known Russia-nexus providers: [19][24][31]</p>
+        <ul class="content-list">
+          <li><strong>Aeza (AS210644):</strong> OFAC-sanctioned bulletproof host (1 July 2025); carried exposed INC affiliate staging servers in mid 2026, after designation</li>
+          <li><strong>Railnet / Virtualine:</strong> reported as a legal front for a Russia-based bulletproof provider; carried Lynx affiliate remote-access traffic in late 2025 (The DFIR Report)</li>
+          <li><strong>F.N.S Holdings (AS206092):</strong> VPN provider; source network for SonicWall SMA 1000 exploitation attributed to INC</li>
+          <li><strong>Global Connectivity Solutions (AS215540):</strong> transit provider appearing both as a Sinobi exfiltration destination and in the SonicWall exploitation activity</li>
+        </ul>
+        <p>No vendor has published the leak sites' hosting IPs, Tor guard or relay data, or TLS fingerprints. Full indicator sets are carried in the two government advisories and the vendor reports cited; this page does not reproduce them.</p>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Decryptor Availability</div>
         <div class="callout callout-alert">
-          <strong>No public decryptor exists</strong> for INC or Lynx ransomware as of September 2026. The No More Ransom Project does not list either strain among available tools. Encryption using AES-128 CTR and Curve25519 Donna is assessed as correctly implemented with no publicly disclosed cryptographic flaw. Recovery without operator cooperation or a comprehensive backup strategy is not feasible. [6][1][3]
+          <strong>No public decryptor exists</strong> for INC, Lynx or Sinobi as of October 2026, and no cryptographic flaw has been disclosed. Recovery without backups or operator cooperation is not feasible.
         </div>
       </div>
     </section>
 
-    <!-- SECTION 5: DEFENSIVE MAPPING -->
+    <!-- SECTION 05: DEFENSIVE MAPPING -->
     <section class="section" id="defensive">
       <div class="section-header">
         <span class="section-num">05</span>
         <h2 class="section-title">Defensive Mapping</h2>
       </div>
 
-      <p>This section translates reporting into defender action items. No dedicated US CISA advisory. Sourced from the Australian ACSC advisory on the INC Ransom affiliate model and vendor reporting (Palo Alto Unit 42, Fortinet, Darktrace). Lynx is a rebrand of INC Ransom with shared source code; confidence is Credible. Rows are rated <strong>Credible</strong> based on source. Techniques reflect documented tradecraft; no single intrusion uses all of them.</p>
+      <p>This section translates reporting into defender action items. Two government advisories now cover the lineage directly: the ACSC / NZ NCSC / CERT Tonga advisory on the INC affiliate model (6 March 2026) and the FBI / USSS FortiBleed advisory (6 October 2026), which names INC/Lynx as a downstream customer of FortiBleed initial-access brokers. Rows drawn from those advisories are <strong>Confirmed</strong>; rows drawn from vendor intrusion reporting are <strong>Credible</strong>. Techniques reflect documented tradecraft; no single intrusion uses all of them.</p>
 
       <div class="subsection">
         <div class="subsection-title">MITRE ATT&amp;CK Techniques: Priority Set</div>
@@ -960,17 +1006,18 @@ html { scroll-behavior: smooth; }
           <table>
             <thead><tr><th>Technique</th><th>Tactic</th><th>Usage</th><th>Defender Action</th></tr></thead>
             <tbody>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1190/" target="_blank">T1190</a> Exploit Public-Facing Application</td><td>Initial Access</td><td>Exploits exposed applications and edge appliances (Fortinet devices implicated in the FortiBleed credential campaign)</td><td>Patch edge and VPN CVEs on the CISA KEV list; remove management interfaces from the internet</td></tr>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1078/" target="_blank">T1078</a> Valid Accounts</td><td>Initial Access</td><td>Uses purchased or harvested credentials, including from credential-theft campaigns</td><td>Enforce MFA on all remote access; monitor for credential-stuffing and impossible-travel logins</td></tr>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1021/001/" target="_blank">T1021.001</a> Remote Services: RDP</td><td>Lateral Movement</td><td>Uses RDP to move laterally after initial access</td><td>Segment networks; block lateral RDP; require MFA internally</td></tr>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1003/" target="_blank">T1003</a> OS Credential Dumping</td><td>Credential Access</td><td>Harvests credentials for privilege escalation</td><td>Protect LSASS; alert on credential-dumping tool signatures</td></tr>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1490/" target="_blank">T1490</a> Inhibit System Recovery</td><td>Impact</td><td>Deletes shadow copies before encryption</td><td>Alert on shadow-copy deletion; keep immutable offline backups</td></tr>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1486/" target="_blank">T1486</a> Data Encrypted for Impact</td><td>Impact</td><td>Encrypts after exfiltration; INC/Lynx shared code base</td><td>Deploy EDR ransomware-behavior detection; segment to contain spread</td></tr>
-              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1567/" target="_blank">T1567</a> Exfiltration Over Web Service</td><td>Exfiltration</td><td>Steals data for double extortion prior to encryption</td><td>Alert on anomalous outbound transfers; block unsanctioned file-sharing</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1190/" target="_blank">T1190</a> Exploit Public-Facing Application</td><td>Initial Access</td><td>SonicWall SMA 1000 zero-day chain (CVE-2026-15409/15410); earlier edge-device CVEs</td><td>Patch SMA 1000 to the fixed release; remove management interfaces from the internet; check KEV weekly</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1078/" target="_blank">T1078</a> Valid Accounts</td><td>Initial Access</td><td>Brokered FortiGate credentials from FortiBleed; purchased VPN access</td><td>Rotate all FortiGate and VPN credentials if exposed during FortiBleed; enforce MFA; alert on logins from VPN and hosting ranges</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1133/" target="_blank">T1133</a> External Remote Services</td><td>Initial Access / Persistence</td><td>VPN and SSL-VPN appliance abuse as the entry and return path</td><td>Restrict appliance admin access to management networks; log and review admin logins</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1021/001/" target="_blank">T1021.001</a> Remote Services: RDP</td><td>Lateral Movement</td><td>RDP for lateral movement after entry</td><td>Segment networks; block lateral RDP; require MFA internally</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1003/" target="_blank">T1003</a> OS Credential Dumping</td><td>Credential Access</td><td>LSASS dumping; 2026 dumper targets backup-software credentials</td><td>Protect LSASS; alert on credential-dumping signatures; isolate backup consoles</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1562/001/" target="_blank">T1562.001</a> Impair Defenses: Disable or Modify Tools</td><td>Defense Evasion</td><td>BYOVD tooling to disable endpoint protection (INC, 2026)</td><td>Enable vulnerable-driver blocklists; alert on unsigned or known-bad driver loads</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1490/" target="_blank">T1490</a> Inhibit System Recovery</td><td>Impact</td><td>Shadow-copy and ESXi snapshot deletion before encryption</td><td>Alert on shadow-copy deletion; keep immutable offline backups</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1486/" target="_blank">T1486</a> Data Encrypted for Impact</td><td>Impact</td><td>Rust encryptors for Windows, Linux and ESXi; multi-architecture Linux builds</td><td>Deploy EDR ransomware-behaviour detection on Linux and ESXi hosts, not only Windows</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1567/" target="_blank">T1567</a> Exfiltration Over Web Service</td><td>Exfiltration</td><td>Data theft before encryption for double extortion</td><td>Alert on anomalous outbound volume; block unsanctioned file-sharing and backup tools</td></tr>
             </tbody>
           </table>
         </div>
-
         <div class="attack-nav-link" style="margin:12px 0 4px;padding:10px 14px;border-left:3px solid var(--gray-600);font-size:13px;line-height:1.5;">
           <strong>Full technique matrix (external):</strong> <a href="https://mitre-attack.github.io/attack-navigator/#layerURL=https://www.ransomware.live/attack-navigator/lynx" target="_blank" rel="noopener">Open the interactive MITRE ATT&amp;CK Navigator layer for Lynx / INC</a>. Built and maintained by ransomware.live from its TTP matrix; opens on MITRE's Navigator site. Use it for techniques only: MITRE group records can merge operator and affiliate identities, and this project does not import them as an authority on organization.
         </div>
@@ -983,23 +1030,25 @@ html { scroll-behavior: smooth; }
           <table>
             <thead><tr><th>Advisory</th><th>Date</th><th>Title</th><th>Defender Takeaway</th></tr></thead>
             <tbody>
-              <tr><td class="mono"><a href="https://www.cyber.gov.au/about-us/view-all-content/alerts-and-advisories/inc-ransom-affiliate-model-enabling-targeting-of-critical-networks" target="_blank">ACSC</a></td><td>2024</td><td>INC Ransom Affiliate Model Enabling Targeting of Critical Networks (Australian Signals Directorate)</td><td>Affiliate-model TTPs and mitigations for the INC lineage that Lynx rebranded from</td></tr>
+              <tr><td class="mono"><a href="https://www.cyber.gov.au/about-us/view-all-content/alerts-and-advisories/inc-ransom-affiliate-model-enabling-targeting-of-critical-networks" target="_blank">ACSC / NZ NCSC / CERT Tonga</a></td><td>6 Mar 2026</td><td>INC Ransom Affiliate Model Enabling Targeting of Critical Networks</td><td>Franchise model, healthcare targeting, Tonga MoH case study, full IOC set</td></tr>
+              <tr><td class="mono"><a href="https://www.ic3.gov/CSA/2026/261006.pdf" target="_blank">FBI / USSS JCSA-20261006-01</a></td><td>6 Oct 2026</td><td>FortiBleed Operations Continue Targeting Exposed Systems Leading to Reports of Lockouts</td><td>Credential rotation and lockout recovery for FortiGate; INC/Lynx and Payload named as downstream ransomware</td></tr>
+              <tr><td class="mono"><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank">CISA KEV</a></td><td>14 Jul 2026</td><td>CVE-2026-15409 and CVE-2026-15410 (SonicWall SMA 1000)</td><td>Federal patch deadline; both later flagged for known ransomware use</td></tr>
+              <tr><td class="mono">SonicWall SNWLID-2026-0008</td><td>14 Jul 2026</td><td>SMA 1000 zero-day advisory</td><td>Vendor fixed release and mitigation steps</td></tr>
             </tbody>
           </table>
         </div>
-        <div class="conf-block credible"><strong>Coverage note:</strong> No dedicated CISA advisory exists for Lynx or INC Ransom. The closest government source is the Australian ACSC advisory on the INC affiliate model; the mappings above are Credible, drawn from that advisory and vendor analysis of the shared INC/Lynx code base.</div>
+        <div class="conf-block confirmed"><strong>Coverage note:</strong> there is still no dedicated CISA #StopRansomware advisory for INC, Lynx or Sinobi. The ACSC-led advisory is the most complete government description of the operation; the FBI/USSS advisory covers the supply line rather than the group.</div>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Top Defensive Priorities</div>
-        <div class="callout callout-info">
-          <strong>If you do only five things:</strong> (1) patch edge, VPN, and Fortinet CVEs on the KEV list, (2) enforce MFA everywhere and watch for credential-theft-driven logins, (3) segment networks and block lateral RDP, (4) protect LSASS and alert on credential dumping, and (5) keep immutable offline backups.
+        <div class="callout callout-success">
+          <strong>If you do only five things:</strong> (1) patch SonicWall SMA 1000 and every Fortinet and VPN CVE on the KEV list, (2) assume FortiGate credentials exposed during FortiBleed are sold and rotate them, with MFA on every remote path, (3) segment networks and block lateral RDP, (4) protect LSASS and backup-console credentials and enable vulnerable-driver blocklists, and (5) keep immutable offline backups and test ESXi restore, because the Linux and ESXi encryptors are the strongest in the lineage.
         </div>
       </div>
     </section>
 
-
-    <!-- SECTION 05: FINANCIAL -->
+    <!-- SECTION 06: FINANCIAL -->
     <section class="section" id="financial">
       <div class="section-header">
         <span class="section-num">06</span>
@@ -1007,25 +1056,51 @@ html { scroll-behavior: smooth; }
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Payment Model</div>
-        <p>Public reporting identifies Bitcoin as the primary ransom payment currency for both INC and Lynx, consistent with mainstream RaaS practice. Secondary sources reference possible Monero support in negotiation chats; this is not confirmed by primary TI vendors and is treated as possible but unverified. [5][8]</p>
+        <div class="subsection-title">Payment Model by Brand</div>
+        <p>INC collects ransom centrally: affiliates deploy, the operator extorts and is paid (ACSC). That makes the INC payment path a single chokepoint rather than a per-affiliate spray. Lynx did the reverse, with affiliate-controlled wallets and negotiation (Group-IB). Sinobi's model is undocumented. Bitcoin is the documented payment currency; Monero support is mentioned in secondary reporting only. [1][7]</p>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">On-Chain Analysis</div>
         <div class="callout callout-warning">
-          <strong>Key intelligence gap:</strong> TRM Labs, Chainalysis, and Elliptic have not published named cluster attribution or wallet analysis for INC or Lynx as of September 2026. No specific wallet cluster IDs, OFAC-sanctioned addresses, or confirmed laundering path documentation has been released by blockchain forensics firms under this group's name. On-chain visibility for this cluster remains limited to open-source intelligence.
+          <strong>Key intelligence gap:</strong> no public blockchain-analytics firm (Chainalysis, TRM Labs, Elliptic, Crystal) has published named wallet attribution, payment totals or laundering routes for INC, Lynx or Sinobi as of October 2026. Ransomwhere carries no entries for any of the three. This page asserts no on-chain attribution.
         </div>
-        <p>General behavior inferred from Group-IB and Darktrace reporting is consistent with standard RaaS laundering patterns: Bitcoin payments collected into operator-controlled addresses, rapid layering through nested transfers and mixing services, and consolidation via high-volume exchanges or OTC brokers. This characterization is an ANALYST INFERENCE from behavioral reporting and has not been confirmed by named wallet cluster data. [5][9]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Enforcement Weather: Services This Class of Operation Depends On</div>
+        <p>None of the following actions names this lineage. All of them narrow the cash-out and hosting environment it operates in. [33][34][35]</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Action</th><th>Relevance to the lineage</th></tr></thead>
+            <tbody>
+              <tr><td>Feb 2025</td><td>Zservers sanctioned (OFAC) and raided; Stark Industries successor network: 800+ servers seized in the Netherlands (Dutch FIOD, May 2026)</td><td>Bulletproof hosting class used by lineage affiliates</td></tr>
+              <tr><td>Jul 2025</td><td>Aeza Group sanctioned (OFAC); successor fronts and Media Land sanctioned by US, UK and Australia (Nov 2025)</td><td>Aeza carried INC affiliate staging servers after designation</td></tr>
+              <tr><td>Aug 2025</td><td>Garantex seized and re-designated; successor Grinex and the A7 / A7A5 network sanctioned, with indictments and rewards</td><td>Russia-facing cash-out rails</td></tr>
+              <tr><td>Sep 2025</td><td>TradeOgre shut down, about 40 million US dollars seized (RCMP)</td><td>No-KYC exchange class</td></tr>
+              <tr><td>Jun 2026</td><td>AudiA6 mixer-as-a-service network dismantled; arrests in Georgia, extradition sought (DOJ, USSS, Europol); served at least 15 ransomware operations, clients unnamed</td><td>Laundering service class; lineage membership unknown</td></tr>
+              <tr><td>Jul 2026</td><td>First VPN Service and a cryptor seller sanctioned for ransomware support (OFAC)</td><td>Anonymising transport and crypting services</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Policy Levers in Force or Proposed</div>
+        <ul class="content-list">
+          <li><strong>US Executive Order 14390 (March 2026):</strong> directs a transnational-crime action plan and a victims-restoration program funded from forfeited assets</li>
+          <li><strong>Australia:</strong> mandatory ransomware-payment reporting, in enforcement since January 2026; directly relevant given the ACSC-documented shift to Australian and Pacific healthcare</li>
+          <li><strong>United Kingdom:</strong> proposed public-sector and critical-infrastructure payment ban, consulted on but not yet enacted</li>
+        </ul>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Sanctions Status</div>
-        <p>No OFAC designations have been linked to INC, Lynx, or any suspected operator of either group as of September 2026. Unlike Conti-lineage groups (e.g., Trickbot infrastructure, Conti leadership), INC/Lynx does not appear on published US Treasury sanctions lists. No EU, UK, or other allied jurisdiction sanctions have been reported. [3][5]</p>
+        <p>No OFAC, EU, UK OFSI or other allied designation names INC, Lynx, Sinobi, or any operator of the three as of 18 October 2026. The one publicly named infrastructure controller (Section 08) is not designated. Organisations face no lineage-specific compliance obligation beyond general ransomware payment guidance and the jurisdictional reporting rules above.</p>
       </div>
     </section>
 
-    <!-- SECTION 06: VICTIMS -->
+    <!-- SECTION 07: VICTIMS -->
     <section class="section" id="victims">
       <div class="section-header">
         <span class="section-num">07</span>
@@ -1033,41 +1108,49 @@ html { scroll-behavior: smooth; }
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Victim Volume Over Time</div>
+        <div class="subsection-title">Volume by Brand (tracker read 18 October 2026)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Brand</th><th>Lifetime listings</th><th>2026 pattern</th><th>Last post</th><th>Site status</th></tr></thead>
+            <tbody>
+              <tr><td>INC Ransom</td><td>980</td><td>29 to 46 a month; 52 in January; fourth or fifth globally in several quarterly counts</td><td>15 Oct 2026</td><td>Primary leak onion reachable</td></tr>
+              <tr><td>Lynx</td><td>417</td><td>About 25 in January, then single digits, then nothing</td><td>29 Aug 2026</td><td>Most sites down; admin and chat portals intermittent</td></tr>
+              <tr><td>Sinobi</td><td>274</td><td>About 56 in January, collapsed to zero by April</td><td>Before 8 May 2026</td><td>All tracked sites offline</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Source: ransomware.live group pages, with 2026 tempo cross-checked against Group-IB, Hookphish, ZeroFox and Comparitech quarterly statistics. [31][32]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Volume Over Time</div>
         <div class="phase-list">
           <div class="phase-item">
             <div class="phase-num">1</div>
             <div class="phase-body">
-              <div class="phase-title">INC Phase (Aug 2023 to mid-2024)</div>
-              <div class="phase-desc">Targeted multiple organizations across 2023 to early 2024 in retail, real estate, architecture, financial services, and environmental services. Victim count is less standardized in public reporting than Lynx; the DLS was operational but less prominent.</div>
+              <div class="phase-title">INC alone (mid 2023 to mid 2024)</div>
+              <div class="phase-desc">Targeted double extortion across retail, real estate, professional services and healthcare; Secureworks profiled the operator as GOLD IONIC in April 2024. Source code offered for sale in spring 2024. [22][23]</div>
             </div>
           </div>
           <div class="phase-item">
             <div class="phase-num">2</div>
             <div class="phase-body">
-              <div class="phase-title">Lynx Early Phase (Jul to Dec 2024)</div>
-              <div class="phase-desc">First samples observed July 2024. By September 2024, over 20 confirmed victims reported. Rapid7 and Nextron track early-phase activity.</div>
+              <div class="phase-title">Lynx build-out (mid 2024 to Aug 2025)</div>
+              <div class="phase-desc">Lynx grew from 20+ victims (September 2024) to 96 (January 2025) to nearly 300 (August 2025), while the INC site kept posting. MSPs identified as a priority target for Lynx and Akira (Acronis, August 2025). [7][11][25][26]</div>
             </div>
           </div>
           <div class="phase-item">
             <div class="phase-num">3</div>
             <div class="phase-body">
-              <div class="phase-title">Lynx Growth Phase (Jan to Aug 2025)</div>
-              <div class="phase-desc">Fortinet counted 96 victims on the DLS as of January 29, 2025. SOCRadar reported nearly 300 victims by August 2025. Victim posting pace is accelerating.</div>
+              <div class="phase-title">Three brands concurrent (Jun 2025 to Jan 2026)</div>
+              <div class="phase-desc">Sinobi appears around June 2025 on Lynx code. All three leak sites post in parallel; January 2026 is the peak month for every brand (INC 52, Sinobi about 56, Lynx about 25). [19][21][31]</div>
             </div>
           </div>
           <div class="phase-item">
             <div class="phase-num">4</div>
             <div class="phase-body">
-              <div class="phase-title">Lynx Plateau and Fade (Sep 2025 to present)</div>
-              <div class="phase-desc">Ransomware.live reported 410+ total Lynx victims as of May 10, 2026 across 16+ countries. Posting then collapsed: 7 in May 2026, 4 in June, zero in July, 3 in August (internal collection; 415 lifetime). The May 2026 read of "no deceleration" did not survive the summer.</div>
-            </div>
-          </div>
-          <div class="phase-item">
-            <div class="phase-num">5</div>
-            <div class="phase-body">
-              <div class="phase-title">INC Resurgence as the Volume Brand (2026)</div>
-              <div class="phase-desc">The INC leak site, never actually retired, ran at top-10 monthly volume every month of 2026: 52 in January (including a 20-victim single-day surge on 5 January noted by Acronis), then 41/50/33/30/32/36/42 through August, reaching 881+ lifetime claims. Acronis assesses INC as a top-tier RaaS in 2026 with more than 800 victims since 2023, aided by affiliate migration after the LockBit and ALPHV disruptions. The cluster's activity therefore continued at scale through 2026 under the INC name while the Lynx brand faded. [CONFIRMED internal collection; CREDIBLE Acronis]</div>
+              <div class="phase-title">Inversion (Feb 2026 to present)</div>
+              <div class="phase-desc">Sinobi collapses to zero by April and goes dark 8 May. Lynx fades to single digits and stops 29 August. INC holds 29 to 46 listings a month through October, reaching 980 lifetime with victims in 73 countries. Neither dormant brand announced a shutdown. [31]</div>
             </div>
           </div>
         </div>
@@ -1077,17 +1160,14 @@ html { scroll-behavior: smooth; }
         <div class="subsection-title">Sector Targeting</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Sector</th><th>Relative Share</th><th>Source</th></tr></thead>
+            <thead><tr><th>Sector</th><th>Finding</th><th>Source</th></tr></thead>
             <tbody>
-              <tr><td>Industrials / Manufacturing</td><td>Highest (46 incidents in 2025 per Blackpoint)</td><td>Fortinet, Darktrace, Blackpoint [3][9][11]</td></tr>
-              <tr><td>Construction and Engineering</td><td>Second highest (29 incidents in 2025 per Blackpoint)</td><td>Fortinet, Darktrace, Blackpoint [3][9][11]</td></tr>
-              <tr><td>Professional and Business Services</td><td>Significant (25 incidents in 2025 per Blackpoint)</td><td>Blackpoint [11]</td></tr>
-              <tr><td>Technology</td><td>Significant</td><td>Multiple vendors [1][9]</td></tr>
-              <tr><td>Finance and Insurance</td><td>Moderate</td><td>Darktrace, Blackpoint [9][11]</td></tr>
-              <tr><td>Transportation</td><td>Moderate (17 incidents in 2025 per Blackpoint)</td><td>Blackpoint [11]</td></tr>
-              <tr><td>Legal Services</td><td>Moderate (17 incidents in 2025 per Blackpoint)</td><td>Blackpoint [11]</td></tr>
-              <tr><td>Real Estate, Architecture, Environmental</td><td>Lower but consistent</td><td>Unit 42 [1]</td></tr>
-              <tr><td>Government / Healthcare / Non-profits</td><td>Claimed avoidance (not confirmed)</td><td>Stated policy; not operationally verified [4]</td></tr>
+              <tr><td>Professional services</td><td>Heaviest INC concentration in 2026; ten US law firms listed inside 48 hours in March 2026, suggesting an upstream platform or managed-service compromise (not confirmed)</td><td>Trackers, vendor reporting [31][32]</td></tr>
+              <tr><td>Healthcare</td><td>INC was the second most prolific group against healthcare providers in Q3 2026 (Comparitech); ACSC records a shift to Australian, New Zealand and Pacific healthcare from early 2025; Tonga MoH national disruption (June 2025)</td><td>ACSC, Comparitech, Cyble [1][29][30][32]</td></tr>
+              <tr><td>Manufacturing / industrials</td><td>Highest Lynx sector in 2025 (46 incidents per Blackpoint); remains a core INC sector</td><td>Blackpoint, Fortinet [8][11]</td></tr>
+              <tr><td>Technology and education</td><td>Significant INC share in 2026</td><td>Trackers [31][32]</td></tr>
+              <tr><td>Local government and emergency services</td><td>Maryland county emergency-services department; Canadian regional public-health body (about 60,000 people affected)</td><td>Vendor and press reporting</td></tr>
+              <tr><td>Construction, transport, legal, finance</td><td>Second-tier Lynx sectors in 2025 (29, 17, 17 incidents per Blackpoint; finance moderate)</td><td>Blackpoint [8]</td></tr>
             </tbody>
           </table>
         </div>
@@ -1096,20 +1176,20 @@ html { scroll-behavior: smooth; }
       <div class="subsection">
         <div class="subsection-title">Geographic Distribution</div>
         <ul class="content-list">
-          <li><strong>United States:</strong> Over 60% of confirmed victims; dominant target country by a significant margin</li>
-          <li><strong>United Kingdom and Canada:</strong> Approximately 8% each; second-tier target markets</li>
-          <li><strong>Europe, Asia-Pacific, Australia, Germany:</strong> Additional confirmed victims; broader opportunistic spread</li>
-          <li><strong>Russia and CIS:</strong> No confirmed victims; CIS locale check consistent with deliberate avoidance</li>
+          <li><strong>United States:</strong> majority of INC victims (543 of 980 on one tracker); over 60% for Lynx</li>
+          <li><strong>Canada, Germany, United Kingdom, Australia:</strong> next tier for INC; UK and Canada about 8% each for Lynx</li>
+          <li><strong>Australia, New Zealand, Pacific islands:</strong> deliberate shift from early 2025 per ACSC; Partnered Health (60+ clinics) and Tonga MoH among the named cases</li>
+          <li><strong>Russia and CIS:</strong> no confirmed victims for any brand</li>
         </ul>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Victim Size Profile</div>
-        <p>Lynx targets mid-market to enterprise organizations rather than very small businesses, consistent with Group-IB's characterization of affiliates pursuing "high-value corporate targets" and the observed seven-figure ransom demand range. MSPs have been identified as targets by Acronis TRU (August 2025), which describes MSPs as a priority target for both Akira and Lynx, suggesting deliberate supply-chain leverage through managed service access. [5][11][17]</p>
+        <p>Mid-market to enterprise across all three brands, consistent with Group-IB's description of affiliates pursuing high-value corporate targets and with the MSP targeting posture Acronis identified. The multi-architecture Linux builds found on INC affiliate servers in 2026 indicate deliberate reach into legacy and heterogeneous enterprise estates. [7][14][25]</p>
       </div>
     </section>
 
-    <!-- SECTION 07: ENFORCEMENT -->
+    <!-- SECTION 08: ENFORCEMENT -->
     <section class="section" id="enforcement">
       <div class="section-header">
         <span class="section-num">08</span>
@@ -1119,33 +1199,40 @@ html { scroll-behavior: smooth; }
       <div id="enforcement-module"></div>
       <script src="../scripts/enforcement-module.js" data-page="groups/lynx.html" defer></script>
 
-
       <div class="callout callout-info">
-        <strong>Summary:</strong> As of September 2026, no arrests, indictments, infrastructure seizures, CISA or FBI advisories, or sanctions have been publicly linked to INC or Lynx. Both groups' infrastructure remains operational. Law enforcement focus has been concentrated on higher-profile groups (LockBit, Conti, ALPHV/BlackCat, RansomHub), leaving INC/Lynx largely uncontested.
+        <strong>Summary:</strong> as of 18 October 2026 no arrests, indictments, extraditions, rewards, OFAC or allied sanctions, or infrastructure seizures name INC, Lynx or Sinobi. The INC leak site remains reachable. Government attention consists of two advisories. For a brand now in the global top five by volume, the gap is conspicuous.
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Indictments and Arrests</div>
-        <p>No publicly known indictments or named individuals have been formally charged specifically for INC or Lynx operations. No US, UK, Europol, or other allied law enforcement agencies have announced actions targeting this group by name as of September 2026. [1][3][5]</p>
+        <div class="subsection-title">Government Advisories</div>
+        <div class="conf conf-confirmed">Confirmed: primary government sources</div>
+        <ul class="content-list">
+          <li><strong>6 March 2026, ACSC with NZ NCSC and CERT Tonga:</strong> describes the INC franchise model (affiliates intrude and deploy; INC extorts and handles payment), documents the 15 June 2025 Tonga Ministry of Health attack (claimed by INC on 26 June 2025), records the shift toward Australian and Pacific healthcare from January 2025, and names Roman Khubov, alias "blackod", as a Russia-based cybercriminal who controlled the data-exfiltration infrastructure used in that incident. [1]</li>
+          <li><strong>6 October 2026, FBI and US Secret Service (JCSA-20261006-01):</strong> warns that FortiBleed operations continue, with administrator lockouts, and states that initial-access brokers using the chain supply "INC/Lynx ransomware and Payload ransomware". No individuals or hosting providers are named. [2]</li>
+        </ul>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Infrastructure Seizures</div>
-        <p>No coordinated infrastructure takedowns have been announced. The Lynx DLS (lynxblog.net and Tor mirrors) remains operational according to ransomware.live tracking as of September 2026. No seizure banners have been reported on any Lynx or INC infrastructure. [2][5]</p>
+        <div class="subsection-title">Named Individual, Unactioned</div>
+        <p>The ACSC advisory's naming of Roman Khubov ("blackod") is the most advanced public attribution in the entire lineage. The same handle appears in a leaked forum database as a seller of corporate VPN access. As of 18 October 2026 there is no indictment, sanction or reward tied to him or to any INC, Lynx or Sinobi operator. [1]</p>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Advisory Activity</div>
-        <p>No CISA, FBI, or allied government advisory has been issued specifically naming INC or Lynx as of September 2026. The absence of a dedicated advisory is consistent with the group's scale relative to headline operations: with 410 victims, Lynx has not yet reached the operational footprint that typically triggers a coordinated government advisory response (compare: LockBit advisory at 1,000+ victims; ALPHV advisory after healthcare-sector escalation). [1][3]</p>
+        <div class="subsection-title">Adjacent Actions</div>
+        <ul class="content-list">
+          <li><strong>RAMP forum seizure (28 January 2026, FBI / SDFL / CCIPS):</strong> removed Lynx's documented recruitment venue. No charges connected to the lineage. [5]</li>
+          <li><strong>Aeza designation (1 July 2025, OFAC):</strong> INC affiliate staging servers were still found on Aeza (AS210644) in mid 2026, after designation. [33]</li>
+          <li><strong>Hosting and laundering actions in Section 06:</strong> none names the lineage; all narrow its environment.</li>
+        </ul>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Sanctions</div>
-        <p>No OFAC sanctions are tied to INC, Lynx, or any suspected operator as of September 2026. No EU, UK OFSI, or other allied sanctions designations have been reported. Without identified operator names or sanctioned wallet addresses, organizations face no specific compliance obligation beyond general ransomware payment guidance. [3][5]</p>
+        <div class="subsection-title">Infrastructure Seizures and Sanctions</div>
+        <p>None. No seizure banner has appeared on any INC, Lynx or Sinobi site; the dormant brands went quiet without announcement or takedown. No OFAC, EU, UK OFSI or allied designation names the brands, their operators, or the named infrastructure controller.</p>
       </div>
     </section>
 
-    <!-- SECTION 08: ATTRIBUTION -->
+    <!-- SECTION 09: ATTRIBUTION -->
     <section class="section" id="attribution">
       <div class="section-header">
         <span class="section-num">09</span>
@@ -1154,14 +1241,28 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Jurisdiction Assessment</div>
-        <div class="conf conf-credible">Credible, converging indicators; no confirmed identity</div>
-        <p>Multiple independent indicators converge on a Russian-speaking criminal origin operating from CIS territory or similar safe havens:</p>
+        <div class="conf conf-credible">Credible: converging indicators; one individual confirmed Russia-based by a government advisory</div>
         <ul class="content-list">
-          <li>CIS language/locale checks in the binary consistent with deliberate avoidance of domestic victims</li>
-          <li>Victim distribution heavily weighted toward the US, UK, Canada, and Western Europe; zero confirmed CIS victims</li>
-          <li>Affiliate recruitment and source code sale conducted via RAMP, a Russian-language cybercriminal forum</li>
-          <li>Underground chatter and operational communications consistent with Russian-speaking threat actors (inferred from Group-IB and Darktrace reporting)</li>
+          <li>CIS locale checks in INC and Lynx binaries; zero confirmed CIS victims across all three brands</li>
+          <li>Russian-language forum activity: source-code sale on Exploit and XSS, affiliate recruitment on RAMP</li>
+          <li>ACSC explicitly characterises the named infrastructure controller as "Russia based"</li>
+          <li>Hosting and transport concentrated in Russia-nexus providers (Aeza, Railnet / Virtualine, F.N.S Holdings, Global Connectivity Solutions)</li>
         </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals and Handles</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name or handle</th><th>Role</th><th>Source</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Roman Khubov, "blackod"</td><td>Russia-based; controlled the data-exfiltration infrastructure in the Tonga MoH attack claimed by INC; same handle sells corporate VPN access on a leaked forum database</td><td>ACSC / NZ NCSC / CERT Tonga advisory [1]</td><td>CONFIRMED (government advisory); no charge, sanction or reward</td></tr>
+              <tr><td>"salfetka"</td><td>Seller of INC source code on Exploit and XSS, spring 2024</td><td>BleepingComputer [23]</td><td>CONFIRMED (forum posting)</td></tr>
+              <tr><td>"rinc" / "farnetwork"</td><td>Actor linked to "salfetka" by the researcher 3xp0rt; associated with Nokoyawa, JSWORM, Nefilim, Karma and Nemty</td><td>3xp0rt via BleepingComputer [23]</td><td>CREDIBLE (single researcher)</td></tr>
+              <tr><td>"silencer"</td><td>Lynx affiliate recruiter on RAMP from August 2024</td><td>Blackpoint, Group-IB [7][8]</td><td>CONFIRMED (posting alias only; no identity)</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="subsection">
@@ -1170,29 +1271,25 @@ html { scroll-behavior: smooth; }
           <table>
             <thead><tr><th>Vendor</th><th>Designation</th><th>Scope</th></tr></thead>
             <tbody>
-              <tr><td>Microsoft</td><td>Storm-2113</td><td>Lynx operator group (confirmed per Blackpoint Feb 2026)</td></tr>
-              <tr><td>Trend Micro</td><td>Water Lalawag</td><td>Lynx operator group (confirmed per Blackpoint Feb 2026)</td></tr>
-              <tr><td>CrowdStrike</td><td>Not published</td><td>No formal designation for INC or Lynx as of September 2026</td></tr>
-              <tr><td>Mandiant (Google)</td><td>Not published</td><td>No formal designation for INC or Lynx as of September 2026</td></tr>
-              <tr><td>Secureworks</td><td>Not published</td><td>No formal designation for INC or Lynx as of September 2026</td></tr>
+              <tr><td>Secureworks (Sophos)</td><td>GOLD IONIC</td><td>INC Ransom operator (April 2024) [22]</td></tr>
+              <tr><td>Microsoft</td><td>Storm-2113</td><td>Lynx operator group [8]</td></tr>
+              <tr><td>Trend Micro</td><td>Water Lalawag</td><td>Lynx operator group [8]</td></tr>
+              <tr><td>ACSC advisory alias list</td><td>Tarnished Scorpion</td><td>Listed as an INC alias; the advisory does not state which vendor coined it [1]</td></tr>
+              <tr><td>CrowdStrike</td><td>Not published</td><td>No formal designation for any of the three brands</td></tr>
+              <tr><td>Mandiant (Google)</td><td>Not published</td><td>No formal designation for any of the three brands</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
       <div class="subsection">
-        <div class="subsection-title">Named Individuals</div>
-        <p>No individual operators, developers, or affiliate managers have been publicly identified by name for INC or Lynx. The RAMP forum recruiter "silencer" is the only pseudonymous actor identified in open-source reporting, and that is a posting alias only with no identity attribution attached. [11]</p>
-      </div>
-
-      <div class="subsection">
         <div class="subsection-title">Russian Intelligence Service (RIS) Nexus</div>
-        <div class="conf conf-inference">Analyst Inference, no published vendor assessment of state nexus</div>
-        <p>No major vendor attributes INC or Lynx to Russian state intelligence services or any other state actor. The group is uniformly characterized as financially motivated cybercriminal enterprise. There is no open-source evidence of direct state tasking, intelligence-sharing arrangements, or explicit safe-harbor agreements with FSB or SVR. The standard implicit tolerance extended to CIS-based criminal groups that avoid domestic victims applies here but does not constitute evidence of an active state relationship. The RIS nexus assessment is: <strong>Not established. Implicit tolerance only.</strong> [1][5][3]</p>
+        <div class="conf conf-inference">Analyst Inference: no vendor assessment of state nexus</div>
+        <p>No vendor attributes INC, Lynx or Sinobi to Russian state intelligence. The operation is uniformly assessed as financially motivated. The relationship with the state is best read as tolerance, not tasking: a CIS-based crew that avoids domestic victims and faces no domestic enforcement. Assessment: <strong>not established; implicit tolerance only.</strong></p>
       </div>
     </section>
 
-    <!-- SECTION 09: TRAJECTORY -->
+    <!-- SECTION 10: TRAJECTORY -->
     <section class="section" id="trajectory">
       <div class="section-header">
         <span class="section-num">10</span>
@@ -1201,18 +1298,18 @@ html { scroll-behavior: smooth; }
 
       <div class="subsection">
         <div class="subsection-title">Operational Tempo</div>
-        <p>The Lynx brand's growth curve ran from 20+ victims in September 2024, to 96 by January 2025, to nearly 300 by August 2025, to 410+ by May 2026, then broke: single-digit monthly posting from May 2026 onward and a July with zero. The cluster's tempo did not fall with it; it moved to the INC leak site, which held top-10 monthly volume throughout 2026 (30 to 52 claims per month, 42 in August, 881+ lifetime). Read at cluster level, the operation remains at scale with no meaningful law enforcement disruption; read at brand level, Lynx is fading while INC carries the volume. [2][3][4][11] [CONFIRMED, internal collection]</p>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Capability Evolution</div>
-        <p>The INC-to-Lynx transition represents a deliberate capability improvement: more granular runtime control for affiliates, a broader multi-platform binary bundle (adding Linux ARM and MIPS), a structured affiliate panel, and a formalized negotiation infrastructure. Blackpoint Cyber's characterization of the Linux ESXi variant (91% code similarity, full VM kill and snapshot removal capability) indicates the group has invested in enterprise infrastructure targeting. [1][3][6][11]</p>
-        <p>The addition of a call center service for an extra fee is a notable differentiation from the INC model and from many peer RaaS operations, suggesting the core team is investing in operational support infrastructure to attract higher-quality affiliates. [11]</p>
+        <p>Measured at cluster level the operation is at scale and uncontested; measured at brand level it has concentrated. Lynx and Sinobi both peaked in January 2026 and then stopped; INC absorbed the tempo and has posted daily into mid October 2026. Four-plus years of cluster activity carry zero enforcement exposure beyond two advisories. [31][32]</p>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Rebranding Signals</div>
-        <p>No indicators of an imminent Lynx rebrand or operational wind-down have been identified as of September 2026. Victims continue to be posted on the DLS. The affiliate panel and infrastructure mirrors remain active. Underground chatter about payment disputes or affiliate grievances is mentioned in some reporting as low-confidence rumors but has not materialized into a public split or exit event. [2][5]</p>
+        <div class="conf conf-inference">Analyst Inference: consolidation is the best fit, not a stated fact</div>
+        <p>Whether Lynx and Sinobi dormancy is consolidation, pause or quiet rebrand is unresolved. No vendor has announced a shutdown; no new family on the same codebase has been reported. If this is consolidation onto one brand, the operation is currently concentrated, which is the opposite of the resilience that rebrand-and-disperse usually buys. The measurable signal of the alternative is the emergence of a new family that BinDiffs against the INC/Lynx reference set.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability Evolution</div>
+        <p>Investment has moved to the INC side: Rust rewrites of the Windows and Linux/ESXi encryptors, a backup-software credential dumper, BYOVD defence evasion, and Linux builds for non-standard architectures. Lynx's affiliate-facing improvements (granular runtime options, call-centre service, multi-platform bundle) have not been updated in 2026. [7][14]</p>
       </div>
 
       <div class="subsection">
@@ -1221,33 +1318,101 @@ html { scroll-behavior: smooth; }
           <table>
             <thead><tr><th>Relationship</th><th>Assessment</th><th>Confidence</th></tr></thead>
             <tbody>
-              <tr><td>INC (anchor)</td><td>Codebase origin; probable operator overlap; confirmed shared DLS email</td><td>CONFIRMED (code) / CREDIBLE (operator continuity)</td></tr>
-              <tr><td>LockBit influence</td><td>Lynx modifications to INC code assessed as LockBit-influenced; single-source Blackpoint claim</td><td>CREDIBLE (single-source; no corroboration from CrowdStrike, Mandiant, or Secureworks)</td></tr>
-              <tr><td>Unnamed RaaS ecosystems</td><td>Group-IB notes Lynx affiliates overlap with operators from other RaaS families; no specific groups named</td><td>CREDIBLE (non-specific; no group named)</td></tr>
-              <tr><td>FortiBleed campaign (Jul 2026)</td><td>SOCRadar traced the FortiGate credential-theft campaign to both INC and Lynx operations, with one operator logged into both negotiation panels; strongest operator-continuity evidence to date</td><td>CREDIBLE (SOCRadar telemetry; republished by SecurityWeek, The Hacker News, Cybersecurity Dive)</td></tr>
+              <tr><td>INC (anchor)</td><td>Origin codebase; operator-controlled payments; the active brand</td><td>CONFIRMED</td></tr>
+              <tr><td>Lynx</td><td>Same codebase (48 to 91% by platform); shared registration email; one operator seen in both panels; FBI writes "INC/Lynx"</td><td>CONFIRMED (code) / CREDIBLE (same core team)</td></tr>
+              <tr><td>Sinobi</td><td>63.2% binary overlap with Lynx; replicated Lynx panel layout; assessed as rebrand or offshoot by five vendors; dark since May 2026</td><td>CREDIBLE</td></tr>
+              <tr><td>Payload</td><td>Shares the FortiBleed initial-access supply with INC/Lynx (FBI/USSS); no code or personnel link reported</td><td>CONFIRMED (shared supplier only)</td></tr>
+              <tr><td>DeadLock</td><td>One DeadLock affiliate previously associated with the Lynx and INC ecosystems (Microsoft, Aug 2026); affiliate-level link, not operator-level</td><td>CREDIBLE</td></tr>
+              <tr><td>Nemty, Nemty X, Karma, Nokoyawa</td><td>ACSC assesses significant TTP overlap; 3xp0rt links the INC code seller to that actor set</td><td>CREDIBLE (two independent lines)</td></tr>
+              <tr><td>LockBit influence</td><td>Lynx modifications to INC code "likely influenced by the LockBit operation" (Blackpoint, single source)</td><td>CREDIBLE (single-source; no corroboration)</td></tr>
             </tbody>
           </table>
         </div>
+        <p style="font-size:12px;color:var(--gray-600);">Mandiant and Recorded Future have not published a formal cluster assessment for this lineage.</p>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Key Intelligence Gaps</div>
         <ul class="content-list">
-          <li>No confirmed identification of core operators, developers, or RaaS administrators by real identity</li>
-          <li>No published blockchain cluster IDs or wallet attribution from TRM Labs, Chainalysis, or Elliptic</li>
-          <li>Operator arrangement partially clarified: the FortiBleed dual-panel finding (Jul 2026) shows at least one shared operator running both brands concurrently, but whether the full core teams are identical remains unconfirmed</li>
-          <li>Why the cluster runs two concurrent brands, and why volume shifted back to the INC name in 2026, is unexplained in public reporting</li>
-          <li>No CrowdStrike, Mandiant, or Secureworks formal assessments; their silence on this group is itself analytically notable given its victim volume</li>
-          <li>No visibility into ransom payment totals or aggregate revenue for the cluster</li>
-          <li>Affiliate count and churn rate unknown</li>
+          <li>No public on-chain attribution for any of the three brands; wallets, totals and laundering paths are unpublished</li>
+          <li>Leak-site hosting IPs, Tor relay data and TLS fingerprints are unpublished</li>
+          <li>INC's revenue split, affiliate count and recruitment channel are undocumented</li>
+          <li>Whether Lynx and Sinobi dormancy is consolidation, pause or quiet rebrand is unresolved</li>
+          <li>The identities behind the FortiBleed broker crew and the SMA 1000 operators, and their precise relationship to the INC core, are not established in open source</li>
+          <li>No CrowdStrike, Mandiant or Recorded Future formal assessment of any brand</li>
         </ul>
       </div>
 
       <div class="subsection">
         <div class="subsection-title">Overall Trajectory Indicator</div>
         <div class="callout callout-alert">
-          <strong>Assessment: Uncontested operation at scale, volume concentrated on the INC brand.</strong> The cluster remains on a sustained high-volume trajectory with no evidence of law enforcement disruption and no internal collapse signals, but the May 2026 read that the Lynx brand itself was expanding did not hold: Lynx posting collapsed to single digits over the summer while the INC leak site sustained top-10 monthly volume all year, ranking among the most prolific operations of 2026 (Acronis: 800+ victims since 2023). Analytic consequence: brand-level metrics understate this cluster; it must be measured across both leak sites. The primary disruption risk remains a coordinated LE action analogous to Operation Cronos, and none has been signaled publicly; four-plus years of cluster activity carry zero enforcement exposure. The MSP targeting posture identified by Acronis (August 2025) remains an escalating threat vector.
+          <strong>Assessment: uncontested operation at scale, now concentrated on the INC brand.</strong> The May 2026 read that Lynx was the expanding brand did not hold; by October 2026 Lynx and Sinobi are dormant and INC is a top-five brand by volume with daily posting, two identifiable access suppliers, and a healthcare tilt that is the likeliest driver of future government attention. The primary disruption risk remains a coordinated action analogous to Operation Cronos, and none has been signalled. The window in which the operation is concentrated on one brand, one payment path and two suppliers is the analytically significant feature of the current period (Section 11).
         </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: STRUCTURAL LEVERAGE POINTS -->
+    <section class="section" id="leverage">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Structural Leverage Points</h2>
+      </div>
+
+      <p>This section records where the operation's structure is exposed, on open-source evidence only, and what observable change would show that a given dependency has been degraded. Every point is tied to a cited fact and a measurable indicator. It describes exposure; it does not assign tasks. Priority order reflects impact against reversibility.</p>
+
+      <div class="lp-grid">
+        <div class="lp-card confirmed">
+          <div class="lp-num">Point 1: highest value</div>
+          <div class="lp-title">INC's operator-controlled payment channel</div>
+          <div class="lp-row"><strong>Exposure:</strong> unlike Lynx, INC collects ransom centrally; affiliates deploy, the operator extorts and is paid. One payment path serves every INC victim.</div>
+          <div class="lp-row"><strong>Evidence:</strong> ACSC / NZ NCSC / CERT Tonga advisory, 6 March 2026 [1]; contrast Group-IB on Lynx [7].</div>
+          <div class="lp-row"><strong>Indicator:</strong> inbound consolidation from many victims to a small operator-controlled address set; a change in INC listing rate or negotiation behaviour following any off-ramp action.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CONFIRMED on the model; wallet attribution is not public.</div>
+        </div>
+        <div class="lp-card confirmed">
+          <div class="lp-num">Point 2</div>
+          <div class="lp-title">Two identifiable initial-access suppliers</div>
+          <div class="lp-row"><strong>Exposure:</strong> INC's 2026 volume rides on brokered FortiBleed credentials and the SonicWall SMA 1000 zero-day cluster. Neither is INC's own work.</div>
+          <div class="lp-row"><strong>Evidence:</strong> FBI / USSS advisory, 6 October 2026 [2]; Rapid7, Resecurity, Volexity on SMA 1000 [15][16][37]; CISA KEV [3].</div>
+          <div class="lp-row"><strong>Indicator:</strong> INC listing rate against patch and remediation milestones on those two vectors; share of INC intrusions with a Fortinet or SonicWall entry point in vendor case reporting.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CONFIRMED.</div>
+        </div>
+        <div class="lp-card credible">
+          <div class="lp-num">Point 3</div>
+          <div class="lp-title">Sanctioned and fronted hosting</div>
+          <div class="lp-row"><strong>Exposure:</strong> INC affiliate staging servers sat on Aeza after its OFAC designation; Lynx affiliate access ran through Railnet / Virtualine; SonicWall exploitation came from F.N.S Holdings and Global Connectivity Solutions ranges. None of these hosting ties has been actioned in connection with the lineage.</div>
+          <div class="lp-row"><strong>Evidence:</strong> The DFIR Report [24]; SOCRadar and exposed-server analysis [13][19]; OFAC Aeza designation [33].</div>
+          <div class="lp-row"><strong>Indicator:</strong> reachability and migration churn of leak-site and affiliate infrastructure; provider mix of attacker IPs in subsequent advisories.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CREDIBLE (vendor attribution of hosting); the Aeza designation itself is CONFIRMED.</div>
+        </div>
+        <div class="lp-card confirmed">
+          <div class="lp-num">Point 4</div>
+          <div class="lp-title">The named, unactioned individual</div>
+          <div class="lp-row"><strong>Exposure:</strong> a government advisory has publicly named a Russia-based infrastructure controller for an INC incident. No charge, sanction or reward follows. This is the most advanced public attribution in the lineage and it currently carries no consequence.</div>
+          <div class="lp-row"><strong>Evidence:</strong> ACSC / NZ NCSC / CERT Tonga advisory [1].</div>
+          <div class="lp-row"><strong>Indicator:</strong> any designation, indictment or reward listing that cites the advisory; any change in exfiltration infrastructure patterns in later INC incidents.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CONFIRMED.</div>
+        </div>
+        <div class="lp-card inference">
+          <div class="lp-num">Point 5</div>
+          <div class="lp-title">The brand-consolidation moment</div>
+          <div class="lp-row"><strong>Exposure:</strong> Lynx and Sinobi are dormant while INC runs hot. If this is consolidation, the operation is concentrated on one brand, one payment path and one leak site, the opposite of the dispersal that rebranding normally buys.</div>
+          <div class="lp-row"><strong>Evidence:</strong> tracker data [31]; no vendor statement of shutdown or rebrand.</div>
+          <div class="lp-row"><strong>Indicator:</strong> emergence of a new family on the same codebase (BinDiff against the INC/Lynx reference set); reactivation of Lynx or Sinobi sites.</div>
+          <div class="lp-row"><strong>Confidence:</strong> ANALYST INFERENCE.</div>
+        </div>
+        <div class="lp-card credible">
+          <div class="lp-num">Point 6</div>
+          <div class="lp-title">Western-reachable extortion plumbing</div>
+          <div class="lp-row"><strong>Exposure:</strong> the 2026 INC extortion campaign used a clear-web contact domain registered through a reachable registrar on Cloudflare nameservers, and a US telephone number for victim pressure calls. Low impact on the core, but inside Western provider reach and existing authorities.</div>
+          <div class="lp-row"><strong>Evidence:</strong> vendor incident reporting, 2026 [36].</div>
+          <div class="lp-row"><strong>Indicator:</strong> turnover of contact domains and numbers in ransom notes; registrar and nameserver mix over time.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CREDIBLE.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Reading this section:</strong> points 1, 2 and 4 are documented by government advisories and are the structural facts of the operation. Point 3 rests on vendor hosting attribution. Points 5 and 6 are the analyst's read of the current moment and of the lowest-cost surfaces. None of this page's content draws on closed holdings.
       </div>
     </section>
 
@@ -1258,7 +1423,7 @@ html { scroll-behavior: smooth; }
         <h2 class="section-title">Recent Reporting <span class="live-badge" style="font-size:10px;vertical-align:middle;">LIVE</span></h2>
       </div>
       <p style="font-size:13px;color:var(--gray-600);margin-bottom:4px;">
-        Open-source reporting on INC / Lynx from monitored threat intelligence sources. Refreshed automatically every 8 hours via ransomware.live and major TI blog feeds. Authored analysis above is unaffected by this feed.
+        Open-source reporting on INC, Lynx and Sinobi from monitored threat intelligence sources. Refreshed automatically every 8 hours via ransomware.live and major TI blog feeds. Authored analysis above is unaffected by this feed.
       </p>
       <div class="feed-grid" id="feed-grid">
         <div class="feed-loading" id="feed-loading">Loading recent reporting&hellip;</div>
@@ -1275,37 +1440,56 @@ html { scroll-behavior: smooth; }
         &#9660; Show / Hide Source List
       </button>
       <div class="source-list">
-        <div class="source-category">Primary Vendor Research</div>
-        <div class="source-item"><span class="source-num">[1]</span><div>Palo Alto Networks Unit 42: <a href="https://unit42.paloaltonetworks.com/inc-ransomware-rebrand-to-lynx/" target="_blank">"Lynx Ransomware: A Rebranding of INC Ransomware"</a> (October 2024)</div></div>
-        <div class="source-item"><span class="source-num">[2]</span><div>Ransomware.live: <a href="http://www.ransomware.live/group/lynx" target="_blank">Lynx group page</a> (accessed May 2026)</div></div>
-        <div class="source-item"><span class="source-num">[3]</span><div>Fortinet FortiGuard Labs: <a href="https://www.fortinet.com/blog/threat-research/ransomware-roundup-lynx" target="_blank">"Ransomware Roundup: Lynx"</a> (February 2025)</div></div>
-        <div class="source-item"><span class="source-num">[4]</span><div>Rapid7: <a href="https://www.rapid7.com/blog/post/2024/09/12/ransomware-groups-demystified-lynx-ransomware/" target="_blank">"Ransomware Groups Demystified: Lynx Ransomware"</a> (September 2024)</div></div>
-        <div class="source-item"><span class="source-num">[5]</span><div>Group-IB: <a href="https://www.group-ib.com/blog/cat-s-out-of-the-bag-lynx-ransomware/" target="_blank">"Cat's Out of the Bag: Lynx Ransomware-as-a-Service"</a> (January 2025)</div></div>
-        <div class="source-item"><span class="source-num">[6]</span><div>Nextron Systems: <a href="https://www.nextron-systems.com/2024/10/11/in-depth-analysis-of-lynx-ransomware/" target="_blank">"In-Depth Analysis of Lynx Ransomware"</a> (October 2024)</div></div>
-        <div class="source-item"><span class="source-num">[7]</span><div>Malpedia (Fraunhofer FKIE): <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.lynx" target="_blank">Lynx (win.lynx) entry</a></div></div>
-        <div class="source-item"><span class="source-num">[8]</span><div>Picus Security: <a href="https://www.picussecurity.com/resource/blog/lynx-ransomware" target="_blank">"Lynx Ransomware: Exposing How INC Ransomware Rebrands Itself"</a> (February 2025)</div></div>
-        <div class="source-item"><span class="source-num">[9]</span><div>Darktrace: <a href="https://www.darktrace.com/blog/new-threat-on-the-prowl-investigating-lynx-ransomware" target="_blank">"New Threat on the Prowl: Investigating Lynx Ransomware"</a> (2024)</div></div>
-        <div class="source-item"><span class="source-num">[10]</span><div>SOCRadar: <a href="https://socradar.io/blog/dark-web-profile-lynx-ransomware/" target="_blank">"Dark Web Profile: Lynx Ransomware"</a> (August 2025, updated April 2026)</div></div>
-        <div class="source-item"><span class="source-num">[11]</span><div>Blackpoint Cyber: <a href="https://blackpointcyber.com/wp-content/uploads/2026/02/Lynx.pdf" target="_blank">"Lynx Ransomware Threat Profile"</a> (February 2026)</div></div>
-        <div class="source-item"><span class="source-num">[12]</span><div>BlackBerry Research and Intelligence Team: <a href="https://blogs.blackberry.com/en/2024/10/lynx-ransomware" target="_blank">"Lynx on the Prowl: Targeting SMBs with Double-Extortion Tactics"</a> (October 2024)</div></div>
-        <div class="source-category">Supplementary Research</div>
-        <div class="source-item"><span class="source-num">[13]</span><div>The DFIR Report: <a href="https://thedfirreport.com/2025/11/17/cats-got-your-files-lynx-ransomware/" target="_blank">"Cat's Got Your Files: Lynx Ransomware"</a> (November 2025)</div></div>
-        <div class="source-item"><span class="source-num">[14]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/security/inc-ransomware-source-code-selling-on-hacking-forums-for-300-000/" target="_blank">"INC ransomware source code selling on hacking forums for $300,000"</a> (2024)</div></div>
-        <div class="source-item"><span class="source-num">[15]</span><div>CybelAngel: <a href="https://cybelangel.com/lynx-ransomware-double-extortion/" target="_blank">"Lynx Ransomware: Double Extortion, Ethics and Affiliate Payouts"</a> (March 2025)</div></div>
-        <div class="source-item"><span class="source-num">[16]</span><div>Acronis Threat Research Unit: <a href="https://www.acronis.com/en/tru/posts/msps-a-top-target-for-akira-and-lynx-ransomware/" target="_blank">"MSPs a top target for Akira and Lynx Ransomware"</a> (August 2025)</div></div>
-        <div class="source-item"><span class="source-num">[17]</span><div>Broadcom Security Center: <a href="https://www.broadcom.com/support/security-center/protection-bulletin/lynx-ransomware-established-in-2024" target="_blank">"Lynx Ransomware, established in 2024"</a> (February 2025)</div></div>
-        <div class="source-item"><span class="source-num">[18]</span><div>Halcyon: <a href="https://www.halcyon.ai/threat-group/lynx" target="_blank">Lynx threat group profile</a></div></div>
-        <div class="source-category">Added September 2026</div>
-        <div class="source-item"><span class="source-num">[19]</span><div>SOCRadar: <a href="https://socradar.io/blog/fortibleed-inc-lynx-ransomware-link/" target="_blank">"SOCRadar Links FortiBleed Campaign to INC and Lynx Ransomware Operations"</a> (July 2026). Dual-panel operator finding; FortiGate credential handoff to both brands.</div></div>
-        <div class="source-item"><span class="source-num">[20]</span><div>Acronis Threat Research Unit: <a href="https://www.acronis.com/en/tru/posts/from-emerging-threat-to-top-tier-ransomware-as-a-service-the-evolution-of-inc-ransomware/" target="_blank">"From emerging threat to top-tier ransomware-as-a-service: The evolution of INC ransomware"</a> (2026). 800+ victims since 2023; 5 January 2026 20-victim surge; affiliate migration post-LockBit/ALPHV.</div></div>
-        <div class="source-item"><span class="source-num">[21]</span><div>SecurityWeek: <a href="https://www.securityweek.com/fortibleed-campaign-linked-to-inc-lynx-ransomware-attacks/" target="_blank">"FortiBleed Campaign Linked to INC, Lynx Ransomware Attacks"</a> (July 2026).</div></div>
+        <div class="source-category">Government and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><div>Australian Cyber Security Centre, New Zealand NCSC and CERT Tonga: <a href="https://www.cyber.gov.au/about-us/view-all-content/alerts-and-advisories/inc-ransom-affiliate-model-enabling-targeting-of-critical-networks" target="_blank">"INC Ransom Affiliate Model Enabling Targeting of Critical Networks"</a> (6 March 2026); <a href="https://www.ncsc.govt.nz/assets/guidance/Documents/INC-Ransom-Affiliate-Model-Enabling-Targeting-of-Critical-Networks.pdf" target="_blank">full PDF via NZ NCSC</a></div></div>
+        <div class="source-item"><span class="source-num">[2]</span><div>FBI and US Secret Service: <a href="https://www.ic3.gov/CSA/2026/261006.pdf" target="_blank">"FortiBleed Operations Continue Targeting Exposed Systems Leading to Reports of Lockouts"</a>, JCSA-20261006-01, TLP:CLEAR (6 October 2026)</div></div>
+        <div class="source-item"><span class="source-num">[3]</span><div>CISA: <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank">Known Exploited Vulnerabilities Catalog</a>, entries for CVE-2026-15409 and CVE-2026-15410 (added 14 July 2026)</div></div>
+        <div class="source-item"><span class="source-num">[4]</span><div>SonicWall: security advisory SNWLID-2026-0008, SMA 1000 Series (14 July 2026)</div></div>
+        <div class="source-item"><span class="source-num">[5]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/security/fbi-seizes-ramp-cybercrime-forum-used-by-ransomware-gangs/" target="_blank">"FBI seizes RAMP cybercrime forum used by ransomware gangs"</a> (28 January 2026)</div></div>
+        <div class="source-category">Vendor and Researcher Reporting</div>
+        <div class="source-item"><span class="source-num">[6]</span><div>Palo Alto Networks Unit 42: <a href="https://unit42.paloaltonetworks.com/inc-ransomware-rebrand-to-lynx/" target="_blank">"Lynx Ransomware: A Rebranding of INC Ransomware"</a> (October 2024)</div></div>
+        <div class="source-item"><span class="source-num">[7]</span><div>Group-IB: <a href="https://www.group-ib.com/blog/cat-s-out-of-the-bag-lynx-ransomware/" target="_blank">"Cat's Out of the Bag: Lynx Ransomware-as-a-Service"</a> (January 2025)</div></div>
+        <div class="source-item"><span class="source-num">[8]</span><div>Blackpoint Cyber: <a href="https://blackpointcyber.com/wp-content/uploads/2026/02/Lynx.pdf" target="_blank">"Lynx Ransomware Threat Profile"</a> (February 2026)</div></div>
+        <div class="source-item"><span class="source-num">[9]</span><div>BlackBerry Research and Intelligence Team: <a href="https://blogs.blackberry.com/en/2024/10/lynx-ransomware" target="_blank">"Lynx on the Prowl: Targeting SMBs with Double-Extortion Tactics"</a> (October 2024)</div></div>
+        <div class="source-item"><span class="source-num">[10]</span><div>Rapid7: <a href="https://www.rapid7.com/blog/post/2024/09/12/ransomware-groups-demystified-lynx-ransomware/" target="_blank">"Ransomware Groups Demystified: Lynx Ransomware"</a> (September 2024)</div></div>
+        <div class="source-item"><span class="source-num">[11]</span><div>Fortinet FortiGuard Labs: <a href="https://www.fortinet.com/blog/threat-research/ransomware-roundup-lynx" target="_blank">"Ransomware Roundup: Lynx"</a> (February 2025)</div></div>
+        <div class="source-item"><span class="source-num">[12]</span><div>Nextron Systems: <a href="https://www.nextron-systems.com/2024/10/11/in-depth-analysis-of-lynx-ransomware/" target="_blank">"In-Depth Analysis of Lynx Ransomware"</a> (October 2024)</div></div>
+        <div class="source-item"><span class="source-num">[13]</span><div>SOCRadar: <a href="https://socradar.io/blog/fortibleed-inc-lynx-ransomware-link/" target="_blank">"SOCRadar Links FortiBleed Campaign to INC and Lynx Ransomware Operations"</a> (July 2026); gated whitepaper June and July 2026</div></div>
+        <div class="source-item"><span class="source-num">[14]</span><div>Acronis Threat Research Unit: <a href="https://www.acronis.com/en/tru/posts/from-emerging-threat-to-top-tier-ransomware-as-a-service-the-evolution-of-inc-ransomware/" target="_blank">"From emerging threat to top-tier ransomware-as-a-service: The evolution of INC ransomware"</a> (17 June 2026): Rust rewrite, credential dumper, BYOVD, affiliate migration</div></div>
+        <div class="source-item"><span class="source-num">[15]</span><div>Resecurity: <a href="https://www.resecurity.com/blog/article/from-wsproxy-to-root-inc-ransomware-and-sonicwall-sma-exploit-chain" target="_blank">"From WSProxy to Root: INC Ransomware and SonicWall SMA Exploit Chain"</a> (August 2026)</div></div>
+        <div class="source-item"><span class="source-num">[16]</span><div>Dark Reading: <a href="https://www.darkreading.com/vulnerabilities-threats/inc-ransomware-exploits-sonicwall-sma-zero-days" target="_blank">"Inc Ransomware Exploits SonicWall SMA Zero-Days"</a> (17 July 2026), reporting Rapid7's attribution</div></div>
+        <div class="source-item"><span class="source-num">[17]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/security/sonicwall-warns-of-sma1000-flaws-exploited-in-zero-day-attacks-patch-now/" target="_blank">"SonicWall warns of SMA1000 flaws exploited in zero-day attacks"</a> (July 2026)</div></div>
+        <div class="source-item"><span class="source-num">[18]</span><div>eSecurity Planet: <a href="https://www.esecurityplanet.com/cybersecurity/news-deadlock-ransomware-server-takedowns/" target="_blank">"Microsoft Warns DeadLock Ransomware Can Keep Operating After Servers Go Down"</a> (12 August 2026), reporting Microsoft Threat Intelligence's 10 August 2026 analysis</div></div>
+        <div class="source-item"><span class="source-num">[19]</span><div>SOCRadar: <a href="https://socradar.io/blog/dark-web-profile-sinobi-ransomware/" target="_blank">"Dark Web Profile: Sinobi Ransomware"</a> (2025 to 2026): binary comparison, infrastructure tiers</div></div>
+        <div class="source-item"><span class="source-num">[20]</span><div>Hive Pro: <a href="https://www.hivepro.com/threat-advisory/sinobi-ransomware-a-fast-rising-mid-market-threat-to-watch-in-2026" target="_blank">"Sinobi Ransomware: A Fast-Rising Mid-Market Threat to Watch in 2026"</a>; Barracuda, Picus and AttackIQ Sinobi analyses (2025 to 2026)</div></div>
+        <div class="source-item"><span class="source-num">[21]</span><div>eSentire Threat Response Unit, Sinobi intrusion and code overlap with Lynx (27 August 2025), as reported by <a href="https://securityonline.info/is-this-a-rebrand-new-sinobi-ransomware-group-shows-code-overlap-with-lynx/" target="_blank">SecurityOnline</a></div></div>
+        <div class="source-item"><span class="source-num">[22]</span><div>Secureworks (Sophos): <a href="https://www.sophos.com/en-us/blog/gold-ionic-deploys-inc-ransomware" target="_blank">"GOLD IONIC Deploys INC Ransomware"</a> (April 2024)</div></div>
+        <div class="source-item"><span class="source-num">[23]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/security/inc-ransomware-source-code-selling-on-hacking-forums-for-300-000/" target="_blank">"INC ransomware source code selling on hacking forums for $300,000"</a> (May 2024), including 3xp0rt's link from "salfetka" to "rinc" / "farnetwork"</div></div>
+        <div class="source-item"><span class="source-num">[24]</span><div>The DFIR Report: <a href="https://thedfirreport.com/2025/11/17/cats-got-your-files-lynx-ransomware/" target="_blank">"Cat's Got Your Files: Lynx Ransomware"</a> (November 2025; Railnet / Virtualine hosting)</div></div>
+        <div class="source-item"><span class="source-num">[25]</span><div>Acronis Threat Research Unit: <a href="https://www.acronis.com/en/tru/posts/msps-a-top-target-for-akira-and-lynx-ransomware/" target="_blank">"MSPs a top target for Akira and Lynx Ransomware"</a> (August 2025)</div></div>
+        <div class="source-item"><span class="source-num">[26]</span><div>SOCRadar: <a href="https://socradar.io/blog/dark-web-profile-lynx-ransomware/" target="_blank">"Dark Web Profile: Lynx Ransomware"</a> (August 2025, updated April 2026)</div></div>
+        <div class="source-item"><span class="source-num">[27]</span><div>Darktrace: <a href="https://www.darktrace.com/blog/new-threat-on-the-prowl-investigating-lynx-ransomware" target="_blank">"New Threat on the Prowl: Investigating Lynx Ransomware"</a> (2024)</div></div>
+        <div class="source-item"><span class="source-num">[28]</span><div>Picus Security: <a href="https://www.picussecurity.com/resource/blog/lynx-ransomware" target="_blank">"Lynx Ransomware: Exposing How INC Ransomware Rebrands Itself"</a> (February 2025)</div></div>
+        <div class="source-item"><span class="source-num">[29]</span><div>Cyble: <a href="https://cyble.com/blog/inc-ransom-attacks-australia-new-zealand/" target="_blank">INC Ransom attacks on Australia and New Zealand</a> (2026)</div></div>
+        <div class="source-item"><span class="source-num">[30]</span><div>Dark Reading: <a href="https://darkreading.com/threat-intelligence/inc-ransomware-healthcare-oceania" target="_blank">INC ransomware targeting healthcare in Oceania</a> (2025)</div></div>
+        <div class="source-category">Trackers and Statistics</div>
+        <div class="source-item"><span class="source-num">[31]</span><div>ransomware.live group pages for <a href="https://www.ransomware.live/group/incransom" target="_blank">INC Ransom</a>, <a href="https://www.ransomware.live/group/lynx" target="_blank">Lynx</a> and <a href="https://www.ransomware.live/group/sinobi" target="_blank">Sinobi</a> (read 18 October 2026): listing counts, last-post dates, site reachability</div></div>
+        <div class="source-item"><span class="source-num">[32]</span><div>Group-IB, Hookphish, ZeroFox, GalaxyWarden and Comparitech ransomware statistics for 2026 quarterly tempo, ranking and sector data (Comparitech Q3 2026 healthcare ranking)</div></div>
+        <div class="source-category">Regulatory Context</div>
+        <div class="source-item"><span class="source-num">[33]</span><div>US Treasury OFAC press releases: Zservers (February 2025), Aeza Group (July 2025), Garantex and Grinex with the A7 / A7A5 network (August 2025), Aeza successor network and Media Land with UK and Australia (November 2025), First VPN Service and a cryptor provider (July 2026); Dutch FIOD Stark Industries successor seizure (May 2026)</div></div>
+        <div class="source-item"><span class="source-num">[34]</span><div>US Department of Justice, US Secret Service, Europol and partners: AudiA6 laundering-network takedown (10 to 11 June 2026)</div></div>
+        <div class="source-item"><span class="source-num">[35]</span><div>Royal Canadian Mounted Police: TradeOgre seizure (announced 18 September 2025)</div></div>
+        <div class="source-category">Supplementary</div>
+        <div class="source-item"><span class="source-num">[36]</span><div>Huntress: INC intrusion analysis (21 September 2026), extortion contact infrastructure</div></div>
+        <div class="source-item"><span class="source-num">[37]</span><div>Volexity: SonicWall SMA pre-disclosure exploitation cluster (17 July 2026)</div></div>
+        <div class="source-item"><span class="source-num">[38]</span><div>Malpedia (Fraunhofer FKIE): <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.lynx" target="_blank">Lynx (win.lynx) entry</a></div></div>
       </div>
     </section>
 
   </div><!-- /content -->
 
   <footer class="page-footer">
-    Ransomware EDP, Threat Actor Library &nbsp;&bull;&nbsp; INC / Lynx Profile &nbsp;&bull;&nbsp; Last updated <span id="footer-last-updated">4 September 2026</span><br>
+    Ransomware EDP, Threat Actor Library &nbsp;&bull;&nbsp; INC / Lynx / Sinobi Profile &nbsp;&bull;&nbsp; Last updated <span id="footer-last-updated">18 October 2026</span><br>
     Compiled from open-source intelligence. All confidence assessments reflect analyst judgment at time of publication.
     <span class="reno-credit">Developed by Reno</span>
   </footer>
@@ -1320,7 +1504,8 @@ html { scroll-behavior: smooth; }
 // ---------------------------------------------------------------
 (function initTheme() {
   const root = document.documentElement;
-  const saved = localStorage.getItem('reno-theme');
+  let saved = null;
+  try { saved = localStorage.getItem('reno-theme'); } catch (e) {}
   if (saved === 'dark') root.setAttribute('data-theme', 'dark');
 
   function updateToggle() {
@@ -1335,7 +1520,7 @@ html { scroll-behavior: smooth; }
   document.getElementById('theme-toggle').addEventListener('click', function() {
     const isDark = root.getAttribute('data-theme') === 'dark';
     root.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    localStorage.setItem('reno-theme', isDark ? 'light' : 'dark');
+    try { localStorage.setItem('reno-theme', isDark ? 'light' : 'dark'); } catch (e) {}
     updateToggle();
   });
 })();
@@ -1343,41 +1528,43 @@ html { scroll-behavior: smooth; }
 // ---------------------------------------------------------------
 // LIVE DATA LOADER
 // Fetches JSON files written by GitHub Actions on a cron schedule.
-// If any fetch fails (offline, first deploy, localhost), the page
-// silently falls back to the static values already in the HTML.
+// inc.json holds the last six months of INC Ransom listings. If any
+// fetch fails (offline, first deploy, localhost), the page silently
+// keeps the static values already in the HTML.
 // ---------------------------------------------------------------
 (async function loadLiveData() {
   const BASE = './data/';
 
   try {
     const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
-      fetch(BASE + 'lynx.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'inc.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
       fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
       fetch(BASE + 'ti-feed-lynx.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
     ]);
 
-    // --- Victim count, countries, and last 5 victims strip ---
+    let haveVictims = false;
+
+    // --- Six-month count, countries, and last 5 victims strip ---
     if (victimsRaw.status === 'fulfilled') {
       const victims = victimsRaw.value;
       const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
 
-      if (count !== null) {
-        document.getElementById('kpi-victim-count').textContent = count.toLocaleString() + '+';
+      if (count !== null && count > 0) {
+        haveVictims = true;
+        document.getElementById('kpi-victim-count').textContent = count.toLocaleString();
       }
 
       if (Array.isArray(victims) && victims.length > 0) {
-        // Country count
         const countries = new Set(victims.map(v => v.country).filter(Boolean));
         if (countries.size > 0) {
-          document.getElementById('kpi-country-count').textContent = countries.size + '+';
+          document.getElementById('kpi-country-count').textContent = countries.size + ' (6 mo)';
         }
 
-        // Last 5 victims strip, sorted by published date descending
         const sorted = [...victims]
           .filter(v => v.published || v.date || v.discovered || v.attackdate)
           .sort((a, b) => {
-            const da = new Date(a.published || a.date || a.discovered);
-            const db = new Date(b.published || b.date || b.discovered);
+            const da = new Date(a.published || a.date || a.discovered || a.attackdate);
+            const db = new Date(b.published || b.date || b.discovered || b.attackdate);
             return db - da;
           })
           .slice(0, 5);
@@ -1425,13 +1612,11 @@ html { scroll-behavior: smooth; }
         document.getElementById('topbar-refresh-label').textContent = label;
         document.getElementById('topbar-live').style.display = 'flex';
 
-        const subLabel = 'Via ransomware.live Pro: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('kpi-victim-sub').textContent = subLabel;
-        document.getElementById('kpi-country-sub').textContent = subLabel;
-
-        const dateLabel = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        document.getElementById('hero-last-updated').textContent = dateLabel;
-        document.getElementById('footer-last-updated').textContent = dateLabel;
+        if (haveVictims) {
+          const subLabel = 'Via ransomware.live Pro: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          document.getElementById('kpi-victim-sub').textContent = subLabel;
+          document.getElementById('kpi-country-sub').textContent = subLabel;
+        }
       }
     }
 

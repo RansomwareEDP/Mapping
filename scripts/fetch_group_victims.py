@@ -56,6 +56,7 @@ OUTDIR = pathlib.Path("groups/data")
 # chaos is the current active iteration of the Royal/BlackSuit/Chaos lineage.
 GROUPS = {
     "lynx": "lynx",
+    "incransom": "inc",        # INC Ransom, the active brand of the INC / Lynx / Sinobi lineage
     "qilin": "qilin",
     "akira": "akira",
     "lockbit": "lockbit",
