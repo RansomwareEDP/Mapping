@@ -82,6 +82,10 @@ KEYWORDS = {
         "storm-2113",
         "water lalawag",
         "lynx raas",
+        "inc ransom",
+        "sinobi ransomware",
+        "fortibleed",
+        "gold ionic",
     ],
     "qilin": [
         "qilin ransomware",
