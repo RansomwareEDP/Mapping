@@ -22,7 +22,7 @@
       ['dyre', 'Dyre / Dyreza'],
       ['lockbit', 'LockBit'],
       ['silentransom', 'Luna Moth / SRG'],
-      ['lynx', 'Lynx / INC'],
+      ['lynx', 'INC / Lynx / Sinobi'],
       ['medusa', 'Medusa'],
       ['nightspire', 'NightSpire'],
       ['payload', 'Payload'],
