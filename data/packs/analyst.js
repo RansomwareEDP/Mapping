@@ -62,7 +62,8 @@ MAP_PACKS.analyst = {
     { match:/mixer/i,                           nodes:['mixers'] },
     { match:/laundering/i,                      nodes:['mixers','otc'] },
     { match:/exchange/i,                        nodes:['ruexch','exchl'] },
-    { match:/stablecoin/i,                      nodes:['a7a5'] },
+    { match:/defi|decentrali[sz]ed exchange|\bdex\b|lending protocol|uniswap|curve|aave/i, nodes:['defi'] },
+    { match:/\bai\b|llm|language model|openai|chatgpt|anthropic|claude|gemini|grok|mistral|deepseek/i, nodes:['enab-ai'] },
     { match:/gru/i,                             nodes:['gru'] }
   ]
 };

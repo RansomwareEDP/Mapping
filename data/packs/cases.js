@@ -184,10 +184,6 @@ MAP_PACKS.cases = {
           level: 'PARTIAL',
           note: 'First UK use of Regulation 17A against cryptoasset exchanges (May 26, 2026): 18 targets in the A7 network package including HTX, Exmo, Rapira, and Bitpapa, the named absorbers of displaced Garantex/Grinex flow. The EU 20th package banned transactions with all Russia- and Belarus-based crypto providers from May 24, 2026. Bitpapa (triple-designated) and Rapira were still operating at document preparation (Confirmed).'
         },
-        a7a5: {
-          level: 'LIMITED',
-          note: 'The chokepoint that did not move. The ruble settlement rail carried Garantex customer balances into Grinex, cleared roughly $93B in its first year, and passed $100B in reported turnover while absorbing designations from OFAC (Aug 2025), the EU (Oct 2025 token ban), and the UK (May 2026). Daily volume fell from a roughly $1.5B peak to roughly $500M, but the settlement function kept clearing (Confirmed).'
-        },
         otc: {
           level: 'LIMITED',
           note: 'Displaced ruble conversion routed toward OTC brokers and non-designated Central Asian venues within days of each brand death: the documented displacement pattern, not disruption. Venue compression over roughly 9 months narrowed the absorber set, which shrinks the target set for the next round of pressure (Credible).'
