@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rhysida | Ransomware EDP Threat Actor Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0f1b2d;
+  --navy-mid:    #1a2d45;
+  --navy-light:  #243a56;
+  --accent:      #c0392b;
+  --accent-soft: #e8d5d3;
+  --blue:        #2471a3;
+  --blue-soft:   #d4e6f1;
+  --teal:        #148f77;
+  --teal-soft:   #d0ece7;
+  --amber:       #b7770d;
+  --amber-soft:  #fdebd0;
+  --green:       #1e8449;
+  --green-soft:  #d5f5e3;
+  --gray-100:    #f8f9fb;
+  --gray-200:    #eef0f3;
+  --gray-300:    #d8dce2;
+  --gray-400:    #9aa3af;
+  --gray-600:    #5a6472;
+  --gray-800:    #2c3440;
+  --text:        #1c2530;
+  --sidebar-w:   280px;
+  --header-h:    56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--gray-100);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex; align-items: center; padding: 0 24px;
+  border-bottom: 2px solid var(--accent);
+}
+.topbar-brand { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-brand span { color: var(--accent); }
+.topbar-tag { margin-left: auto; font-size: 11px; color: var(--gray-400); letter-spacing: 0.05em; }
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy-mid);
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 2px; }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400);
+  padding: 20px 20px 8px;
+}
+
+.group-list { padding: 0 12px 8px; }
+.group-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.group-item.active { background: var(--navy-light); color: #fff; }
+.group-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--gray-300); }
+.group-item.coming-soon { cursor: default; opacity: 0.5; }
+.group-item.coming-soon:hover { background: transparent; color: var(--gray-400); }
+.group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-active { background: #e74c3c; }
+.dot-st-active { background: #2ecc71; }
+.dot-st-disrupted { background: #f1c40f; }
+.dot-st-inactive { background: #9ba1ab; }
+.dot-st-defunct { background: #e05252; }
+.group-details { border-top: 1px solid var(--navy-light); margin-top: 4px; }
+.group-summary { list-style: none; cursor: pointer; padding: 12px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); display: flex; align-items: center; gap: 8px; }
+.group-summary::-webkit-details-marker { display: none; }
+.group-summary::before { content: '\25B8'; font-size: 10px; transition: transform 0.15s; }
+.group-details[open] .group-summary::before { transform: rotate(90deg); }
+.group-count { margin-left: auto; font-family: monospace; font-size: 10px; background: var(--navy-light); color: var(--gray-400); padding: 1px 7px; border-radius: 10px; }
+.dot-dim { background: var(--gray-400); }
+.dot-conti { background: #c0392b; }
+.coming-tag {
+  margin-left: auto; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--gray-400);
+  border: 1px solid var(--navy-light); border-radius: 4px;
+  padding: 1px 5px; text-transform: uppercase;
+}
+
+.section-nav { padding: 0 12px; }
+.section-nav a {
+  display: block; padding: 7px 12px; border-radius: 6px;
+  font-size: 12.5px; color: var(--gray-400); text-decoration: none;
+  transition: all 0.15s; border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.section-nav a:hover { color: var(--gray-300); background: rgba(255,255,255,0.04); }
+.section-nav a.active { color: #fff; border-left-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+/* MAIN CONTENT */
+.main { flex: 1; min-width: 0; padding: 0 0 80px; }
+
+/* HERO */
+.hero {
+  background: var(--navy);
+  padding: 40px 48px 36px;
+  border-bottom: 1px solid var(--navy-light);
+}
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 42px; font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 15px; color: var(--gray-400); margin-top: 6px; margin-bottom: 20px;
+}
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 20px;
+}
+.badge-critical { background: var(--accent); color: #fff; }
+.badge-operational { background: #1e8449; color: #fff; }
+.badge-raas { background: var(--navy-light); color: var(--gray-300); border: 1px solid var(--navy-light); }
+.badge-cluster { background: #6c3483; color: #fff; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-light);
+  border-radius: 10px; padding: 16px;
+}
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: #fff; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+/* CONTENT SECTIONS */
+.content { padding: 0 48px; }
+.section { padding: 40px 0; border-bottom: 1px solid var(--gray-200); }
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px;
+}
+.section-num {
+  font-size: 12px; font-weight: 700; color: var(--gray-400);
+  letter-spacing: 0.06em; min-width: 28px;
+}
+.section-title {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+p { margin-bottom: 12px; line-height: 1.7; color: var(--gray-800); }
+p:last-child { margin-bottom: 0; }
+
+ul.content-list { padding-left: 0; list-style: none; margin-bottom: 12px; }
+ul.content-list li {
+  padding: 5px 0 5px 18px; position: relative; color: var(--gray-800);
+  line-height: 1.6;
+}
+ul.content-list li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* CONFIDENCE LABELS */
+.conf {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 10px;
+}
+.conf-confirmed { background: var(--green-soft); color: var(--green); }
+.conf-credible  { background: var(--blue-soft);  color: var(--blue); }
+.conf-inference { background: var(--amber-soft); color: var(--amber); }
+.conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.conf-block {
+  border-left: 3px solid; border-radius: 0 6px 6px 0;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px;
+}
+.conf-block.confirmed { border-color: var(--green); background: var(--green-soft); color: #145a32; }
+.conf-block.credible  { border-color: var(--blue);  background: var(--blue-soft);  color: #1a3a5c; }
+.conf-block.inference { border-color: var(--amber); background: var(--amber-soft); color: #7d5316; }
+.conf-block strong { font-weight: 700; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-300); }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+table thead tr { background: var(--navy); }
+table thead th {
+  padding: 11px 14px; text-align: left;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #fff; white-space: nowrap;
+}
+table tbody tr:nth-child(even) { background: var(--gray-100); }
+table tbody tr:hover { background: var(--blue-soft); }
+table tbody td {
+  padding: 10px 14px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top; line-height: 1.5;
+}
+table tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 8px; padding: 16px 18px; margin: 16px 0; font-size: 13.5px;
+}
+.callout-warning { background: var(--amber-soft); border-left: 4px solid var(--amber); color: #6d4208; }
+.callout-info    { background: var(--blue-soft);  border-left: 4px solid var(--blue);  color: #174a70; }
+.callout-alert   { background: var(--accent-soft); border-left: 4px solid var(--accent); color: #7b1e1e; }
+.callout-success { background: var(--green-soft); border-left: 4px solid var(--green); color: #145a32; }
+.callout strong  { font-weight: 700; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card {
+  background: #fff; border: 1px solid var(--gray-300);
+  border-radius: 8px; padding: 14px 16px;
+}
+.metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.metric-val   { font-size: 20px; font-weight: 700; color: var(--navy); }
+.metric-note  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.metric-card.highlight { border-color: var(--blue); background: var(--blue-soft); }
+.metric-card.highlight .metric-val { color: var(--blue); }
+
+/* SOURCE LIST */
+.source-toggle {
+  background: none; border: 1px solid var(--gray-300); border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--gray-600);
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s;
+}
+.source-toggle:hover { background: var(--gray-200); }
+.source-list { display: none; margin-top: 16px; }
+.source-list.open { display: block; }
+.source-category { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin: 16px 0 8px; }
+.source-item {
+  padding: 7px 12px; border-radius: 6px; margin-bottom: 3px;
+  font-size: 12.5px; color: var(--gray-800); background: #fff;
+  border: 1px solid var(--gray-200); display: flex; gap: 10px; align-items: baseline;
+}
+.source-num { font-size: 11px; font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.source-item a { color: var(--blue); text-decoration: none; }
+.source-item a:hover { text-decoration: underline; }
+
+/* PILLAR CARDS */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.pillar-card {
+  background: #fff; border: 1px solid var(--gray-300); border-radius: 8px;
+  padding: 16px; position: relative; overflow: hidden;
+}
+.pillar-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.pillar-card.confirmed::before { background: var(--green); }
+.pillar-card.credible::before  { background: var(--blue); }
+.pillar-card.inference::before { background: var(--amber); }
+.pillar-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.pillar-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.pillar-body { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; }
+
+/* PHASE LIST */
+.phase-list { margin: 16px 0; }
+.phase-item {
+  display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start;
+}
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--navy);
+  color: #fff; font-size: 13px; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  margin-top: 2px;
+}
+.phase-body { flex: 1; }
+.phase-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.phase-desc { font-size: 13px; color: var(--gray-800); line-height: 1.55; }
+
+/* FOOTER */
+.page-footer {
+  text-align: center; padding: 32px 48px;
+  font-size: 12px; color: var(--gray-400);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* IMAGE GALLERY */
+.img-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.img-gallery.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.img-panel { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+.img-panel img { width: 100%; height: 220px; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--gray-200); }
+.img-panel.tall img { height: 300px; }
+.img-panel.myth img { object-position: center; object-fit: contain; background: #0d0d0d; padding: 8px; }
+.img-caption { padding: 10px 12px; font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+.img-caption strong { color: var(--gray-800); display: block; margin-bottom: 2px; }
+.img-source { font-size: 10.5px; color: var(--gray-400); margin-top: 4px; display: block; }
+
+/* SCROLL */
+html { scroll-behavior: smooth; }
+
+/* PRINT */
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { padding: 0; }
+  .content { padding: 0 24px; }
+}
+
+/* DARK MODE TOGGLE BUTTON */
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  margin-left: 14px;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+/* VICTIM STRIP */
+.victim-strip {
+  margin: 20px 40px 0;
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.victim-strip-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gray-600);
+}
+.victim-strip-sub {
+  font-weight: 400; letter-spacing: 0; text-transform: none;
+  color: var(--gray-400); font-size: 10px; margin-left: 4px;
+}
+.victim-row {
+  display: flex; align-items: center; gap: 0;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 12px;
+}
+.victim-row:last-child { border-bottom: none; }
+.victim-name { font-weight: 600; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.victim-meta { display: flex; gap: 14px; font-size: 11px; color: var(--gray-600); flex-shrink: 0; }
+.victim-country { color: var(--gray-400); }
+.victim-sector { color: var(--gray-400); font-style: italic; }
+
+/* "DEVELOPED BY RENO" CREDIT */
+.reno-credit {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  opacity: 0.7;
+}
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] body { background: #0d1117; color: #e6edf3; }
+[data-theme="dark"] .hero { background: #161b22; border-bottom: 1px solid #21262d; }
+[data-theme="dark"] .hero-eyebrow { color: #6b7280; }
+[data-theme="dark"] .hero-title { color: #e6edf3; }
+[data-theme="dark"] .hero-subtitle { color: #8b949e; }
+[data-theme="dark"] .kpi-card { background: #1f2937; border-color: #374151; }
+[data-theme="dark"] .kpi-label { color: #9ca3af; }
+[data-theme="dark"] .kpi-value { color: #f3f4f6; }
+[data-theme="dark"] .kpi-sub { color: #6b7280; }
+[data-theme="dark"] .kpi-live .kpi-sub { color: #27ae60; }
+[data-theme="dark"] .victim-strip { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .victim-strip-header { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .victim-row { border-bottom-color: #21262d; }
+[data-theme="dark"] .victim-name { color: #c9d1d9; }
+[data-theme="dark"] .victim-meta { color: #6b7280; }
+[data-theme="dark"] .content { background: #0d1117; }
+[data-theme="dark"] .section { border-bottom-color: #21262d; }
+[data-theme="dark"] .section-title { color: #e6edf3; }
+[data-theme="dark"] .section-num { color: #6b7280; }
+[data-theme="dark"] .subsection-title { color: #c9d1d9; border-bottom-color: #21262d; }
+[data-theme="dark"] p { color: #c9d1d9; }
+[data-theme="dark"] li { color: #c9d1d9; }
+[data-theme="dark"] .callout { filter: brightness(0.8) saturate(0.9); }
+[data-theme="dark"] .table-wrap { border-color: #30363d; }
+[data-theme="dark"] table { background: #161b22; }
+[data-theme="dark"] thead { background: #21262d; }
+[data-theme="dark"] thead th { color: #8b949e; border-bottom-color: #30363d; }
+[data-theme="dark"] tbody tr { border-bottom-color: #21262d; }
+[data-theme="dark"] tbody tr:hover { background: #1f2937; }
+[data-theme="dark"] td { color: #c9d1d9; }
+[data-theme="dark"] .pillar { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .pillar-header { background: #21262d; border-bottom-color: #30363d; }
+[data-theme="dark"] .pillar-title { color: #e6edf3; }
+[data-theme="dark"] .pillar-label { color: #8b949e; }
+[data-theme="dark"] .pillar-body { color: #c9d1d9; }
+[data-theme="dark"] .source-toggle { background: #21262d; border-color: #30363d; color: #8b949e; }
+[data-theme="dark"] .source-list { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .source-item { border-bottom-color: #21262d; color: #8b949e; }
+[data-theme="dark"] .source-category { background: #21262d; color: #8b949e; }
+[data-theme="dark"] .img-panel { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .img-caption { color: #8b949e; }
+[data-theme="dark"] .img-caption strong { color: #c9d1d9; }
+[data-theme="dark"] .feed-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .feed-card a { color: #c9d1d9; }
+[data-theme="dark"] .feed-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+[data-theme="dark"] .feed-meta { color: #6b7280; }
+[data-theme="dark"] .feed-source { color: #58a6ff; }
+[data-theme="dark"] .mono { background: #21262d; color: #79c0ff; }
+[data-theme="dark"] a { color: #58a6ff; }
+[data-theme="dark"] .page-footer { background: #0d1117; border-top-color: #21262d; color: #6b7280; }
+[data-theme="dark"] .reno-credit { color: #4b5563; }
+
+/* LIVE DATA INDICATORS */
+.topbar-live {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--gray-400);
+  letter-spacing: 0.03em;
+}
+.topbar-tag { margin-left: 20px; }
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.live-pulse {
+  position: relative;
+  display: inline-block;
+  width: 7px; height: 7px;
+  flex-shrink: 0;
+}
+.live-pulse::before, .live-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #27ae60;
+}
+.live-pulse::after {
+  background: transparent;
+  border: 1.5px solid #27ae60;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+.live-badge {
+  display: inline-block;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #27ae60;
+  border: 1px solid #27ae60;
+  border-radius: 3px;
+  padding: 1px 4px;
+  vertical-align: middle;
+  margin-left: 5px;
+  line-height: 1.4;
+}
+
+.kpi-live { border-top: 2px solid #27ae60; }
+.kpi-live .kpi-sub { color: #27ae60; }
+
+/* RECENT REPORTING SECTION */
+.feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+@media (max-width: 900px) { .feed-grid { grid-template-columns: 1fr; } }
+
+.feed-card {
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.feed-card:hover { border-left-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.feed-card a { text-decoration: none; color: var(--text); }
+.feed-card a:hover { color: var(--blue); }
+.feed-title { font-size: 13px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+.feed-meta { font-size: 11px; color: var(--gray-600); display: flex; gap: 10px; flex-wrap: wrap; }
+.feed-source { font-weight: 600; color: var(--blue); }
+.feed-date { color: var(--gray-400); }
+.feed-empty {
+  grid-column: 1 / -1;
+  font-size: 13px; color: var(--gray-400);
+  padding: 20px 0;
+  font-style: italic;
+}
+.feed-loading { grid-column: 1 / -1; font-size: 13px; color: var(--gray-400); padding: 20px 0; }
+</style>
+
+<style>
+/* ADDED 18 OCT 2026: brand status badge + leverage point cards */
+.badge-dormant { background: var(--gray-600); color: #fff; }
+.lp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+@media (max-width: 900px) { .lp-grid, .pillar-grid { grid-template-columns: 1fr; } }
+.lp-card { background: #fff; border: 1px solid var(--gray-300); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+.lp-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.lp-card.confirmed::before { background: var(--green); }
+.lp-card.credible::before { background: var(--blue); }
+.lp-card.inference::before { background: var(--amber); }
+.lp-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.lp-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.lp-row { font-size: 12.5px; color: var(--gray-800); line-height: 1.55; margin-bottom: 6px; }
+.lp-row strong { color: var(--navy); font-weight: 700; }
+[data-theme="dark"] .lp-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .lp-title, [data-theme="dark"] .lp-row strong { color: #e6edf3; }
+[data-theme="dark"] .lp-row { color: #c9d1d9; }
+[data-theme="dark"] .pillar-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-card { background: #161b22; border-color: #30363d; }
+[data-theme="dark"] .metric-val { color: #e6edf3; }
+[data-theme="dark"] ul.content-list li { color: #c9d1d9; }
+
+/* ── INTERNAL DATA BADGE ── */
+.internal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--navy); color: #fff; padding: 3px 8px; border-radius: 4px;
+  vertical-align: middle; margin-left: 6px;
+}
+[data-theme="dark"] .internal-badge { background: #30363d; color: #e6edf3; }
+</style>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">Ransomware<span>EDP</span> &nbsp;/&nbsp; Threat Actor Library</div>
+  <div class="topbar-live" id="topbar-live" style="display:none;">
+    <span class="live-pulse"></span>
+    <span id="topbar-refresh-label">Intelligence data refreshed…</span>
+  </div>
+  <div class="topbar-tag">Developed by Reno &nbsp;&bull;&nbsp; Analytical profiles compiled from open-source intelligence</div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#9790; Dark</button>
+</header>
+
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="node-library"></div>
+  <div class="sidebar-section-label">On This Page</div>
+  <nav class="section-nav" id="section-nav">
+    <a href="#overview">01 Overview</a>
+    <a href="#lineage">02 Lineage &amp; Heritage</a>
+    <a href="#operations">03 Operational Model</a>
+    <a href="#technical">04 Technical Capabilities</a>
+    <a href="#defensive">05 Defensive Mapping</a>
+    <a href="#financial">06 Financial Infrastructure</a>
+    <a href="#victims">07 Victim Profile</a>
+    <a href="#enforcement">08 LE &amp; Regulatory Response</a>
+    <a href="#attribution">09 Attribution &amp; Nexus</a>
+    <a href="#trajectory">10 Trajectory</a>
+    <a href="#leverage">11 Structural Leverage Points</a>
+    <a href="#recent-reporting">Recent Reporting</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Threat Actor Profile: Last updated <span id="hero-last-updated">29 October 2026</span></div>
+    <div class="hero-title">Rhysida</div>
+    <div class="hero-subtitle">Double Extortion &nbsp;&bull;&nbsp; Auction-Model Leak Site &nbsp;&bull;&nbsp; Vice Society successor payload</div>
+    <div class="hero-badges">
+      <span class="badge badge-critical">High Threat</span>
+      <span class="badge badge-operational">Operational: last post 29 Oct 2026</span>
+      <span class="badge badge-raas">Closed or private RaaS (contested)</span>
+      <span class="badge badge-cluster">VICE SPIDER / GOLD VICTOR / Vanilla Tempest</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Lifetime Listings</div>
+        <div class="kpi-value">307</div>
+        <div class="kpi-sub">ransomware.live, read 29 Oct 2026; first post June 2023</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Listings, Last 6 Months <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-victim-count">40</div>
+        <div class="kpi-sub" id="kpi-victim-sub">Internal victim database, 27 Apr to 29 Oct 2026; live after next refresh</div>
+      </div>
+      <div class="kpi-card kpi-live">
+        <div class="kpi-label">Countries Hit <span class="live-badge">LIVE</span></div>
+        <div class="kpi-value" id="kpi-country-count">42</div>
+        <div class="kpi-sub" id="kpi-country-sub">US 133 of 307 (ransomware.live)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Last 90 Days vs Prior 90</div>
+        <div class="kpi-value">35 / 4</div>
+        <div class="kpi-sub">Internal victim database to 29 Oct 2026: near ninefold tempo rise</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Public Demand Range</div>
+        <div class="kpi-value">5 to 100 BTC</div>
+        <div class="kpi-sub">Modal demand 30 BTC for government victims</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Government Response</div>
+        <div class="kpi-value">1 / 0</div>
+        <div class="kpi-sub">One joint advisory; zero arrests, sanctions or seizures</div>
+      </div>
+    </div>
+    <div class="victim-strip" id="victim-strip" style="display:none;">
+      <div class="victim-strip-header">
+        <span class="live-pulse"></span>
+        Recent Rhysida Victims
+        <span class="live-badge">LIVE</span>
+        <span class="victim-strip-sub">via ransomware.live Pro</span>
+      </div>
+      <div id="victim-list"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION 01: OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Executive Summary and Group Overview</h2>
+      </div>
+
+      <p>Rhysida is a double-extortion ransomware brand first seen in May 2023 and still operating on 29 October 2026, with 307 lifetime leak-site listings and new posts on 27, 28 and 29 October 2026. The brand is operated by a long-running crew that previously ran Vice Society and before that deployed Zeppelin and HelloKitty lockers. That crew is tracked as VICE SPIDER (CrowdStrike), GOLD VICTOR (Secureworks, now Sophos), Vanilla Tempest, formerly DEV-0832 (Microsoft), and Arcane Mantis (PRODAFT). The lineage rests on intrusion-cluster and tooling continuity documented by Sophos, Check Point and Secureworks; no vendor has published code, blockchain or personnel evidence linking the two brands. [9][10][12][13][16] <span class="conf conf-confirmed" style="margin:0 0 0 6px;vertical-align:middle;">Confirmed: same operators</span> <span class="conf conf-inference" style="margin:0 0 0 6px;vertical-align:middle;">Inference: single crew, not a rebrand</span></p>
+
+      <p>Three things distinguish Rhysida from the RaaS mainstream. First, its leak site runs seven-day auctions that sell each stolen dataset to a single "exclusive" buyer, with lots marked sold or published if unsold. Second, its operating model is contested: CISA and most press call it RaaS, but Secureworks has never seen affiliate advertising and CrowdStrike states that VICE SPIDER "privately operates both Rhysida and Interlock ransomware and the associated dedicated leak sites." Third, since 2024 its intake has shifted from stolen VPN credentials to malvertising and SEO-poisoned fake installers (Teams, Zoom, PuTTY) delivering the OysterLoader backdoor, signed with fraudulently obtained code-signing certificates. [9][10][20][33] <span class="conf conf-confirmed" style="margin:0 0 0 6px;vertical-align:middle;">Confirmed</span></p>
+
+      <p>Government output is thin. One joint advisory exists (CISA, FBI and MS-ISAC AA23-319A, November 2023, updated April 2025) plus an HHS sector alert. There are no arrests, indictments, sanctions, rewards or seizures naming Rhysida, Vice Society or any of the vendor-tracked operator names. The only court action is civil: Microsoft's May 2026 case in the Southern District of New York against the Fox Tempest code-signing service names "Vanilla Tempest" as John Does 3 and 4, the first court document to name the Rhysida operators. In the same period Microsoft revoked over 200 certificates used in Rhysida's Teams-installer campaign (October 2025) and over 1,000 Fox Tempest certificates (May 2026). The group kept listing victims through both actions, including the Berlin state administration (30 BTC demand, 5.79 TB published) and Anne Arundel County, Maryland (25 BTC, outcome unresolved). [1][4][5][6][21][37][39] <span class="conf conf-confirmed" style="margin:0 0 0 6px;vertical-align:middle;">Confirmed</span></p>
+
+      <div class="callout callout-info">
+        <strong>Tempo read, 29 October 2026:</strong> the internal victim database shows 35 Rhysida listings in the 90 days to 29 October against 4 in the preceding 90, with 12 in September and 16 in October to date. Aggregator commentary from 2025 describing Rhysida as "significantly less active" is out of date. The crew is in a posting surge, concentrated on US local government, legal services and German public bodies. <span class="internal-badge">Internal</span> [45][46]
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Quick-Reference Attributes</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Attribute</th><th>Value</th><th>Confidence</th></tr></thead>
+          <tbody>
+            <tr><td>First observed</td><td>Samples 15 to 17 May 2023; first leak-site listings late May to June 2023; earliest tracked DLS listing 5 June 2023</td><td>CONFIRMED [2][13][45]</td></tr>
+            <tr><td>Status (29 Oct 2026)</td><td>Active; listings on 27, 28 and 29 October 2026 (Machelen, Noelker and Hull, ClaimTek Systems)</td><td>CONFIRMED [45][46]</td></tr>
+            <tr><td>Lifetime listings</td><td>307 (ransomware.live); 230 since 1 January 2024 in the internal database</td><td>CONFIRMED [45][46]</td></tr>
+            <tr><td>Operating model</td><td>Contested: RaaS per CISA and press; private or closed per Secureworks and CrowdStrike; no affiliate advertising ever observed</td><td>VENDOR CONFLICT [1][9][10]</td></tr>
+            <tr><td>Extortion model</td><td>Double extortion; seven-day exclusive-buyer auctions on the leak site; media pressure (journalists listed first on the contact form)</td><td>CONFIRMED [33][34]</td></tr>
+            <tr><td>Platforms</td><td>Windows (MinGW/GCC, LibTomCrypt); Linux/ESXi ELF variant from November 2023</td><td>CONFIRMED [1][29]</td></tr>
+            <tr><td>Encryption</td><td>Per-file AES-256-CTR keys wrapped with embedded RSA-4096; ChaCha20 used as the PRNG (CISA describes it as "RSA-4096 and ChaCha20")</td><td>VENDOR CONFLICT, see Section 04 [1][25][26]</td></tr>
+            <tr><td>Decryptor</td><td>KISA/Kookmin University tool (February 2024) for early Windows builds only; later builds reported not vulnerable</td><td>CONFIRMED (tool); CREDIBLE (later builds) [18][27]</td></tr>
+            <tr><td>Predecessor brand</td><td>Vice Society (mid 2021 to June 2023); earlier Zeppelin and HelloKitty/FiveHands deployments</td><td>CONFIRMED [3][9][12]</td></tr>
+            <tr><td>Sibling brand</td><td>Interlock (September 2024 onward): same operator per CrowdStrike; separate groups with overlaps per Secureworks, IBM, Talos</td><td>VENDOR CONFLICT [9][11][17][31]</td></tr>
+            <tr><td>CrowdStrike designation</td><td>VICE SPIDER (operator; active since at least April 2021)</td><td>CONFIRMED [9]</td></tr>
+            <tr><td>Secureworks (Sophos) designation</td><td>GOLD VICTOR (operator); Sophos X-Ops cluster TAC5279, also written STAC5279</td><td>CONFIRMED [10][12]</td></tr>
+            <tr><td>Microsoft designation</td><td>Vanilla Tempest, formerly DEV-0832</td><td>CONFIRMED [23][21]</td></tr>
+            <tr><td>Unit 42 designation</td><td>Squeaking Scorpius (listed as "aka Rhysida")</td><td>CONFIRMED [14]</td></tr>
+            <tr><td>Mandiant / Google designation</td><td>None for the operator. Malware tracked as RHYSIDA; access cluster UNC6016 (malvertising) feeds RHYSIDA and NITROGEN</td><td>CONFIRMED (gap) [15]</td></tr>
+            <tr><td>PRODAFT / IBM designations</td><td>Arcane Mantis (PRODAFT, Vice Society/Rhysida); IBM tracks Interlock as Hive0163 and Rhysida by malware name</td><td>CONFIRMED [16][17]</td></tr>
+            <tr><td>Assessed jurisdiction</td><td>Russian-speaking eCrime; no documented CIS victims; no state nexus asserted by any source</td><td>CREDIBLE [2][18]</td></tr>
+            <tr><td>Government advisories</td><td>CISA/FBI/MS-ISAC AA23-319A (15 Nov 2023, updated 30 Apr 2025); HHS HC3 sector alert (Aug 2023); CISA AA22-249A on Vice Society (Sep 2022)</td><td>CONFIRMED [1][2][3]</td></tr>
+            <tr><td>Arrests, sanctions, seizures</td><td>None as of 29 October 2026. Civil: Microsoft v. John Doe 1 et al., 26 Civ. 3737 (SDNY), Vanilla Tempest as John Does 3 and 4</td><td>CONFIRMED [5]</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:24px;">Data Leak Site and Branding</div>
+      <div class="img-gallery">
+        <div class="img-panel tall">
+          <img src="https://cdn.socradar.io/wp-content/uploads/2023/08/rhysida-tor-page-1024x436.png.webp" style="object-position:center;"
+               alt="Rhysida Tor leak site header with centipede image and brush-script wordmark"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS Home: Centipede Branding</strong>
+            The Tor site header pairs a photographic centipede with a brush-script wordmark and a blue "R". The header counters ("auctions online", "companies") expose the two-stage model at a glance: live auctions first, then a published-companies archive. The group is named after the Rhysida genus of centipedes.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel tall">
+          <img src="https://cdn.socradar.io/wp-content/uploads/2023/08/rhysida-token.png.webp"
+               alt="Rhysida leak site listing an active auction with countdown beside published victims with data catalog sizes"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS Listings: Auction Beside Archive</strong>
+            Left, an active seven-day auction with countdown, buyer form and captcha; right, published victims with data-catalog sizes and upload progress bars. The "we sell only to one hand, no reselling, you will be the only owner" pitch is the exclusive-buyer model Rapid7 later documented at 5 to 10 BTC starting prices.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+      </div>
+      <div class="img-gallery three-col">
+        <div class="img-panel">
+          <img src="https://cdn.socradar.io/wp-content/uploads/2023/08/rhysida-western-national-group.png.webp"
+               alt="Rhysida victim announcement card for a US real estate firm"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Victim Announcement Card</strong>
+            Early-format announcement: company description lifted from the victim's own site, countdown, and an invitation to bid. The format has stayed stable through 2026.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://cdn.socradar.io/wp-content/uploads/2023/08/rhysida-ransom-note.png.webp"
+               alt="Rhysida ransom note PDF titled Critical Breach Detected"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>Ransom Note: CriticalBreachDetected.pdf</strong>
+            The note presents the crew as a "cybersecurity team" that has found a "critical breach", gives a portal address and a secret key, and states no price. The amount is set inside the Tor portal, which keeps demand figures out of open-source reporting unless a victim discloses them.
+            <span class="img-source">Source: SOCRadar, 2023; CISA AA23-319A, 2023</span>
+          </div>
+        </div>
+        <div class="img-panel">
+          <img src="https://cdn.socradar.io/wp-content/uploads/2023/08/rhysida-data-leak.png.webp"
+               alt="Rhysida leak site archive of victims whose data has been published"
+               onerror="this.style.display='none'">
+          <div class="img-caption">
+            <strong>DLS Archive: Published Victims</strong>
+            The post-auction archive. Datasets that fail to sell are published here with size and file counts, which is where the Berlin (5.79 TB) and Port of Seattle dumps ended up. Publication is the crew's proof that refusal has a cost.
+            <span class="img-source">Source: SOCRadar, 2023</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: LINEAGE -->
+    <section class="section" id="lineage">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Lineage and Organizational Heritage</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Core Assessment</div>
+        <div class="conf conf-confirmed">Confirmed: Vice Society operators moved to the Rhysida payload</div>
+        <div class="conf conf-credible" style="margin-left:8px;">Credible: a single crew spanning Zeppelin, HelloKitty, Vice Society, Rhysida and INC</div>
+        <p>Vice Society ran from mid 2021 to June 2023 without an encryptor of its own, deploying Zeppelin and HelloKitty/FiveHands and concentrating on education and healthcare. Its leak site stopped posting on 21 June 2023, weeks after Rhysida's first listings. Sophos tracked six intrusions between November 2022 and June 2023 by one cluster (TAC5279) that switched from Vice Society to Rhysida payloads and asserted "with high confidence that the TAC5279 affiliate group has transitioned to deploying the Rhysida ransomware variant", while stating it had no evidence that Vice Society had "rebranded". Check Point reached "at least medium confidence that Vice Society operators are now using Rhysida ransomware" and noted the same NTDS dump paths, SystemBC persistence and PortStarter use. Secureworks assesses with moderate confidence that GOLD VICTOR "shifted to an operation built around Rhysida ransomware" in mid 2023. CrowdStrike and Microsoft fold the whole history into one actor (VICE SPIDER; Vanilla Tempest). [9][10][12][13][23]</p>
+        <p>The distinction that matters: every vendor describes operators changing payloads, not a RaaS program renaming itself. Vice Society never had its own locker to rebrand. Check Point adds that others could also be using Rhysida, which is why "same crew" is CONFIRMED for the transition and only CREDIBLE for exclusivity. [12][13]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Hand-Off in the Leak-Site Record</div>
+        <div class="img-gallery" style="grid-template-columns: 1fr;">
+          <div class="img-panel myth">
+            <img src="https://research.checkpoint.com/wp-content/uploads/2023/08/cpr-aug-23-featured-img-1-1024x652.jpg"
+                 alt="Bar chart of Vice Society and Rhysida leak-site victims per month, October 2022 to June 2023"
+                 onerror="this.parentElement.style.display='none'">
+            <div class="img-caption">
+              <strong>Vice Society Hands Off to Rhysida, October 2022 to June 2023</strong>
+              Check Point's monthly leak-site counts: Vice Society posts through May 2023 (3 that month), Rhysida appears with about 20 in May and 17 in June 2023, and Vice Society's last post follows on 21 June 2023. Timing is one of three evidentiary pillars below.
+              <span class="img-source">Source: Check Point Research, 2023</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Evidentiary Pillars</div>
+        <div class="pillar-grid">
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 1: Confirmed</div>
+            <div class="pillar-title">Intrusion-Cluster Continuity</div>
+            <div class="pillar-body">Six Sophos cases, November 2022 to June 2023, one cluster: VPN access without MFA, ZeroLogon (CVE-2020-1472), PortStarter leading to SystemBC, then Vice Society payloads early and Rhysida payloads late. Sophos: high confidence on the transition. [12]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 2: Confirmed</div>
+            <div class="pillar-title">Tooling and Artifact Continuity</div>
+            <div class="pillar-body">Shared NTDS.dit dump path (C:\Users\Public\temp_l0gs), SystemBC "socks" Run key persistence, PortStarter, a firewall rule named "Windows Update", a domain-wide password reset before encryption, and the same onionmail.org contact pattern. Check Point, Secureworks and Recorded Future report overlapping subsets. [10][13][18]</div>
+          </div>
+          <div class="pillar-card confirmed">
+            <div class="pillar-num">Pillar 3: Confirmed</div>
+            <div class="pillar-title">Timing and Victimology</div>
+            <div class="pillar-body">Rhysida's first listings (May to June 2023) immediately precede Vice Society's last post (21 June 2023). Sector focus (education, healthcare) carried over unchanged. Circumstantial on its own, decisive in combination with pillars 1 and 2. [3][13]</div>
+          </div>
+          <div class="pillar-card inference">
+            <div class="pillar-num">Pillars absent: Gap</div>
+            <div class="pillar-title">No Code, Blockchain or Personnel Evidence</div>
+            <div class="pillar-body">Code overlap would not be expected (Vice Society used third-party lockers; Rhysida is a new MinGW/LibTomCrypt build). No public wallet clustering connects the two brands' payments. No named individuals, handles or chat leaks exist for either. The lineage is behavioural, not forensic. [1][24]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vendor Designations and Positions</div>
+        <p>Designations are listed per vendor and never merged. The first block names the operator cluster across all its payloads; the second names Rhysida specifically; the third names Interlock, which some vendors fold into the same operator.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vendor</th><th>Designation</th><th>Scope and position</th></tr></thead>
+            <tbody>
+              <tr><td>CrowdStrike</td><td>VICE SPIDER</td><td>Operator. "Big Game Hunting adversary that has conducted ransomware operations since at least April 2021"; began with commodity Zeppelin; "likely acquired the source code to the Linux version of FERAL SPIDER's DeathKitty in May 2021"; "privately operates both Rhysida and Interlock ransomware and the associated dedicated leak sites". Community identifiers listed: Rhysida, InterLock, Arcane Mantis, Nefarious Mantis, GOLD EMBRACE, Vice Society, DEV-0832, Vanilla Tempest. [9]</td></tr>
+              <tr><td>Secureworks (now Sophos CTU)</td><td>GOLD VICTOR</td><td>Operator. Ran Vice Society from mid 2021; moderate confidence on the shift to Rhysida in mid 2023; "Rhysida does not appear to be operated as ransomware-as-a-service"; neither brand advertised for affiliates; "possible that Rhysida is operated as a private RaaS". Aliases listed: DEV-0832, STAC5279, Vanilla Tempest, Vice Society, Vice Spider. [10]</td></tr>
+              <tr><td>Sophos X-Ops</td><td>TAC5279 (STAC5279 in the CTU profile)</td><td>Intrusion cluster; six cases; high confidence on the payload transition; no evidence of a "rebrand". [12]</td></tr>
+              <tr><td>Microsoft</td><td>Vanilla Tempest (formerly DEV-0832)</td><td>Operator. 2022 blog: payloads shifted "from BlackCat, QuantumLocker, and Zeppelin"; "reportedly been active as early as June 2021". Later X posts: INC deployed against US healthcare via Gootloader hand-off from Storm-0494 (September 2024); Rhysida via fake Teams installers and Oyster backdoor (October 2025). [21][22][23]</td></tr>
+              <tr><td>Palo Alto Unit 42</td><td>Squeaking Scorpius</td><td>Rhysida-specific. Listed with "Also Known As: Rhysida"; "some researchers have suggested links between this group and the actors behind Vice Society". No dedicated assessment published. [14]</td></tr>
+              <tr><td>Google / Mandiant</td><td>None for the operator; RHYSIDA (malware); UNC6016 (access cluster)</td><td>March 2026: UNC6016 malvertising (fake PuTTY and similar) "ultimately lead to NITROGEN or RHYSIDA ransomware deployments"; LIONSHARE tunneler persisted by a 12-hour scheduled task in a RHYSIDA incident. No FIN or UNC number for the Rhysida operator located. [15]</td></tr>
+              <tr><td>PRODAFT</td><td>Arcane Mantis</td><td>"Also known as Vice Society/Rhysida Ransomware ... first appeared in summer 2021." March 2025: "intelligence shows Interlock and Rhysida share the same developer, who built the infrastructure for both." The name "Nefarious Mantis" for Interlock appears only in CrowdStrike's identifier list, not in PRODAFT's published material. [9][16]</td></tr>
+              <tr><td>IBM X-Force</td><td>Hive0163 (Interlock); Rhysida by malware name</td><td>June 2026: "the exact nature of this relationship remains unknown"; shared Supper backdoor, similar but distinct loaders and crypters; code overlaps "indicating a shared original codebase or possibly common developers"; about 80 victims each in 2025. [17]</td></tr>
+              <tr><td>Recorded Future (Insikt)</td><td>Rhysida (no separate alias); TAG-124 (traffic distribution system)</td><td>Moderate confidence on the Vice Society link (October 2024); documents the TAG-124 TDS used by Rhysida, Interlock and others. [18][19]</td></tr>
+              <tr><td>Check Point Research</td><td>None</td><td>"At least medium confidence that Vice Society operators are now using Rhysida ransomware", possibly not exclusively. [13]</td></tr>
+              <tr><td>Government (CISA, HHS)</td><td>Rhysida</td><td>CISA cites Vice Society similarities "per open-source reporting"; HHS (August 2023) had seen no overt connection at that time. Neither asserts an operator identity. [1][2]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Start-date discrepancy:</strong> CrowdStrike dates the operator to April 2021, Microsoft to "as early as June 2021", Secureworks and PRODAFT to mid or summer 2021. The profile uses "mid 2021" and does not resolve the difference.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03: OPERATIONS -->
+    <section class="section" id="operations">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Operational Model</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RaaS or Closed Crew: An Unresolved Conflict</div>
+        <div class="conf conf-credible">Credible: private or closed operation</div>
+        <p>CISA's advisory states that Rhysida "operates in a ransomware-as-a-service (RaaS) model" with profit-sharing between developers and affiliates, citing open-source reporting; Kaspersky and Recorded Future repeat the label, the latter with "allegedly". Against that, Secureworks has never observed affiliate advertising for Vice Society or Rhysida and writes that Rhysida "does not appear to be operated as ransomware-as-a-service"; CrowdStrike states the operator "privately operates" the brand and its leak site; IBM reaches the same conclusion for the sibling brand Interlock. No forum recruitment post, affiliate panel, vetting rule or revenue split has ever been published for Rhysida. The RaaS label traces to early 2023 press reporting and has no primary evidence behind it. This profile treats Rhysida as a closed or private operation that buys access and tooling from suppliers rather than recruiting affiliates. [1][9][10][17][24]</p>
+        <div class="metric-grid">
+          <div class="metric-card highlight">
+            <div class="metric-label">Affiliate advertising observed</div>
+            <div class="metric-val">None</div>
+            <div class="metric-note">Secureworks, through 2026</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Revenue split published</div>
+            <div class="metric-val">None</div>
+            <div class="metric-note">No panel, no split, no vetting rules in open source</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Payment control</div>
+            <div class="metric-val">Operator</div>
+            <div class="metric-note">Single Tor portal sets the price per victim</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Supplier Model: Access and Tooling Bought In</div>
+        <p>What the open record does show is a supplier chain rather than an affiliate roster. Initial access has come from Gootloader operators (Microsoft's Storm-0494 hand-off, September 2024; Gootloader added to the CISA advisory in April 2025), from the TAG-124 traffic distribution system (Recorded Future), and from the UNC6016 malvertising cluster (Mandiant, March 2026). Code-signing came from the Fox Tempest service, of which Vanilla Tempest was a customer from June 2025 until Microsoft's seizure in May 2026. The loader (OysterLoader, also called CleanUpLoader and Broomstick) is closely linked to the ITG23 Trickbot/Conti developer lineage per IBM and Recorded Future, and is used by other groups, so the supplier relationship is shared rather than exclusive. [1][6][15][17][18][19][22]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Extortion and Negotiation</div>
+        <ul class="content-list">
+          <li><strong>Contact.</strong> The ransom note (CriticalBreachDetected.pdf) carries a unique key and a Tor portal address and states no price. Contact addresses follow an onionmail.org pattern. Payment is in Bitcoin only. [1][2]</li>
+          <li><strong>Auction mechanics.</strong> Rapid7 (November 2025): auctions "since at least June 2023", typically seven days, each dataset "sold exclusively to a single buyer"; as of mid October 2025 five auctions ran concurrently with starting prices of 5 to 10 BTC. Unsold data is published; the Lurie Children's listing threatened sale to multiple buyers at a lower price if the auction failed. [33]</li>
+          <li><strong>Media pressure.</strong> Sophos (December 2023): the leak-site contact form lists journalists first, before "Recoveries", and the site solicits media and "fans". Press attention is part of the pressure model. [34]</li>
+          <li><strong>Negotiation.</strong> Fortinet reports the crew negotiates unless a counteroffer is "insultingly low"; no reduction ranges are published. The Port of Seattle leak included what the group said was a 750,000 US dollar counteroffer from the Port, which is unverified. [28][44]</li>
+          <li><strong>Data selection.</strong> HR shares are targeted for passports, driving licences and identity documents (Recorded Future). At the British Library about 60 percent of copied data came from Finance, Technology and People team drives, the rest from keyword searches such as "passport" and "confidential". [8][18]</li>
+          <li><strong>No third tier.</strong> No DDoS or direct harassment of victims' customers is documented. [1][33]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Documented Demands</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Date</th><th>Demand</th><th>Outcome</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Prospect Medical Holdings</td><td>Aug 2023</td><td>50 BTC (about 1.3M USD)</td><td>Data offered for sale</td><td>BleepingComputer [44]</td></tr>
+              <tr><td>British Library</td><td>Oct to Nov 2023</td><td>20 BTC (about 600,000 GBP)</td><td>Not paid; about 600 GB published; servers destroyed by the attackers</td><td>British Library review; Computer Weekly [8][44]</td></tr>
+              <tr><td>King Edward VII's Hospital</td><td>Nov to Dec 2023</td><td>About 300,000 GBP in BTC</td><td>Not stated</td><td>Computing [44]</td></tr>
+              <tr><td>Insomniac Games (Sony)</td><td>Dec 2023</td><td>50 BTC (about 2M USD), 7 days</td><td>Not paid; 1.67 TB published</td><td>Game Informer [44]</td></tr>
+              <tr><td>Lurie Children's Hospital</td><td>Feb 2024</td><td>60 BTC (about 3.6M USD), 7 days</td><td>Listing later marked "sold" by the group</td><td>BleepingComputer [44]</td></tr>
+              <tr><td>City of Columbus, Ohio</td><td>Jul 2024</td><td>30 BTC (about 1.9M USD)</td><td>Not paid; 3.1 of 6.5 TB posted; about 500,000 people notified</td><td>TechCrunch [44]</td></tr>
+              <tr><td>Port of Seattle / SEA airport</td><td>Aug to Sep 2024</td><td>100 BTC (about 6M USD)</td><td>Not paid; data posted</td><td>The Register [44]</td></tr>
+              <tr><td>Oregon DEQ</td><td>Apr 2025</td><td>30 BTC (about 2.5M USD)</td><td>Agency denied exfiltration; data later released by the group</td><td>Bitdefender [42]</td></tr>
+              <tr><td>Maryland DOT / MTA</td><td>Aug to Sep 2025</td><td>30 BTC (about 3.3M USD)</td><td>Not paid (state statement)</td><td>GovTech [41]</td></tr>
+              <tr><td>Stelia Aerospace North America</td><td>Apr 2026</td><td>27 BTC (2.07M USD), 10 TB, 7 days</td><td>Incident confirmed by the company; outcome not stated</td><td>Aviation Business News [40]</td></tr>
+              <tr><td>City of Stuttgart</td><td>May 2026</td><td>5 BTC (about 333,000 EUR)</td><td>City reported no indication of an incident</td><td>heise [43]</td></tr>
+              <tr><td>Berlin state administration</td><td>Aug to Sep 2026</td><td>30 BTC starting price</td><td>Refused; 5.79 TB (about 1.44 million files) published early September</td><td>Reuters; Security Affairs [37][38]</td></tr>
+              <tr><td>Anne Arundel County, Maryland</td><td>Oct 2026</td><td>25 BTC (about 2M USD), 2.6 TB, 7 days</td><td>Unresolved; county has not said whether it paid (19 Oct 2026)</td><td>Cybernews; The Record; GovTech [39]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--gray-600);">Public demands cluster between 20 and 60 BTC, with 30 BTC the modal figure for government victims. Dollar conversions vary by outlet; the table uses the BTC figure where both exist. Only victims that disclosed the demand, or whose listing stated a price, are included.</p>
+      </div>
+    </section>
+
+    <!-- SECTION 04: TECHNICAL -->
+    <section class="section" id="technical">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Technical Capabilities</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Initial Access: Three Generations</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vector</th><th>Period</th><th>Detail</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Valid credentials to VPN or remote services without MFA</td><td>2023 onward</td><td>Primary vector in the CISA advisory. British Library: first access on a Terminal Services server with no MFA, most likely via compromised privileged credentials, possibly a third party's. [1][8]</td><td>CONFIRMED</td></tr>
+              <tr><td>Phishing</td><td>2023 onward</td><td>Cited by CISA; the Chilean Army breach was reportedly phishing-led. [1][18]</td><td>CONFIRMED (vector); CREDIBLE (Chile)</td></tr>
+              <tr><td>ZeroLogon (CVE-2020-1472)</td><td>2022 to 2023</td><td>Exploited in the Sophos TAC5279 cases; the only CVE with intrusion-report backing. [12]</td><td>CONFIRMED</td></tr>
+              <tr><td>Gootloader (Storm-0494)</td><td>2024 onward</td><td>Microsoft: Gootloader to Supper to AnyDesk to MEGA chains in INC healthcare attacks (September 2024). Added to AA23-319A in April 2025: "Rhysida actors have also used Gootloader malware at times for initial access". [1][22]</td><td>CONFIRMED</td></tr>
+              <tr><td>Malvertising and SEO poisoning</td><td>Mid 2024 onward</td><td>Fake Teams, Zoom, PuTTY, AutoDesk and Webex installers via search ads and typosquat domains, delivering OysterLoader (CleanUpLoader, Broomstick). Mandiant's UNC6016 cluster; Expel's certificate tracking; Microsoft's October 2025 disruption. [15][18][20][21]</td><td>CONFIRMED</td></tr>
+              <tr><td>Citrix session-cookie theft</td><td>2023 to 2024</td><td>Observed by Fortinet IR; no CVE named. A link to Citrix Bleed (CVE-2023-4966) is plausible and unconfirmed. [28]</td><td>CREDIBLE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning">
+          <strong>Aggregator CVE list rejected.</strong> Several 2026 aggregator pages attribute CVE-2026-50751 (Check Point), CVE-2026-48027 (Nx Console), CVE-2023-21529 (Exchange), CVE-2024-1708 (ScreenConnect) and CVE-2025-60710 (Windows Task Host) to Rhysida. Follow-on checks found no vendor intrusion report linking any of them to Rhysida; the Check Point flaw is attributed by Check Point and Rapid7 to a Qilin affiliate. The April 2025 CISA advisory lists no CVEs. These five are excluded. [1]
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Post-Exploitation Tradecraft</div>
+        <ul class="content-list">
+          <li><strong>Persistence and C2:</strong> SystemBC with a "socks" Run key; PortStarter; AnyDesk; Supper (also SocksShell, WINDYTWIST) backdoor, first seen July 2024 and shared with Interlock intrusions; NetSupport assessed likely; signed OysterLoader binaries. [1][13][17][18][20]</li>
+          <li><strong>Scheduled tasks:</strong> a task named "AlphaSecurity" (IBM); in one 2026 incident the LIONSHARE tunneler ran every 12 hours as SYSTEM via rundll32 loading red.dll (Mandiant). [15][17]</li>
+          <li><strong>Credential access and discovery:</strong> secretsdump; ntdsutil backups of NTDS.dit to the temp_l0gs folder; PowerView. [1][13]</li>
+          <li><strong>Lateral movement:</strong> RDP, PsExec, PuTTY and SSH, PowerShell and WMI; Cobalt Strike. [1]</li>
+          <li><strong>Exfiltration:</strong> AzCopy and Azure Storage Explorer, MEGA, WinSCP; staging in C:\in and C:\out; one At-Bay case moved about 100,000 files with AzCopy. [1][30]</li>
+          <li><strong>Defence evasion and impact:</strong> wevtutil log clearing; shadow-copy deletion; a domain-wide password reset immediately before encryption; Wake-on-LAN to reach powered-off hosts; the SILENTKILL script; at the British Library, servers were destroyed to block recovery and forensics. [8][29][30]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Encryptor</div>
+        <ul class="content-list">
+          <li><strong>Build:</strong> 64-bit Windows PE compiled with MinGW/GCC, using LibTomCrypt. [1][24]</li>
+          <li><strong>Scheme:</strong> code-level analyses (Kookmin University and KISA, Gen Digital, Recorded Future) show AES-256-CTR file encryption with per-file keys from a ChaCha20-based PRNG, wrapped by an embedded per-sample RSA-4096 OAEP public key and stored in a 0x40C-byte footer. CISA and HHS describe the scheme as "4096-bit RSA encryption key with the ChaCha20 algorithm"; the code analyses are the more precise description. [1][2][25][26]</li>
+          <li><strong>Speed:</strong> intermittent and multithreaded. Files under 1 MiB are fully encrypted; larger files in chunks (four 1 MiB blocks for files of 4 MiB or more). [26]</li>
+          <li><strong>Output:</strong> .rhysida extension; system-folder and extension exclusion lists; wallpaper change; PowerShell self-deletion; drive order changed in builds after 1 July 2023. [24][25]</li>
+          <li><strong>Linux/ESXi:</strong> ELF variant observed around November 2023, targeting /vmfs/volumes and standard Linux paths while skipping ESXi boot.cfg; arguments include -d (directory), -sr (self-remove), nobg and -md5. Fortinet saw ESXi hosts encrypted first in one incident. [28][29]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Decryptor Availability</div>
+        <div class="conf conf-confirmed">Confirmed: public decryptor for early Windows builds</div>
+        <p>In early builds the PRNG was seeded with a predictable time-based value, so file modification times allow the seed, key and IV to be regenerated. Kookmin University and KISA published the method (arXiv, February 2024) and KISA released a free Windows decryptor hosted on its own site; Emsisoft's Fabian Wosar noted it works only on files encrypted by the Windows encryptor. Recorded Future reported in October 2024 that builds from June 2024 seed the PRNG from runtime process data and are not vulnerable; that statement comes from a report this profile could not re-read in full and is carried as CREDIBLE. No newer public decryptor exists. [18][26][27]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">CIS Exclusion</div>
+        <p>No source documents a keyboard-layout or language kill switch in the encryptor. The code-level analyses reviewed (CISA, Gen Digital, Kookmin/KISA, Kaspersky, Fortinet, Trend Micro, Recorded Future) say nothing about GetKeyboardLayoutList or locale checks. Claims of CIS avoidance are about targeting, not binary behaviour: HHS says victim geography "loosely aligns" with CIS avoidance; ransomware.live records no CIS victim among 42 countries; Trend Micro's detection telemetry led with Jordan, the United States and Indonesia. This is absence of evidence. A current sample's import table and strings should be checked directly before the point is asserted either way. [2][24][29][45] <span class="conf conf-inference" style="margin-left:6px;">Analyst inference: targeting-level avoidance only</span></p>
+      </div>
+    </section>
+
+    <!-- SECTION 05: DEFENSIVE MAPPING -->
+    <section class="section" id="defensive">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Defensive Mapping</h2>
+      </div>
+
+      <p>This section translates reporting into defender action items. Rows drawn from the CISA, FBI and MS-ISAC advisory are <strong>Confirmed</strong>; rows drawn from vendor intrusion reporting are <strong>Credible</strong>. The 2024 to 2026 shift to malvertising means the highest-value controls are now on the endpoint and the browser rather than the VPN edge, although the VPN vector has not gone away.</p>
+
+      <div class="subsection">
+        <div class="subsection-title">MITRE ATT&amp;CK Techniques: Priority Set</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Technique</th><th>Tactic</th><th>Rhysida usage</th><th>Defender Action</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1189/" target="_blank">T1189</a> Drive-by Compromise</td><td>Initial Access</td><td>Search-ad and SEO-poisoned fake installers (Teams, Zoom, PuTTY) delivering OysterLoader</td><td>Block software downloads outside approved repositories; ad-blocking on managed browsers; alert on signed binaries from unknown publishers</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1553/002/" target="_blank">T1553.002</a> Subvert Trust Controls: Code Signing</td><td>Defense Evasion</td><td>47 fraudulently obtained certificates tracked by Expel through 2025; Fox Tempest service seized May 2026</td><td>Do not treat a valid signature as trust; use reputation and publisher allow-lists; ingest Microsoft certificate revocations</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1078/" target="_blank">T1078</a> Valid Accounts</td><td>Initial Access</td><td>Compromised credentials to VPN and remote services lacking MFA</td><td>Phishing-resistant MFA on every remote path; disable legacy VPN accounts; alert on first-seen geography</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1133/" target="_blank">T1133</a> External Remote Services</td><td>Initial Access / Persistence</td><td>Terminal Services and VPN entry (British Library); AnyDesk for return access</td><td>Inventory and restrict remote-access tools; block unapproved RMM binaries</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1003/003/" target="_blank">T1003.003</a> OS Credential Dumping: NTDS</td><td>Credential Access</td><td>ntdsutil backups of NTDS.dit to temp_l0gs; secretsdump</td><td>Alert on ntdsutil and vssadmin from non-admin hosts; tier-0 isolation for domain controllers</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1021/001/" target="_blank">T1021.001</a> Remote Services: RDP</td><td>Lateral Movement</td><td>RDP and PsExec after entry</td><td>Segment networks; block lateral RDP; require MFA internally</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1053/005/" target="_blank">T1053.005</a> Scheduled Task</td><td>Persistence</td><td>"AlphaSecurity" task; LIONSHARE tunneler every 12 hours via rundll32</td><td>Baseline scheduled tasks; alert on rundll32 loading DLLs from System32\config</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1567/002/" target="_blank">T1567.002</a> Exfiltration to Cloud Storage</td><td>Exfiltration</td><td>AzCopy and Azure Storage Explorer to attacker storage; MEGA; WinSCP</td><td>Block AzCopy and MEGA except where approved; alert on outbound volume to new storage accounts</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1531/" target="_blank">T1531</a> Account Access Removal</td><td>Impact</td><td>Domain-wide password reset immediately before encryption</td><td>Alert on bulk password resets; keep offline break-glass credentials</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1490/" target="_blank">T1490</a> Inhibit System Recovery</td><td>Impact</td><td>Shadow-copy deletion; server destruction at the British Library</td><td>Immutable offline backups; test restores for ESXi and domain controllers</td></tr>
+              <tr><td class="mono"><a href="https://attack.mitre.org/techniques/T1486/" target="_blank">T1486</a> Data Encrypted for Impact</td><td>Impact</td><td>Intermittent multithreaded encryption; Windows and Linux/ESXi builds</td><td>EDR ransomware-behaviour detection on ESXi and Linux, not only Windows</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="attack-nav-link" style="margin:12px 0 4px;padding:10px 14px;border-left:3px solid var(--gray-600);font-size:13px;line-height:1.5;">
+          <strong>Full technique matrix (external):</strong> <a href="https://mitre-attack.github.io/attack-navigator/#layerURL=https://www.ransomware.live/attack-navigator/rhysida" target="_blank" rel="noopener">Open the interactive MITRE ATT&amp;CK Navigator layer for Rhysida</a>. Built and maintained by ransomware.live from its TTP matrix; opens on MITRE's Navigator site. Use it for techniques only: MITRE group records can merge operator and affiliate identities, and this project does not import them as an authority on organization.
+        </div>
+        <p style="font-size:12px;color:var(--gray-600);">Curated for detection and hardening value; not an exhaustive mapping.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Linked Advisories</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Advisory</th><th>Date</th><th>Title</th><th>Defender Takeaway</th></tr></thead>
+            <tbody>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-319a" target="_blank">CISA / FBI / MS-ISAC AA23-319A</a></td><td>15 Nov 2023, updated 30 Apr 2025</td><td>#StopRansomware: Rhysida Ransomware</td><td>TTPs, IOCs, Gootloader addition; the only dedicated government advisory</td></tr>
+              <tr><td class="mono"><a href="https://www.hhs.gov/sites/default/files/rhysida-ransomware-sector-alert-tlpclear.pdf" target="_blank">HHS HC3 Sector Alert</a></td><td>Aug 2023</td><td>Rhysida Ransomware</td><td>Healthcare-specific warning after Prospect Medical</td></tr>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-249a-0" target="_blank">CISA / FBI / MS-ISAC AA22-249A</a></td><td>Sep 2022</td><td>#StopRansomware: Vice Society</td><td>Predecessor tradecraft, PrintNightmare, education targeting</td></tr>
+              <tr><td class="mono"><a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa25-203a" target="_blank">CISA / FBI AA25-203A</a></td><td>Jul 2025</td><td>#StopRansomware: Interlock Ransomware</td><td>Sibling brand; notes similarities to Rhysida</td></tr>
+              <tr><td class="mono"><a href="https://blogs.microsoft.com/on-the-issues/2026/05/19/disrupting-fox-tempest-a-cybercrime-service/" target="_blank">Microsoft DCU</a></td><td>19 May 2026</td><td>Disrupting Fox Tempest</td><td>Certificate revocations; treat signed installers from ad links as untrusted</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Top Defensive Priorities</div>
+        <div class="callout callout-success">
+          <strong>If you do only five things:</strong> (1) stop users installing software from search results, because that is where 2024 to 2026 intrusions start, (2) put phishing-resistant MFA on every VPN and remote-desktop path, (3) alert on ntdsutil, bulk password resets and AzCopy, the three loudest signals before encryption, (4) keep immutable offline backups and rehearse ESXi restore, and (5) if hit, assume HR and finance shares were taken first and prepare identity-document notifications before the seven-day auction ends.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06: FINANCIAL -->
+    <section class="section" id="financial">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Financial Infrastructure</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Payment Model</div>
+        <p>Bitcoin only; no Monero option is documented. The demand is set per victim inside the Tor portal and does not appear in the ransom note. No Rhysida payment address appears in any government advisory, and public trackers list none attributed with confidence. Payment control sits with the operator, which is consistent with the closed-crew reading in Section 03. [1][2]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">On-Chain Analysis: A Documented Gap</div>
+        <div class="conf conf-confirmed">Confirmed: no published blockchain analysis of Rhysida</div>
+        <p>Site-scoped searches of TRM Labs, Chainalysis and Elliptic on 29 October 2026 found no blog, report or case study naming Rhysida wallets, laundering paths or revenue. Secondary coverage of Chainalysis' February 2026 ransomware report names LockBit, BlackCat and Scattered Spider and does not mention Rhysida, Vice Society, Interlock or Vanilla Tempest; the report itself could not be read directly. No public wallet clustering connects Vice Society and Rhysida payments. Revenue is unknown. The only financial tracing in the public record is adjacent: Microsoft's Fox Tempest investigation identified wallets used by the signing service and "clear links tying the actor to ransomware affiliates ... including INC, Qilin, Akira, and others", with Vanilla Tempest a customer from June 2025. The filings index and service declaration contain no Vanilla Tempest payment tracing. [5][6][47]</p>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">Vendor on-chain reports</div>
+            <div class="metric-val">0</div>
+            <div class="metric-note">TRM, Chainalysis, Elliptic (searched 29 Oct 2026)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Public payment confirmations</div>
+            <div class="metric-val">0</div>
+            <div class="metric-note">A widely repeated "one confirmed payment" (Kronick, Aug 2024) has no support in the victim's own notice</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Public refusals</div>
+            <div class="metric-val">6+</div>
+            <div class="metric-note">British Library, Insomniac, Columbus, Port of Seattle, Maryland MTA, Berlin</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Enforcement Weather: Services This Operation Depends On</div>
+        <p>The documented dependencies are on the delivery side, not the cash-out side. The Fox Tempest signing service was seized on 19 May 2026 (signspace[.]cloud, over 1,000 certificates revoked, Europol EC3 and the FBI assisting, Resecurity supporting); Microsoft had already revoked over 200 certificates in early October 2025. Neither action touched the leak site, the portal or any wallet, and listings continued (Berlin in August, Anne Arundel in October). The cash-out chain for Rhysida proceeds is undocumented in open source. [4][6][21]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sanctions Status</div>
+        <p>No OFAC, UK or EU designation names Rhysida, Vice Society, any vendor-tracked operator name, any individual or any wallet as of 29 October 2026. OFAC's 2021 advisory on ransomware payments applies generally, but a payment to Rhysida is not in itself a transaction with a designated party. [48]</p>
+      </div>
+    </section>
+
+    <!-- SECTION 07: VICTIMS -->
+    <section class="section" id="victims">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Victim Profile and Targeting</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Volume (two reads, 29 October 2026)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source</th><th>Count</th><th>Coverage</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>ransomware.live group page</td><td>307</td><td>June 2023 to 29 Oct 2026</td><td>42 countries; US 133, Canada 20, Germany 13, UK 10, Australia 8 [45]</td></tr>
+              <tr><td>Internal victim database <span class="internal-badge">Internal</span></td><td>230</td><td>1 Jan 2024 to 29 Oct 2026</td><td>Analyst-held copy of public leak-site listings; 85 in 2024, 94 in 2025, 51 in 2026 to date; last collection run 29 Oct 2026 [46]</td></tr>
+              <tr><td>IBM X-Force</td><td>About 80 (2025)</td><td>Calendar 2025</td><td>"Around 80 victims each" for Rhysida and Interlock, majority US [17]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--gray-600);">Leak-site listings are claims, not confirmed incidents. The two sources agree within normal collection variance for the overlapping period. Aggregator figures claiming verified-incident and paid/refused counts could not be checked and are not used.</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Volume Over Time</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Period</th><th>Listings</th><th>Read</th></tr></thead>
+            <tbody>
+              <tr><td>2023 (June to December)</td><td>About 77</td><td>Lifetime 307 less 230 since 2024. Launch burst: about 20 listings in May and 17 in June 2023 per Check Point [13]</td></tr>
+              <tr><td>2024</td><td>85</td><td>Peak August (18), driven by the US government and healthcare cluster <span class="internal-badge">Internal</span></td></tr>
+              <tr><td>2025</td><td>94</td><td>Flat first half (8 to 9 a month), dip in summer (3 to 6), rebound October to December (11 to 13) <span class="internal-badge">Internal</span></td></tr>
+              <tr><td>2026, January to July</td><td>16</td><td>Lowest sustained period on record: 1 to 6 a month <span class="internal-badge">Internal</span></td></tr>
+              <tr><td>2026, August to 29 October</td><td>35</td><td>7, 12, 16: close to nine times the prior 90 days <span class="internal-badge">Internal</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The 2026 shape matters for the trajectory read. The January to July trough coincides with the Fox Tempest seizure (May) and the preceding certificate revocations (October 2025); the August to October surge follows them. Either the delivery-chain disruption had no lasting effect, or the crew retooled within roughly three months. Leak-site timing lags intrusions by weeks, so part of the surge reflects intrusions from June and July. [4][21][46] <span class="conf conf-inference" style="margin-left:6px;">Analyst inference</span></p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Sector Targeting</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sector</th><th>ransomware.live (lifetime)</th><th>Internal database (2024 to 2026)</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td>Education</td><td>58</td><td>23</td><td>Dominant in 2023, inherited from Vice Society; share falling since</td></tr>
+              <tr><td>Healthcare</td><td>51</td><td>41</td><td>Largest sector since 2024; Prospect, Lurie, Cookeville Regional, Valley Health Team</td></tr>
+              <tr><td>Professional and business services</td><td>46</td><td>39</td><td>Law firms prominent in the 2026 surge (Gress Clark Young, Reed and Giordano, Sanders Law Group)</td></tr>
+              <tr><td>Government and defense</td><td>33</td><td>33</td><td>Chilean Army, Columbus, Port of Seattle, Oregon DEQ, Maryland MTA, Stuttgart, Berlin, Anne Arundel, Machelen</td></tr>
+              <tr><td>Manufacturing</td><td>32</td><td>24</td><td>Stelia Aerospace, DR.SCHNELL, Line2Line</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--gray-600);">Sector labels differ between the two sources (the internal database splits "Business Services" and "Professional Services", and "Government", "Public Sector" and "Government &amp; Defense"; the figures above combine them). Both read 29 October 2026. [45][46]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Geographic Distribution</div>
+        <p>United States first by a wide margin: 133 of 307 lifetime listings (43 percent) on ransomware.live, and 61 percent of listings with a known country in the internal database (116 of 190). Five Eyes countries account for 77 percent of known-country listings since 2024. Canada, Germany, the United Kingdom and Australia follow. Early victims (summer 2023) were more than half European per Fortinet; the 2026 surge is US and German. Outliers include Chile (Chilean Army, 2023), Kuwait (Ministry of Health), the Philippines and, on 26 October 2026, Malaysia (MISC Group). No CIS country appears. [28][45][46] <span class="internal-badge">Internal</span></p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Notable Named Victims</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Victim</th><th>Sector</th><th>Date</th><th>Impact and confidence</th></tr></thead>
+            <tbody>
+              <tr><td>Chilean Army (Ejercito de Chile)</td><td>Government / military</td><td>May to Jun 2023</td><td>First high-profile listing; files leaked 15 June 2023. CONFIRMED (listing and leak); CREDIBLE (phishing entry) [13][35]</td></tr>
+              <tr><td>Prospect Medical Holdings</td><td>Healthcare</td><td>Aug 2023</td><td>Multi-state hospital disruption; prompted the HHS sector alert. CONFIRMED [2][44]</td></tr>
+              <tr><td>British Library</td><td>Government-funded institution</td><td>Oct to Nov 2023</td><td>Months-long outage; servers destroyed; about 600 GB published; the most detailed public incident review of any Rhysida attack. CONFIRMED [8]</td></tr>
+              <tr><td>Lurie Children's Hospital</td><td>Healthcare (paediatric)</td><td>Feb 2024</td><td>60 BTC demand for a children's hospital; no stated exclusion for paediatric care. CONFIRMED [44]</td></tr>
+              <tr><td>City of Columbus, Ohio</td><td>Local government</td><td>Jul 2024</td><td>About 500,000 residents notified; 3.1 of a claimed 6.5 TB posted after refusal. CONFIRMED [44]</td></tr>
+              <tr><td>Port of Seattle / SEA airport</td><td>Critical infrastructure</td><td>Aug to Sep 2024</td><td>Airport systems disrupted; 100 BTC demand refused; data posted. CONFIRMED [44]</td></tr>
+              <tr><td>Maryland DOT / MTA</td><td>Transport</td><td>Aug to Sep 2025</td><td>Paratransit disruption; 30 BTC refused. CONFIRMED [41]</td></tr>
+              <tr><td>Berlin state administration</td><td>State government</td><td>Aug to Sep 2026</td><td>5.79 TB, about 1.44 million files, published after refusal; exfiltration 7 to 12 August, disconnection 14 August; LKA and prosecutor investigating; Berlin: "no evidence of connections to Russia", though it "cannot be ruled out". CONFIRMED [37][38]</td></tr>
+              <tr><td>Anne Arundel County, Maryland</td><td>Local government</td><td>Oct 2026</td><td>Listed 9 October: 814,500 files, 2.6 TB, 25 BTC; county confirms unauthorised access and copying from "a limited number of systems"; separate from its January 2025 incident; payment status unknown. CONFIRMED (listing and breach); outcome OPEN [39]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info">
+          <strong>Why Berlin matters analytically:</strong> it is the first Rhysida attack on a European capital's administration, it was timed weeks before a state election, and the full dataset was dumped rather than auctioned once refused. The crew demonstrated it will burn a 5.79 TB dataset for signalling value when no buyer or payer appears. That raises the credibility of its threats to later victims at zero cost to the crew. <span class="conf conf-inference" style="margin-left:6px;">Analyst inference</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Targeting Criteria and Victim Size</div>
+        <p>CISA describes "targets of opportunity" across education, healthcare, manufacturing, IT and government. There is no published rule against hospitals, children's hospitals or public bodies, and the record shows none is applied. Malvertising delivery since 2024 makes selection less deliberate: the victim is whoever installs the trojanised tool. Trend Micro's sample of 71 victims (June 2023 to January 2024) was 53.5 percent small business, 21.1 percent mid-sized and 14.1 percent enterprise; that figure is dated and single-source. The 2026 surge skews toward public bodies and law firms, which are high-disclosure sectors, so part of the apparent shift may be reporting rather than targeting. [1][29][46] <span class="conf conf-credible" style="margin-left:6px;">Credible</span></p>
+      </div>
+    </section>
+
+    <!-- SECTION 08: ENFORCEMENT -->
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Law Enforcement and Regulatory Response</h2>
+      </div>
+
+      <p>After three and a half years of Rhysida and five of the operator cluster, there is no criminal action anywhere in the public record. Searches on 29 October 2026 found no arrest, indictment, OFAC, UK or EU designation, Rewards for Justice offer, or infrastructure seizure tied to Rhysida, Vice Society, VICE SPIDER, GOLD VICTOR or Vanilla Tempest at any time, with particular attention to June through October 2026. Confidence that nothing exists is moderate, since this is a search-based negative. [48] <span class="conf conf-confirmed" style="margin-left:6px;">Confirmed: nothing public</span></p>
+
+      <div class="subsection">
+        <div class="subsection-title">What Does Exist</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Category</th><th>Action</th><th>Date</th><th>Effect on the operation</th></tr></thead>
+            <tbody>
+              <tr><td>Government advisory</td><td>CISA / FBI / MS-ISAC AA23-319A, updated with Gootloader IOCs</td><td>15 Nov 2023; 30 Apr 2025</td><td>Defensive only [1]</td></tr>
+              <tr><td>Sector alert</td><td>HHS HC3 Rhysida sector alert</td><td>Aug 2023</td><td>Defensive only [2]</td></tr>
+              <tr><td>Private disruption</td><td>Microsoft revoked over 200 certificates used to sign malicious Teams installers; Vanilla Tempest "more recently has been primarily deploying Rhysida ransomware"</td><td>Early Oct 2025</td><td>Delivery chain only; listings continued [21]</td></tr>
+              <tr><td>Civil action</td><td>Microsoft Corp. v. John Doe 1, John Doe 2 a/k/a SamCodeSign a/k/a Fox Tempest, and John Does 3 and 4 a/k/a Vanilla Tempest, 26 Civ. 3737 (S.D.N.Y., Judge Abrams). TRO 8 May 2026, extended 12 May; unsealed 19 May; preliminary injunction signed 22 May 2026. signspace[.]cloud seized; over 1,000 certificates revoked. Europol EC3 and FBI collaborated; Resecurity assisted. Hickey declaration ties Teams-download[.]buzz, Teams-install[.]run and Teams-download[.]top to John Does 3 and 4</td><td>May 2026</td><td>First court document naming the Rhysida operators (as Vanilla Tempest); supplier removed; no effect on core infrastructure [4][5][6]</td></tr>
+              <tr><td>National investigation</td><td>Berlin LKA, public prosecutor and BSI investigating the Berlin attack</td><td>Aug 2026 onward</td><td>No public result [37]</td></tr>
+              <tr><td>Decryptor</td><td>KISA / Kookmin University free Windows decryptor for early builds</td><td>Feb 2024</td><td>Closed by the crew's PRNG change within months [18][27]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Reading the Record</div>
+        <p>Every action to date has targeted a supplier (certificates, the signing service) or defenders (advisories), never the crew, its leak site, its portal or its money. The Microsoft case is the closest the public record comes to naming the operators and it is a civil matter against anonymous defendants. For a crew that has hit a national library, a major airport, two state transport agencies, a European capital and multiple children's hospitals, the absence of any criminal, sanctions or reward action is itself a finding. [4][5] <span class="conf conf-inference" style="margin-left:6px;">Analyst inference</span></p>
+      </div>
+    </section>
+
+    <!-- SECTION 09: ATTRIBUTION -->
+    <section class="section" id="attribution">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Attribution and State Nexus</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Jurisdiction Assessment</div>
+        <div class="conf conf-credible">Credible: Russian-speaking eCrime</div>
+        <p>The indicators are thin and all point the same way. Recorded Future reported that the Zabbix monitoring panel on Rhysida's management infrastructure was set to Russian, and that a June 2023 operational-security lapse exposed the leak site's real IP (5.255.106[.]234) before the operators moved from Apache to Nginx. OysterLoader is linked by IBM and Recorded Future to the ITG23 (Trickbot/Conti) developer lineage, which Recorded Future describes as Russia-based while explicitly not presenting that as evidence of Rhysida's own location. No CIS victim is recorded across 42 countries. Reuters characterises the group as one "which researchers say operates from Russia or Eastern Europe". Cynet's December 2023 claim of Russian code comments is unsupported by any evidence in the post and is not used. The ransom note and leak site are in English. [17][18][37][45]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Named Individuals and Handles</div>
+        <p>None. No individual, forum handle, leaked chat, cooperating witness or wanted notice exists for Rhysida, Vice Society or the operator cluster. The only pseudonymous identifiers in the public record are the "John Does 3 and 4" of the Microsoft complaint, and the complaint's service declaration lists only the domains they used. This is the deepest gap in the profile. [5]</p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Russian Intelligence Service (RIS) Nexus</div>
+        <div class="conf conf-confirmed">Confirmed: no source asserts a state nexus</div>
+        <p>No government or vendor has documented a link between Rhysida, Vice Society or VICE SPIDER and the FSB, SVR, GRU or any other service. No advisory or profile claims state tasking, safe harbour or intelligence sharing. CrowdStrike's "SPIDER" suffix denotes eCrime, not a state "BEAR". The Berlin Senate said there was "no evidence of connections to Russia", while it "cannot be ruled out"; German press reported internal suspicion of Russian ties without an official attribution. The pre-election timing of the Berlin attack is a point to monitor, not evidence. [9][37][38]</p>
+        <div class="callout callout-info">
+          <strong>Assessment:</strong> weak, consistent indicators of a Russian-speaking criminal crew operating from a jurisdiction that does not act against it. Nothing shows direction, protection or tasking. Any claim beyond "tolerated safe harbour" would outrun the evidence. <span class="conf conf-inference" style="margin-left:6px;">Analyst inference</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: TRAJECTORY -->
+    <section class="section" id="trajectory">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Trajectory Assessment</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Operational Tempo</div>
+        <p>Rising sharply as of October 2026. After the lowest sustained period on record (16 listings, January to July 2026), the crew posted 35 in the 90 days to 29 October, including the Berlin, Anne Arundel, Valley Health Team, Machelen, Noelker and Hull and ClaimTek Systems listings. Commentary from 2025 calling Rhysida "significantly less active" than peer groups described a trough that has ended. [45][46] <span class="internal-badge">Internal</span></p>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Rebranding Signals</div>
+        <ul class="content-list">
+          <li><strong>Parallel brands, not succession.</strong> Interlock appeared in September 2024 while Rhysida kept operating, so the operator (on CrowdStrike's reading) now runs two brands at once rather than replacing one with another. This is the opposite of the Vice Society pattern. [9][11][31]</li>
+          <li><strong>Payload history.</strong> Zeppelin, HelloKitty/FiveHands, Vice Society, Rhysida, INC, Interlock: the crew has changed payloads five times in five years. Another change is plausible, especially after the May 2026 court action and the Berlin attention. [9][22][23]</li>
+          <li><strong>No exit signal.</strong> Leak site active and posting daily in late October 2026; no shutdown statement; no affiliate dispute or chat leak (consistent with a closed structure). [45]</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Capability Evolution</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Year</th><th>Developments</th></tr></thead>
+            <tbody>
+              <tr><td>2023</td><td>Launch; credential and VPN access; ZeroLogon; PortStarter and SystemBC; vulnerable early encryptor; Linux/ESXi build by November</td></tr>
+              <tr><td>2024</td><td>PRNG fix closes the decryptor route; malvertising and CleanUpLoader infrastructure; Gootloader supply; Supper backdoor appears (July)</td></tr>
+              <tr><td>2025</td><td>Signed OysterLoader through Trusted Signing and other CAs (7 certificates in 2024, 40 or more in 2025 per Expel); Fox Tempest customer from June; Microsoft revocations in October</td></tr>
+              <tr><td>2026</td><td>LIONSHARE tunneler; largest exfiltrations on record (5.79 TB Berlin, 10 TB Stelia); German public-sector focus; survives the Fox Tempest seizure and returns to peak tempo within three months</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Connected Group Cluster</div>
+        <p>Two-tier confidence: the anchor relationship is assessed separately from each extension.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Entity</th><th>Relationship claimed</th><th>Assessed by</th><th>Corroboration and confidence</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Vice Society</strong> (anchor)</td><td>Same operators; predecessor brand</td><td>Sophos, Check Point, Secureworks, Recorded Future, PRODAFT, CrowdStrike, Microsoft</td><td>Multiple independent sources on intrusion and tooling continuity. CONFIRMED [9][10][12][13][16]</td></tr>
+              <tr><td><strong>Interlock</strong> (GOLD EMBRACE, Hive0163)</td><td>Same operator (CrowdStrike); shared developer (PRODAFT); splinter or rebrand (Talos, low confidence); "similarities" (CISA); "nature unknown" (IBM)</td><td>CrowdStrike, PRODAFT, Talos, CISA, IBM, Forescout, Secureworks</td><td>Overlaps are multi-sourced (near-identical exclusion lists, AzCopy exfiltration, Supper backdoor, TAG-124 TDS). Only CrowdStrike asserts one operator; Secureworks and IBM track separately. VENDOR CONFLICT; same-operator claim CREDIBLE [7][9][11][17][31][32]</td></tr>
+              <tr><td><strong>INC Ransom</strong></td><td>Vanilla Tempest deployed INC in US healthcare (September 2024)</td><td>Microsoft (X post)</td><td>Single source. CREDIBLE [22]</td></tr>
+              <tr><td><strong>Zeppelin, HelloKitty/FiveHands, BlackCat, Quantum</strong></td><td>Earlier payloads of the same crew</td><td>Microsoft, CrowdStrike, CISA (Vice Society)</td><td>Multiple. CONFIRMED [3][9][23]</td></tr>
+              <tr><td><strong>Storm-0494 / Gootloader</strong></td><td>Access supplier</td><td>Microsoft; CISA (April 2025 update)</td><td>Two sources. CONFIRMED [1][22]</td></tr>
+              <tr><td><strong>ITG23 / OysterLoader developers</strong></td><td>Loader supplier (shared with other groups)</td><td>IBM, Expel, Recorded Future</td><td>Multiple on the loader; exclusivity not established. CONFIRMED (use); CREDIBLE (ITG23 link) [17][18][20]</td></tr>
+              <tr><td><strong>UNC6016</strong></td><td>Malvertising access cluster leading to RHYSIDA or NITROGEN</td><td>Google / Mandiant</td><td>Single source. CREDIBLE [15]</td></tr>
+              <tr><td><strong>TAG-124</strong></td><td>Traffic distribution system used by Rhysida, Interlock and others</td><td>Recorded Future</td><td>Single source. CREDIBLE [19]</td></tr>
+              <tr><td><strong>Fox Tempest</strong></td><td>Code-signing supplier; customer since June 2025</td><td>Microsoft, court orders; Expel independently observed signing abuse</td><td>CONFIRMED [5][6][20]</td></tr>
+              <tr><td><strong>Latrodectus</strong></td><td>Co-occurs in OysterLoader campaigns; Supper also delivered by Latrodectus</td><td>Expel, Secureworks</td><td>Two sources on co-occurrence; no operator link asserted. CREDIBLE [10][20]</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="conf-block confirmed"><strong>Formal assessment status:</strong> CrowdStrike (VICE SPIDER), Secureworks (GOLD VICTOR) and Microsoft (Vanilla Tempest) have published operator-level assessments. Mandiant has not published an operator designation for Rhysida; Recorded Future tracks the brand by name only. The Interlock question is the live disagreement.</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Key Intelligence Gaps</div>
+        <ul class="content-list">
+          <li>No blockchain forensics: no wallets, laundering paths or revenue estimate from any vendor.</li>
+          <li>No primary evidence for the RaaS label: no advertisement, panel or split.</li>
+          <li>No published binary test for CIS locale checks in current builds.</li>
+          <li>No Mandiant or Recorded Future operator designation.</li>
+          <li>No named individual, handle or leaked communication for the crew.</li>
+          <li>Whether Interlock is the same operator remains contested.</li>
+          <li>The Microsoft SDNY complaint and declarations (not fully read for this profile) may hold Vanilla Tempest infrastructure or payment detail.</li>
+          <li>Leak-site counts are claims; no independent verified-incident count exists.</li>
+        </ul>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Overall Trajectory Indicator</div>
+        <div class="callout callout-alert">
+          <strong>Rising.</strong> Tempo at a record high since August 2026, exfiltration volumes at record size, a demonstrated willingness to publish a capital city's data in full, and two private-sector disruptions absorbed without visible effect. No criminal action in prospect. The crew's exposure is its supplier chain (access, loaders, signing) and its Western-facing extortion plumbing, not its core. <span class="conf conf-inference" style="margin-left:6px;">Analyst inference</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: STRUCTURAL LEVERAGE POINTS -->
+    <section class="section" id="leverage">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Structural Leverage Points</h2>
+      </div>
+
+      <p>This section records where the operation's structure is exposed, on open-source evidence only, and what observable change would show that a given dependency has been degraded. Every point is tied to a cited fact and a measurable indicator. It describes exposure; it does not assign tasks. Priority order reflects impact against reversibility.</p>
+
+      <div class="lp-grid">
+        <div class="lp-card confirmed">
+          <div class="lp-num">Point 1: highest value</div>
+          <div class="lp-title">A single operator-controlled payment and auction channel</div>
+          <div class="lp-row"><strong>Exposure:</strong> one Tor portal sets every price and receives every payment; one leak site runs every auction. No affiliate layer disperses the money. Whatever the RaaS label says, the structure is a closed crew with one cash intake.</div>
+          <div class="lp-row"><strong>Evidence:</strong> CISA on the portal model [1]; Secureworks and CrowdStrike on private operation [9][10]; Rapid7 on the auction mechanics [33].</div>
+          <div class="lp-row"><strong>Indicator:</strong> inbound consolidation from many victims to a small address set once any Rhysida payment address becomes public; auction completion rate ("sold" markers) over time.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CONFIRMED on the model; no wallet is public.</div>
+        </div>
+        <div class="lp-card confirmed">
+          <div class="lp-num">Point 2</div>
+          <div class="lp-title">Dependence on bought-in access and signing</div>
+          <div class="lp-row"><strong>Exposure:</strong> since 2024 the crew's intake has run through third parties: Gootloader operators, the TAG-124 TDS, the UNC6016 malvertising cluster and the Fox Tempest signing service. The May 2026 seizure proved the suppliers are reachable; the three-month trough that followed suggests the dependency is real, and the subsequent surge suggests substitutes exist.</div>
+          <div class="lp-row"><strong>Evidence:</strong> Microsoft DCU and court orders [4][5][6]; Expel certificate tracking [20]; Mandiant UNC6016 [15]; Recorded Future TAG-124 [19]; CISA Gootloader update [1].</div>
+          <div class="lp-row"><strong>Indicator:</strong> listing rate in the 90 days after each supplier action; share of new Rhysida intrusions entering via signed installers versus credentials in vendor case reporting; certificate issuance cadence to the crew's loaders.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CONFIRMED.</div>
+        </div>
+        <div class="lp-card credible">
+          <div class="lp-num">Point 3</div>
+          <div class="lp-title">The buyer side of the auction model</div>
+          <div class="lp-row"><strong>Exposure:</strong> the exclusive-buyer auction only pays if buyers exist. Every public case shows refusal by the victim and publication by the crew; no buyer has ever been identified. If the buyer market is thin or fictional, the auction is a pressure tactic rather than a revenue line, and the crew's income depends entirely on victim payments it cannot publicly evidence.</div>
+          <div class="lp-row"><strong>Evidence:</strong> Rapid7 auction documentation [33]; the demand table in Section 03; absence of any confirmed sale or payment in open source.</div>
+          <div class="lp-row"><strong>Indicator:</strong> ratio of "sold" markers to published datasets; time between auction expiry and publication; any buyer-side identification by researchers.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CREDIBLE on the mechanics; the thin-market reading is ANALYST INFERENCE.</div>
+        </div>
+        <div class="lp-card confirmed">
+          <div class="lp-num">Point 4</div>
+          <div class="lp-title">A crew named in court and nowhere else</div>
+          <div class="lp-row"><strong>Exposure:</strong> Vanilla Tempest is a named defendant in a US federal civil case with a signed preliminary injunction, FBI and Europol participation, and declarations tying specific domains to the defendants. No criminal, sanctions or reward action builds on it. The discovery and service record is the most advanced public attribution of the operators and currently carries no consequence beyond certificate revocation.</div>
+          <div class="lp-row"><strong>Evidence:</strong> Microsoft v. John Doe 1 et al., 26 Civ. 3737 [5]; Microsoft Security Blog on Fox Tempest's cryptocurrency links [6].</div>
+          <div class="lp-row"><strong>Indicator:</strong> any designation, indictment or reward that cites the case; unsealing of further declarations; changes in Teams-installer infrastructure naming after the injunction.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CONFIRMED.</div>
+        </div>
+        <div class="lp-card inference">
+          <div class="lp-num">Point 5</div>
+          <div class="lp-title">Two brands, one developer</div>
+          <div class="lp-row"><strong>Exposure:</strong> if CrowdStrike and PRODAFT are right that one operator or developer runs both Rhysida and Interlock, then shared components (Supper, exclusion lists, the TDS) are single points of failure for both brands, and action against either leak site tests the claim directly.</div>
+          <div class="lp-row"><strong>Evidence:</strong> CrowdStrike VICE SPIDER [9]; PRODAFT March 2025 statement [16]; IBM and Forescout on shared tooling [17][32]; Secureworks and IBM dissent on operator identity [11][17].</div>
+          <div class="lp-row"><strong>Indicator:</strong> correlated tempo changes across the two leak sites; simultaneous tooling changes (new backdoor, new loader) on both; any infrastructure overlap surfaced by a takedown of one.</div>
+          <div class="lp-row"><strong>Confidence:</strong> ANALYST INFERENCE built on a VENDOR CONFLICT.</div>
+        </div>
+        <div class="lp-card credible">
+          <div class="lp-num">Point 6</div>
+          <div class="lp-title">Western-reachable extortion plumbing</div>
+          <div class="lp-row"><strong>Exposure:</strong> contact runs through onionmail.org addresses and the leak site courts journalists by name on its contact form. The crew's pressure model depends on Western media attention, which is an input it does not control. The Berlin case shows it will publish in full when the victim refuses, which removes the auction's leverage on the next victim who reads the record.</div>
+          <div class="lp-row"><strong>Evidence:</strong> Sophos on the contact form [34]; onionmail pattern [1]; Berlin publication [37][38].</div>
+          <div class="lp-row"><strong>Indicator:</strong> turnover of contact addresses in ransom notes; press pickup rate of new listings; victim refusal rate over successive high-profile cases.</div>
+          <div class="lp-row"><strong>Confidence:</strong> CREDIBLE.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Reading this section:</strong> points 1, 2 and 4 are documented by government and court material and vendor primary sources. Point 3 rests on the public record of outcomes. Points 5 and 6 are the analyst's read. None of this page's content draws on closed holdings; the internal victim database used in Sections 01, 07 and 10 is an analyst-held copy of public leak-site listings.
+      </div>
+    </section>
+
+    <!-- SECTION: RECENT REPORTING -->
+    <section class="section" id="recent-reporting">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Recent Reporting <span class="live-badge" style="font-size:10px;vertical-align:middle;">LIVE</span></h2>
+      </div>
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:4px;">
+        Open-source reporting on Rhysida from monitored threat intelligence sources. Refreshed automatically every 8 hours via ransomware.live and major TI blog feeds. Authored analysis above is unaffected by this feed.
+      </p>
+      <div class="feed-grid" id="feed-grid">
+        <div class="feed-loading" id="feed-loading">Loading recent reporting&hellip;</div>
+      </div>
+    </section>
+
+    <!-- SECTION: SOURCES -->
+    <section class="section" id="sources">
+      <div class="section-header">
+        <span class="section-num"></span>
+        <h2 class="section-title">Sources</h2>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('open')">
+        &#9660; Show / Hide Source List
+      </button>
+      <div class="source-list">
+        <div class="source-category">Government, Court and Law Enforcement</div>
+        <div class="source-item"><span class="source-num">[1]</span><div>CISA, FBI and MS-ISAC: <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-319a" target="_blank">"#StopRansomware: Rhysida Ransomware"</a>, AA23-319A (15 November 2023, updated 30 April 2025); <a href="https://www.cisa.gov/sites/default/files/2025-04/aa23-319a-stopransomware-rhysida-ransomware_2.pdf" target="_blank">April 2025 PDF</a></div></div>
+        <div class="source-item"><span class="source-num">[2]</span><div>HHS Health Sector Cybersecurity Coordination Center: <a href="https://www.hhs.gov/sites/default/files/rhysida-ransomware-sector-alert-tlpclear.pdf" target="_blank">"Rhysida Ransomware" sector alert</a> (August 2023)</div></div>
+        <div class="source-item"><span class="source-num">[3]</span><div>CISA, FBI and MS-ISAC: <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-249a-0" target="_blank">"#StopRansomware: Vice Society"</a>, AA22-249A (September 2022)</div></div>
+        <div class="source-item"><span class="source-num">[4]</span><div>Microsoft On the Issues: <a href="https://blogs.microsoft.com/on-the-issues/2026/05/19/disrupting-fox-tempest-a-cybercrime-service/" target="_blank">"Disrupting Fox Tempest, a cybercrime service"</a> (19 May 2026)</div></div>
+        <div class="source-item"><span class="source-num">[5]</span><div>Microsoft Digital Crimes Unit, notice of pleadings: <a href="https://www.noticeofpleadings.net/OpFauxSign/index.html" target="_blank">Microsoft Corp. v. John Doe 1, John Doe 2 a/k/a SamCodeSign a/k/a "Fox Tempest", and John Does 3-4 a/k/a "Vanilla Tempest"</a>, 26 Civ. 3737 (S.D.N.Y.): TRO 8 May 2026, preliminary injunction 22 May 2026, Hickey declaration</div></div>
+        <div class="source-item"><span class="source-num">[6]</span><div>Microsoft Security Blog: <a href="https://www.microsoft.com/en-us/security/blog/2026/05/19/exposing-fox-tempest-a-malware-signing-service-operation/" target="_blank">"Exposing Fox Tempest: a malware signing service operation"</a> (19 May 2026)</div></div>
+        <div class="source-item"><span class="source-num">[7]</span><div>CISA and FBI: <a href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa25-203a" target="_blank">"#StopRansomware: Interlock Ransomware"</a>, AA25-203A (July 2025)</div></div>
+        <div class="source-item"><span class="source-num">[8]</span><div>British Library: <a href="https://www.bl.uk/files/v5dwkion/production/99206a2d1e9f07b35712b78f7d75fbb09560c08d.pdf/british-library-cyber-incident-review-8-march-2024.pdf" target="_blank">"Learning Lessons from the Cyber-Attack: British Library cyber incident review"</a> (8 March 2024)</div></div>
+        <div class="source-category">Vendor and Researcher Reporting</div>
+        <div class="source-item"><span class="source-num">[9]</span><div>CrowdStrike Adversary Universe: <a href="https://www.crowdstrike.com/adversaries/vice-spider/" target="_blank">VICE SPIDER</a> (read 29 October 2026)</div></div>
+        <div class="source-item"><span class="source-num">[10]</span><div>Sophos Counter Threat Unit (formerly Secureworks): <a href="https://www.sophos.com/en-us/threat-profiles/gold-victor" target="_blank">GOLD VICTOR threat profile</a> (read 29 October 2026)</div></div>
+        <div class="source-item"><span class="source-num">[11]</span><div>Sophos Counter Threat Unit: <a href="https://www.sophos.com/en-us/threat-profiles/gold-embrace" target="_blank">GOLD EMBRACE threat profile</a> (Interlock)</div></div>
+        <div class="source-item"><span class="source-num">[12]</span><div>Sophos X-Ops, Colin Cowie and Morgan Demboski: <a href="https://www.sophos.com/en-us/blog/vice-society-and-rhysida-ransomware" target="_blank">"Same threats, different ransomware: Vice Society and Rhysida"</a> (November 2023)</div></div>
+        <div class="source-item"><span class="source-num">[13]</span><div>Check Point Research: <a href="https://research.checkpoint.com/2023/the-rhysida-ransomware-activity-analysis-and-ties-to-vice-society/" target="_blank">"The Rhysida Ransomware: Activity Analysis and Ties to Vice Society"</a> (August 2023)</div></div>
+        <div class="source-item"><span class="source-num">[14]</span><div>Palo Alto Networks Unit 42: <a href="https://unit42.paloaltonetworks.com/threat-actor-groups-tracked-by-palo-alto-networks-unit-42/" target="_blank">"Threat Actor Groups Tracked by Palo Alto Networks Unit 42"</a> (Squeaking Scorpius entry)</div></div>
+        <div class="source-item"><span class="source-num">[15]</span><div>Google Cloud Threat Intelligence (Mandiant): <a href="https://cloud.google.com/blog/topics/threat-intelligence/ransomware-ttps-shifting-threat-landscape" target="_blank">"Ransomware Under Pressure: Tactics, Techniques, and Procedures in a Shifting Threat Landscape"</a> (16 March 2026)</div></div>
+        <div class="source-item"><span class="source-num">[16]</span><div>PRODAFT: <a href="https://github.com/prodaft/malware-ioc/blob/master/ArcaneMantis/README.md" target="_blank">Arcane Mantis IOC repository</a>; PRODAFT statement on X on the Interlock and Rhysida shared developer (March 2025)</div></div>
+        <div class="source-item"><span class="source-num">[17]</span><div>IBM X-Force, Golo Muhr: <a href="https://www.ibm.com/think/x-force/interlock-and-rhysida-within-the-ransonware-ecosystem" target="_blank">"Interlock and Rhysida within the ransomware ecosystem"</a> (12 June 2026)</div></div>
+        <div class="source-item"><span class="source-num">[18]</span><div>Recorded Future Insikt Group: <a href="https://www.recordedfuture.com/research/outmaneuvering-rhysida-advanced-threat-intelligence-shields-critical-infrastructure-ransomware" target="_blank">"Outmaneuvering Rhysida"</a> (9 October 2024); full PDF cta-2024-1009 not re-read for this profile</div></div>
+        <div class="source-item"><span class="source-num">[19]</span><div>Recorded Future Insikt Group: TAG-124 traffic distribution system report, cta-2025-0130 (January 2025)</div></div>
+        <div class="source-item"><span class="source-num">[20]</span><div>Expel: <a href="https://expel.com/blog/certified-oysterloader-tracking-rhysida-ransomware-gang-activity-via-code-signing-certificates/" target="_blank">"Certified OysterLoader: tracking Rhysida ransomware gang activity via code-signing certificates"</a> (31 October 2025)</div></div>
+        <div class="source-item"><span class="source-num">[21]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-disrupts-ransomware-attacks-targeting-teams-users/" target="_blank">"Microsoft disrupts ransomware attacks targeting Teams users"</a> (16 October 2025), reporting Microsoft Threat Intelligence</div></div>
+        <div class="source-item"><span class="source-num">[22]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-vanilla-tempest-hackers-hit-healthcare-with-inc-ransomware/" target="_blank">"Microsoft: Vanilla Tempest hackers hit healthcare with INC ransomware"</a> (September 2024), reporting Microsoft Threat Intelligence</div></div>
+        <div class="source-item"><span class="source-num">[23]</span><div>Microsoft Security Blog: <a href="https://www.microsoft.com/en-us/security/blog/2022/10/25/dev-0832-vice-society-opportunistic-ransomware-campaigns-impacting-us-education-sector/" target="_blank">"DEV-0832 (Vice Society) opportunistic ransomware campaigns impacting US education sector"</a> (25 October 2022, April 2023 update renaming to Vanilla Tempest)</div></div>
+        <div class="source-item"><span class="source-num">[24]</span><div>Kaspersky Securelist: <a href="https://securelist.com/crimeware-report-gopix-lumar-rhysida/110871/" target="_blank">Crimeware report covering Rhysida</a> (2023)</div></div>
+        <div class="source-item"><span class="source-num">[25]</span><div>Gen Digital: <a href="https://www.gendigital.com/blog/insights/research/rhysida-ransomware-technical-analysis" target="_blank">"Rhysida ransomware technical analysis"</a> (2023)</div></div>
+        <div class="source-item"><span class="source-num">[26]</span><div>Kookmin University and KISA: <a href="https://arxiv.org/html/2402.06440v1" target="_blank">"A Method for Decrypting Data Infected with Rhysida Ransomware"</a>, arXiv 2402.06440 (February 2024)</div></div>
+        <div class="source-item"><span class="source-num">[27]</span><div>BleepingComputer: <a href="https://www.bleepingcomputer.com/news/security/free-rhysida-ransomware-decryptor-for-windows-exploits-rng-flaw/" target="_blank">"Free Rhysida ransomware decryptor for Windows exploits RNG flaw"</a> (12 February 2024)</div></div>
+        <div class="source-item"><span class="source-num">[28]</span><div>Fortinet FortiGuard Labs: <a href="https://www.fortinet.com/blog/threat-research/ransomware-roundup-rhysida" target="_blank">"Ransomware Roundup: Rhysida"</a> (2023) and Fortinet incident-response white paper on attacker activity data</div></div>
+        <div class="source-item"><span class="source-num">[29]</span><div>Trend Micro: <a href="https://www.trendaisecurity.com/en-us/resources-insights/deep-research/ransomware-spotlight-rhysida" target="_blank">"Ransomware Spotlight: Rhysida"</a> (2024)</div></div>
+        <div class="source-item"><span class="source-num">[30]</span><div>At-Bay: <a href="https://www.at-bay.com/threat-research/rhysida-evading-detection/" target="_blank">"Rhysida: evading detection"</a> (2024)</div></div>
+        <div class="source-item"><span class="source-num">[31]</span><div>Cisco Talos: <a href="https://blog.talosintelligence.com/emerging-interlock-ransomware/" target="_blank">"Emerging Interlock ransomware"</a> (November 2024)</div></div>
+        <div class="source-item"><span class="source-num">[32]</span><div>Forescout: <a href="https://www.forescout.com/blog/a-year-later-interlock-ransomware-keeps-leveling-up/" target="_blank">"A year later, Interlock ransomware keeps leveling up"</a> (2025)</div></div>
+        <div class="source-item"><span class="source-num">[33]</span><div>Rapid7: <a href="https://www.rapid7.com/blog/post/tr-extortion-ecommerce-ransomware-groups-turn-breaches-into-bidding-wars-research/" target="_blank">"Extortion e-commerce: ransomware groups turn breaches into bidding wars"</a> (24 November 2025)</div></div>
+        <div class="source-item"><span class="source-num">[34]</span><div>Sophos: <a href="https://www.sophos.com/en-us/blog/press-and-pressure-ransomware-gangs-and-the-media" target="_blank">"Press and pressure: ransomware gangs and the media"</a> (13 December 2023)</div></div>
+        <div class="source-item"><span class="source-num">[35]</span><div>SOCRadar: <a href="https://socradar.io/blog/threat-profile-rhysida-ransomware/" target="_blank">"Threat Profile: Rhysida Ransomware"</a> (3 August 2023, updated 21 April 2026); leak-site and ransom-note screenshots</div></div>
+        <div class="source-item"><span class="source-num">[36]</span><div>CybelAngel: <a href="https://cybelangel.com/blog/rhysida-ransomware-explained-ttps-iocs-and-how-to-defend-in-2026/" target="_blank">"Rhysida Ransomware Explained: TTPs, IOCs and How to Defend in 2026"</a> (2 September 2026)</div></div>
+        <div class="source-category">Incident Reporting</div>
+        <div class="source-item"><span class="source-num">[37]</span><div>Reuters, Maria Martinez and AJ Vicens: <a href="https://www.reuters.com/world/berlin-city-government-says-it-wont-submit-extortion-after-pre-election-2026-08-28/" target="_blank">"Berlin city government says it won't submit to extortion"</a> (28 August 2026)</div></div>
+        <div class="source-item"><span class="source-num">[38]</span><div>Security Affairs: <a href="https://securityaffairs.com/?p=198545" target="_blank">Berlin refuses 30 Bitcoin ransom; 5.79 TB published</a> (7 September 2026); BleepingComputer (31 August 2026); Borncity (31 August 2026) on the Senate's exfiltration timeline</div></div>
+        <div class="source-item"><span class="source-num">[39]</span><div>The Record: <a href="https://therecord.media/anne-arundel-county-maryland-confirms-data-breach" target="_blank">"Anne Arundel County, Maryland confirms data breach"</a> (October 2026); Cybernews: <a href="https://cybernews.com/news/rhysida-maryland-government-data-breach/" target="_blank">Rhysida Maryland government data breach</a>; GovTech (19 October 2026) on the county's payment statement</div></div>
+        <div class="source-item"><span class="source-num">[40]</span><div>Aviation Business News: <a href="https://aviationbusinessnews.com/cabin/stelia-aerospace-hacked-in-apparent-ransomware-attack/" target="_blank">"Stelia Aerospace hacked in apparent ransomware attack"</a> (29 April 2026)</div></div>
+        <div class="source-item"><span class="source-num">[41]</span><div>GovTech: <a href="https://www.govtech.com/security/maryland-restores-services-pays-no-ransom-after-attack" target="_blank">"Maryland restores services, pays no ransom after attack"</a> (1 October 2025)</div></div>
+        <div class="source-item"><span class="source-num">[42]</span><div>Bitdefender: <a href="https://www.bitdefender.com/en-us/blog/hotforsecurity/hackers-say-they-breached-oregon-agency-officials-deny-the-claim" target="_blank">"Hackers say they breached Oregon agency; officials deny the claim"</a> (17 April 2025)</div></div>
+        <div class="source-item"><span class="source-num">[43]</span><div>heise online: <a href="https://www.heise.de/-11301876" target="_blank">Rhysida claims City of Stuttgart data, 5 BTC demand</a> (May 2026)</div></div>
+        <div class="source-item"><span class="source-num">[44]</span><div>Press coverage of named incidents: BleepingComputer on <a href="https://www.bleepingcomputer.com/news/security/rhysida-claims-ransomware-attack-on-prospect-medical-threatens-to-sell-data/" target="_blank">Prospect Medical</a> (August 2023) and <a href="https://www.bleepingcomputer.com/news/security/rhysida-ransomware-wants-36-million-for-childrens-stolen-data/" target="_blank">Lurie Children's</a> (February 2024); <a href="https://www.computerweekly.com/news/366560432/Internal-documents-leaked-as-Rhysida-claims-responsibility-for-British-Library-ransomware-attack" target="_blank">Computer Weekly</a> on the British Library; <a href="https://www.computing.co.uk/news/4152507/hackers-demand-gbp300-leak-royal-familys-medical-records" target="_blank">Computing</a> on King Edward VII's Hospital; <a href="https://gameinformer.com/news/2023/12/19/insomniac-games-hacked-by-ransomware-group-resulting-in-1-tb-of-leaked-game-info" target="_blank">Game Informer</a> on Insomniac; <a href="https://techcrunch.com/2024/11/04/columbus-says-ransomware-gang-stole-personal-data-of-500000-ohio-residents/" target="_blank">TechCrunch</a> on Columbus; <a href="https://www.theregister.com/security/2024/09/17/rhysida-ships-off-port-of-seattle-data-for-6m/1111756" target="_blank">The Register</a> on the Port of Seattle</div></div>
+        <div class="source-category">Trackers and Internal Data</div>
+        <div class="source-item"><span class="source-num">[45]</span><div>ransomware.live: <a href="https://www.ransomware.live/group/rhysida" target="_blank">Rhysida group page</a> (read 29 October 2026): 307 listings, 42 countries, country and sector breakdown, onion mirror status; <a href="https://www.ransomlook.io/group/rhysida" target="_blank">RansomLook</a> for mirror count</div></div>
+        <div class="source-item"><span class="source-num">[46]</span><div>Internal data <span class="internal-badge">Internal</span>: analyst-held victim database compiled daily from public ransomware.live listings; 230 Rhysida listings, 1 January 2024 to 29 October 2026, last collection run 29 October 2026. Public leak-site claims, not confirmed incidents</div></div>
+        <div class="source-category">Financial and Regulatory Context</div>
+        <div class="source-item"><span class="source-num">[47]</span><div>Chainalysis: <a href="https://www.chainalysis.com/blog/crypto-ransomware-2026/" target="_blank">"Crypto ransomware 2026"</a> (February 2026), as reported by <a href="https://www.theregister.com/2026/02/27/ransomware_chainalysis/" target="_blank">The Register</a> (27 February 2026); site-scoped searches of TRM Labs, Chainalysis and Elliptic (29 October 2026) returned no Rhysida analysis</div></div>
+        <div class="source-item"><span class="source-num">[48]</span><div>US Treasury OFAC: <a href="https://ofac.treasury.gov/sanctions-programs-and-country-information/sanctions-related-to-significant-malicious-cyber-enabled-activities" target="_blank">cyber-related sanctions program</a> (checked 29 October 2026); no Rhysida-related designation</div></div>
+        <div class="source-item"><span class="source-num">[49]</span><div>Malpedia (Fraunhofer FKIE): <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.rhysida" target="_blank">Rhysida (win.rhysida) entry</a></div></div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <footer class="page-footer">
+    Ransomware EDP, Threat Actor Library &nbsp;&bull;&nbsp; Rhysida Profile &nbsp;&bull;&nbsp; Last updated <span id="footer-last-updated">29 October 2026</span><br>
+    Compiled from open-source intelligence and an analyst-held copy of public leak-site listings. All confidence assessments reflect analyst judgment at time of publication.
+    <span class="reno-credit">Developed by Reno</span>
+  </footer>
+
+</main>
+</div><!-- /layout -->
+</main>
+</div><!-- /layout -->
+
+<script>
+// ---------------------------------------------------------------
+// DARK MODE
+// Persists preference in localStorage across page loads.
+// ---------------------------------------------------------------
+(function initTheme() {
+  const root = document.documentElement;
+  let saved = null;
+  try { saved = localStorage.getItem('reno-theme'); } catch (e) {}
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+
+  function updateToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = isDark ? '&#9728; Light' : '&#9790; Dark';
+  }
+
+  updateToggle();
+
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    try { localStorage.setItem('reno-theme', isDark ? 'light' : 'dark'); } catch (e) {}
+    updateToggle();
+  });
+})();
+
+// ---------------------------------------------------------------
+// LIVE DATA LOADER
+// Fetches JSON files written by GitHub Actions on a cron schedule.
+// rhysida.json holds the last six months of Rhysida listings. If any
+// fetch fails (offline, first deploy, localhost), the page silently
+// keeps the static values already in the HTML.
+// ---------------------------------------------------------------
+(async function loadLiveData() {
+  const BASE = './data/';
+
+  try {
+    const [victimsRaw, lastUpdatedRaw, feedRaw] = await Promise.allSettled([
+      fetch(BASE + 'rhysida.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'last-updated.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(BASE + 'ti-feed-rhysida.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    ]);
+
+    let haveVictims = false;
+
+    // --- Six-month count, countries, and last 5 victims strip ---
+    if (victimsRaw.status === 'fulfilled') {
+      const victims = victimsRaw.value;
+      const count = Array.isArray(victims) ? victims.length : (victims.count ?? null);
+
+      if (count !== null && count > 0) {
+        haveVictims = true;
+        document.getElementById('kpi-victim-count').textContent = count.toLocaleString();
+      }
+
+      if (Array.isArray(victims) && victims.length > 0) {
+        const countries = new Set(victims.map(v => v.country).filter(Boolean));
+        if (countries.size > 0) {
+          document.getElementById('kpi-country-count').textContent = countries.size + ' (6 mo)';
+        }
+
+        const sorted = [...victims]
+          .filter(v => v.published || v.date || v.discovered || v.attackdate)
+          .sort((a, b) => {
+            const da = new Date(a.published || a.date || a.discovered || a.attackdate);
+            const db = new Date(b.published || b.date || b.discovered || b.attackdate);
+            return db - da;
+          })
+          .slice(0, 5);
+
+        const strip = document.getElementById('victim-strip');
+        const list  = document.getElementById('victim-list');
+
+        if (sorted.length > 0 && strip && list) {
+          sorted.forEach(v => {
+            const rawDate = v.published || v.date || v.discovered || v.attackdate;
+            const dateStr = rawDate
+              ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              : '';
+            const row = document.createElement('div');
+            row.className = 'victim-row';
+            row.innerHTML =
+              `<span class="victim-name">${v.post_title || v.victim || v.name || 'Unknown'}</span>` +
+              `<span class="victim-meta">` +
+              (dateStr ? `<span class="victim-date">${dateStr}</span>` : '') +
+              (v.country ? `<span class="victim-country">${v.country}</span>` : '') +
+              (v.activity ? `<span class="victim-sector">${v.activity}</span>` : '') +
+              `</span>`;
+            list.appendChild(row);
+          });
+          strip.style.display = 'block';
+        }
+      }
+    }
+
+    // --- Topbar refresh timestamp ---
+    if (lastUpdatedRaw.status === 'fulfilled') {
+      const lu = lastUpdatedRaw.value;
+      const updated = lu.updated ?? lu.timestamp ?? null;
+      if (updated) {
+        const d = new Date(updated);
+        const diffH = Math.round((Date.now() - d.getTime()) / 3600000);
+        const label = diffH < 1
+          ? 'Intelligence data refreshed just now'
+          : diffH === 1
+            ? 'Intelligence data refreshed 1h ago'
+            : diffH < 24
+              ? `Intelligence data refreshed ${diffH}h ago`
+              : `Intelligence data refreshed ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+
+        document.getElementById('topbar-refresh-label').textContent = label;
+        document.getElementById('topbar-live').style.display = 'flex';
+
+        if (haveVictims) {
+          const subLabel = 'Via ransomware.live Pro: ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          document.getElementById('kpi-victim-sub').textContent = subLabel;
+          document.getElementById('kpi-country-sub').textContent = subLabel;
+        }
+      }
+    }
+
+    // --- Recent Reporting feed ---
+    const grid = document.getElementById('feed-grid');
+    const loadingEl = document.getElementById('feed-loading');
+
+    if (feedRaw.status === 'fulfilled' && Array.isArray(feedRaw.value) && feedRaw.value.length > 0) {
+      const items = feedRaw.value.slice(0, 10);
+      if (loadingEl) loadingEl.remove();
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        const dateStr = item.date
+          ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : '';
+        card.innerHTML =
+          `<div class="feed-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>` +
+          `<div class="feed-meta">` +
+          `<span class="feed-source">${item.source}</span>` +
+          (dateStr ? `<span class="feed-date">${dateStr}</span>` : '') +
+          `</div>`;
+        grid.appendChild(card);
+      });
+
+    } else {
+      if (loadingEl) {
+        loadingEl.textContent = 'No recent reporting found in monitored feeds. Feed updates every 8 hours via GitHub Actions.';
+        loadingEl.style.fontStyle = 'italic';
+      }
+    }
+
+  } catch (e) {
+    const loadingEl = document.getElementById('feed-loading');
+    if (loadingEl) loadingEl.remove();
+  }
+})();
+
+// ---------------------------------------------------------------
+// Scroll spy for sidebar section nav
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.section-nav a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector('.section-nav a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(section => observer.observe(section));
+</script>
+
+<script src="groups-data.js"></script>
+<script src="nav.js"></script>
+<script src="../assets/node-library.js?v=7"></script>
+</body>
+</html>
