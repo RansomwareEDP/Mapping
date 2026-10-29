@@ -29,43 +29,43 @@
   var PROVIDERS = [
     {
       slug: 'aeza', name: 'Aeza Group', western: true,
-      chain: 'aurologic GmbH (AS30823, Germany, primary European upstream and colocation); Hetzner (AS24940, Germany); Hurricane Electric (AS6939, US); Zayo (AS8218, US)',
+      chain: 'aurologic GmbH (AS30823, Germany, primary European upstream and colocation); Fiord Networks (AS28917, Lithuania, Frankfurt); GlobalNet (AS31500, Russia); Hetzner (AS24940, Germany); Hurricane Electric (AS6939, US); Zayo (AS8218, US)',
       juris: 'Germany, United States',
-      lever: 'Available and unused. aurologic remained a primary upstream after US, UK, and Australian designations.'
+      lever: 'Available and unused. aurologic remained the dominant upstream of AS210644 and of the NetCrafters migration network (AS203273) through October 2026, after two rounds of US, UK and Australian designations. No EU designation exists, so no EU compulsion pathway applies to aurologic, Hetzner, RIPE NCC or the EU-based LIRs leasing space to Aeza.'
     },
     {
       slug: 'stark', name: 'Stark / THE.Hosting', western: true,
-      chain: 'MIRhosting (Almere, Netherlands), physical colocation and transit to AMS-IX and DE-CIX Frankfurt',
-      juris: 'Netherlands, Germany',
+      chain: 'FBW Networks SAS (AS49434, France), the only material BGP upstream of AS209847 in October 2026; MIRhosting (Almere, Netherlands) was the colocation and transit layer before the May 2026 seizure and is no longer a current neighbour',
+      juris: 'France, Netherlands',
       lever: 'Available. Exercised indirectly through the May 2026 Dutch seizure and arrests rather than through de-peering.'
     },
     {
       slug: 'zservers', name: 'ZServers / XHost', western: true,
-      chain: 'Hostkey (Netherlands) confirmed as at least one upstream via the September 2024 breach; additional transit undocumented',
+      chain: 'Hostkey (Netherlands) confirmed via the September 2024 breach and, in October 2026, via an XHOST reverse zone on Hostkey nameservers and a Vault Dweller OU block announced by HOSTKEY B.V. (AS57043); sponsoring LIR for the XHOST address space is an Omsk-based individual LIR (ru-avm)',
       juris: 'Netherlands',
-      lever: 'Available. Not used: the February 2025 action went straight to sanctions and physical seizure.'
+      lever: 'Available. Not used: the February 2025 action went straight to sanctions and physical seizure. By October 2026 no ZServers ASN remains; the residual lever is Hostkey, which still carries address space of the Estonian Vault Dweller OU (DEDBROPRO), the registrant of the former XHOST ASN.'
     },
     {
       slug: 'dedbropro', name: 'DEDBROPRO', western: true,
-      chain: 'Belcloud (AS44901, Bulgaria); CJSC RASCOM (AS20764, Russia)',
-      juris: 'Bulgaria (EU)',
-      lever: 'Available and unused. No designation exists against the entity, so no compulsion pathway currently applies.'
+      chain: 'Historical (to June 2025): Belcloud (AS44901, Bulgaria); CJSC RASCOM (AS20764, Russia). Since 2026 the Vault Dweller blocks are announced by InterLIR lessees: HOSTKEY B.V. (AS57043, Netherlands), AS50053 (Russia), AS203545 (Turkey); the operator runs no network of its own',
+      juris: 'Netherlands, Bulgaria (EU)',
+      lever: 'Available and unused. No designation exists against the entity, so no compulsion pathway currently applies. The practical lever moved from Belcloud to the broker InterLIR and the lessee Hostkey, both in EU jurisdiction.'
     },
     {
       slug: 'virtualine', name: 'Virtualine / Railnet', western: true,
       chain: 'aurologic GmbH (AS30823, Germany, primary, carrying roughly 95 percent of Railnet traffic); Pfcloud UG (AS51396, Germany, secondary, a single range)',
       juris: 'Germany',
-      lever: 'Available and unused. No designation exists against Virtualine, Railnet, or their fronts, so no compulsion pathway currently applies. aurologic continued serving these networks through late 2025 while also serving the sanctioned Aeza.'
+      lever: 'Available and unused. The FBI seized virtualine.net on 27 October 2026 but issued no designation against Virtualine, Railnet or their fronts, so no compulsion pathway applies to aurologic. Railnet (AS214943) left the routing table in February 2026; aurologic still carries the remaining Virtualine-linked ASN, AS209800, as of October 2026.'
     },
     {
       slug: 'medialand', name: 'Media Land', western: false,
-      chain: 'NetCom-R (AS49531, RU); MegaFon (AS20632, RU); SYSECT D.O.O. (AS202799, Montenegro); Lavrentyev A.A. (AS51538, RU). Historical: Vimpelcom/Beeline (AS3216), ERTH (AS9049)',
+      chain: 'NetCom-R (AS49531, RU, dominant); SYSECT D.O.O. (AS202799, Montenegro); Severen-Telecom (AS35000, RU, sole upstream of ML Cloud AS215376). Not seen as current neighbours in October 2026: MegaFon (AS20632), Lavrentyev A.A. (AS51538). Historical: Vimpelcom/Beeline (AS3216), ERTH (AS9049)',
       juris: 'Montenegro only',
       lever: 'Effectively absent. All four peers remained in place through the November 2025 sanctions and the July 2026 indictment and EU designation.'
     },
     {
       slug: 'bearhost', name: 'Bearhost / PROSPERO', western: false,
-      chain: 'Kaspersky Lab (AS209030) since December 2024. Kaspersky denies an intentional relationship. PROTON66 upstream chain not documented.',
+      chain: 'Global Network Management (AS31500, RU, dominant for both ASNs); Inetcom Carrier (AS35598, RU); ER-Telecom (AS9049, RU); Hurricane Electric (AS6939, US). Kaspersky Lab (AS209030) carried PROSPERO from December 2024 but is no longer a neighbour as of October 2026.',
       juris: 'None',
       lever: 'Absent. Transit sits inside Russia with a vendor that is itself outside Western regulatory reach.'
     }
