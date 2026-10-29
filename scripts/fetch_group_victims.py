@@ -71,6 +71,7 @@ GROUPS = {
     "payload": "payload",
     "worldleaks": "worldleaks",
     "shinyhunters": "shinyhunters",
+    "rhysida": "rhysida",
 }
 
 

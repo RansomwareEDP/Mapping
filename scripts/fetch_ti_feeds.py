@@ -157,6 +157,14 @@ KEYWORDS = {
         "unc6240",
         "shinysp1d3r",
     ],
+    "rhysida": [
+        "rhysida",
+        "vice society",
+        "vanilla tempest",
+        "vice spider",
+        "gold victor",
+        "oysterloader",
+    ],
     "silentransom": [
         "silent ransom group",
         "luna moth",
