@@ -27,7 +27,7 @@
    with it (it is the fallback for self-contained copies).
    ================================================================== */
 window.MAP_MANIFESTS = {
-  version: '12',
+  version: '13',
   defaultEdition: 'public',
   editions: {
 

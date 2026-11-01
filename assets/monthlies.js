@@ -29,6 +29,12 @@
 
 const EDP_MONTHLIES = [
   {
+    ym: "2026-10", month: "OCT", name: "October 2026",
+    title: "October 2026 Activity Summary",
+    desc: "The UK designation of the Kyrgyz payment rails beside Grinex and A7, the FBI and Dutch seizure of the Virtualine bulletproof host, a Qilin core member in German custody, the $6.3 billion Binance theft, and a 22 percent rise in leak-site claims on the N0n debut",
+    html: "briefs/edp-monthly-2026-10.html"
+  },
+  {
     ym: "2026-09", month: "SEP", name: "September 2026",
     title: "September 2026 Activity Summary",
     desc: "The US designation of the whole A7 Network, the ShinyHunters claim against the FBI, a quarter fewer leak-site claims, and the police takeover of the KillSec leak site",
