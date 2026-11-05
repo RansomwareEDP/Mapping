@@ -25,7 +25,8 @@ SOURCES
   ThreatFox (abuse.ch)  live indicators, principally botnet command servers
   URLhaus (abuse.ch)    URLs actively distributing malware
   RIPEstat              which address ranges each tracked network announces
-All three are public, keyless and free.
+RIPEstat is keyless. ThreatFox and URLhaus now require a free abuse.ch
+Auth-Key (ABUSECH_AUTH_KEY), the same key the crypters collector uses.
 
 COMPROMISED HOSTS ARE SEPARATED, WHICH MATTERS
 -----------------------------------------------
@@ -62,6 +63,7 @@ OUTPUT
 
 import ipaddress
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -70,8 +72,8 @@ import urllib.request
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
-THREATFOX = "https://threatfox.abuse.ch/export/json/recent/"
-URLHAUS = "https://urlhaus.abuse.ch/downloads/json_recent/"
+THREATFOX = "https://threatfox-api.abuse.ch/api/v1/"
+URLHAUS = "https://urlhaus-api.abuse.ch/v1/urls/recent/"
 RIPESTAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS{}"
 OUT = pathlib.Path("data/measurement")
 CONFIG = OUT / "tracked-networks.json"
@@ -90,6 +92,34 @@ def get_json(url, label):
         except Exception:
             out = subprocess.run(["curl", "-s", "--max-time", "120", "-H", f"User-Agent: {UA}", url],
                                  capture_output=True, text=True)
+            if out.returncode == 0 and out.stdout.strip():
+                try:
+                    return json.loads(out.stdout)
+                except json.JSONDecodeError:
+                    pass
+    print(f"  {label}: could not be downloaded")
+    return None
+
+
+def abuse_fetch(url, label, key, post=None):
+    """Fetch an abuse.ch unified-API endpoint with the Auth-Key. POST JSON when
+    `post` is given (ThreatFox get_iocs), GET otherwise (URLhaus recent). Same
+    retry shape and curl fallback as get_json, with the key carried both ways."""
+    body = json.dumps(post).encode() if post is not None else None
+    headers = {"User-Agent": UA, "Accept": "application/json", "Auth-Key": key}
+    req = urllib.request.Request(url, data=body, headers=headers)
+    for wait in (0, 5, 20):
+        if wait:
+            time.sleep(wait)
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return json.loads(r.read())
+        except Exception:
+            cmd = ["curl", "-s", "--max-time", "120",
+                   "-H", f"User-Agent: {UA}", "-H", f"Auth-Key: {key}", url]
+            if post is not None:
+                cmd += ["-d", json.dumps(post)]
+            out = subprocess.run(cmd, capture_output=True, text=True)
             if out.returncode == 0 and out.stdout.strip():
                 try:
                     return json.loads(out.stdout)
@@ -120,6 +150,14 @@ def main():
     now = datetime.now(timezone.utc)
     OUT.mkdir(parents=True, exist_ok=True)
 
+    key = os.environ.get("ABUSECH_AUTH_KEY", "").strip()
+    if not key:
+        write_health(None, now, [
+            "No ABUSECH_AUTH_KEY was provided. ThreatFox and URLhaus now require "
+            "the free abuse.ch Auth-Key, so neither feed could be queried. Set the "
+            "ABUSECH_AUTH_KEY secret (the same key the crypters collector uses)."])
+        return 1
+
     cfg = json.loads(CONFIG.read_text())
     targets = []
     for slug, prov in cfg["providers"].items():
@@ -146,32 +184,34 @@ def main():
     print(f"  tracked address space: {len(nets)} prefixes across "
           f"{len(targets) - len(failed)} networks")
 
-    tf = get_json(THREATFOX, "ThreatFox")
-    uh = get_json(URLHAUS, "URLhaus")
+    tf = abuse_fetch(THREATFOX, "ThreatFox", key, post={"query": "get_iocs", "days": 1})
+    uh = abuse_fetch(URLHAUS, "URLhaus", key)
+    if tf is not None and tf.get("query_status") != "ok":
+        tf = None
+    if uh is not None and uh.get("query_status") != "ok":
+        uh = None
     if tf is None and uh is None:
-        write_health(None, now, ["Neither ThreatFox nor URLhaus could be downloaded."])
+        write_health(None, now, ["Neither ThreatFox nor URLhaus could be downloaded "
+                                 "(abuse.ch unified API; check the Auth-Key and the endpoints)."])
         return 1
 
     indicators = []
     if tf:
-        for group in tf.values():
-            for v in group:
-                indicators.append({
-                    "src": "threatfox", "value": v.get("ioc_value"),
-                    "malware": v.get("malware_printable") or v.get("malware") or "unknown",
-                    "threat_type": v.get("threat_type"),
-                    "compromised": bool(v.get("is_compromised")),
-                    "first_seen": (v.get("first_seen_utc") or "")[:10]})
+        for v in tf.get("data", []):
+            indicators.append({
+                "src": "threatfox", "value": v.get("ioc"),
+                "malware": v.get("malware_printable") or v.get("malware") or "unknown",
+                "threat_type": v.get("threat_type"),
+                "compromised": bool(v.get("is_compromised")),
+                "first_seen": (v.get("first_seen") or "")[:10]})
     if uh:
-        rows = uh.values() if isinstance(uh, dict) else []
-        for group in rows:
-            for v in group:
-                indicators.append({
-                    "src": "urlhaus", "value": v.get("url"),
-                    "malware": ", ".join(v.get("tags") or []) or "unknown",
-                    "threat_type": "malware_distribution",
-                    "compromised": False,
-                    "first_seen": (v.get("dateadded") or "")[:10]})
+        for v in uh.get("urls", []):
+            indicators.append({
+                "src": "urlhaus", "value": v.get("url"),
+                "malware": ", ".join(v.get("tags") or []) or "unknown",
+                "threat_type": "malware_distribution",
+                "compromised": False,
+                "first_seen": (v.get("date_added") or "")[:10]})
     print(f"  indicators to check: {len(indicators)}")
 
     by_provider = defaultdict(lambda: {"inventory": [], "compromised": []})

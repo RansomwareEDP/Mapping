@@ -291,6 +291,14 @@ tr.op-row { cursor: pointer; }
       </div>
     </div>
     <div class="method-block">
+      <h4>Second dimension: monetization capability (v1.3)</h4>
+      <p>From the November 2026 revision, operations are additionally graded on monetization capability: the target's internal ability to convert compromises into paid ransoms, scored only where internal leak data or on-chain evidence exists (shown in the row detail; a blank field means no evidence base, not no effect). Leak-site survival and relaunch speed are treated as presence signals only. The motivating case: LockBit 4.0 panel data shows Operation Cronos cut compromise-to-payment conversion from 54.1 percent to 11.5 percent while 75 affiliate accounts and an active leak blog made the group look alive (Gray et al., eCrime 2025; Castano et al., 2025, same leak).</p>
+    </div>
+    <div class="method-block">
+      <h4>Measurement caveats</h4>
+      <p>Leak-site counts measure disclosure, not attacks: about 59 percent of attacks on large and medium firms are invisible even combining police reports, the lead IR firm and leak sites, an observed-to-true multiplier of about 2.4x (Meurs et al., Journal of Quantitative Criminology 2026, Dutch data 2019-2022). Paid victims largely vanish from leak sites, so a post-takedown dip in posts is not proof of a dip in attacks. Designation-type instruments are also structurally late: sanctions arrive on average 727 days after a group's first victim, usually after the group has stopped or rebranded (Meurs et al., eCrime 2024).</p>
+    </div>
+    <div class="method-block">
       <h4>Rules</h4>
       <p>The unit of analysis is the operation, not the press release: coordinated multi-authority actions are one row, and every named lead authority is credited with that row's score. Averages exclude operations under roughly 90 days old (marked TBD), because reconstitution takes weeks to observe. Individual arrests are recorded inside their parent operation's personnel outcome rather than as separate rows.</p>
     </div>
@@ -488,6 +496,7 @@ tr.op-row { cursor: pointer; }
           "<span class='d-label'>Successor</span><span>" + esc(o.successor) + "</span>" +
           "<span class='d-label'>Personnel</span><span>" + esc(o.personnel) + "</span>" +
           "<span class='d-label'>Measured impact</span><span>" + esc(o.impact) + "</span>" +
+          (o.monetization ? "<span class='d-label'>Monetization capability</span><span>" + esc(o.monetization) + "</span>" : "") +
           "<span class='d-label'>Assessment</span><span>" + esc(o.status) + "</span>" +
           "<span class='d-label'>Confidence</span><span>" + esc(o.confidence) + "</span>" +
           "<span class='d-label'>Sources</span><span>" + String(o.source).split(";").map(function (s) {
@@ -499,7 +508,7 @@ tr.op-row { cursor: pointer; }
     });
   }
   D.operations.forEach(function (o) {
-    o.summaryText = [o.components, o.successor, o.personnel, o.impact, o.status].join(" ");
+    o.summaryText = [o.components, o.successor, o.personnel, o.impact, o.status, o.monetization].join(" ");
   });
   document.querySelectorAll(".filter-bar .fchip").forEach(function (ch) {
     ch.addEventListener("click", function () {
