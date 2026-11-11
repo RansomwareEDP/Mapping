@@ -712,12 +712,10 @@ window.RECONSTITUTION = {
         {
           "lane": "loaders",
           "target": "DanaBot",
-          "class": "censored",
-          "evidence": "No resurgence in 14+ months; indictment naming with developers still free",
-          "confidence": "Confirmed"
+          "class": "closed", "replacementDays": 170, "migrationDays": 170, "approx": true, "evidence": "Returned with a new version about six months after the takedown (BleepingComputer and Zscaler reporting, November 2025); the 16 named developers remained free", "confidence": "Credible"
         }
       ],
-      "commentary": "Best malware outcome achieved without arrests: full attribution alone suppressed the rebuild."
+      "commentary": "Full attribution did not prevent the rebuild: DanaBot returned after about six months."
     },
     {
       "id": "E21",
