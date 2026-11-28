@@ -5,110 +5,58 @@
    "URLhaus (abuse.ch)",
    "RIPEstat"
   ],
-  "built": "2026-11-27T16:24:28Z",
-  "runs": 87,
+  "built": "2026-11-28T15:24:02Z",
+  "runs": 88,
   "prefixes_checked": 575,
   "networks_unreadable": [],
-  "indicators_examined": 3036,
-  "indicators_on_confirmed_networks": 3,
+  "indicators_examined": 2389,
+  "indicators_on_confirmed_networks": 2,
   "indicators_on_adjacent_networks": 0,
   "measures": "Whether tracked hosting providers are currently carrying live malware infrastructure.",
   "why_this_can_mislead": "Absence is not innocence: zero means nothing was REPORTED on that network, and reporting is uneven and volunteer-driven. The source exports cover a recent rolling window, so one run is a snapshot rather than a series. Address space changes hands, so a prefix inside a tracked network today may not be tomorrow. And presence is not proof the provider knew: it is a reason to look at abuse response, which is what separates a bulletproof host from a careless one. Indicators on compromised machines are counted separately and must never be added to the rest, because a hacked server is a victim, not inventory. Hits on sibling and successor networks are also kept apart: those are networks a profile records as adjacent without establishing ownership, so counting them against a provider asserts an attribution the research did not make.",
   "distortion": "Medium"
  },
  "ecosystem_botnet_c2_by_family": {
-  "Unknown malware": 910,
-  "AsyncRAT": 42,
-  "WARDENStealer": 28,
-  "Cobalt Strike": 18,
-  "Jackskid": 14,
-  "Sliver": 13,
-  "PureRAT": 12,
-  "Unknown RAT": 7,
-  "DCRat": 6,
-  "Evilginx": 4,
-  "NjRAT": 3,
-  "Mirai": 3,
-  "SmartLoader": 3,
-  "Unknown Webinject": 2,
-  "Formbook": 2,
-  "SectopRAT": 2,
-  "XWorm": 2,
-  "Venom RAT": 2,
-  "VShell": 2,
-  "CECbot": 2,
-  "Unknown Stealer": 1,
-  "RevStealer": 1,
-  "Remus": 1,
-  "MooBot": 1,
-  "RomulusLoader": 1,
-  "XMRIG": 1,
-  "Lumma Stealer": 1,
-  "Ave Maria": 1,
+  "Unknown malware": 789,
+  "Jackskid": 29,
+  "Cobalt Strike": 27,
+  "PureRAT": 21,
+  "Unknown RAT": 18,
+  "Sliver": 11,
+  "WARDENStealer": 9,
+  "Mirai": 6,
+  "DCRat": 5,
+  "Anatsa": 4,
+  "AdaptixC2": 4,
+  "SalatStealer": 3,
+  "Remcos": 3,
+  "SeroRAT": 3,
+  "Unknown Stealer": 2,
+  "EtherRAT": 2,
+  "Hook": 2,
+  "Coper": 2,
+  "Quasar RAT": 2,
+  "DeimosC2": 2,
+  "NetSupportManager RAT": 2,
+  "NjRAT": 2,
+  "Unknown Loader": 1,
+  "AMOS": 1,
+  "XWorm": 1,
+  "CECbot": 1,
+  "Empire Downloader": 1,
   "Havoc": 1,
-  "Brute Ratel C4": 1,
-  "Chaos": 1,
-  "NetSupportManager RAT": 1,
-  "SeroRAT": 1,
-  "Remcos": 1,
-  "DeimosC2": 1
+  "AsyncRAT": 1
  },
  "indicator_types_on_tracked_space": {
-  "botnet_cc": 3
+  "botnet_cc": 2
  },
  "malware_families_on_tracked_space": {
-  "Unknown malware": 2,
-  "Venom RAT": 1
+  "Anatsa": 2
  },
  "providers": {
   "aeza": {
    "name": "AEZA GROUP",
    "designated": true,
-   "indicators_confirmed_own": 3,
-   "indicators_on_successor": 0,
-   "indicators_on_sibling": 0,
-   "indicators_on_compromised_hosts": 0,
-   "by_network": {
-    "AS210644 (measured)": 2,
-    "AS216246 (measured)": 1
-   },
-   "malware_families": {
-    "Unknown malware": 2,
-    "Venom RAT": 1
-   },
-   "indicators": [
-    {
-     "value": "193.233.246.151:4449",
-     "malware": "Venom RAT",
-     "threat_type": "botnet_cc",
-     "asn": 216246,
-     "confidence": "measured",
-     "first_seen": "2026-11-27",
-     "source": "threatfox"
-    },
-    {
-     "value": "213.165.40.132:8787",
-     "malware": "Unknown malware",
-     "threat_type": "botnet_cc",
-     "asn": 210644,
-     "confidence": "measured",
-     "first_seen": "2026-11-27",
-     "source": "threatfox"
-    },
-    {
-     "value": "213.108.20.12:8787",
-     "malware": "Unknown malware",
-     "threat_type": "botnet_cc",
-     "asn": 210644,
-     "confidence": "measured",
-     "first_seen": "2026-11-27",
-     "source": "threatfox"
-    }
-   ]
-  },
-  "bearhost": {
-   "name": "Bearhost / Underground / Voodoo Servers",
-   "designated": false,
    "indicators_confirmed_own": 0,
    "indicators_on_successor": 0,
    "indicators_on_sibling": 0,
@@ -116,6 +64,40 @@
    "by_network": {},
    "malware_families": {},
    "indicators": []
+  },
+  "bearhost": {
+   "name": "Bearhost / Underground / Voodoo Servers",
+   "designated": false,
+   "indicators_confirmed_own": 2,
+   "indicators_on_successor": 0,
+   "indicators_on_sibling": 0,
+   "indicators_on_compromised_hosts": 0,
+   "by_network": {
+    "AS200593 (measured)": 2
+   },
+   "malware_families": {
+    "Anatsa": 2
+   },
+   "indicators": [
+    {
+     "value": "91.215.85.55:85",
+     "malware": "Anatsa",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-11-28",
+     "source": "threatfox"
+    },
+    {
+     "value": "http://91.215.85.55:85/api/botupdate",
+     "malware": "Anatsa",
+     "threat_type": "botnet_cc",
+     "asn": 200593,
+     "confidence": "measured",
+     "first_seen": "2026-11-28",
+     "source": "threatfox"
+    }
+   ]
   },
   "dedbropro": {
    "name": "DEDBROPRO",
